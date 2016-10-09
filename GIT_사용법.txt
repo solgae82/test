@@ -65,12 +65,78 @@ git add .gitignore
 git commit -m "add .ignore" <=git에 등록함. 다른 사람과 연동시에 저 법칙을 공유하게 됨.
 
 
------------------------------------------------------------원격 저장소
+##################################################원격 저장소
+
+--------- 원격저장소 가져오기(clone)
+#git init 할 필요없다 바로 clone명령하면 됨.
+#git init + git pull 이라고 생각하면됨.
+#git clone <원격주소> [복사할 로컬주소:없으면 원격저장소 이름으로 디렉토리 생성됨]
+
+git clone https://github.com/solgae82/test.git test1
+
+# 클론 후 확인해보면 자동 원격저장소가 설정되었음을 알 수 있다
+git remote -v <= 원격주소확인
+origin  https://github.com/solgae82/test.git (fetch)
+origin  https://github.com/solgae82/test.git (push)
+
 ---------원격저장소 설정
 git remote 	:현재 로컬과 현재 원격저장소 상태보기
 git remote -v 	:현재 로컬과 연결된 원격저장소 상태(주소까지 함께보기)
-git remote add origin <원격서버주소> : 현재 로컬저장소에 원격저장소 정보 설정
+git remote add <저장소명(origin)> <원격서버주소> : 현재 로컬저장소에 원격저장소 정보 설정
+
+---------원격저장소 가져오기(fetch)
+# fetch는 현재 브랜치와 바로 병합하는 것이 아니라, 임시 저장소(origine/master)에 가져오고,
+충돌 났는지, 비교등을 하고  직접 수정해서 반영하라는 수동모드.
+
+git fetch
+git brach -a
+  remotes/origin/master <= origin/master 가 원격저장소에서 가져오 브랜치
+#비교등을 하고 합친다
+git merge origin/master <=현재 master에 가져온 origin/master를 합친다
+
+---------- 원격저장소 가져오기+자동병합(pull)
+#fetch + merge 명령이라고 생각할 수 있음.
+git pull <원격주소이름> <가져올로컬브랜치>
+
+git pull origin master
 
 
+--------- 처음 가져오기
+test1에 가져온다고 가정할 경우
+
+1. clone으로 가져오기
+git clone https://github.com/solgae82/test.git test1
+# init과정 필요없음. 바로 원격설정등 자동으로 연결됨.
+
+cd test1   #복사된(로컬저장소) 위치로 이동
+git status #확인
+
+2.fetch로 가져오기
+mkdir test1	#로컬저장소 디렉토리 생성
+cd test1	#이동
+git init	#로컬저장소 생성
+git remote add origin https://github.com/solgae82/test.git	#원격저장소 설정
+git remote -v	#원격저장소 설정 확인
+  origin  https://github.com/solgae82/test.git (fetch)
+  origin  https://github.com/solgae82/test.git (push)
+
+git fetch	#원격저장소에서 가져오기
+git branch -a	#임시로 받은 원격저장소 브랜치 확인
+  remotes/origin/master
+
+git merge origin/master	#(편집수정할 내용없음) 현재 master로 합침 
+git status	#상태확인
+
+3.pull로 가져오기
+mkdir test1	#로컬저장소 디렉토리 생성
+cd test1	#이동
+git init	#로컬저장소 생성
+git remote add origin https://github.com/solgae82/test.git	#원격저장소 설정
+git remote -v	#원격저장소 설정 확인
+  origin  https://github.com/solgae82/test.git (fetch)
+  origin  https://github.com/solgae82/test.git (push)
+
+git pull origin master	#가져오기 (fetch + merge)
+git status	#상태확인
 
 
