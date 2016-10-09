@@ -7,45 +7,46 @@ git config =-global user.name "dong"
 git config --global user.email "dong@ggg.com"
 
 --------- 로컬 저장소 만들기
-mkdir project	<= 저장소 생성, 디렉토리생성
-git init	<= git 초기화, git에 의해 이 디렉토리 관리됨.
+mkdir project	# 저장소 생성, 디렉토리생성
+git init	# git 초기화, git에 의해 이 디렉토리 관리됨.
 
-git status	<= 저장소 상태 확인
+git status	# 저장소 상태 확인
 
-.git <=이것 삭제하면 로컬 저장소 삭제됨
+.git #이것 삭제하면 로컬 저장소 삭제됨
 
 --------- 로컬 저장소에 파일 등록하기(add , commit)
-git add hello.txt <=hello.txt 파일 커밋 전 index(stage area)등록.
-git commit	<= index(stage area)에 등록된 파일 git에 버전 저장.
+git add hello.txt #hello.txt 파일 커밋 전 index(stage area)등록.
+git commit	# index(stage area)에 등록된 파일 git에 버전 저장.
 		(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
 
-git commit -a  <=저장소에 변경된 모든 파일들 index(stage area)에 add후 바로 commit
+git commit -a  #저장소에 변경된 모든 파일들 index(stage area)에 add후 바로 commit
 		(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
 
-git commit -am "add first" <=저장소에 변경된 모든 파일들 index(stage area)에 add후 메시지까지 작성 후 바로 commit
+git commit -am "add first" #저장소에 변경된 모든 파일들 index(stage area)에 add후 메시지까지 작성 후 바로 commit
 
 
 --------- 브랜치 생성
-git branch <= 현재 브랜치들 보기, 기본(master)만 있음
-git branch ver2 <= ver2 브랜치 생성
-git branch <= master, ver2 2개 있음.
+git branch # 현재 브랜치들 보기, 기본(master)만 있음
+git branch ver2 # ver2 브랜치 생성
+git branch # master, ver2 2개 있음.
 
-git checkout ver2 <= ver2 브랜치로 이동.
-git checkout -b ver3 <= ver3 브랜치 만들고 ver3 브랜치로 이동.
+git checkout ver2 # ver2 브랜치로 이동.
+git checkout -b ver3 # ver3 브랜치 만들고 ver3 브랜치로 이동.
 
+git branch -a	#원격저장소에 fetch로 가져온 remote-tracking 도 보여준다
 
 
 ---------병합하기
 master + ver2 합치기
 
-git checkout master <= 병합될 기준되는 위치로 이동
-git merge ver2	    <= 다른 branch인 ver2를 master로 합침.
+git checkout master # 병합될 기준되는 위치로 이동
+git merge ver2	    # 다른 branch인 ver2를 master로 합침.
 
 ---------병합충돌
 <<<<< HEAD
-abc	<=현재 위치한 branch 파일에 내용
+abc	#현재 위치한 branch 파일에 내용
 =====
-abcd	<= 병합을 가져오는 곳에 파일에 내용
+abcd	# 병합을 가져오는 곳에 파일에 내용
 >>>>> ver2
 /*
 git은 충돌난 지접을 알려줄 뿐이고 처리는 사람에게 위임한다.
@@ -59,10 +60,10 @@ git log --graph /병합내역 아스키로 보여줌
 git log --stat //커밋 수정 통계정보
 
 ---------파일등록 무시하기
-.gitignore <=파일 생성  
-.gitignore <=파일에 git에 등록되지 말아야할 파일패턴 입력.
+.gitignore #파일 생성  
+.gitignore #파일에 git에 등록되지 말아야할 파일패턴 입력.
 git add .gitignore
-git commit -m "add .ignore" <=git에 등록함. 다른 사람과 연동시에 저 법칙을 공유하게 됨.
+git commit -m "add .ignore" #git에 등록함. 다른 사람과 연동시에 저 법칙을 공유하게 됨.
 
 
 ##################################################원격 저장소
@@ -75,9 +76,9 @@ git commit -m "add .ignore" <=git에 등록함. 다른 사람과 연동시에 �
 git clone https://github.com/solgae82/test.git test1
 
 # 클론 후 확인해보면 자동 원격저장소가 설정되었음을 알 수 있다
-git remote -v <= 원격주소확인
-origin  https://github.com/solgae82/test.git (fetch)
-origin  https://github.com/solgae82/test.git (push)
+git remote -v # 원격주소확인
+  origin  https://github.com/solgae82/test.git (fetch)
+  origin  https://github.com/solgae82/test.git (push)
 
 ---------원격저장소 설정
 git remote 	:현재 로컬과 현재 원격저장소 상태보기
@@ -90,13 +91,13 @@ git remote add <저장소명(origin)> <원격서버주소> : 현재 로컬저장
 
 git fetch
 git brach -a
-  remotes/origin/master <= origin/master 가 원격저장소에서 가져오 브랜치
+  remotes/origin/master # origin/master 가 원격저장소에서 가져오 브랜치
 #비교등을 하고 합친다
-git merge origin/master <=현재 master에 가져온 origin/master를 합친다
+git merge origin/master #현재 master에 가져온 origin/master를 합친다
 
 ---------- 원격저장소 가져오기+자동병합(pull)
 #fetch + merge 명령이라고 생각할 수 있음.
-git pull <원격주소이름> <가져올로컬브랜치>
+git pull <원격주소이름> <가져올 로컬브랜치>
 
 git pull origin master
 
@@ -138,5 +139,3 @@ git remote -v	#원격저장소 설정 확인
 
 git pull origin master	#가져오기 (fetch + merge)
 git status	#상태확인
-
-
