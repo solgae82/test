@@ -1,5 +1,5 @@
 ﻿work tree : 작업공간
-inddex(stage area) : 커밋 전 등록하는 곳
+index(stage area) : 커밋 전 등록하는 곳
 HEAD : 최종확정본 
 
 --------- 식별자 설정
