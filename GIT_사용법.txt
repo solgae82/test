@@ -3,7 +3,7 @@ index(stage area) : 커밋 전 등록하는 곳
 HEAD : 최종확정본 
 
 --------- 식별자 설정
-git config =-global user.name "dong"
+git config --global user.name "dong"
 git config --global user.email "dong@ggg.com"
 
 --------- 로컬 저장소 만들기
