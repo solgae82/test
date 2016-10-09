@@ -1,0 +1,76 @@
+﻿work tree : 작업공간
+inddex(stage area) : 커밋 전 등록하는 곳
+HEAD : 최종확정본 
+
+--------- 식별자 설정
+git config =-global user.name "dong"
+git config --global user.email "dong@ggg.com"
+
+--------- 로컬 저장소 만들기
+mkdir project	<= 저장소 생성, 디렉토리생성
+git init	<= git 초기화, git에 의해 이 디렉토리 관리됨.
+
+git status	<= 저장소 상태 확인
+
+.git <=이것 삭제하면 로컬 저장소 삭제됨
+
+--------- 로컬 저장소에 파일 등록하기(add , commit)
+git add hello.txt <=hello.txt 파일 커밋 전 index(stage area)등록.
+git commit	<= index(stage area)에 등록된 파일 git에 버전 저장.
+		(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
+
+git commit -a  <=저장소에 변경된 모든 파일들 index(stage area)에 add후 바로 commit
+		(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
+
+git commit -am "add first" <=저장소에 변경된 모든 파일들 index(stage area)에 add후 메시지까지 작성 후 바로 commit
+
+
+--------- 브랜치 생성
+git branch <= 현재 브랜치들 보기, 기본(master)만 있음
+git branch ver2 <= ver2 브랜치 생성
+git branch <= master, ver2 2개 있음.
+
+git checkout ver2 <= ver2 브랜치로 이동.
+git checkout -b ver3 <= ver3 브랜치 만들고 ver3 브랜치로 이동.
+
+
+
+---------병합하기
+master + ver2 합치기
+
+git checkout master <= 병합될 기준되는 위치로 이동
+git merge ver2	    <= 다른 branch인 ver2를 master로 합침.
+
+---------병합충돌
+<<<<< HEAD
+abc	<=현재 위치한 branch 파일에 내용
+=====
+abcd	<= 병합을 가져오는 곳에 파일에 내용
+>>>>> ver2
+/*
+git은 충돌난 지접을 알려줄 뿐이고 처리는 사람에게 위임한다.
+충돌난 파일을 편집하고, 다시 commit하면 된다
+*/
+git commit -a -m "conflict resolved" 
+
+-------- git log보기
+다음보기 이동(스페이스바), 끝내기 : 'q' 입력.
+git log --graph /병합내역 아스키로 보여줌
+git log --stat //커밋 수정 통계정보
+
+---------파일등록 무시하기
+.gitignore <=파일 생성  
+.gitignore <=파일에 git에 등록되지 말아야할 파일패턴 입력.
+git add .gitignore
+git commit -m "add .ignore" <=git에 등록함. 다른 사람과 연동시에 저 법칙을 공유하게 됨.
+
+
+-----------------------------------------------------------원격 저장소
+---------원격저장소 설정
+git remote 	:현재 로컬과 현재 원격저장소 상태보기
+git remote -v 	:현재 로컬과 연결된 원격저장소 상태(주소까지 함께보기)
+git remote add origin <원격서버주소> : 현재 로컬저장소에 원격저장소 정보 설정
+
+
+
+
