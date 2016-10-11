@@ -1,0 +1,28 @@
+$.param() : 폼 요소들의 값을 변환하여 직렬화된 문자열로 표현한다.
+var params = {width : 1680, height : 1050};	// 배열 선언
+var str = $.param(params); // Ajax로 전송가능하도록 직렬화 , width=1680&height=1050
+---------------------------------------//		     
+.serialize() : 선택한 form의 데이터를 ajax로 전송할 수 있도록 직렬화 한다.
+$("#form_1").serialize();    //  id name form_1의 데이터를 직렬화한다. a=1&b=2
+---------------------------------------//
+ $.ajax({
+	type : 'POST',                          // post 타입 전송
+	url : 'some.php',                       // 전송 url
+	data : "name=John&location=Boston",	// 전송 파라미터
+	cache : false,                          // ajax로 페이지를 요청해서 보여줄 경우
+						// cache가 있으면 새로운 내용이 업데이트 되지 않는다.
+	async : true,                           // 비동기 통신,  false : 동기 통신
+	beforSend : fucntion(){..}              // ajax 요청이 전송되기 전 실행 함수
+	success : function(msg,status){..}             // 콜백 성공 응답시 실행
+	error : function(){..}                  // Ajax 전송 에러 발생시 실행
+	complete : function(){..}               //  success, error 실행 후 최종적으로 실행
+ });
+---------------------------------------//
+$.post() : post 방식으로 ajax 통신을 한다. 서버와 파라미터로 데이터를 주고받는다.
+var params = 'a=1&b=hi'; //또는 {a;1, b:'hi'}
+$.post("test.php", params, function(data,status){..});// data:출력데이터, status:success, error 문자열 상태
+
+---------------------------------------//
+$.get() : get 방식으로 ajax 통신을 한다. 서버에서 가져온다.
+var params = 'a=1&b=hi'; //또는 {a;1, b:'hi'}
+$.get("test.php",params ,  function(data, status){..});  // data:출력데이터, status:success, error 문자열 상태

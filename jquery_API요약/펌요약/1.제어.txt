@@ -1,0 +1,275 @@
+1. 제어
+
+
+- 선택
+
+.add() : 요소를 추가 선택한다. 
+       //   $("p").add("div")  // p 요소와 div 요소를 선택한다.
+
+.not() : 선택된 확장집합에서 인자에 해당하는 요소를 제거한다.
+      //   $("p").not(".green")  // p 요소의 확장집합에서 class가 green인 요소를 제거한다.
+
+.children() : 요소의 고유한 자식으로 구성된 확장 집합을 반환한다.
+
+.contents() : 선택한 요소의 자식 요소를 가져온다.(text node 포함)
+       $('.container').contents().filter(function(){}); 
+        // class container 요소의 자식요소(text 포함)를 가져와 filter 한다. iframe text를 가져올때 사용
+
+.first() : 요소의 첫번째 노드 반환
+
+.last() : 요소의 마지막 노드 반환
+
+.next() : 요소 집합내의 바로 다음에 나오는 형제로 구성된 요소 반환
+
+.nextAll() : 요소 집합내의 다음에 나오는 모든 형제로 구성된 확장집합 반환
+
+.nextUntil() : 선택 요소부터 인자가 나올때까지 집합을 선택한다.
+   // $("#term").nextUntil("dt").css('background-color', 'red'); 
+    // id term 요소부터 dt가 나올때까지 형제요소를 검색하고 배경을 red로 변경
+  // $("#term").nextUntil($("#term2"), "dd").css('background-color', 'red'); 
+       // id term 요소부터 id term2 요소까지 중 dd 요소만 배경을 red로 변경
+
+.parent() : 요소 집합의 바로 위 부모로 구성된 확장 집합 반환
+
+.parents() : 요소 집합의 모든 조상 확장 집합을 반환. 부모와 상위 모든 조상이 포함되지만 문서루트는 미포함
+
+.parentsUnitl() : 선택 요소부터 인자가 나올때까지 부모 집합을 선택한다.
+        // $("#term").parentsUntil("dt").css('background-color', 'red'); 
+            // id term 요소부터 dt가 나올때까지 부모요소를 검색하고 배경을 red로 변경
+        // $("#term").parentsUntil($("#term2"), "dd").css('background-color', 'red'); 
+             // id term 요소부터 id term2 부모요소까지 중 dd 요소만 배경을 red로 변경
+
+.prev() : 요소 집합의 바로 이전에 나오는 형제로 구성된 확장 집합을 반환
+
+.prevAll() : 요소 집합의 이전에 나오는 모든 형제로 구성된 확장 집합을 반환
+
+.siblings() : 요소의 모든 형제를 포함하는 확장 집합을 반환.
+
+.eq() : 선택 요소의 index번째 요소를 선택한다.
+   // $("div").eq(2).css('background-color', 'red'); // div의 3번째 요소의 배경을 변경
+
+.index() : 선택 요소에서 인자의 index 번호를 반환
+        // $("div").index($("div:contains('Third')")); 
+         // div 안에서 div에 'Third'라는 단어를 포함하고 있는 div index 값
+
+$.inArray() <jQuery.inArray()> : 대상 배열 내의 값을찾아서 인덱스를 반환한다. ; 첫번째 배열은 0, 요소가 없으면 -1
+        // $.inArray("John", arr);     // arr 배열에서 "John"의 인덱스를 찾아서 반환
+
+.find() : 선택된 요소의 자식노드에서 인자의 요소를 찾는다.
+       // $("#div").find(ul); // id div의 자식노드에서 ul 요소를 찾는다.
+
+.filter() : 선택된 요소를 포함한 노드에서 인자의 요소를 찾는다.
+       // $("#div").filter(ul); // id div 노드 자신을 포함한 요소에서 ul 요소를 찾는다.
+
+.end() : jQuery 함수를 연쇄적으로(chain)으로 사용할 경우 앞쪽에 이미 선택되었던 요소로 돌아간다.
+   
+   $('ul:first').find('.foo).css('background-color' , 'red')  // ul의 첫번째 요소에서 class=foo를 찾아 배경 변경
+
+   .end().find('bar').css('background-color', 'green'); // find를 호출하기 전의 요소($('ul:first))에서 class=bar를 찾아 배경 변경
+
+.each() : 다중 요소를 순서대로 선택한다.
+      // $("div").each(function(i,element){
+          // div 요소를 순서대로 선택한다.  i: 순서 시작은 0 ,  element : 선택된 요소 
+       });
+
+.has() : 인자를 가지고 있는 확장집합을 선택 
+            // $("li").has("ul");   // li 요소중 ul을 가지고 있는 요소만 선택
+
+.slice() : 선택한 요소 집합을 인자의 범위로 잘라낸다.
+              // $("img").slice(2).css(...);    
+                             // img 요소의 세번째 요소부터 끝 요소까지 css 적용
+             // $("img").slice(2, 4).css(...);    
+                             // img 요소의 세번째 요소부터 5번째 요소를 만날때까지(4번째) css적용
+             // $("img").slice(-2, -1).css(...);    
+                  // img 요소의 끝에서 두번째 요소부터 끝에서 첫번째 요소를 만날때까지 css적용
+
+.clone() : 선택된 요소를 복사한다. // $("#img").clone();  // id img DOM을 복사한다.
+
+.closest() : 현재 위치한 요소에서 DOM 트리를 탐색하여 일치된 요소를 선택한다.
+        $("#name").closest("ul");   // id name 요소에서 가장 가까운 ul을 선택한다.
+        $("#name").closest("ul", "#code");   // id code 요소 아래의 id name 요소에서 가장 가까운 ul을 선택한다.
+
+.andSelf() : 선택된 구조 요소를 이어붙인다.
+     // $('div').find('p').andSelf().css(..);  
+                       // div와 내부의 p요소를 선택해서 결합 후 css 적용
+
+.offsetParent() : 위치(css:position) 요소를 기반으로 한 부모 요소를 찾는다.
+     // $('li.item-a').offsetParent().css(..);   // li의 item-a 클래스의 css position상 가장 가까운 부모요소에 css를 적용
+
+$.grep() <jQuery.grep()> : 배열 요소를 조건에 따라 필터링하여 제거 한다. 특정 로직에 의해 true가 되는 결과만 반환
+    
+      // $.grep([0,1,2], function(n,i){ return n>0;});      
+                    // 배열 [0,1,2] 에서 0보다 큰값을 반환 [1,2]
+     // $.grep([0,1,2], function(n,i){ return n>0;}, true);      
+                   // 배열 [0,1,2] 에서 0보다 크지 않은 값을 반환 [0]
+
+
+$.proxy() <jQuery.proxy()> : jQuery의 네임스페이스를 관리할 수 있게 한다. "this" 키워드를 통하여 다른 개체를 유지할 수 있게 한다.
+           var app={
+                   config : {  clickMessage : Hi!" },        
+                                    // config 메서드에 clickMessage를 정의
+   
+                     clickHandler : function(){                // clicHandler 메서드 함수 정의
+                                     alert( this.config.clickMessage);   
+                                           // this:app 의 config 메시지의 clickMessage를 알람
+                         }   
+                        }
+            $('a).bind('click', app.clickHandler);   
+                             // 실행되지 않는다. jQuery 이벤트 모델에 의해 this가 app 이 아니다.
+           $('a').bind('click', .proxy(app, 'clickHandler'));  
+                            // this 키워드를 유지한채 실행된다.
+
+- 삽입
+
+.after() : 지정한 요소 뒤에 새로운 요소를 삽입 // A.after( B) // A뒤에 B를 추가
+.insertAfter() : 지정한 요소 뒤에 새로운 요소를 삽입 
+                     // A.insertAfter(B) // B뒤에 A를 추가
+
+.append() : 지정한 요소 뒤에 내용 삽입
+           // $("div").append("<p>내용</p>");    // div 뒤에 <p>내용</p> 를 삽입한다.
+.appenTo() : 지정한 내용을 요소 뒤에 삽입
+      // $("<p>내용</p>").appendTo($("div"));   // <p>내용</p>를 div 뒤에 삽입한다. 
+
+.before() : 지정한 요소의 앞에 요소를 삽입 // A.before(B) // A 앞에 B를 추가
+.insertBefore() : 지정한 요소의 앞에 요소를 삽입 
+                        // A.insertBefore(B) // B 앞에 A를 추가
+
+.prepend() : 지정한 요소 앞에 내용 삽입
+        // $("div").prepend("<p>내용</p>");    // div 앞에 <p>내용</p> 를 삽입한다.
+.prependTo() : 지정한 내용을 요소 앞에 삽입
+       // $("<p>내용</p>").prependTo($("div"));  
+                // <p>내용</p>를 div 앞에 삽입한다. 
+
+.pushStack() : jQuery 스택에 DOM 요소를 추가한다.
+               // $("#ids").pushStack($("div"));   
+                          // id ids 요소에 jQuery 스택에 div 요소를 추가한다.
+
+.wrap() : $() 형식으로 쓰는 함수의 선택한 요소 각각을 문자열 또는 객체로 감싼다.
+             .// $(".inner").wrap('<div class="new" />');   
+                                   // class=inner 집합 요소 각각을 <div class ="new"></div>
+              .// $(".inner").wrap(function(){
+                        return '<div class="new" />');  
+                                   // class=inner 집합 요소 각각을 <div class ="new"></div>
+                });
+
+.unwrap() : 선택한 요소 집합의 부모를 제거한다.
+             .// $(".inner").wrap();   // class=inner 집합 요소의 부모를 제거한다. 
+
+.wrapAll() : $() 형식으로 쓰는 함수의 선택한 요소 전체를 문자열 또는 객체로 감싼다.
+             .// $(".inner").wrapAll('<div class="new" />');  
+                                   // class=inner 집합 요소 전체를 <div class ="new"></div>
+
+.wrapInner() : $() 형식으로 쓰는 함수의 선택한 요소 각각의 내부를 문자열 또는 객체로 감싼다.
+             .// $(".inner").wrapInner('<div class="new" />');  
+                             // class=inner 집합 요소 각각의 내부를 <div class ="new"></div> 로 감싼다
+
+
+- 삭제
+
+.detach() : 지정한 요소를 포함 하위 요소 모두 제거
+             // $("div").detach();    // div를 포함 하위 요소 모두 제거
+.empty() : 지정한 요소의 하위 요소를 제거
+           // $("div").empty();    // div 하위 요소 모두 제거
+.remove() : 지정한 요소를 포함 하위 요소 모두 제거, 요소와 관련된 이벤트와 데이터 모두 제거
+            // $("div").remove();    // div 포함 하위 요소, 이벤트, 데이터 모두 제거
+
+- 변경, 변환
+
+.text() : 해당 요소에 text 요소를 삽입 또는 변경한다.
+
+.html() : 해당 요소에 html 요소를 삽입 또는 변경한다.
+
+.val() : 해당 요소의 value 값을 삽입 또는 변경한다.
+
+.replaceAll() : 해당 요소들로 인자 요소를 대체한다.
+         // $('<h2>New heading</h2>').empty($("div"));    
+                                 // div 요소를 <h2>New heading</h2> 요소로 변경한다.
+
+.replaceWith() : 해당 요소들을 인자의 요소로 바꾼다.  ; replaceAll() 과 선택,인자(target)이 반대
+        // $("div").empty('<h2>New heading</h2>');    
+                              //  <h2>New heading</h2> 요소로 div 요소를 변경 시킨다.
+
+.toArray() : 선택한 요소 DOM 집합을 자바스크립트 배열로 만든다.
+      // var arr = $("div").toArray();    //  arr[0] === <div>Hello</div>
+
+$.makeArray <jQuery.makeArray()> : jQuery 집합의 요소 값을 JavaScript 배열로 변환한다.
+    // var arr = $.makeArray($("input"));      //  arr[0] === "Hello"
+
+$.map() <jQuery.map()>
+.map() : 선택된 배열 요소를 순서대로 callback 함수를 통해 얻어진 리턴값을 포함하는 새로운 jQuery 오브젝트 생성
+    // var arr = $("div").map(function(){
+           return $(this).text().toUpperCase();      // 선택된 요소들의 text값을 대문자로 변경한다.
+         });
+    // var arr = $("div").map({width : 10, height: 15} ,function(value, index){
+           return index;      //  key를 반환한다.  ["width", "height"]
+         });
+$.globalEval() <jQuery.globalEval()> : 문자열로 명령어를 실행시켜준다.
+    // $.globalEval("var newVar = true;")      // newVar == true
+
+$.merge() <jQuery.merge()> : 두개의 배열을 첫번째 배열에 합칩니다.
+    // $.merge([0,1,2],[2,3,4]);      // 첫번째 배열 결과 : [0,1,2,2,3,4]
+    // $.merge($.merge([],[0,1,2]),[2,3,4]);      
+                                     // 첫번째 배열의 값을 유지하기 위해 새로운 배열을 만든다. 
+
+$.trim() <jQuery.trim()> : 문자열 앞뒤에 있는 공백 문자를 제거하고 결과 반환
+    // var trimStr = $.trim(str);      // str === "   abc def ff  ";    trimStr === "abc def ff";
+
+$.unique() <jQuery.unique()> : element 배열의 중복된 모든 element를 제거한다. ; string, number 배열에서는 동작 X
+    // var divs = $.unique(divs);      // divs의 중복 선택되어 들어간 element를 제거한다.
+
+$.parseJSON() <jQuery.parseJSON()> : JSON문자열을 JavaScript object로 반환한다.
+    // var obj = $.parseJSON('{"name":"John"}');     
+                                 // 문자열 {"name":"John"}을 JavaScript object로 변환한다.
+    // alert(obj.name==="John");     // JavaScriptObject인 obj에서 name 요소인 John
+
+    - 참고 : 형식이 어긋난 JSON 문자열을 인자로 사용하면 exception이 발생한다.
+               문자열의 key 와 value 는 쌍따옴표("")를 사용해야 한다.
+
+$.parseXML() <jQuery.parseXML()> : 유효한 XML문서를 파상한다.
+    $title = $.parseXML(xml).find("title");  // xml 파일에서 title의 값을 찾는다.
+
+
+- 확장
+
+$.noop() <jQuery.noop()> : 비어있는 함수 (function(){})
+
+$.noConflict() <jQuery.Conflict()> : 다른 JavaScript 라이브러리와 함께 사용할때 $의 충돌을 막기위해 사용
+
+$.sub() <jQuery.sub()> : 새로운 jQuery 함수를 정의할때, 네임스페이스의 충돌로 다른 개발자의 함수에 영향을 주지 않도록 캡슐화된 플러그인을 만들고자 할때 $.sub() 로 복사하여 사용
+  (function(){
+    var sub$ = jQuery.sub();
+    sub$.fn.myCustomMethod = function(){
+      return 'just for me';
+    };
+
+    sub$(document).ready(function() {
+      sub$('body').myCustomMethod() // 'just for me'
+    });
+  })();
+
+  typeof jQuery('body').myCustomMethod // undefined
+
+$.extend() <jQuery.extend()> : 첫번째 인자에서 두번째 인자를 병합하며, 확장한다.
+     (1) 두번째 인자값이 첫번째 인자값의 같은 옵션을 대체하며 확장
+         var object1 = { apple : 0,  banana : {weight : 52, price : 100}, cherry : 97 };
+         var object2 = { banana : {price : 200},  durian : 100 };
+         $.extend(object1, object2);
+결과 : object1 = { apple: 0, banana: { price: 200 }, cherry: 97, durian: 100 };
+
+        (2) 첫번째 인자값의 원본 값을 유지하며 병합
+         var object1 = {  apple: 0,  banana: {weight: 52, price: 100},  cherry: 97};
+         var object2 = {  banana: {price: 200},  durian: 100};
+         $.extend(true, object1, object2
+결과 : object1 == { apple: 0, banana: { weight: 52, price: 200 }, cherry: 97, durian: 100 }
+
+             (3) 요소에 적용할 명령어 확장
+                    $.fn.extend({
+                         myMethod : function(){...}
+                    });
+                    -> $("div").myMethod();
+
+                (4) 함수 실행 JQuery 명령어 확장
+                     $.extend({
+                          myMethod2 : function(){...}
+                      });
+                           -> $.myMethod();

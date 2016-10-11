@@ -1,0 +1,7 @@
+1.window > show view > svn > svn Repositories 추가
+2. svn Repositories 탭에서 +기호(New Repository Location) 아이콘 클릭
+3.General탭
+URL : svn://192.168.0.3/node 
+User : desktop
+Password : 100you
+4.생성된 svn 아이콘 우측클릭  checkout 으로 가져온다
