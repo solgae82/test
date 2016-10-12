@@ -1,0 +1,10 @@
+--------------------- 바이너리 설치
+1./usr/src/node-v4.1.0-linux-x64.tar.gz <-  노드 바이너리 업로드
+2.tar -xvfz node-v4.1.0-linux-x64.tar.gz <- 압축해제
+3.cp -r ./node-v4.1.0-linux-x64 /usr/local/node <- 해제한 디렉토리 카피해서 옮김
+4.ln -s /usr/local/node/bin/* /usr/local/bin <- 어디서든 실행되게 심볼릭 링크하기
+
+
+--------------------- 소스설치
+./configure 하면 됨..
+근데..(C++ 컴파일러가 후지데..)의존성 라이브러리...때문에 실패..ㅠ

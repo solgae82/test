@@ -1,0 +1,28 @@
+php : Thread Safe 와 Non Thread Safe 차이점
+
+VC6 : Apache 용
+
+
+VC9 : IIS 용
+
+[Thread Safe 와 Non Thread Safe]
+
+우선 윈도우용 PHP는 항상 Thread Safe 버전으로 나왔었습니다.
+이유는 윈도우가 멀티쓰레드 방식인데 PHP 는 멀티프로세스 방식으로 개발 되었기 때문이죠.
+참고로 리눅스나 유닉스는 원래 멀티프로세스 방식이었기에 문제가 되지 않았습니다.
+
+PHP를 IIS와 연동하기 위해 CGI 또는 ISAPI 방식으로 연동을 합니다.
+그런데 PHP와 관련된 모듈들이 대부분 멀티프로세스 방식으로 개발 되었기 때문에
+ 멀티쓰레드 방식으로 개발된 ISAPI 로 연동하였을 경우 서버가 다운되는 현상이 나타났습니다.
+
+그래서 안정적인 방법으로 CGI 방식을 사용하긴 하지만 이 것 역시 퍼포먼스 측면에서 너무 느리다는게 문제가 되었죠.
+이 퍼포먼스 문제를 개선한 것이 Non Thread Safe 버전이라고 생각하시면 되겠습니다…^^
+
+그럼 결론적으로 아래와 같은 조합이라 생각할 수 있겠죠? ^^a
+
+Windows + IIS(ISAPI) : VC9 Thread Safe 버전
+Windows + IIS(CGI or FastCGI) : VC9 Non Thread Safe 버전
+Windows + Apache(MPM worker) : VC6 Thread Safe 버전
+Windows + Apache(MPM prefork) : VC6 Non Thread Safe 버전
+
+windows IIS 연동시 : Non-thread-safe zip package 로 다운

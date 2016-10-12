@@ -1,0 +1,433 @@
+﻿CentOS에 APM (Apache,PHP,MySQL) 소스 설치
+by keypointer • 2013년 10월 15일 • 42 Comments
+
+요즘 드는 생각은 굳이 시간을 들여 소스 설치를 할 필요는 없다고 생각되지만 특정 환경을 만들기 위해서 가끔 설치를 하면 컴파일 에러 잡느라 많은 시간을 소비한다.
+정리를 해두면 ‘여러 사람의 시간을 아낄 수 있지 않을까’ 하는 생각에 여기에 정리해봅니다. 설치시 대부분의 에러는 의존성 문제인데 설치시 설정에 따라서 다를 수 있다.
+
+설치 환경 : VM, CentOS6.4-x86_64bit
+
+우선 필요한 Application 을 다운로드한다.
+
+MySQL
+– 최신버전 : 5.6.14
+– 다운로드 페이지 : http://dev.mysql.com/downloads/mysql/#downloads – Select Platform 의 콤보박스에서 Source Code 를 선택하여 가장 마지막 항목을 다운로드 한다. (Generic Linux (Architecture Independent), Compressed TAR Archive)
+– 다운로드 URL : http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.14.tar.gz/from/http://cdn.mysql.com/
+Apache Portable Runtime
+– 최신버전 : APR 1.4.8. APR-util 1.5.2, APR-iconv 1.2.1
+– 다운로드 페이지 : http://apr.apache.org/download.cgi
+– APR 다운로드 URL : http://mirror.apache-kr.org//apr/apr-1.4.8.tar.gz
+– APR-util 다운로드 URL : http://mirror.apache-kr.org//apr/apr-util-1.5.2.tar.gz
+Apache HTTP Server
+– 최신버전 : 2.4.6
+– 다운로드 페이지 : http://apache.org/dyn/closer.cgi – mirror 에서 다운받는 경우 http 폴더로 들어가서 다운로드한다.
+– 다운로드 URL : http://mirror.apache-kr.org/httpd/httpd-2.4.6.tar.gz
+PHP
+– 최신버전 : 5.5.4
+– 다운로드 페이지 : http://php.net/downloads.php
+– 다운로드 URL : http://kr1.php.net/get/php-5.6.13.tar.gz/from/this/mirror
+ 
+
+1. 의존 라이브러리 설치
+	yum groupinstall "Development Tools"
+	yum install wget
+	yum install cmake
+	yum install ncurses-devel
+	yum install libtool-ltdl
+	yum install expat-devel
+	yum install db4-devel
+	yum install pcre-devel
+	yum install openssl-devel
+
+2.MySQL 설치
+
+	– 관리 계정 생성
+		아래는 “mysql” 그룹 계정과 “mysql” 계정으로 생성하였다.
+		[root@host ~] groupadd dba
+		[root@host ~] useradd -M -c "mysql" -d /var/mysql -g mysql -s /bin/nologin mysql
+
+	– 압축 해제
+		[root@host downloads] tar zxvf mysql-5.6.26.tar.gz
+
+	– 컴파일과 설치
+		5.5 미만 버전에서는 configure 로 makefile 파일을 만들었는데 5.5 이상 버전부터 cmake 를 이용하여 makefile 을 생성하고 컴파일하도록 변경되었다.
+		cmake 는 멀티플랫폼을 지원하는 make 대용 개발 도구로 플랫폼 별로 make 파일을 만들어주는 meta make 이다.
+		자세한 설명은 [wiki:CMake] 에서 확인한다.
+		cmake 를 이용해 설치 옵션과 함께 makefile 을 생성하고 컴파일 및 설치를 진행한다.
+		[root@host downloads] cd mysql-5.6.26
+		[root@host mysql-5.6.26] cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+		-DMYSQL_DATADIR=/var/mysql/data \
+		-DMYSQL_UNIX_ADDR=/var/mysql/mysql.sock \
+		-DSYSCONFDIR=/etc \
+		-DMYSQL_TCP_PORT=3306 \
+		-DMYSQL_USER=mysql \
+		-DDEFAULT_CHARSET=utf8 \
+		-DDEFAULT_COLLATION=utf8_general_ci \
+		-DWITH_EXTRA_CHARSETS=all \
+		-DENABLED_LOCAL_INFILE=1 \
+		-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+		-DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+		-DWITH_BLACKHOLE_STORAGE_ENGINE=1
+		 
+		[root@host mysql-5.6.26] gmake; gmake install
+
+		이외의 MySQL 설치 옵션은 아래 URL을 참고한다.
+		http://dev.mysql.com/doc/refman/5.6/en/source-configuration-options.html
+
+	– 데이터베이스가 저장되는 폴더 생성
+		“/var/mysql/data” 에 데이터베이스 파일들을 저장하기 위해서 “data” 폴더의 부모 폴더인 “/var/mysql” 폴더를 생성한다.
+		기본 데이터베이스 저장 폴더인 “/usr/local/mysql/data” 에 저장하는 경우는 부모 폴더가 존재하기 때문에 폴더를 생성하지 않아도 된다.
+		[root@host downloads] mkdir /var/mysql
+
+	– 기본 데이터베이스 생성 및 폴더 권한 변경
+		[root@host mysql-5.6.26] cd /usr/local/mysql
+		[root@host mysql] ./scripts/mysql_install_db --user=mysql --datadir=/var/mysql/data
+		[root@host mysql] chown -R mysql:mysql /usr/local/mysql
+		[root@host mysql] chown -R mysql:mysql /var/mysql
+
+	– 환경 설정
+		위에서 mysql_install_db 를 실행하면 “/usr/local/mysql/” 폴더에 my.cnf 파일이 생성된다.
+		이 파일을 설치시에 지정한 “/etc/” 폴더로 이동시켜서 환경 설정 파일을 수정한다.
+			[root@host mysql] mv ./my.cnf /etc/my.cnf
+			[root@host mysql] vi /etc/my.cnf
+			-----------------------------------------------------------------
+			 
+			[mysqld]
+			 
+			sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+			 
+			innodb_buffer_pool_size = 16M
+			innodb_additional_mem_pool_size = 2M
+			innodb_log_file_size = 5M
+			innodb_log_buffer_size = 8M
+			innodb_flush_log_at_trx_commit = 1
+			innodb_lock_wait_timeout = 50
+		더 자세한 옵션은 아래 URL을 참고한다.
+		http://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html
+
+	– PATH 추가 및 서비스 등록
+		MySQL 의 주요 실행 파일을 어떤 경로에서든지 실행할 수 있도록 PATH 환경 변수에 추가된 “/bin”, “/sbin” 폴더로 Symbolic Link 를 걸어둔다.
+		[root@host mysql] ln -s /usr/local/mysql/bin/mysql /usr/bin/mysql
+		[root@host mysql] ln -s /usr/local/mysql/bin/mysqldump /usr/sbin/mysqldump
+		[root@host mysql] ln -s /usr/local/mysql/bin/mysql_config /usr/sbin/mysql_config
+		[root@host mysql] ln -s /usr/local/mysql/bin/mysqladmin /usr/sbin/mysqladmin
+		MySQL 을 서비스에 등록하여 chkconfig 유틸리티로 관리할 수 있도록 한다.
+		MySQL 에서 제공하는 daemon 실행 스크립트의 링크를 생성하고 서비스에 등록하여 데몬을 시작한다.
+		아래는 3, 5 runlevel 에서만 동작하도록 2, 3 runlevel 에서는 동작하지 않도록 했다.
+		[root@host mysql] ln -s /usr/local/mysql/support-files/mysql.server /etc/rc.d/init.d/mysql
+		[root@host mysql] chkconfig --add mysql
+		[root@host mysql] chkconfig --level 24 mysql off
+		[root@host mysql] service mysql start
+	– 관리자 비밀번호 설정
+		MySQL 의 관리자 계정인 “root” 의 암호를 설정한다.
+		암호를 설정한 뒤에는 MySQL 의 root 계정으로 접속 시에 설정한 암호를 요구하게 된다.
+		[root@host mysql] mysqladmin -u root password "1234"
+		[root@host mysql] mysqladmin -u root -p reload
+	– 공유 라이브러리 추가
+		MySQL 라이브러리를 다른 어플리케이션에서 쉽게 접근할 수 있도록 공유 라이브러리에 추가한다.
+		[root@host mysql] echo "/usr/local/mysql/lib" >> /etc/ld.so.conf
+		[root@host mysql] ldconfig
+
+
+3. Apache 설치
+	Apache 를 설치하기 위해서는 APR 이 설치되어 있어야 한다. 이전에 APR 은 Apache 프로젝트에 포함되었으나 별도 프로젝트로 분리되었다. 
+	Apache 에 포함된 bundle 를 사용해도 되지만 APR 을 별도로 설치하겠다.
+	– APR 설치
+		# APR ,APR-util 압축 해제
+		[root@host downloads] tar zxvf apr-1.5.2.tar.gz
+		[root@host downloads] tar zxvf apr-util-1.5.4.tar.gz
+		 
+		# APR 설치
+		[root@host downloads] cd apr-1.5.2
+		[root@host apr-1.5.2] ./configure --prefix=/usr/local/apr
+		[root@host apr-1.5.2] make; make install
+		 
+		# APR-util 설치
+		[root@host apr-1.5.2] cd ../apr-util-1.5.4
+		[root@host apr-util-1.5.4] ./configure --prefix=/usr/local/apr \
+		--with-apr=/usr/local/apr/bin/apr-1-config \
+		--with-crypto=/usr --with-openssl \
+		--with-dbm=db47 --with-gdbm --with-berkeley-db \
+		--with-mysql=/usr/local/mysql \
+		--with-sqlite3 \
+		--with-expat=/usr
+		[root@host apr-util-1.5.4] make; make install
+
+	– 아파치 압축 해제
+		[root@host downloads] tar zxvf http-2.4.16.tar.gz
+
+	– 컴파일과 설치
+		[root@host downloads] cd http-2.4.16
+		[root@host httpd-2.4.16] ./configure --prefix=/usr/local/httpd --sysconfdir=/etc/httpd \
+		--with-apr=/usr/local/apr/bin/apr-1-config --with-apr-util=/usr/local/apr/bin/apu-1-config \
+		--with-pcre --with-libxml2 --with-ssl --with-z \
+		--with-mpm=worker \
+		--enable-modules=most --enable-mods-shared=most \
+		--enable-file-cache --enable-cache --enable-file-cache \
+		--enable-so \
+		--enable-mime-magic --enable-expires --enable-header \
+		--enable-proxy --enable-ssl \
+		--enable-mpms-shared=all \
+		--enable-vhosts-alias --enable-rewrite
+		[root@host httpd-2.4.16] make; make install
+		더 자세한 옵션은 아래 URL을 참고한다.
+		http://httpd.apache.org/docs/2.4/en/programs/configure.html
+
+	– 환경 설정
+		로그를 “/var/log/httpd” 폴더로 저장하기 위해서 설정하기 전에 폴더를 생성한다.
+		[root@host httpd-2.4.6] mkdir /var/log/httpd
+
+		설치시 환경 설정 경로(–sysconfdir)를 “/etc/httpd” 폴더로 설정했기 때문에 “/etc/httpd” 폴더에 설정 파일들이 생성되어 있다.
+		http.conf  파일을 편집한다.
+
+		[root@host httpd-2.4.6] cd /etc/httpd
+		[root@host httpd] vi httpd.conf
+	 
+		# 사용할 모듈의 주석을 제거하여 활성화한다
+		LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+		LoadModule dav_module modules/mod_dav.so
+		LoadModule vhost_alias_module modules/mod_vhost_alias.so
+		LoadModule negotiation_module modules/mod_negotiation.so
+		LoadModule rewrite_module modules/mod_rewrite.so
+		...
+		 
+		# 그룹 계정 비활성화
+		<IfModule unixd_module>
+		.
+		.
+		User daemon
+		Group #-1	<-요기
+		</IfModule>
+		 
+		# 관리자 이메일
+		ServerAdmin keypointer@gmail.com	<-요기
+		 
+		# 서버 이름
+		ServerName www.keypointer.co.kr:80	<-요기
+		 
+		# 루트 디렉토리
+		DocumentRoot "/home/chat"
+		<Directory "/home/chat">
+
+		    # Options FollowSymLinks	<-요기 제거
+		 
+		    AllowOverride None	<-요기
+
+		    Require all granted <-요기
+		</Directory>
+		 
+		# 폴더로 접근할 때 실행하는 인덱스 파일 설정
+		<IfModule dir_module>
+		    DirectoryIndex index.html  index.php <-요기
+		</IfModule>
+		 
+		# 로그 파일 저장 위치
+		ErrorLog "/var/log/httpd/error_log" <-요기
+		<IfModule log_config_module>
+			.
+			.
+		    CustomLog "/var/log/httpd/access_log" common <-요기
+		 
+
+		</IfModule>
+		 
+		# 설정 파일 import
+		# Server-pool management (MPM specific)
+		Include /etc/httpd/extra/httpd-mpm.conf
+		# Language settings
+		Include /etc/httpd/extra/httpd-languages.conf
+		# Virtual hosts
+		#Include /etc/httpd/extra/httpd-vhosts.conf
+		# Distributed authoring and versioning (WebDAV)
+		Include /etc/httpd/extra/httpd-dav.conf
+		 
+		-----------------------------------------------------------------
+		 
+		[root@host httpd] vi extra/httpd-mpm.conf
+			.
+			.
+
+		     PidFile "/var/log/httpd/httpd.pid" <-요기
+		 
+		----------------------------------------------------------------
+		 
+		[root@host httpd] vi extra/httpd-languages.conf
+		 
+		DefaultLanguage ko	<-요기
+		 ...
+		LanguagePriority ko en ca cs da de el eo es et fr he hr it ja ltz nl nn no pl pt pt-BR ru sv tr zh-CN zh-TW <-요기(ko 를 맨 앞으로)
+
+	– 서비스 등록
+		apachectl 스크립트는 chkconfig 로 동작할 수 있도록 수정해야 한다.
+		Symbolic Link 를 만들고 apachectl 스크립트의 상단 부분을 아래와 같이 수정해야만 서비스로 추가가 가능하다.
+		[root@host httpd] ln -s /usr/local/httpd/bin/apachectl /etc/rc.d/init.d/httpd
+		[root@host httpd] vi /usr/local/httpd/bin/apachectl
+		 
+		#!/bin/sh
+		#
+		# Apache This starts and stops Apache.
+		#
+		# chkconfig: 35 20 80
+		# description: Apache Web Service
+		#
+		# Licensed to the Apache Software Foundation
+		...
+		 
+		----------------------------------------------------------------
+		 
+		[root@host httpd] service httpd start
+
+	– 공유 라이브러리 추가
+		[root@host httpd] echo "/usr/local/httpd/module" >> /etc/ld.so.conf
+		[root@host httpd] ldconfig
+
+
+4. PHP 설치
+	– 의존 라이브러리 설치
+		yum install libxml2-devel
+		yum install bzip2-devel
+		yum install libcurl-devel
+		yum install gdbm-devel
+		yum install libvpx yum install libvpx-devel
+		yum install libjpeg-turbo-devel
+		yum install libpng-devel
+		yum install libXpm libXpm-devel
+		yum install freetype-devel
+		yum install t1lib t1lib-devel
+		yum install gmp-devel
+		yum install libc-client libc-client-devel
+		yum install pam-devel
+		yum install libicu libicu-devel
+		yum install openldap-devel
+		yum install readline-devel
+		yum install libedit-devel
+		yum install libtidy libtidy-devel
+		yum install libxslt libxslt-devel
+	– libmcrypt 설치
+		[root@host downloads] tar zxvf libmcrypt-2.5.8.tar.gz
+		[root@host downloads] cd libmcrypt-2.5.8
+		[root@host libmcrypt-2.5.8] ./configure
+		[root@host libmcrypt-2.5.8] make; make install
+		[root@host libmcrypt-2.5.8] ln -s /usr/local/lib/libmcrypt.so.4 /usr/local/lib64/libmcrypt.so.4
+	– MySQL 라이브러리 참조
+		ln -s /usr/local/mysql/lib /usr/local/mysql/lib64
+	–  압축 해제
+		[root@host ~] cd /root/downloads
+		[root@host downloads] tar zxvf php-5.6.13.tar.gz
+	– 컴파일과 설치
+		./configure --prefix=/usr/local/php \
+		--with-apxs2=/usr/local/httpd/bin/apxs \
+		--with-config-file-path=/etc/httpd \
+		--with-mysql=/usr/local/mysql \
+		--with-mysql-sock=/var/mysql/mysql.socket \
+		--with-mysqli=/usr/local/mysql/bin/mysql_config \
+		--with-pdo-mysql=shared,/usr/local/mysql \
+		--with-regex=php \
+		--with-openssl \
+		--with-pcre-regex \
+		--with-zlib \
+		--with-bz2 \
+		--with-curl \
+		--with-gdbm \
+		--with-dbm \
+		--with-pcre-dir=/usr \
+		--with-openssl-dir=/usr \
+		--with-libxml-dir=/usr \
+		--with-gd \
+		--with-vpx-dir=/usr \
+		--with-jpeg-dir=/usr \
+		--with-png-dir=/usr \
+		--with-zlib-dir=/usr \
+		--with-xpm-dir=/usr \
+		--with-freetype-dir=/usr \
+		--with-t1lib=/usr \
+		--with-gettext \
+		--with-gmp \
+		--with-mhash \
+		--with-imap \
+		--with-imap-ssl \
+		--with-kerberos \
+		--with-icu-dir=/usr \
+		--with-ldap \
+		--with-ldap-sasl \
+		--with-libmbfl \
+		--with-onig \
+		--with-mcrypt \
+		--with-libedit \
+		--with-readline \
+		--with-tidy \
+		--with-libexpat-dir=/usr \
+		--with-xmlrpc \
+		--with-xsl \
+		--with-pear \
+		--with-pic \
+		--with-db4=/usr \
+		--libdir=/usr/lib64 
+		--with-libdir=lib64 \
+		--enable-bcmath \
+		--enable-calendar \
+		--enable-exif \
+		--enable-ftp \
+		--enable-pcntl \
+		--enable-gd-native-ttf \
+		--enable-gd-jis-conv \
+		--enable-intl \
+		--enable-mbstring \
+		--enable-shmop \
+		--enable-sockets \
+		--enable-sysvmsg \
+		--enable-sysvsem \
+		--enable-sysvshm \
+		--enable-wddx \
+		--enable-zip \
+		--enable-mysqlnd \
+		--enable-dba=shared \
+		--enable-mod-charset \
+		--enable-dom \
+		--enable-mbregex \
+		--enable-inline-optimization \
+		--enable-sigchild \
+		--enable-soap \
+		--enable-maintainer-zts \
+		--enable-opcache=no
+		[root@host php-5.6.13] make; make install
+
+	– 환경 설정(php.ini)
+		#복사 이동
+		[root@host php-5.6.13] cp php.ini-production /etc/httpd/php.ini
+		#편집
+		[root@host php-5.6.13] vi /etc/httpd/php.ini
+
+		 default_charset = "UTF-8" <-요기
+		 file_uploads = On <-요기
+		 upload_tmp_dir = /tmp <-요기
+		 upload_max_filesize = 50M <-요기
+		 max_file_uploads = 20 <-요기
+		 date.timezone = "Asia/Seoul" <-요기
+
+	– Apache 설정
+		[root@host php-5.6.13] vi /etc/httpd/httpd.conf
+		 
+		# PHP 모듈이 정상적으로 추가되었는지 확인
+		LoadModule php5_module        modules/libphp5.so
+		 
+		<IfModule mime_module>
+		 
+		    ... 중략 ...
+		 
+		    AddType application/x-httpd-php .php .html 
+		    AddType application/x-httpd-php-source .phps
+		 
+		</IfModule>
+		 
+		[root@host php-5.6.13] service httpd restart
+
+	– PATH 추가
+		[root@host php-5.6.13] ln -s /usr/local/php/bin/php /bin/php
+		[root@host php-5.6.13] ln -s /usr/local/php/bin/php-config /usr/local/bin/php-config
+		[root@host php-5.6.13] ln -s /usr/local/php/bin/phpize /usr/local/bin/phpize
+
+
+------------------------------------------------------------------------------------------------//
+마지막 테스트
+echo "<?php phpinfo() ?>" > /usr/local/httpd/htdocs/index.html

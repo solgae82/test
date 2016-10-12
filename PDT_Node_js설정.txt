@@ -1,0 +1,60 @@
+-----------------------1. Node  설치
+https://nodejs.org/
+설치파일: node-v4.1.0-x64.msi
+
+
+1.윈도우 node 설치 : node-v4.1.0-x64.msi
+: 설치후 자동으로 Path 설정됨.
+
+2.cmd > 프롬프트 창에서 npm설치
+$ npm install -g nodeclipse
+$ npm install -g express
+$ npm install -g express-generator
+
+
+-----------------------2. xampp 설치( APM 설치)
+https://www.apachefriends.org/
+설치파일 : xampp-win32-7.0.1-0-VC14-installer.exe (PHP7)
+
+1..mysql root패스 설정
+2.아파치 http.conf 설정 
+	: web root 디렉토리 -> D:\php로 설정
+	(포트등을 기존에 쓰고 있는 프로그램등이 있을경우: 80, 443포트 -> 8011,4433등으로 변경)
+
+-----------------------3. PDT 설치
+https://eclipse.org/pdt/
+설치파일 : eclipse-php-mars-R-win32-x86_64.zip
+전통적인 이클립스 설정으로 설치하면 됨..
+java sdk 설치되어있어야 함..
+
+※ PDT 서버 설정
+1.이클립스  window>preference>PHP>server>New 추가
+- Name : PHP Web Server
+- Base URL : http://localhost (브라우저에서 실행할 주소)
+- Local Web Root : D:\php (xampp에서 설정한 디렉토리)
+
+
+-----------------------4. PDT에 플러그인으로 Node.js 설정
+1.이클립스(PDT) >  Help > Eclipse Marketplace
+: node 를 검색해서  nodeclipse1.0.1 를 설치
+
+2.이클립스(PDT) > window > preference > Nodeclipse
+enable Nodeclipse Console : 체크
+find node on PATH. Othrerwise use Node.js instance in location below : 체크해제
+Node.js path : C:\Program Files\nodejs\node.exe(Node설치 디렉토리 path가 잡혔는지 확인)
+
+3. js작성 후 우측 마우스 > Run As > NodeApplication
+
+-----------------------5. PDT에 플러그인으로 Suversion플러그인 설정
+1.이클립스(PDT) >  Help > Eclipse Marketplace
+: subversive 검색해서 subversive - SVN Tema Provider 3.0 설치
+: 재시작 후 svn kit 1.8.11 추가 설치 후 또 재시작
+
+---------------------- 선택사항 : 독립형 노드이클립스(Nodeclipse)  설치
+※ node.js용 독립형 이클립스를 쓰고 싶다면..
+
+http://www.nodeclipse.org/ 
+설치파일 : Enide-2015-7-windows-x64-20150706.zip
+
+전통적인 이클립스 설정으로 설치하면 됨..
+java sdk 설치되어있어야 함..
