@@ -1,0 +1,47 @@
+node.js 설치
+npm install -g phonegap
+npm install -g cordova
+
+------------------
+java sdk 설치
+
+ant 설치
+http://ant.apach.org/bindownload.cgi
+
+adt bundle 설치
+http://developer.android.com/sdk/index.html
+
+환경변수 설정
+java_home/bin
+and_home/bin
+adt_home/tools, adt_home/platform-tools, adt_home/build-tools
+
+-----------------프로젝트 생성 및 빌드
+
+cd project
+phonegap create hello_world
+phonegap serve (listening 서버)
+
+cordova plaform add android  : 빌드할 플랫폼 추가
+
+cordova build android --release : 안드로이드 빌드
+cd platforms/androd/ant-build  : 프로젝트 플랫폼에 빌드된 곳에 이동
+hello_world-release-unsigned.apk 생성되어 있음 확인
+
+# 서명 및 정렬
+-키만들기
+keytool -genkey -v -keystore release.keystore -alias hello_world -keyalg RSA \
+-keysize 2048 -validity 100000
+#각종 정보 입력 후, 특히 비밀번호 기억
+#release.keystore : 파일 생성됨
+
+-서명
+jarsingner -tsa http://solgae.com -verbose -keystore release.keystore \
+hello_world-release-unsigned.apk hello_world
+
+-최적화
+#zipalign 루트에 설정 안 되었으면, adt_home/build-tools 안에 뒤져야 함. 최신버전 디렉토리에서 복사해서 
+# adt_home/build-tools 에 붙여넣기 함(환경변수 설정된 곳에)
+zipalign -v 4 hello_world-release-unsigned.apk hello_finshed.apk
+
+hello_finshed.apk : (최종적으로 생성된 마켓에 올릴 수 있는  apk)
