@@ -28,6 +28,8 @@ cordova build android --release : 안드로이드 빌드
 cd platforms/androd/ant-build  : 프로젝트 플랫폼에 빌드된 곳에 이동
 hello_world-release-unsigned.apk 생성되어 있음 확인
 
+----------------- 배포 
+
 # 서명 및 정렬
 -키만들기
 keytool -genkey -v -keystore release.keystore -alias hello_world -keyalg RSA \
