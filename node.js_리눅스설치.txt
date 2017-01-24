@@ -1,10 +1,20 @@
---------------------- ¹ÙÀÌ³Ê¸® ¼³Ä¡
-1./usr/src/node-v4.1.0-linux-x64.tar.gz <-  ³ëµå ¹ÙÀÌ³Ê¸® ¾÷·Îµå
-2.tar -xvfz node-v4.1.0-linux-x64.tar.gz <- ¾ĞÃàÇØÁ¦
-3.cp -r ./node-v4.1.0-linux-x64 /usr/local/node <- ÇØÁ¦ÇÑ µğ·ºÅä¸® Ä«ÇÇÇØ¼­ ¿Å±è
-4.ln -s /usr/local/node/bin/* /usr/local/bin <- ¾îµğ¼­µç ½ÇÇàµÇ°Ô ½Éº¼¸¯ ¸µÅ©ÇÏ±â
+--------------------- ë°”ì´ë„ˆë¦¬ ì„¤ì¹˜
 
+mkdir /usr/local/node
+xd -d node-v6.9.2-linux-x64.tar.xz <=xz í’€ê¸°
+tar -xvf node-v6.9.2-linux-x64.tar <= tarí’€ê¸°
+move -r ./node-v6.9.2-linux-x64 /usr/local/node <=ì‰¬ìš´ë””ë ‰í† ë¦¬ë¡œ ë³€ê²½í•´ì„œì˜®ê¹€
 
---------------------- ¼Ò½º¼³Ä¡
-./configure ÇÏ¸é µÊ..
-±Ùµ¥..(C++ ÄÄÆÄÀÏ·¯°¡ ÈÄÁöµ¥..)ÀÇÁ¸¼º ¶óÀÌºê·¯¸®...¶§¹®¿¡ ½ÇÆĞ..¤Ğ
+#íŒ¨ìŠ¤ì„¤ì •
+vi /etc/profile
+..
+export NODE_HOME=/usr/local/node
+export PATH=$PATH:$NODE_HOME/bin
+ì €ì¥
+
+source /etc/profile <= path ì ìš©
+
+--------------------- ì†ŒìŠ¤ì„¤ì¹˜
+./configure í•˜ë©´ ë¨..
+ê·¼ë°..(C++ ì»´íŒŒì¼ëŸ¬ê°€ í›„ì§€ë°..)ì˜ì¡´ì„± ë¼ì´ë¸ŒëŸ¬ë¦¬...ë•Œë¬¸ì— ì‹¤íŒ¨..ã… 
+

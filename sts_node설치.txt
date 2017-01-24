@@ -1,21 +1,21 @@
------------------------1. Node  ¼³Ä¡
+-----------------------1. Node  ì„¤ì¹˜
 https://nodejs.org/
-¼³Ä¡ÆÄÀÏ : node-v4.5.0-x64.msi
+ì„¤ì¹˜íŒŒì¼ : node-v4.5.0-x64.msi
 
------------------------2. STS¼³Á¤
-ÇÃ·¯±×ÀÎ ¼³Á¤
+-----------------------2. STSì„¤ì •
+í”ŒëŸ¬ê·¸ì¸ ì„¤ì •
 
-1.ÀÌÅ¬¸³½º >  Help > Eclipse Marketplace
-: node ¸¦ °Ë»öÇØ¼­  nodeclipse1.0.2 ¸¦ ¼³Ä¡
+1.ì´í´ë¦½ìŠ¤ >  Help > Eclipse Marketplace
+: node ë¥¼ ê²€ìƒ‰í•´ì„œ  nodeclipse1.0.2 ë¥¼ ì„¤ì¹˜
 
-2.ÀÌÅ¬¸³½º > window > preference > Nodeclipse
-enable Nodeclipse Console : Ã¼Å©
-find node on PATH. Othrerwise use Node.js instance in location below : Ã¼Å©ÇØÁ¦
-Node.js path : C:\Program Files\nodejs\node.exe(Node¼³Ä¡ µğ·ºÅä¸® path°¡ ÀâÇû´ÂÁö È®ÀÎ)
+2.ì´í´ë¦½ìŠ¤ > window > preference > Nodeclipse
+enable Nodeclipse Console : ì²´í¬
+find node on PATH. Othrerwise use Node.js instance in location below : ì²´í¬í•´ì œ
+Node.js path : C:\Program Files\nodejs\node.exe(Nodeì„¤ì¹˜ ë””ë ‰í† ë¦¬ pathê°€ ì¡í˜”ëŠ”ì§€ í™•ì¸)
 
-3. jsÀÛ¼º ÈÄ ¿ìÃø ¸¶¿ì½º > Run As > NodeApplication
+3. jsì‘ì„± í›„ ìš°ì¸¡ ë§ˆìš°ìŠ¤ > Run As > NodeApplication
 
------------------------3. STS¿¡ ÇÃ·¯±×ÀÎÀ¸·Î SuversionÇÃ·¯±×ÀÎ ¼³Á¤
-1.ÀÌÅ¬¸³½º(PDT) >  Help > Eclipse Marketplace
-: subversive °Ë»öÇØ¼­ subversive - SVN Tema Provider 4.0 ¼³Ä¡
-: Àç½ÃÀÛ ÈÄ svn kit 1.8.12 Ãß°¡ ¼³Ä¡ ÈÄ ¶Ç Àç½ÃÀÛ(¶Ç´Â window > preference > team > svn > svn connector > get connector·Î ÇØµµ µÈ´Ù)
+-----------------------3. STSì— í”ŒëŸ¬ê·¸ì¸ìœ¼ë¡œ Suversioní”ŒëŸ¬ê·¸ì¸ ì„¤ì •
+1.ì´í´ë¦½ìŠ¤(PDT) >  Help > Eclipse Marketplace
+: subversive ê²€ìƒ‰í•´ì„œ subversive - SVN Tema Provider 4.0 ì„¤ì¹˜
+: ì¬ì‹œì‘ í›„ svn kit 1.8.12 ì¶”ê°€ ì„¤ì¹˜ í›„ ë˜ ì¬ì‹œì‘(ë˜ëŠ” window > preference > team > svn > svn connector > get connectorë¡œ í•´ë„ ëœë‹¤)
