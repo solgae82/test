@@ -1,4 +1,4 @@
-﻿work tree(working copy) : 작업공간
+work tree(working copy) : 작업공간
 index(staging area) : 커밋 전 등록하는 곳
 HEAD : 최종확정본 
 
@@ -95,7 +95,8 @@ git commit -m "add .ignore" #git에 등록함. 다른 사람과 연동시에 저
 #git init + git pull 이라고 생각하면됨.
 #git clone <원격주소> [복사할 로컬주소:없으면 원격저장소 이름으로 디렉토리 생성됨]
 
-git clone https://github.com/solgae82/test.git test1
+git clone https://github.com/solgae82/test.git test1  # test1디렉토리 만들고 그 안에 복사
+git clone https://github.com/solgae82/test.git	#원격저장소 이름이 test이면 test로 저장
 
 # 클론 후 확인해보면 자동 원격저장소가 설정되었음을 알 수 있다
 git remote -v # 원격주소확인
@@ -132,6 +133,11 @@ git clone https://github.com/solgae82/test.git test1
 # init과정 필요없음. 바로 원격설정등 자동으로 연결됨.
 
 cd test1   #복사된(로컬저장소) 위치로 이동
+git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+
 git status #확인
 
 2.fetch로 가져오기
@@ -147,7 +153,11 @@ git fetch	#원격저장소에서 가져오기
 git branch -a	#임시로 받은 원격저장소 브랜치 확인
   remotes/origin/master
 
-git merge origin/master		#(편집수정할 내용없음) 현재 master로 합침 
+git merge remotes/origin/master		#(편집수정할 내용없음) 현재 master로 합침 
+git branch -a
+* master
+  remotes/origin/master
+
 git status	#상태확인
 
 3.pull로 가져오기
@@ -160,6 +170,10 @@ git remote -v	#원격저장소 설정 확인
   origin  https://github.com/solgae82/test.git (push)
 
 git pull origin master	#가져오기 (fetch + merge)
+git branch -a
+* master
+  remotes/origin/master
+
 git status	#상태확인
 
 ------------ 원격저장소에 올리기
