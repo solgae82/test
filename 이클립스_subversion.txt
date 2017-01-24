@@ -1,7 +1,19 @@
-1.window > show view > svn > svn Repositories �߰�
-2. svn Repositories �ǿ��� +��ȣ(New Repository Location) ������ Ŭ��
-3.General��
+---이클립스에 설치
+1. Help > Marketplace > 검색창에 'svn' > subversive SVN Team Provider 4.0.2 선택 > install > 설치완료 > restart
+2. SVN Connector 설치가 뜨지 않으면 수동으로 설치해야함.
+	: window - preferences > team > svn 누르면 자동검색창에 SVN Kit 1.8.12 선택 > 설치완료 > restart
+
+--- 이클립스 프로젝트에서  svn에 commit 하기
+프로젝트 우측메뉴 > SVN > team > share project 
+URL : svn://192.168.0.3/node 
+User : notebook
+Password : 100you 
+
+--- 다른 사용자 이클립스에 svn 리포지터리 가져오기(checkout)  
+1.window > show view > svn > svn Repositories 추가
+2. svn Repositories 탭에서 +기호(New Repository Location) 아이콘 클릭
+3.General탭
 URL : svn://192.168.0.3/node 
 User : desktop
 Password : 100you
-4.������ svn ������ ����Ŭ��  checkout ���� �����´�
+4.생성된 svn 아이콘 우측클릭  checkout 으로 가져온다

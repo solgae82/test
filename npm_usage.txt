@@ -63,6 +63,11 @@ D:\php\node2\node_modules\mmm -> C:\Users\desktop\AppData\Roaming\npm\node_modul
 1.프로젝트 생성
 2.프로젝트 디렉토리로 가서 npm init으로  package.json 파일생성
 3.모듈 추가때마다 --save 옵션 넣어서 생성 (package.json > dependencies 에 모듈 버전 추가됨)
+npm install socket.io --save
+
 - 프로젝트 이동시 -
 1.프로젝트 옮길시 현 디렉토리 node_modules 빼고(양이 너무 많으므로), 작성한 파일들과 + package.json 파일만 있으면 됨.
 2.새로 생성한 프로젝트 디렉토리에 가서 'npm install'만 하면 옮겨진 package.json > dependencies 의 모듈들을 모두 설치됨.
+
+--------------------------프로그램 실행
+node index.js or index

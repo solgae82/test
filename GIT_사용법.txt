@@ -1,4 +1,4 @@
-﻿work tree(working copy) : 작업공간
+work tree(working copy) : 작업공간
 index(staging area) : 커밋 전 등록하는 곳
 HEAD : 최종확정본 
 
