@@ -1,0 +1,428 @@
+--- JDK 버전 맞추기
+프로젝트 > properties > Java Compiler > java 1.8변경
+프로젝트 > properties > Java Facets > java 1.8변경
+
+--- pom.xml 
+	:스프링 버전(4.1.7), 자바버전(1.8) 변경
+		<properties>
+			<java-version>1.8</java-version>
+			<org.springframework-version>4.1.7.RELEASE</org.springframework-version>
+			<org.aspectj-version>1.6.10</org.aspectj-version>
+			<org.slf4j-version>1.6.6</org.slf4j-version>
+		</properties>
+
+-- pom.xml Junit
+	:(4.12) 버전 변경
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency> 
+		
+--- appServlet/servlet-context.xml 주요설정
+		: 각종 서블릿, 웹관련 설정파일
+		<?xml version="1.0" encoding="UTF-8"?>
+		<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:beans="http://www.springframework.org/schema/beans"
+			xmlns:context="http://www.springframework.org/schema/context"
+			xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+				http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+			<!-- 어노테이션 사용하기 위해 설정 -->
+			<annotation-driven />		
+			
+			<!-- image,css,javascript등 정적자원 디렉토리 설정 -->
+			<resources mapping="/resources/**" location="/resources/" />		
+			
+			<!-- /WEB-INF/views 디렉토리안에 jsp 매칭을 위한 설정 -->
+			<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+				<beans:property name="prefix" value="/WEB-INF/views/" />
+				<beans:property name="suffix" value=".jsp" />
+			</beans:bean>		
+			
+			<!-- 컴포넌트 스캔하기 위한  패키지명 설정 -->
+			<context:component-scan base-package="com.solgae.test" />			
+		</beans:beans>
+		
+--- JSON 라이브러리 다운로드
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.5.4</version>
+		</dependency>
+		
+--- WAS 없이 컨트롤러 테스트하기 설정
+	:spring-test 사용을 위한 서블리 버전(3.1.0) 올려주기
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		
+	:WAS없이 web application 테스트
+		package com.solgae.test;
+		
+		import javax.inject.Inject;
+		
+		import org.junit.Before;
+		import org.junit.Test;
+		import org.junit.runner.RunWith;
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+		import org.springframework.test.context.ContextConfiguration;
+		import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+		import org.springframework.test.context.web.WebAppConfiguration;
+		import org.springframework.test.web.servlet.MockMvc;
+		import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+		import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+		import org.springframework.web.context.WebApplicationContext;
+		
+		
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@WebAppConfiguration
+		@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring/**/*.xml"})
+		public class WebTest {
+		private static final Logger logger = LoggerFactory.getLogger(WebTest.class);
+			
+			@Inject
+			private WebApplicationContext wac;
+			
+			private MockMvc mockMvc;
+			
+			@Before
+			public void setup(){
+				this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+				logger.info("setup......");
+			}
+			
+			@Test
+			public void testDoA() throws Exception{
+				mockMvc.perform(MockMvcRequestBuilders.get("/doA"));
+			}
+		}
+		
+--- MySQL Connector 설정
+	:(5.1.36) 설치
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.36</version>
+		</dependency>
+		
+	:잘 연결되는지 Junit 테스트 진행
+		package com.solgae.test;
+		
+		import java.sql.Connection;
+		import java.sql.DriverManager;
+		
+		import org.junit.Test;
+		
+		public class MySQLConnectorTest {
+			private static final String DRIVER = "com.mysql.jdbc.Driver";
+			private static final String URL = "jdbc:mysql://127.0.0.1:3306/test";
+			private static final String USER = "root";
+			private static final String PW = "100you";
+			
+			@Test
+			public void testConnection() throws Exception{
+				Class.forName(DRIVER);
+				try(Connection con = DriverManager.getConnection(URL,USER,PW)){
+					System.out.println(con);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+			
+--- MyBatis 관련 라이브러리 설치 , dataSource 설정
+	:mybatis(3.2.8),mybatis-spring(1.2.2),spring-jdbc(스프링버전),spring-test(스프링버전)
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.2.8</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>1.2.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-test</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
+	:root-context.xml 확장
+		: 이클립스 Namespacees탭에서 aop, beans, context, jdbc, mybatis-spring 확장.
+	
+	:root-context.xml -> dataSource bean설정
+		<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+			<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+			<property name="url" value="jdbc:mysql://127.0.0.1:3306/test"></property>
+			<property name="username" value="root"></property>
+			<property name="password" value="100you"></property>
+		</bean>
+	: 연결 Junit 테스트 진행
+		package com.solgae.test;
+		
+		import java.sql.Connection;
+		
+		import javax.inject.Inject;
+		import javax.sql.DataSource;
+		
+		import org.junit.Test;
+		import org.junit.runner.RunWith;
+		import org.springframework.test.context.ContextConfiguration;
+		import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+		
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@ContextConfiguration(locations ={"file:src/main/webapp/WEB-INF/spring/**/*.xml"})
+		public class DataSourceTest {
+		
+			@Inject
+			private DataSource ds;
+			
+			@Test
+			public void testConnection() throws Exception{
+				try(Connection con = ds.getConnection()){
+					System.out.print(con);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+--- mybatis 기본 설정
+	:root-context.xml -> sqlSessionFactory bean 설정
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource"></property>
+			<property name="configLocation"	value="classpath:/mybatis-config.xml"></property>
+		</bean>
+	:resources/mybatis-config.xml 파일 생성
+		<?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE configuration
+		  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+		<configuration>
+			//..TO DO
+		</configuration>
+	:myBatis 연결 Junit 테스트 
+		package com.solgae.test;
+		
+		import javax.inject.Inject;
+		
+		import org.apache.ibatis.session.SqlSession;
+		import org.apache.ibatis.session.SqlSessionFactory;
+		import org.junit.Test;
+		import org.junit.runner.RunWith;
+		import org.springframework.test.context.ContextConfiguration;
+		import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+		
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring/**/*.xml"})
+		public class MyBatisTest {
+		
+			@Inject
+			private SqlSessionFactory sqlFactory;
+			
+			@Test
+			public void testFactory(){
+				System.out.println(sqlFactory);
+			}
+			
+			@Test
+			public void testSession() throws Exception{
+				try(SqlSession session = sqlFactory.openSession()){
+					System.out.println(session);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+--- mybatis 사용하기
+	:root-context.xml -> 스캔할 패키지 추가
+		<context:component-scan base-package="com.solgae.persistence"></context:component-scan>
+		
+	:root-context.xml -> sqlSessionFactory -> mapperLocations 경로 속성추가
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource"></property>
+			<property name="configLocation"	value="classpath:/mybatis-config.xml"></property>
+			<property name="mapperLocations"	value="classpath:mappers/**/*Mapper.xml"></property> <!-- 추가 -->
+		</bean>
+		
+	:root-context.xml -> SqlSessionTemplate bean 설정
+		<bean id="sqlSession"	class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+			<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+		</bean>
+		
+	:resources/mappers/[name]Mapper.xml생성
+		<?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE mapper
+		  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		  
+		<mapper namespace="com.solgae.mapper.MemberMapper">
+			 <select id="getTime" resultType="String">
+			   select now()
+			 </select>
+			 <select id="insertMember">
+			   insert into tbl_member (userid,userpw,username,email) values (#{userid}, #{userpw},#{username},#{email})
+			 </select>
+		</mapper>
+		
+
+	: (VO) MemberVO.java 작성
+		package com.solgae.domain;
+		
+		import java.util.Date;
+		
+		public class MemberVO {
+			private String userid;
+			private String userpw;
+			private String username;
+			private String email;
+			private Date regdate;
+			private Date updatedate;
+			public String getUserid() {
+				return userid;
+			}
+			public void setUserid(String userid) {
+				this.userid = userid;
+			}
+			public String getUserpw() {
+				return userpw;
+			}
+			public void setUserpw(String userpw) {
+				this.userpw = userpw;
+			}
+			public String getUsername() {
+				return username;
+			}
+			public void setUsername(String username) {
+				this.username = username;
+			}
+			public String getEmail() {
+				return email;
+			}
+			public void setEmail(String email) {
+				this.email = email;
+			}
+			public Date getRegdate() {
+				return regdate;
+			}
+			public void setRegdate(Date regdate) {
+				this.regdate = regdate;
+			}
+			public Date getUpdatedate() {
+				return updatedate;
+			}
+			public void setUpdatedate(Date updatedate) {
+				this.updatedate = updatedate;
+			}
+			
+			
+		}
+
+	: (DAO, interface) MemberDAO.java 작성
+		package com.solgae.persistence;
+		
+		import com.solgae.domain.MemberVO;
+		
+		public interface MemberDAO {
+			
+			public String getTime();
+			public void insertMember(MemberVO vo);
+		}
+		
+	: (Impl, DAO구현 클래스) MemberDAOImpl.java 구현 작성
+		package com.solgae.persistence;
+		
+		import javax.inject.Inject;
+		
+		import org.apache.ibatis.session.SqlSession;
+		import org.springframework.stereotype.Repository;
+		
+		import com.solgae.domain.MemberVO;
+		
+		@Repository
+		public class MemberDAOImpl implements MemberDAO {
+		
+			@Inject
+			private SqlSession sqlSession;
+			
+			private static final String namespace = "com.solgae.mapper.MemberMapper";
+													
+			
+			public String getTime() {
+				
+				return sqlSession.selectOne(namespace + ".getTime");
+			}
+		
+			
+			public void insertMember(MemberVO vo) {
+				sqlSession.insert(namespace + ".insertMember", vo);
+		
+			}
+		
+		}
+
+	: (Controller) MemberDAOTest.java  작성
+		package com.solgae.test;
+		
+		import javax.inject.Inject;
+		
+		import org.junit.Test;
+		import org.junit.runner.RunWith;
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+		import org.springframework.test.context.ContextConfiguration;
+		import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+		
+		import com.solgae.domain.MemberVO;
+		import com.solgae.persistence.MemberDAO;
+		
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring/**/*.xml"})
+		
+		public class MemberDAOTest {
+			
+			private static final Logger logger = LoggerFactory.getLogger(MemberDAOTest.class);
+			
+			@Inject
+			private MemberDAO dao;
+			
+			@Test
+			public void testTime() throws Exception{
+				logger.info("---------------"+dao.getTime());
+			}
+			
+			@Test
+			public void testInsertMember() throws Exception{
+				MemberVO vo = new MemberVO();
+				vo.setUserid("user04");
+				vo.setUserpw("100100");
+				vo.setUsername("dong");
+				vo.setEmail("email@naver.com");
+				
+				dao.insertMember(vo);
+				
+			}
+		}
+			
