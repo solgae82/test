@@ -1,0 +1,10 @@
+db 생성 후,
+
+//1. 모든 외부접속을 허용..
+GRANT ALL PRIVILEGES on 데이터베이스명.* to 'ID'@'%' identified by 'PASSWORD' WITH GRANT OPTION;
+//2.114.108.140.105 의 접속만 허용...
+
+GRANT ALL PRIVILEGES on yahoo.* to 'ID'@'114.108.140.103' identified by 'PASSWORD' WITH GRANT OPTION;
+
+마지막으로 다시 권한 분출...
+ flush privileges;

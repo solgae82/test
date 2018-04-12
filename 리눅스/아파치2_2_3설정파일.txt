@@ -1,0 +1,571 @@
+아파치2.2.3은 윈도XP에서도 동적공유객체(DSO:Dynamic Shared Object)와 다중처리 모듈(MPM:Multi-Processing Module) 모드로 작동 된다. 아파치 매뉴얼에 나와 있는 것을 근거로 한다면 MPM은 기존의 프로세스 기반(process-based) 서버 보다는 적은 시스템 자원으로 여러개의 요청을 처리한다고 기술되어져 있다. 이 MPM을 제어하기 위해서 중요한 지시어(directive)는 ThreadsPerChild이며, 자식 프로세스(child process)와 최대연결(MaxClients)을 어떻게 설정하느냐 그리고 얼마나 많은 스레드(threads)가 메모리에서 작동하느냐 또는 적절하게 무리없이 처리하느냐에 따라서 웹서버의 서비스 능력(요청에 대응) 및 성능이 결정된다. *** httpd.conf의 파일에 대한 기본적 설정을 파악해 보기. ***
+
+#
+# This is the main Apache HTTP server configuration file. It contains the
+# configuration directives that give the server its instructions.
+# See <URL:http://httpd.apache.org/docs/2.2/> for detailed information.
+# In particular, see 
+# <URL:http://httpd.apache.org/docs/2.2/mod/directives.html>
+# for a discussion of each configuration directive.
+#
+# Do NOT simply read the instructions in here without understanding
+# what they do. They're here only as hints or reminders. If you are unsure
+# consult the online docs. You have been warned. 
+#
+# Configuration and logfile names: If the filenames you specify for many
+# of the server's control files begin with "/" (or "drive:/" for Win32), the
+# server will use that explicit path. If the filenames do *not* begin
+# with "/", the value of ServerRoot is prepended -- so "logs/foo.log"
+# with ServerRoot set to "C:/Program Files/Apache2.2" will be interpreted by the
+# server as "C:/Program Files/Apache2.2/logs/foo.log".
+#
+# NOTE: Where filenames are specified, you must use forward slashes
+# instead of backslashes (e.g., "c:/apache" instead of "c:\apache").
+# If a drive letter is omitted, the drive on which Apache.exe is located
+# will be used by default. It is recommended that you always supply
+# an explicit drive letter in absolute paths, however, to avoid
+# confusion.
+#
+
+# ThreadsPerChild: constant number of worker threads in the server process
+# MaxRequestsPerChild: maximum number of requests a server process serves
+ThreadsPerChild 250
+MaxRequestsPerChild 0
+
+# 윈도XP에 보면 작업관리자에 프로세스탭이 있는데 웹사이트에 방문자가 오면 페이지를 보여주기 위해서 해당 프로세스가 떠 있다가 이를 응답하면서 서비스를 해주게 되는데 이렇게 서비스를 하기 위해서 메모리에 떠 있는 프로세스내에는 워커 스레드(worker threads)라는 것들이 실질적인 요청을 받아 처리한다. ThreadsPerChild는 하나의 프로세스당 몇개의 워커 스레드를 일정하게 유지하고 있을 것인가를 결정한다. 윈도우용 아파치2.2.x의 ThreadsPerChild 기본값은 250개이다. 보다 빠른 CPU와 보다 많은 메모리에 따라서 이 개수를 늘려서 보다 많은 웹사이트 방문자를 수용할 수 있으므로, 윈앤위처럼 주메모리가 128Mb라면 매우적은 방문자만을 수용할 밖에 없다. 그렇지 않다면 일반 웹페이지와는 달리 이미지 사용을 최대한 자제해서 페이지를 구성해야 한다. MaxRequestsPerChild는 프로세스 하나가 몇개의 요청을 처리하느냐를 결정하는데 1000이면 1000번의 요청을 처리한 후 소멸되고, 0이면 서비스후에 소멸되지 않고 그 다음 요청을 계속 받아들이게 된다.
+
+# ServerRoot: The top of the directory tree under which the server's
+# configuration, error, and log files are kept.
+#
+# Do not add a slash at the end of the directory path. If you point
+# ServerRoot at a non-local disk, be sure to point the LockFile directive
+# at a local disk. If you wish to share the same ServerRoot for multiple
+# httpd daemons, you will need to change at least LockFile and PidFile.
+#
+ServerRoot "C:/Program Files/Apache2.2"
+
+# 지시어 ServerRoot는 아파치를 운영하고 유지할 때 필요한 여러가지 파일이나 디렉토리들이 유지되는 최상위 위치를 지정한다. 아파치 설치시 사용자정의(custom)로 선택해서 변경했다면 그때 변경된 위치에 따라서 기본값이 다르다. 간단히 말해 아파치가 설치된 경로가 서버루트(ServerRoot)가 된다. 아파치에서 경로를 설정할 때 유의해할 점은 백슬래쉬가 아니고 슬래쉬(/)를 사용한다는 것이다. 그리고 "c:/apache2"나 윈도우의 전통적인 프로그램 설치 경로인 "C:/Program Files/" 하위에 설치되어도 무방하지만 경로가 정확해야 이 디렉터리를 기준으로 아파치관련 부속파일을 경로를 연결해서 사용할 수 있다.
+
+#
+# Listen: Allows you to bind Apache to specific IP addresses and/or
+# ports, instead of the default. See also the <VirtualHost>
+# directive.
+#
+# Change this to Listen on specific IP addresses as shown below to 
+# prevent Apache from glomming onto all bound IP addresses (0.0.0.0)
+#
+#Listen 12.34.56.78:80
+Listen 80
+ 아이피 영역을 지정해서 사용자들을 분산시키는 등 로드밸런싱과 관련사항은 여기서 제외하므로 기본값 listen [포트]와 관련된 사항은 제외하고, Listen은 실질적으로 아파치를 통해서 서비스하는 호스트 컴퓨터의 IP(1대는 생략가능)와 웹서비스 기본 포트 80이 기본값이다. 이 포트를 통해서 웹서버는 요청을 받아 들이게 된다. 그러나 8000또는 8080처럼 포트를 바꾸어 서비스를 할 수 있으며, 이 때 윈도XP의 방화벽을 확인하고 해당 포트를 개방해 주어야 한다. 8000포트 또는 8080포트를 사용할 경우 http://도메인:8000 또는 http://도메인:8080올 서비스를 하게 되지만, 무료로 포트포워딩을 서비스 받아서 직접 http://도메인으로 연결이 가능하다. 포트포워딩은 대부분 일반 사용자들이 가정에 웹서비스를 하지 못하도록 ISP측에서 이를 막아 놓았을 경우 포트포워딩을 이용한다. 
+
+#
+# Dynamic Shared Object (DSO) Support
+#
+# To be able to use the functionality of a module which was built as a DSO you
+# have to place corresponding `LoadModule' lines at this location so the
+# directives contained in it are actually available _before_ they are used.
+# Statically compiled modules (those listed by `httpd -l') do not need
+# to be loaded here.
+#
+# Example:
+# LoadModule foo_module modules/mod_foo.so
+#
+
+각 모듈에 대해서 아래URL을 통해서 기능을 파악할 수 있다.
+http://httpd.apache.org/docs/2.2/ko/mod/
+http://httpd.apache.org/docs/2.2/mod/
+
+LoadModule actions_module modules/mod_actions.so
+LoadModule alias_module modules/mod_alias.so
+LoadModule asis_module modules/mod_asis.so
+LoadModule auth_basic_module modules/mod_auth_basic.so
+#LoadModule auth_digest_module modules/mod_auth_digest.so
+#LoadModule authn_anon_module modules/mod_authn_anon.so
+#LoadModule authn_dbm_module modules/mod_authn_dbm.so
+LoadModule authn_default_module modules/mod_authn_default.so
+LoadModule authn_file_module modules/mod_authn_file.so
+#LoadModule authz_dbm_module modules/mod_authz_dbm.so
+LoadModule authz_default_module modules/mod_authz_default.so
+LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+LoadModule authz_host_module modules/mod_authz_host.so
+LoadModule authz_user_module modules/mod_authz_user.so
+LoadModule autoindex_module modules/mod_autoindex.so
+#LoadModule cern_meta_module modules/mod_cern_meta.so
+LoadModule cgi_module modules/mod_cgi.so
+#LoadModule dav_module modules/mod_dav.so
+#LoadModule dav_fs_module modules/mod_dav_fs.so
+#LoadModule deflate_module modules/mod_deflate.so
+LoadModule dir_module modules/mod_dir.so
+LoadModule env_module modules/mod_env.so
+#LoadModule expires_module modules/mod_expires.so
+#LoadModule file_cache_module modules/mod_file_cache.so
+#LoadModule headers_module modules/mod_headers.so
+LoadModule imagemap_module modules/mod_imagemap.so
+LoadModule include_module modules/mod_include.so
+#LoadModule info_module modules/mod_info.so
+LoadModule isapi_module modules/mod_isapi.so
+LoadModule log_config_module modules/mod_log_config.so
+LoadModule mime_module modules/mod_mime.so
+#LoadModule mime_magic_module modules/mod_mime_magic.so
+#LoadModule proxy_module modules/mod_proxy.so
+#LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+#LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+#LoadModule proxy_connect_module modules/mod_proxy_connect.so
+#LoadModule proxy_http_module modules/mod_proxy_http.so
+#LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
+LoadModule negotiation_module modules/mod_negotiation.so
+#LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule setenvif_module modules/mod_setenvif.so
+#LoadModule speling_module modules/mod_speling.so
+#LoadModule status_module modules/mod_status.so
+#LoadModule unique_id_module modules/mod_unique_id.so
+LoadModule userdir_module modules/mod_userdir.so
+#LoadModule usertrack_module modules/mod_usertrack.so
+#LoadModule vhost_alias_module modules/mod_vhost_alias.so
+#LoadModule ssl_module modules/mod_ssl.so
+
+# 지시어 LoadModule은 아파치 실행시에 필요로하는 기능들을 가진 파일(so)을 불러오는 기능을 수행한다. 예를들어 mod_vhost_alias.so이라는 모듈을 Load해야 virtualhost로 IP재사용이 가능하게 해서 여러개의 사이트를 연결할 수 있는데 이처럼 특정한 기능을 수행하는 모듈이 아파치 실행파일 httpd.exe와 함께 작동하도록 하게해서 필요한 기능은 주석(#)처리를 함으로써 load 또는 unload가 가능한 것이 동적공유객체(DSO)이다. 위에 목록은 아파치 2.2.3 for 윈도우에서의 기본 설정상태이다. 모듈을 Load하는 만큼 메모리를 소모하게 되므로 불필요한 기능은 unload하는 것이 효율적이다. 뿐만 아니라 서드파티(3th-Party) 모듈(so)도 쉽게 load해서 사용할 수 있는 것이 장점이다.
+
+#리눅스에서 아파치2.2.3을 운영하는 경험상 mod_authz_host.so mod_log_config.so mod_setenvif.so mod_mime.so mod_dir.so mod_userdir.so 로 6개정도의 모듈만으로 기본 운영이 된다. 그러나 CGI를 구현하기 위해서는 PHP 모듈, Perl 모듈, 그리고 DOS공격을 대비한 모듈, 프록시 관련 모듈, 웹방화벽 모듈, chroot 모듈, 대역폭 스로틀링 등 여러가지 가지 보조 기능들을 추가해서 운영하게 된다.
+
+#
+# ServerAdmin: Your address, where problems with the server should be
+# e-mailed. This address appears on some server-generated pages, such
+# as error documents. e.g. admin@your-domain.com
+#
+ServerAdmin admin@winnwe.com
+
+# 사이트 관리자의 메일을 설정하는 SeverAdmin 지시어이다. 오류가 발생할 때 나타나게 되므로 관리자가 미처 발견하지 못하는 오류나 또는 장애발생시 친절한 방문자로 부터 연락을 받을 수도 있다. 
+
+#
+# ServerName gives the name and port that the server uses to identify itself.
+# This can often be determined automatically, but we recommend you specify
+# it explicitly to prevent problems during startup.
+#
+# If your host doesn't have a registered DNS name, enter its IP address here.
+#
+ServerName 127.0.0.1:80
+
+# 서버이름 지시어 ServerName은 정식도메인이나 유동IP 포트포워딩을 통한 무료 서브도메인처럼 도메인 이름을 입력하는 것이 보통이지만 영향을 받지는 않는다. DNS에 정식으로 등록되지 않았다면 127.0.0.1이나 호스트 IP를 입력하라고 하는데 localhost 또는 로컬컴퓨터 이름도 무방하다. 
+
+#
+# DocumentRoot: The directory out of which you will serve your
+# documents. By default, all requests are taken from this directory, but
+# symbolic links and aliases may be used to point to other locations.
+#
+DocumentRoot "C:/Program Files/Apache2.2/htdocs"
+
+# 지시어 DocumentRoot는 실제 웹사이트를 운영하는 경우의 기본적인 웹사이트의 루트(root)가 된다. 예를들어 웹사이트를 운영하기 위해서 "D:/www/myweb"을 루트로 지정한다. 아파치기 실행되는 로컬 컴퓨터상에서 기본 위치는 DocumentRoot 지시어로 지정을 하고 이 디렉토리에 대한 접근제어(Access Control)는 Directory 지시어로 설정한다. 초보자들이 혼란스러워 하는 경우가 403권한없음 오류인데 자신이 원하는 폴더를 DocumentRoot 지정했으면, 그다음은 Directory 지시어를 통해서 해당 폴더에 대한 접근을 설정해 주어야 한다.
+
+#
+# Each directory to which Apache has access can be configured with respect
+# to which services and features are allowed and/or disabled in that
+# directory (and its subdirectories). 
+#
+# First, we configure the "default" to be a very restrictive set of 
+# features. 
+#
+<Directory />
+Options FollowSymLinks
+AllowOverride None
+Order deny,allow
+Deny from all
+Satisfy all
+</Directory>
+아파치 디렉터리에 대한 접근제어(Access control) 설정은 Directory [경로]로 지정한다. 여기서 FollowSymLinks는 심볼릭링크(윈도우의 경우 단축아이콘)를 보안상 사용하지 않는 것이 유리하고, AllowOverride는 인증(.htaccess)에 관여하고 Order는 차단(Deny) 및 허용(Allow)에 대한 기본값을 설정하는데 Deny,Allow는 차단이 기본값이지만 Allow,Deny는 허용을 기본값을 한다. 먼저 Order로 기본값을 설정한 다음 Deny from 과 Allow from으로 차단 및 허용을 지정한다. Satisfy all은 Allow form에 해당하는 경우만 허용하는데 Allow from이 지정되지 않았으므로 모두 Deny가 된다. 시스템 루트이므로 모두 차단된다고 할 수 있다. 
+
+#
+# Note that from this point forward you must specifically allow
+# particular features to be enabled - so if something's not working as
+# you might expect, make sure that you have specifically enabled it
+# below.
+#
+
+#
+# This should be changed to whatever you set DocumentRoot to.
+#
+#<Directory "C:/Program Files/Apache2.2/htdocs">
+
+아파치 기본 설정은 C:/Program Files/Apache2.2/htdoc가 DocumentRoot이다. 이 DocumentRoot를 변경함으로써 자신의 원하는 사이트의 루트를 설정하게 된다 예를들면 d:/www/mysite라는 윈도XP의 폴더로 DocumentRoot를 설정했다면, d:/www/mysite라는 폴더를 Directory 지시어를 통해서 접근 설정을 해주어야 한다. 그렇지 않으면 권한없음(403) 오류를 출력하게 된다.
+
+<Directory "C:/www/mysite">
+#
+# Possible values for the Options directive are "None", "All",
+# or any combination of:
+# Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+#
+# Note that "MultiViews" must be named *explicitly* --- "Options All"
+# doesn't give it to you.
+#
+# The Options directive is both complicated and important. Please see
+# http://httpd.apache.org/docs/2.2/mod/core.html#options
+# for more information.
+#
+Options Indexes FollowSymLinks
+
+#
+# AllowOverride controls what directives may be placed in .htaccess files.
+# It can be "All", "None", or any combination of the keywords:
+# Options FileInfo AuthConfig Limit
+#
+AllowOverride None
+
+#
+# Controls who can get stuff from this server.
+#
+Order allow,deny
+Allow from all
+
+</Directory>
+
+#
+# DirectoryIndex: sets the file that Apache will serve if a directory
+# is requested.
+#
+<IfModule dir_module>
+DirectoryIndex index.html
+</IfModule>
+
+IfModule지사자에 의해서 Dir모듈이(mod_dir.so)이 로드되어 졌을때 조건부 설정되며 DirectoryIndex 지시어는 디렉터리의 인덱스페이지를 설정한다. 인덱스 페이지는 파일이름 없이 디렉터리를 요청할 시 기본적으로 연결되는 파일이름이다. 동적페이지가 아닌 경우 index.html 또는 index.htm을 사용한다. 하나 이상의 파일을 순서대로 나열할 경우 앞쪽에 위치할 수록 우선순위가 높다. 예를들면 DirectoryIndex index.html, index.htm, index.php로 지정하면, html, htm, php순으로 우선순위가 부여된다.
+
+#
+# The following lines prevent .htaccess and .htpasswd files from being 
+# viewed by Web clients. 
+#
+<FilesMatch "^\.ht">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+FilesMatch 지시어는 정규표현식(regular expression)으로 특정한 파일형식을 지정해서 해당 파일에 대한 접근을 설정할 수 있다. 위에 설정은 확장자 ht를 가지는 모든 파일은 인정하지 않고 무시해 버린다. 
+
+#
+# ErrorLog: The location of the error log file.
+# If you do not specify an ErrorLog directive within a <VirtualHost>
+# container, error messages relating to that virtual host will be
+# logged here. If you *do* define an error logfile for a <VirtualHost>
+# container, that host's errors will be logged there and not here.
+#
+ErrorLog logs/error.log
+
+아파치 오류를 기록하는 파일을 지정한다. 아파치가 정상작동을 하지 않을 경우 가장먼저 확인해야할 파일이다. 이 파일의 경로와 연결되는 것은 이미 위에서 ServerRoot를 통해서 지정을 했으므로 ServerRoot/logs/error.log파일이 된다.
+
+#
+# LogLevel: Control the number of messages logged to the error_log.
+# Possible values include: debug, info, notice, warn, error, crit,
+# alert, emerg.
+#
+LogLevel warn
+
+오류를 기록하는 수준을 지정한다. 기본값은 warn이다. 접속량이 많은 경우 이 로그를 기록하는 자체도 성능에 영향을 줄 수 있으며, 갑자기 서버가 느려지는 경우 로그파일이 비대해 지지 않았는지를 먼저 점검해야 한다. 그러나 그 이전에 적정크기가 되면 새로운 파일로 로그가 기록해주는 것이 좋은 방법이다. 예를들면 3~5Mb 크기 단위로 로그가 기록되도록 해준다.
+
+<IfModule log_config_module>
+#
+# The following directives define some format nicknames for use with
+# a CustomLog directive (see below).
+#
+
+mod_log_config는 이용한 기록 아래의 아파치 문서를 참조한다.
+http://httpd.apache.org/docs/2.2/ko/mod/mod_log_config.html
+
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %>s %b" common
+
+mod_logio를 이용하는 방법은 아래의 아파치 문서를 참조한다.
+http://httpd.apache.org/docs/2.2/ko/mod/mod_logio.html
+
+<IfModule logio_module>
+# You need to enable mod_logio.c to use %I and %O
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+</IfModule>
+
+#
+# The location and format of the access logfile (Common Logfile Format).
+# If you do not define any access logfiles within a <VirtualHost>
+# container, they will be logged here. Contrariwise, if you *do*
+# define per-<VirtualHost> access logfiles, transactions will be
+# logged therein and *not* in this file.
+#
+CustomLog logs/access.log common
+access.log와 error.log 2개만이 설정되어져 있으나 로그파일은 사용자 정의해서 얼마든지 다른 형식으로 저장할 수 있다. mod_rewrite 모듈을 이용할 때도 전용 로그를 생성하고 기록할 수 있다. 로그파일도 성능에 영향을 받는다는 것을 잊어선 안된다.
+
+#
+# If you prefer a logfile with access, agent, and referer information
+# (Combined Logfile Format) you can use the following directive.
+#
+#CustomLog logs/access.log combined
+combined는 사용자 정의로 여러가지 정보를 조합해서 사용한다는 것이고 commin은 공통적으로 사용된다는 레이블 이상의 의미는 없다.</IfModule>
+
+<IfModule alias_module>
+#
+# Redirect: Allows you to tell clients about documents that used to 
+# exist in your server's namespace, but do not anymore. The client 
+# will make a new request for the document at its new location.
+# Example:
+# Redirect permanent /foo http://127.0.0.1/bar
+
+Redirect 지시어는 특정한 위치로 재지향(Redirect)할 때 쓴다.
+#
+# Alias: Maps web paths into filesystem paths and is used to
+# access content that does not live under the DocumentRoot.
+# Example:
+# Alias /webpath /full/filesystem/path
+
+별칭(Alias)을 사용할 수 있는 지시어 Alias는 경로(path)를 짧게 줄이는데 사요한다. 
+
+#
+# If you include a trailing / on /webpath then the server will
+# require it to be present in the URL. You will also likely
+# need to provide a <Directory> section to allow access to
+# the filesystem path.
+
+#
+# ScriptAlias: This controls which directories contain server scripts. 
+# ScriptAliases are essentially the same as Aliases, except that
+# documents in the target directory are treated as applications and
+# run by the server when requested rather than as documents sent to the
+# client. The same rules about trailing "/" apply to ScriptAlias
+# directives as to Alias.
+#
+ScriptAlias /cgi-bin/ "C:/Program Files/Apache2.2/cgi-bin/"
+
+디렉터리를 짧게 줄이는 별칭(Alias)에 스크립전용을 뜻하는 지시어 ScriptAlias는 긴 디렉터리 경로는 짧게 줄이는데 사용한다. cgi-bin이라는 cgi전용 디렉터리를 만들어 이곳에서만 실행이 가능하도록 설정한다. 그러나 홈과 이하 전체의 하위 디렉터리에서 cgi를 실행하려면 아래의 Derectory 지시어가 들어가 부분을 제거한다. 다시말해 별도로 cgi-bin에 대한 접근설정을 별도로 할 필요가 없으며, 홈디렉터리에 대한 접근 권한을 설정할 경우 Options +ExecCGI를 추가해 주면 된다.
+
+</IfModule>
+
+Perl CGI가 작동하지 않는 경우는 대표적으로 2가지 경우이다. 첫번째 500 오류로 내부서버 오류(Internal Server Error)가 발생하는 경우는 Perl 인터프리터 경로가 틀렸을 경우이고, 403 오류로 권한 금지(Access Forbidden)가 표기하는 경우는 Directory 지시어를 통해서 CGI가 실행되도록 설정되지 못한 경우이다.
+
+#
+# "C:/Program Files/Apache2.2/cgi-bin" should be changed to whatever your ScriptAliased
+# CGI directory exists, if you have that configured.
+#
+<Directory "C:/Program Files/Apache2.2/cgi-bin">
+AllowOverride None
+Options None
+Order allow,deny
+Allow from all
+</Directory>
+CGI wrapPer로써 특정 디렉터리에서만 CGI가 실행되도록 제한한다. PHP가 워낙 성능이 강력하고 국내 웹환경이 아파치 웹서버에는 PHP가 필수적 사용되므로 특정 디렉터리내에서 CGI가 실행되도록 하는 경우는 이제 거의 드물 것이다. 아파치 메뉴얼에도 웹서버 보안이 잘된다면 특정 디렉터리로 제한을 두지 않아도 상관이 없다고 한다. mod_cgi(d)를 통해서 Perl CGI를 구현하지 않으려면 제거해도 무방하다.
+
+# 
+# Apache parses all CGI scripts for the shebang line by default.
+# This comment line, the first line of the script, consists of the symbols
+# pound (#) and exclamation (!) followed by the path of the program that 
+# can execute this specific script. For a perl script, with perl.exe in
+# the C:\Program Files\Perl directory, the shebang line should be:
+
+#!c:/program files/perl/perl
+
+펄(Perl) CGI를 사용할 때 파일의 첫번째 라인에 Perl 인터프리(해석기: Interpreter)가 설치된 경로를 #!와 함께 기술한다. 만약 펄 인터프리터가 설치되어 있지 않으면 아래 사이트에서 간단히 이름만 입력하고 윈도우용(win32)의 zip나 msi로 다운로드 받아 설치할 수 있다. 2006년 11월 현재 최신 버젼은 5.8.8.819이다
+다운로드: http://www.activestate.com/store/activeperl/download/
+
+다운로드후에 Pel설치 경로를 특별히 변경하지 않으면 #!C:/Perl에 설치가 되고 실행파일 perl.exe를 지정해서 #!C:/Perl/bin/perl.exe 을 항상 Perl CGI 파일의 맨앞에 위치시킨다.
+
+# Note you _must_not_ indent the actual shebang line, and it must be the
+# first line of the file. Of course, CGI processing must be enabled by 
+# the appropriate ScriptAlias or Options ExecCGI directives for the files 
+# or directory in question.
+#
+# However, Apache on Windows allows either the Unix behavior above, or can
+# use the Registry to match files by extention. The command to execute 
+# a file of this type is retrieved from the registry by the same method as 
+# the Windows Explorer would use to handle double-clicking on a file.
+# These script actions can be configured from the Windows Explorer View menu, 
+# 'Folder Options', and reviewing the 'File Types' tab. Clicking the Edit
+# button allows you to modify the Actions, of which Apache 1.3 attempts to
+# perform the 'Open' Action, and failing that it will try the shebang line.
+# This behavior is subject to change in Apache release 2.0.
+#
+# Each mechanism has it's own specific security weaknesses, from the means
+# to run a program you didn't intend the website owner to invoke, and the
+# best method is a matter of great debate.
+#
+# To enable the this Windows specific behavior (and therefore -disable- the
+# equivilant Unix behavior), uncomment the following directive:
+#
+#ScriptInterpreterSource registry
+
+hello.pl파일의 내용을 아래와 같이 작성을 했다고 한다면
+#!C:/Perl/bin/perl.exe 
+print "Content-type: text/html\n\n";
+print "Hello, World."; 
+
+ScriptInterpreterSource registry를 활성화하면 Perl 해석기 경로인 #!C:/Perl/bin/perl.exe를 생략할 수 있다.
+
+#
+# The directive above can be placed in individual <Directory> blocks or the
+# .htaccess file, with either the 'registry' (Windows behavior) or 'script' 
+# (Unix behavior) option, and will override this server default option.
+#
+
+#
+# DefaultType: the default MIME type the server will use for a document
+# if it cannot otherwise determine one, such as from filename extensions.
+# If your server contains mostly text or HTML documents, "text/plain" is
+# a good value. If most of your content is binary, such as applications
+# or images, you may want to use "application/octet-stream" instead to
+# keep browsers from trying to display binary files as though they are
+# text.
+#
+DefaultType text/plain
+
+웹서버가 데이타를 전송하는 문서 형식(인터넷 매체)을 지정한다. 기본형식은 단순한 텍스트(plain text)이지만, 지금의 웹 컨텐츠들은 단순한 텍스트 형식만이 아닌 여러가지 다영한 형태의 데이타를 전송하는데, 데이타를 전송하기 전에 먼저 어떤 형식의 데이타를 전송하다는 헤더(Header) 정보를 먼저 전송함으로써 클라이언트 측은 이러한 정보를 받아 데이타에 따른 적절한 프로그램을 작동시키게 된다. 예를들면 PDF문서를 웹서버가 전송할 때 클라이언트 컴퓨터인 윈도XP의 Acrobat Reader가 설치되어져 있어 폴더옵션에 파일형식이 등록되어져 있다면 웹브라우져에 Acrobat Reader가 작동되어져 PDF 문서가 열리게 된다. 이 경우 application/pdf 라는 MIME 형식(Type)을 지정함으로써 가능하다. application형식만이 전송효율을 높히기 위한 텍스트를 압축 전송하는 기술도 사용되므로 이러한 형식에 대한 MIME 형식 정보를 설정해 준다. 동적 페이지를 생성하는 Perl CGI 스크립트, PHP 스크립트들도 이러한 형식을 지정해주어야만 올바르게 웹브라우져에서 출력된다.
+
+<IfModule mime_module>
+#
+# TypesConfig points to the file containing the list of mappings from
+# filename extension to MIME-type.
+#
+TypesConfig conf/mime.types
+
+MIME형식 지정되어져 있는 형식파일이 저장되어져 있는 위치와 파일이름이다.
+
+#
+# AddType allows you to add to or override the MIME configuration
+# file specified in TypesConfig for specific file types.
+#
+#AddType application/x-gzip .tgz
+#
+# AddEncoding allows you to have certain browsers uncompress
+# information on the fly. Note: Not all browsers support this.
+#
+#AddEncoding x-compress .Z
+#AddEncoding x-gzip .gz .tgz
+#
+# If the AddEncoding directives above are commented-out, then you
+# probably should define those extensions to indicate media types:
+#
+AddType application/x-compress .Z
+AddType application/x-gzip .gz .tgz
+
+#
+# AddHandler allows you to map certain file extensions to "handlers":
+# actions unrelated to filetype. These can be either built into the server
+# or added with the Action directive (see below)
+#
+# To use CGI scripts outside of ScriptAliased directories:
+# (You will also need to add "ExecCGI" to the "Options" directive.)
+#
+#AddHandler cgi-script .cgi
+
+Perl CGI를 작동시키려면 .pl을 아래처럼 추가해 준다.
+AddHandler cgi-script .cgi .pl
+
+# For type maps (negotiated resources):
+#AddHandler type-map var
+
+#
+# Filters allow you to process content before it is sent to the client.
+#
+# To parse .shtml files for server-side includes (SSI):
+# (You will also need to add "Includes" to the "Options" directive.)
+#
+#AddType text/html .shtml
+#AddOutputFilter INCLUDES .shtml
+</IfModule>
+
+#
+# The mod_mime_magic module allows the server to use various hints from the
+# contents of the file itself to determine its type. The MIMEMagicFile
+# directive tells the module where the hint definitions are located.
+#
+#MIMEMagicFile conf/magic
+
+인터넷 문서(RFC)의 형식이 지정되어져 있지 않을 때 파일의 내용을 통해 자동적으로 결정하게 되는데 MIMEMagicFile 지시어를 통해서 conf폴더의 하위의 magic파일을 힌트삼아서 문서 형식을 결정하게 된다.
+참조: http://httpd.apache.org/docs/2.2/mod/mod_mime_magic.html#mimemagicfile
+
+#
+# Customizable error responses come in three flavors:
+# 1) plain text 2) local redirects 3) external redirects
+#
+# Some examples:
+#ErrorDocument 500 "The server made a boo boo."
+#ErrorDocument 404 /missing.html
+#ErrorDocument 404 "/cgi-bin/missing_handler.pl"
+#ErrorDocument 402 http://127.0.0.1/subscription_info.html
+#
+
+# 하드코드된 오류 메시지(hardcoded error message)로 아파치가 가진 기본적인 오류 메시지(페이지)는 흰색 바탕화면에 검은색 글씨로 그리 보기 좋은 페이지는 아니지만, 사용자정의를 통해서 향상된 오류 페이지를 구성할 수 있다. 위에 설명에 1. 텍스트 방식(사용자정의 메시지 포함), 2. 로컬사이트로 재지향, 3, 외부사이트로 재지향이 가능하다는 예를 보여주고 있다. 재지향(리다이렉트:redirect)을 좀 특별히 서브도메인을 만들고 오류 전용 페이지를 멋지게 디자인해서 보여주는 경우도 있다. 그러나 ErrorDocument 지시어는 굳이 사용하지 않아도 무방하다.
+참조: http://httpd.apache.org/docs/2.2/mod/core.html#errordocument
+
+#
+# EnableMMAP and EnableSendfile: On systems that support it, 
+# memory-mapping or the sendfile syscall is used to deliver
+# files. This usually improves server performance, but must
+# be turned off when serving from networked-mounted 
+# filesystems or if support for these functions is otherwise
+# broken on your system.
+#
+#EnableMMAP off
+#EnableSendfile off
+EnableMMAP은 메모리대응 (memory-mapping) 또는 메모리멥핑이라고 해서 디바이스 드라이버와 관련된 지식이 있을 경우 제대로 이해가 가능한 옵션인데 실제 아파치 성능향상에 영향을 주는 옵션이지만 자칫 역효과가 발생해서 서버의 성능을 떨어트리고 안정성을 해치는 경우가 있다고 하므로 기본값을 유지한다. EnableSendfile은 커널이 지원하는 메카니즘을 통해서 파일을 전송한다.
+참조: http://httpd.apache.org/docs/2.2/mod/core.html#enablemmap
+참조: http://httpd.apache.org/docs/2.2/mod/core.html#enablesendfile
+
+# Supplemental configuration
+#
+# The configuration files in the conf/extra/ directory can be 
+# included to add extra features or to modify the default configuration of 
+# the server, or you may simply copy their contents here and change as 
+# necessary.
+
+httpd.conf를 기능별로 분리해서 include함으로써 관리가 용이하다. 사용하지 않거나 필요하지 않은 파일은 주석처리해서 Include하지 않아도 된다. 윈앤위처럼 메모리 적은 상태로 서버를 운영하는 경우 다중 언어처리나 자동 인덱스, 그리고 웹서버에 대한 리얼타임 정보, 아파치 메뉴얼, 웹개발 도구관련 모듈은 Load하지 않는다.
+
+# Server-pool management (MPM specific)
+#Include conf/extra/httpd-mpm.conf
+Include conf/extra/mpm.conf
+# 위에서 말한 다중처리 모듈(MPM)을 설정하는 파일
+
+# Multi-language error messages
+#Include conf/extra/httpd-multilang-errordoc.conf
+# 에러 메시지를 다중언어로 지원하도록 설정하는 파일
+
+# Fancy directory listings
+#Include conf/extra/httpd-autoindex.conf
+# 자동 인덱스 생성을 위해 설정을 하는 파일
+
+# Language settings
+#Include conf/extra/httpd-languages.conf
+# 다중 언어를 지원하기 위한 설정을 하는 파일
+
+# User home directories
+#Include conf/extra/httpd-userdir.conf
+# 사용자 디렉터리에 대한 설정을 하는 파일
+
+# Real-time info on requests and configuration
+#Include conf/extra/httpd-info.conf
+# 운영되는 웹서버에 관한 상태나 정보출력을 설정하는 파일
+
+# Virtual hosts
+#Include conf/extra/httpd-vhosts.conf
+# IP재사용을 위한 가상호스트(VirtaulHost)를 설정하는 파일
+
+# Local access to the Apache HTTP Server Manual
+#Include conf/extra/httpd-manual.conf
+# 아파치 메뉴얼을 직접 웹사이트에서 이용하기 위해 설정하는 파일
+
+# Distributed authoring and versioning (WebDAV)
+#Include conf/extra/httpd-dav.conf
+# 웹사이트 개발 도구 WebDAV를 지원하는 모듈을 설정하는 파일
+
+# Various default settings
+#Include conf/extra/httpd-default.conf
+# 아파치 웹서버가 작동하기 위한 기본적인 설정 파일 - 아파일은 특별히 변경할 필요가 있을 경우는 수정된 값을 사용하지만, 대부분의 경우 기본값을 유지한 상태로 아파치는 잘 작동을 한다. 그러나 윈앤위사이트 처럼 조금이라도 아파치 성능을 끌어 올릴 필요 경우라면 많은 시행착오를 통해서 MPM과 함께 최적의 값을 찾아야 한다.
+
+# 아파치기 2.0.xx에서는 httpd.conf가 하나로 구성된 것이 기본이었으나 2.2.x 부터는 분리되어졌다. 그러나 이것은 분리되던 묶여있던 상관이 없다. Include 지시어에 의해서 해당 위치에 해당 파일이 포함되는 것일 뿐이다. 분리되었을 경우는 편집상 편리함이 있기도 하고 반면에 불편한 경우도 있다. 다음번 웹로그에서 httpd.conf의 하위 디렉토리 extra에 위치한 부속 파일들을 분석하기로 한다.
+
+# Secure (SSL/TLS) connections
+#Include conf/extra/httpd-ssl.conf
+#
+# Note: The following must must be present to support
+# starting without SSL on platforms with no /dev/random equivalent
+# but a statically compiled-in mod_ssl.
+#
+<IfModule ssl_module>
+SSLRandomSeed startup builtin
+SSLRandomSeed connect builtin
+</IfModule>
+
+# 지시어 IfModule ssl_module은 보안 소켓 레이어(SSL:Secure Sockets Layer) 모듈이 Load되어질 때 해당하는데, 인터넷을 통해서 비공개문서를 전송하기 위해서 네트스케이프(Netscape)에 의해 개발된 프로토콜의 일종이다. SSL 서버는 http가 아니고 https로 구분할 수 있다. 비용을 들여서 정식으로 SSL인증서를 필요로 하기 때문에 상업 사이트외에 일반적인 웹사이트에서는 사용되지 경우느 드물지만, SSL을 사용함으로써 클라이언트와 서버간의 암호화된 통신을 사용함으로 신뢰성을 높힐 수 있다.
+
+이제껏 httpd.conf 주설정 파일에 대한 내용을 살펴보았다. 보다 자세한 사항은 Extra하위 파일에서 다룬다

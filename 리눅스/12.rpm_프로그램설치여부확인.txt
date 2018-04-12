@@ -1,0 +1,5 @@
+rpm -qa php
+rpm -qa | grep php
+¶Ç´Â
+yum list installed php
+yum list installed | grep php

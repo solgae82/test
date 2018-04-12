@@ -1,0 +1,5 @@
+메모리정보 확인
+cat /proc/meminfo
+
+사용량확인
+free -h

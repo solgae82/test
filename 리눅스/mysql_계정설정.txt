@@ -1,0 +1,14 @@
+- 관리자 로그인
+$ mysql -uroot -p비밀번호 mysql
+
+- 계정 생성
+mysql> insert into user ( host, user, password ) values ( 'localhost', '사용자명', password('패스워드') );
+
+- 데이터베이스 생성
+mysql> create database 디비명;
+
+- 데이터베이스 권한 주기
+mysql> insert into db ( host, db, user, select_priv, insert_priv, update_priv, delete_priv, create_priv, drop_priv) values ( 'localhost', '디비명', '사용자명', 'y', 'y', 'y', 'y', 'y', 'y' );
+
+- 새로 적용
+mysql> flush privileges;

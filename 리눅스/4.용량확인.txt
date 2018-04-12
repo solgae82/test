@@ -1,0 +1,11 @@
+파티션 용량확인
+df -h 
+
+해당디렉토리 용량확인
+du -sh .
+
+해당디렉토리 1단계 용량확인(파일,디렉토리)
+du -sh *
+
+해당디렉토리 서브에서 특정디렉토리나 파일을 제외한 용량체크
+du --exclude='gwms*' --exclude='log' --exclude='u_images'  -sh .

@@ -1,0 +1,17 @@
+ldconfig는 runtime때 여러 위치에 존재하는 shared object, 쉽게말해 동적 라이브러리를 연결해주는 dynamic linker를 설정하는 command이다. 
+여기서 runtime dynamic linker는 /lib/ld.so 이고, 어떤 shared object가 필요한지는 실행파일이 알려준다.
+ldd /bin/ls 을 실행해보면 ls가 동작하기위해 필요한 so들 목록이 나오고, 해당 so파일을 어느 경로에 있는걸 가져올껀지도 보여준다. 
+
+/etc/ld.so.conf는 이 경로를 지정해주는 설정파일.
+
+ldconfig: 자신이 사용중인 머신에 새로운 library를 설치한 후 머신이 인식하기 위한 dynamic linking table을 업데이트.
+
+ldd: 컴파일을 한 프로그램에 link가 잘 되었는지 확인하기 위한 command. 
+--------------------------------------------------------------------
+
+# vi /etc/ld.so.conf
+/web/httpd/lib <-경로추가
+/web/httpd/modules <-경로추가
+:wq
+
+ldconfig  <-변경내용 적용(업데이트)

@@ -1,0 +1,8 @@
+웹서버 접속 수
+netstat -an | grep :80.*ESTABLISHED | wc -l
+netstat -an | grep :80 | grep ESTABLISHED | wc -l
+
+
+또다른 방법(실시간)
+watch 'netstat -an | grep EST | wc -l'
+watch 'netstat -an | grep :80.*ESTABLISHED | wc -l'

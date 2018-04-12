@@ -1,0 +1,20 @@
+첫째, 포트열렸는지 확인 : 53번
+둘째, foword파일과 reserve파일 퍼미션 확인 : (예: naemed)
+셋째, /etc/named.caching-nameserver.conf 파일에서 로컬로만 설정된 경우 확인: 외부로도 되게 변경시켜줘야한다
+넷째, forward파일이 실제 위치에 정확이 있는가
+
+/etc/resolv.conf : 네임서버 IP입력 설정하는 부분
+
+/etc/named.caching-nameserver.conf: 네임서버 설정 및 구성파일
+/etc/named.rfc1912.zones: 실제 매핑정보 설정파일
+
+/etc/rc.d/init.d/named (start|stop|restart)
+
+named-checkconf /etc/named.rfc1912.zones : zone문법적으로 이상없는지 검사
+named-checkzone /var/named solgae.com.zone : forward파일 문법검사
+
+//----네임서버 데몬시작----//
+/usr/sbin/named -u named
+/etc/rc.d/init.d/named restart 
+
+

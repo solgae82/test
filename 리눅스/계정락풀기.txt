@@ -1,0 +1,11 @@
+---------
+계정락풀기
+password -l dong <- 2단계 락 걸기
+password -u dong <- 2단계 락 풀기
+
+usermod -L dong <- 1단계 락 걸기
+usermod -U dong <- 1단계 락 풀기
+
+password -l dong <- 2단계 락 걸기
+usermode -U dong
+usermode -U dong <- 두번해서 락 풀기

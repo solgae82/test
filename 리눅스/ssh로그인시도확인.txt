@@ -1,0 +1,11 @@
+시도기록 : 
+ls /var/log/secure | xargs grep -E "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" -o | sort | uniq
+
+실패기록 확인:
+last -f /var/log/btmp | more
+
+로그인 성공 확인:
+
+last
+
+cat /var/log/secure* | grep Accepted | awk '{print $9"\t"$11"\t"$14}' | sort | uniq

@@ -1,0 +1,6 @@
+mysql> use mysql;
+mysql> update user set password=password('123456') where user='root';
+Query OK, 2 rows affected (0.03 sec)
+Rows matched: 2 Changed: 2 Warnings: 0
+mysql> flush privileges; <--- 적용
+flush privileges; 를 하지 않으면 mysql에서 빠져나와서 root 로그인이 안된다.

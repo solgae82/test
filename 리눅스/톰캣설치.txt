@@ -1,0 +1,39 @@
+java 설치 후 설치
+
+1. /usr/local/server/tomcat <= 톰캣  디렉토리(tar 압축해제한) 위치시킨 후
+
+2. 프로파일에 자바설정과, 톰캣 디렉토리 설정
+[root@localhost server]# vi /etc/profile
+.
+.
+export JAVA_HOME=/usr/local/jdk1.7.0_76 <= java 설치 디렉토리
+export CATALINA_HOME=/usr/local/server/tomcat 
+export CLASSPATH="."
+PATH="$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin"
+
+
+3. 시스템 적용
+[root@localhost server]# source /etc/profile
+
+
+4. iptables 에 포트 열기(옵션...적용되어 있을때..)
+[root@localhost server]# /etc/init.d/iptables stop
+[root@localhost server]# vi /etc/sysconfig/iptables
+.
+.
+사용  port 적용
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+
+
+
+저장 후 재시작
+[root@localhost server]# /etc/init.d/iptables start
+
+포트확인
+[root@localhost server]# netstat -ntl <=  열린 포트 확인
+
+5.톰캣 시작
+/usr/local/server/tomcat/catalina.sh start
+

@@ -1,0 +1,17 @@
+실행옵션에
+CATALINA_OPTS 환경변수에 아래값 셋팅 
+
+-Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true
+
+
+윈도우즈에는 bin/catalina.bat 안에
+set CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+
+리눅스에는
+환경변수 등록
+export CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+
+또는
+
+bin/catalina.sh 안에
+CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"

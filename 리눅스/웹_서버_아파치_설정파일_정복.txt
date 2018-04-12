@@ -1,0 +1,1367 @@
+﻿웹 서버 아파치 설정파일 정복 httpd.conf
+
+
+서버관련 설정파일 
+GUI 설정을 제공하지는 않지만, 일단 설정파일의 내용을 알고나면 아는 만큼 더욱 더 섬세한 서버의 조절이 가능하다. 
+
+1. 설정파일을 준비하자 
+일반적으로 아파치 서버의 설정작업은 다음의 세 파일을 다룬다. 
+httpd.conf 
+srm.conf 
+access.conf 
+
+이 설정파일은 /etc/httpd/conf 에서 미리 만들어 둔 파일을 복사해서 사용한다. 
+여기서 위의 파일명에 -dist 라고 끝나는 파일이 각각 있을 것이다. 이것을 위의 3파일로 복사해놓는다. 
+
+# This is the main server configuration file. See URL http://www.apache.org/ 
+# for instructions. 
+
+이것은 메인 서버 설정 파일이다.(더 자세한) 소개를 위해서는 URL http://www.apache.org/ 를 보면된다. 
+
+# Do NOT simply read the instructions in here without understanding 
+# what they do, if you are unsure consult the online docs. You have been 
+# warned. 
+
+만약 온라인 설명문서들의 조언에대한 확신을 하지 못한다면, 이곳의 각 지시문들이 어떤 작업을 하는지에 대한 이해 없이 가볍게 읽지마라. 당신은 경고를 받은 것이다. 
+
+# Originally by Rob McCool 
+
+원본은 Rob McCool 에 의해서 만들어 졌다. 
+
+# Dynamic Shared Object (DSO) Support 
+# 
+동적 공유 객체 (DSO)지원 
+# To be able to use the functionality of a module which was built as a DSO you 
+# have to place corresponding `LoadModule' lines at this location so the 
+# directives contained in it are actually available _before_ they are used. 
+# Please read the file README.DSO in the Apache 1.3 distribution for more 
+# details about the DSO mechanism and run `httpd -l' for the list of already 
+# built-in (statically linked and thus always available) modules in your httpd 
+# binary. 
+# 
+당신이 DSO 로 만들어진 모듈의 기능을 사용하기 위해서는 이 파일의 'LoadModule'라인에 실제로 사용가능한 것을 지시하는 것을 사용되기 전에 (_before_, 이단어가 정확히 무엇을 의미하는지 아직 모르겠음) 포함해야 한다.더 많은 DSO 기능에 관한 것을 보려면 아파치 1.3 배포판의 README.DSO 를 읽고, 
+당신의 httpd 바이너리에 만들어진 (정적 링크되고 따라서 언제나 사용가능한)목록을 보기 위해서는 'httpd -l'이라고 실행하라 
+
+# Example: 
+# LoadModule foo_module libexec/mod_foo.so 
+
+LoadModule foo_module libexec/mod_foo.so 
+
+
+2. 나머지 설정 
+# ServerType is either inetd, or standalone. 
+ServerType,서버유형은 inetd 이거나 standalone 이다. 
+
+ServerType standalone 
+
+아파치 웹 서버를 실행시키는 방법에는 두 가지 방식이 있다. 
+하나는 일반 애플리케이션 처럼 명령라인에서 httpd 를 실행하는 것이고, 
+다른 하나는 inetd 슈퍼 서버에 의해 간접적으로 실행되도록 하는 방법이다. 
+
+수많은 네트웍 서버들을 매번 항상 띄워놓는 것은 자원의 낭비를 뜻하므로 많은 서비스들이 inetd 에 의해 관리되는데, 웹 서버는 독립적으로 실행되는 경우가 많다. 
+이유는 실행 요청이 잦기 때문에 빠른 요청을 위해서이다. 
+
+만약 inetd 방식을 사용할려면, ServerType 을 inetd 라고 적어주는 것과 동시에 두가지 작업이 더 필요하다. 
+우선 /etc/services 파일에 다음 줄이 있는지 확인한다. 
+http 80/tcp 
+# cat /etc/services | grep http 라고 하면 쉽게 확인할 수 있다. 
+이것은 http 프로토콜에 대해서 80번 포트를 사용한다는 것을 명시하고 있다. 
+만약 다른 포트를 사용한다면? 변경하면 된다. ^^; 
+
+그리고 다음으로 /etc/inetd.conf 파일에 
+http stream tcp nowait root /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf 
+라는 라인을 적어 주어야 한다. 
+
+항상 그렇듯이 이렇게 inetd.conf 설정 파일을 바꾸고 나면 indtd 를 다시 실행시켜야 한다. 
+# killall -HUP inetd 
+래드햇에서는 
+# /etc/rc.d/init.d/inetd stop 
+# /etc/rc.d/init.d/inetd start 
+또한 5.0 이상에서는 restart 옵션도 지원한다. 
+
+X 윈도우 에서는 실행레벨편집기 (Lun-Level Editor)에서 inetd 스크립트를 선택하고 Stop/Start 를 시켜준다. 
+속도를 고려하면 standalone 를 보안에 좀더 치중한다면 inetd 를 사용한다. 
+
+# If you are running from inetd, go to "ServerAdmin". 
+해석 : 만약 당신이 inetd 를 실행한다면 "ServerAdmin" 으로 가라 
+
+# Port: The port the standalone listens to. For ports < 1023, you will 
+# need httpd to be run as root initially. 
+해석 : 포트 독립실행이 듣는다.(?) 
+1023 보다 작은 값의 포트를 사용하기 위해서는 처음에 루트로서 httpd 를 실행시켜야 한다. 
+
+Port 80 
+
+웹서버는 일반적으로 80번을 사용한다. 
+이말은 다른 포트를 사용할 수 있다는 것을 뜻하기도 한다. 
+0~1023번 포트는 시스템에서 사용하는 번호로서 root 사용자 이외는 사용할 수 없다. 
+많은 곳에서 8080 을 사용하는 것을 볼 수 있는데, 이것은 그냥 외우기 쉽기 때문이다. 
+
+예) http://www.foo.org:8080 
+
+또한 포트 번호가 중복되지만 않는다면 여러 개의 웹서버를 실행시킬 수도 있다. 학습을 위해 아파치, NCSA, CERN, Java로된 웹서버 등을 한꺼번에 실행시킬 수 있다. 
+또한 외부공개 웹서버와 내부 웹서버를 따로 두는 것도 가능하다. 
+
+# HostnameLookups: Log the names of clients or just their IP numbers 
+# e.g. www.apache.org (on) or 204.62.129.132 (off) 
+# The default is off because it'd be overall better for the net if people 
+# had to knowingly turn this feature on. 
+해석 : HostnameLookups: 이름으로 또는 IP 번호로 클라이언트 로그를 작성할 것을 결정한다. 
+디폴트는 off 인데, 이유는 전반적인 네트웍에서 더 낫다(DNS사용안하기 때문). 만약 사람들이 알아들을 수 있을려면 이 것을 on 하라. 
+
+HostnameLookups off 
+
+이것은 on 하면 로그를 www.apache.org 처럼 이름으로 적고, 
+반대로 off 하게 되면 IP 주소로 표기한다. on의 경우에는 DNS 주소찾기를 하므로 약간의 네트워크 부하가 증가한다. 
+통계를 위해서는 off 를 권장하고 있다. 
+
+# If you wish httpd to run as a different user or group, you must run 
+# httpd as root initially and it will switch. 
+해석 : 만약 httpd 를 다른 그룹/사용자로서 운영하기를 바란다면, 
+당신은 반드시 처음에 루트로 시작해서 httpd 를 실행하고 이것을 전환해야 한다. 
+
+# User/Group: The name (or #number) of the user/group to run httpd as. 
+# On SCO (ODT 3) use User nouser and Group nogroup 
+# On HPUX you may not be able to use shared memory as nobody, and the 
+# suggested workaround is to create a user www and use that user. 
+# NOTE that some kernels refuse to setgid(Group) or semctl(IPC_SET) 
+# when the value of (unsigned)Group is above 60000; 
+# don't use Group #-1 on these systems! 
+해석 : User/Group: http를 운영하는 User/Group 이름 또는 번호이다. 
+SCO(ODT 3) 에서는 User nouser 와 Group nogroup 를 사용. 
+HPUX 에서는 nobody 로서는 공유메모리를 사용할 수 없다, 그래서 제안된 작업이 유저 www 를 만들고 그것을 사용한다. 
+주의 : 어떤 커널은 Group 의 값이 60000 이상일때 setgid(Group) 또는 semctl(IPC_SET)를 거절한다. 
+그러한 시스템에서는 Group 값을 #-1 을 사용하지 마라 
+
+User nobody 
+Group #-1 
+
+웹서버는 어떤 서버보다도 많은 일을 한다. 
+또한 자체적으로 CGI 를 실행시키기도 하고, 데이터베이스와도 연계를 가지는 등 막강한 기능을 행사하기 때문에 만약에 누군가에게 뚤린다면 보안상의 큰 문제가 된다. 
+이러한 사태를 막는 한가지 방법으로 시스템에서 거의 아무런 권한도 가지지 못하는 nobody 사용자, nobody 그룹의 권한으로 프로세스의 주인을 바꾸는 것을 생각해 볼 수 있다. 
+어떤 프로세스가 root 의 권한을 갖는 것은 매우 위험한 일이다. 
+root 가 소유하는 프로세스에서 어떤 스크립트를 부르면 그것은 root 의 권한에서 실행되기 때문에 사실상 모든 일을 할 수 있다.(중요한 사실이죠..) 
+나중에 ps 로 확인해 보면 httpd 에 의해 생성된 복제 httpd 프로세스들이 모두 nobody/nobody 의 사용자/그룹의 소유임을 알 수 있을 것이다. 
+
+실행되는 CGI 의 사용자/그룹이 이 설정을 따른다. 일부 사이트에서는 다양한 소유권을 가지고 CGI 를 실행해야 할 필요가 있는데, 이 기능을 SUEXE 라고 한다. 
+아래를 참고하라. http://www.apache.org/docs/suexec.html 
+
+# ServerAdmin: Your address, where problems with the server should be 
+# e-mailed. 
+해석 : ServerAdmin : 시스템에 문제가 생겼을 경우 e-mail 을 보내야할 당신의 주소 
+
+ServerAdmin iloveu@net-in.co.kr 
+
+여러 서버를 운영하는 관리자라면 한 곳으로 메일을 집중시키고자 할 것이다. 
+
+# ServerRoot: The directory the server's config, error, and log files 
+# are kept in. 
+해석 : ServerRoot : 서버의 설정, 에러, 로그 등의파일이 보관될 디렉토리 
+
+# NOTE! If you intend to place this on a NFS (or otherwise network) 
+# mounted filesystem then please read the LockFile documentation, 
+# you will save yourself a lot of trouble. 
+해석 : 주의 만약 NFS 또는 다른 네트웍 파일 시스템에 이것을 두려면 LockFile 문서를 읽어라. 
+많은 문제를 덜 수 있을 것이다. 
+
+ServerRoot /etc/httpd 
+
+우리는 앞서 웹서버의 설정, 에러, 그리고 각종 로그 파일이 보관될 디렉토리를 /etc/httpd 로 설정하였다. 
+레드햇 리눅스에서 logs 는 /var/log/httpd 에 대한 링크이다. 
+
+# BindAddress: You can support virtual hosts with this option. This option 
+# is used to tell the server which IP address to listen to. It can either 
+# contain "*", an IP address, or a fully qualified Internet domain name. 
+# See also the VirtualHost directive. 
+해석 : BindAddress : 이 옵션으로 가상호스트를 지원할 수 있다. 
+이 옵션은 서버에게 어떤 IP 주소를 받아야 할지(listen to) 알려준다. 
+이것은 와일드카드 * 나 IP 주소를 적거나, 또는 FQDNdmf 을 적을 수 있다. 
+
+#BindAddress * 
+
+# ErrorLog: The location of the error log file. If this does not start 
+# with /, ServerRoot is prepended to it. 
+해석 : ErrorLog : 에러로그 파일의 위치이다. 
+만약 이것을 / 문자로 시작하지 않는다면 , ServerRoot의 값이 앞에 붙는다. 
+
+ErrorLog logs/error_log 
+
+웹 서버의 진행 상황을 알기 위해, 그리고 각종 통계를 위해 Log 파일을 작성한다. 
+이것은 위에서 설정한 ServerRoot 를 기준으로 한다. 
+ErrorLog 는 웹서버의 에러상황, 
+TransferLog 는 전송상황, 
+RefererLog, AgentLog 는 각각 웹 서비스 요청을 한 사용자, 브라우저에 대한 기록을 한다. 
+
+
+# LogLevel: Control the number of messages logged to the error_log. 
+# Possible values include: debug, info, notice, warn, error, crit, 
+# alert, emerg. 
+해석 : LogLevel : Error_log 의 메세지 숫자를 조절한다. 
+사용가능한 값은 다음을 포함한다 : debug, info, notice, warn, error, crit, alert, emerg 
+
+LogLevel warn 
+
+# The following directives define some format nicknames for use with 
+# a CustomLog directive (see below). 
+해석 : 다음에서 가리키는 것은 CustomLog 가 지시하는 것을 사용하는 몇 별칭의 형식이다. 
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined 
+LogFormat "%h %l %u %t \"%r\" %>s %b" common 
+LogFormat "%{Referer}i -> %U" referer 
+LogFormat "%{User-agent}i" agent 
+
+# The location of the access logfile (Common Logfile Format). 
+# If this does not start with /, ServerRoot is prepended to it. 
+해석: access log 파일의 위치이다. (일반 로그 형식) 
+
+CustomLog logs/access_log common 
+
+# If you would like to have an agent and referer logfile uncomment the 
+# following directives. 
+해석: 만일 agent 그리고 referer 로그 파일을 사용할려면 주석을 지워라 
+
+#CustomLog logs/referer_log referer 
+#CustomLog logs/agent_log agent 
+
+# If you prefer a single logfile with access, agent and referer information 
+# (Combined Logfile Format) you can use the following directive. 
+해석 : 만일 단일 로그파일을 선호한다면. 다음의 것을 사용해라 
+
+#CustomLog logs/access_log combined 
+
+# PidFile: The file the server should log its pid to 
+해석: PidFile : 서버가 자신의 Pid 를 기록하는 파일이다. 
+PidFile logs/run/httpd.pid 
+
+작동중인 httpd 프로세스의 PID를 기록해 둘 파일을 정한다. 
+웹서버 작동중 웨 서버 관련 설정을 바꾸고 나서 종료시키지 않은 채 새로운 설정을 읽어들이도록 SIGUP 시그널을 보낼때 잠고할 수 있는 프로세스 ID 를 저장하는 파일이다. 
+kill -HUP 'cat /var/run/httpd' 
+
+# ScoreBoardFile: File used to store internal server process information. 
+# Not all architectures require this. But if yours does (you'll know because 
+# this file is created when you run Apache) then you *must* ensure that 
+# no two invocations of Apache share the same scoreboard file. 
+해석: ScoreBoardFile : 웹서버 프로세서 내부의 상황을 기록해 두는 파일이다. 
+모든 아키텍쳐에서 요구되는 것은 아니다. 
+
+ScoreBoardFile /var/run/apache_runtime_status 
+웹 서버의 내부 진행 상황에 대한 정보를 기록해 두는 파일이다. 
+
+# The LockFile directive sets the path to the lockfile used when Apache 
+# is compiled with either USE_FCNTL_SERIALIZED_ACCEPT or 
+# USE_FLOCK_SERIALIZED_ACCEPT. This directive should normally be left at 
+# its default value. The main reason for changing it is if the logs 
+# directory is NFS mounted, since the lockfile MUST BE STORED ON A LOCAL 
+# DISK. The PID of the main server process is automatically appended to 
+# the filename. 
+# 
+#LockFile logs/accept.lock 
+
+# ServerName allows you to set a host name which is sent back to clients for 
+# your server if it's different than the one the program would get (i.e. use 
+# "www" instead of the host's real name). 
+# 
+# Note: You cannot just invent host names and hope they work. The name you 
+# define here must be a valid DNS name for your host. If you don't understand 
+# this, ask your network administrator. 
+
+#ServerName new.host.name 
+
+클라이언트가 여러분의 서버명을 원할때 보내 줄 서버의 호스트명을 정의할 수 있다. 
+예를 들어 여러분의 호스트 명 대신에 www 라는 이름을 보내줄때 사용한다. 
+하지만 DNS 에 등록되지 않은 것을 아무렇게나 만들어서 사용할 수는 없다. 
+
+# UseCanonicalName: (new for 1.3) With this setting turned on, whenever 
+# Apache needs to construct a self-referencing URL (a url that refers back 
+# to the server the response is coming from) it will use ServerName and 
+# Port to form a "canonical" name. With this setting off, Apache will 
+# use the hostname:port that the client supplied, when possible. This 
+# also affects SERVER_NAME and SERVER_PORT in CGIs. 
+해석 : UseCanonicalName (1.3에 추가) 이 세팅을 on 으로 해놓으면, 
+아파치가 자신참조를 URL 언제 만들던지, ServerName 과 포트 를 "canonical" 이름 폼에 사용한다. 
+이 옵션을 off 라고 해놓으면 아파치는 클라이언트가 보내는 호스트네임:포트 를 사용한다. 
+이것은 CGI 의 SERVER_NAME 와 SERVER_PORT 에도 영향을 미친다. 
+UseCanonicalName on 
+
+# CacheNegotiatedDocs: By default, Apache sends Pragma: no-cache with each 
+# document that was negotiated on the basis of content. This asks proxy 
+# servers not to cache the document. Uncommenting the following line disables 
+# this behavior, and proxies will be allowed to cache the documents. 
+
+#CacheNegotiatedDocs 
+
+# Timeout: The number of seconds before receives and sends time out 
+
+Timeout 300 
+
+클라이언트에게 타임아웃 신호를 보낼때 까지 참고 기다리는 시간을 초로 지정한다. 
+
+# KeepAlive: Whether or not to allow persistent connections (more than 
+# one request per connection). Set to "Off" to deactivate. 
+해석 : KeepAlive: 지속적인 연결을 설정한것인지의 여부이다. 
+
+KeepAlive On 
+
+# MaxKeepAliveRequests: The maximum number of requests to allow 
+# during a persistent connection. Set to 0 to allow an unlimited amount. 
+# We reccomend you leave this number high, for maximum performance. 
+
+MaxKeepAliveRequests 100 
+
+# KeepAliveTimeout: Number of seconds to wait for the next request 
+
+KeepAliveTimeout 15 
+
+# Server-pool size regulation. Rather than making you guess how many 
+# server processes you need, Apache dynamically adapts to the load it 
+# sees --- that is, it tries to maintain enough server processes to 
+# handle the current load, plus a few spare servers to handle transient 
+# load spikes (e.g., multiple simultaneous requests from a single 
+# Netscape browser). 
+
+# It does this by periodically checking how many servers are waiting 
+# for a request. If there are fewer than MinSpareServers, it creates 
+# a new spare. If there are more than MaxSpareServers, some of the 
+# spares die off. These values are probably OK for most sites --- 
+
+MinSpareServers 5 
+MaxSpareServers 10 
+
+아파치 서버는 클라이언트로부터의 요청 쇄도에 따라 적절하게 서버 프로세스를 자동으로 생성한다. 
+현재 요청 건수에 따라 서버를 생성하고, 브라우저가 한서버에 대해서 동시에 여러요청을 하는 것도 가능하므로 여분의 서버를 더 만들어 두기도 한다. 
+
+아파치 프로세스는 정기적으로 서버 프로세스의 숫자를 점검한다. 만약 MinSparseServers 값으로 지정한 값보다 적은 경우, 프로세스를 더 만들어 유지하고 MaxSparseServers 이상인 경우 여분의 프로세스는 종료한다. 
+
+# Number of servers to start --- should be a reasonable ballpark figure. 
+
+StartServers 5 
+
+처음 httpd 가 작동할 때 몇개의 프로세스를 생성할 것인지는 StartServers 값으로 조정한다. 
+
+# Limit on total number of servers running, i.e., limit on the number 
+# of clients who can simultaneously connect --- if this limit is ever 
+# reached, clients will be LOCKED OUT, so it should NOT BE SET TOO LOW. 
+# It is intended mainly as a brake to keep a runaway server from taking 
+# Unix with it as it spirals down... 
+
+MaxClients 150 
+
+아파치 서버가 동시에 처리할 클라이언트의 요청 건수를 제한한다. 
+
+# MaxRequestsPerChild: the number of requests each child process is 
+# allowed to process before the child dies. 
+# The child will exit so as to avoid problems after prolonged use when 
+# Apache (and maybe the libraries it uses) leak. On most systems, this 
+# isn't really needed, but a few (such as Solaris) do have notable leaks 
+# in the libraries. 
+
+MaxRequestsPerChild 30 
+
+하나의 웹 서버 Child 프로세스는 MaxRequestPerChild 값에서 지정한 만큼의 횟수만 서비스하고, 자동으로 소멸하고 새로운 프로세스가 생성된다. 
+이유는 오랫동안 서버를 운영하면서 메모리를 계속 소모하는 일이 벌어지는 것을 방지하기 위해서이다. 
+라이브러리의 결함으로 인해 솔라리스와 같은 환경에서 주로 일어난다고 한다. 
+
+# Proxy Server directives. Uncomment the following line to 
+# enable the proxy server: 
+
+#ProxyRequests On 
+
+프록시 서버로서의 기능을 사용하려면 앞에 붙은 주석 표시를 지우면 된다. 
+나중에 프록시 서버로 다시 다루게 된다. 
+
+# To enable the cache as well, edit and uncomment the following lines: 
+
+#CacheRoot @@ServerRoot@@/proxy 
+#CacheSize 5 
+#CacheGcInterval 4 
+#CacheMaxExpire 24 
+#CacheLastModifiedFactor 0.1 
+#CacheDefaultExpire 1 
+#NoCache a_domain.com another_domain.edu joes.garage_sale.com 
+
+# Listen: Allows you to bind Apache to specific IP addresses and/or 
+# ports, in addition to the default. See also the VirtualHost command 
+
+#Listen 3000 
+#Listen 12.34.56.78:80 
+
+# VirtualHost: Allows the daemon to respond to requests for more than one 
+# server address, if your server machine is configured to accept IP packets 
+# for multiple addresses. This can be accomplished with the ifconfig 
+# alias flag, or through kernel patches like VIF. 
+
+# Any httpd.conf or srm.conf directive may go into a VirtualHost command. 
+# See also the BindAddress entry. 
+
+# 
+#ServerAdmin webmaster@host.some_domain.com 
+#DocumentRoot /www/docs/host.some_domain.com 
+#ServerName host.some_domain.com 
+#ErrorLog logs/host.some_domain.com-error_log 
+#TransferLog logs/host.some_domain.com-access_log 
+# 
+
+
+
+
+그외 아파치 웹서버에 필요한 사항들 
+httpd - srm - access - order 
+
+
+
+1. 암호파일 만들기 
+아파치 서버에서 기본적으로 제공하고 있는 htpasswd 라는 명령으로 AuthUserFile 에서 지정하는 사용자/패스워드 파일을 만들어 낼 수 있다. 
+# htpasswd [-c] <사용자 데이터 베이스> <추가할 사용자명> 
+
+예) # htpasswd -c /etc/httpd/conf/.htpasswd admin 
+# htpasswd /etc/httpd/conf/.htpasswd linuxer 
+
+맨처음 사용자 데이터 베이스를 만들면서 추가 할때는 Create 를 의미하는 -c 를 주어야 한다. 
+만약 파일이 존재하는데 -c 를 사용하면 기존의 파일은 무사하지 못하다. 
+참고로 리눅스 시스템 자체의 /etc/passwd 와는 아무런 관계가 없다. 
+
+만들어진 파일은 /etc/passwd 에서 사용자명:패스워드 만 있는 경우이다. 
+패스워드 부분이 비어있으면? 패스워드 없이 로그인이 가능하다. 
+
+그룹파일(.htgroup)을 만드는 것도 간단하다. 
+
+admin: yong moon 
+superman: youn 
+즉 : 을 경계로 해서 앞에 그룹명을 적어주고, 뒤에 멤버들을 계속 적어나간다. 
+
+개선이 많은 암호화 프로그램이다. 
+
+
+
+2. MIME 파일 
+MIME 는 Multipurpose Internet Mail Extensions 의 약자로서 웹 서버와 웹 브라우저 사이에 오가는 자료가 어떤 형태의 자료인지를 지칭하기 위해 사용된다. 
+
+웹서버는 특정유형의 자료에 대하여 웹브라우저에게 전송할 때 Content-Type: 헤더를 적어서 보낸다. 만약 text/html 이라는 값이면 이것은 이미 브라우저는 일반 텍스트 파일인줄 알고 적절하게 표시한다. 
+마찬가지로 video/mpeg 라면 상황에 따라서 브라우저는 행동 할 것이다. 
+
+일반적으로 MIME 유형을 등록하는 mime.types 설정 파일은 거의 손볼 필요가 없다. 
+지금 현재 MIME 충분히 기본값을 넣어서 제공하고 있기 때문이다. 
+만약이라도 어떻값을 추가할 필요가 있을때는 mime.types 를 수정하지 말고 거의 손볼 필요가 없다. 
+혹시라도 어떤값을 추가할 필요가 있을때는 srm.conf 파일에 AddType 지시자로 추가한다. 
+
+예를 들어보면, 
+audio/mpeg mpga mp2 
+MPEG 오디오 파일에 대한 MIME 설정이 이미 들어있다. 그런데 요즘 mp3라는 고압축 기법이 이기를 끌고 있다. 
+
+그럴때는 
+AddType audio/mpeg mpga mp2 mp3 
+
+
+
+3. 로그파일 들여다 보기 
+래드햇에서는 아파치 서버의 활동 기록상황은 /etc/httpd/logs 가 가리키고 있는 /var/log/httpd 디렉토리에 들어있는 파일을 통해 이루어진다. 
+
+우선 access_log 는 웹서버가 어떤 파일을 읽어 클라이언트에게 전달 했는지 보여준다. 
+
+사용자가 어떤 브라우저를 통해 웹서버에 접속했는지는 agent_log 에 들어있다. 
+
+에러 상황을 상세하게 기록해 두는 중요한 파일은 바로 error_log 이다. 
+
+각 페이지들이 어떻게 무엇을 참조했는지 장황하게 알아볼 수 있는 파일은 referer_log 이다. 
+
+이러한 로그 파일을 사용해서 로그 파일 분석 프로그램으로 도표를 작성하는 것도 가능하다. 
+
+
+4. 실시간 웹 서버 상황 살펴보기 
+아파치의 상태모듈(Status Module, mod_status)를 통해 서버 관리자는 자신의 서버가 어떻게 돌아가고 있는지 즉시 확인 할 수 있다. 
+
+access.conf 의 파일에서 다음 부분을 설정해주면 된다. 
+
+
+SetHandler server-status 
+
+
+order deny,allow 
+deny form all 
+allow from your_admin_host 
+
+
+이제 넷스케이프 등으로 http://your.server.name/status 
+
+만약 수동으로 다시 로딩하지 않고도 자동으로 페이지가 갱신되도록 하기 위해서는 
+http://your.server.name/status?refresh=N (여기서 N은 갱신 주리를 초로 나타낸 것이다.) 
+
+
+
+5. 아파치의 Proxy 프록시 기능 
+프록시란 Proxy 뜻 그대로 무엇인가를 대리로 해주는 것을 말한다. 프록시의 용도중 하나는 똑같은 자료를 여러명이 접근함으로써 발생하는 네트웍 교통량의 낭비를 막는 것이다. 
+
+프록시는 빈번하게 접근되는 자료를 캐시(cache)해 두고 나서 똑같은 자료를 요청하는 경우, 즉시 하드 디스크에서 내용을 읽어 전달해 준다. 
+
+또 다른 용도로는 보안이 중요시되는 환경에서 방화벽이 설치되어 있을때 방화벽에 의해 직접적으로 외부와 교신할 수 없는 네트웍 클라이언트에 대해서 외부세계와 안전한 다리 역할을 해주는 것이다. 
+
+가장 흔하게는 넷스케이프 브라우저에서 프록시 기능을 사용할 수 있다. 
+
+프록시 서버 기능 사용 여부와 세부 설정은 http.conf 에서 한다. 
+참고로 1.1대의 프록시 서버는 버그가 있기 때문에 1.2 이상을 사용하길 바란다. 
+
+프록시 서버 기능을 사용하려면 다음 줄의 주석을 없앤다. 
+#ProxyRequests On 
+프록시 요청을 받아들일지 여부를 설정한다. 
+
+# To enable the cache as well, edit and uncomment the following lines: 
+캐시 기능을 사용하려면 다음 줄의 주석 처리를 없애고 적절하게 편집한다. 
+
+#CacheRoot @@ServerRoot@@/proxy 
+프록시 기능과 함께 빈번하게 요청되는 자료를 캐시하여 일정시간 이내에 똑같은 자료를 요청할 때는 외부로 나가지않고 직접 캐시된 내용을 하드 디스크에서 읽어 전달하고자 할 때 사용한다. 
+#CacheSize 5 
+캐스크기를 KB 단위로 적는다. 
+#CacheGcInterval 4 
+캐시 청소 주기. 시간을 적는다. 주어진 시간마다 CacheSize 를 넘는 캐시를 지워준다. 
+#CacheMaxExpire 24 
+#CacheLastModifiedFactor 0.1 
+#CacheDefaultExpire 1 
+#NoCache a_domain.com another_domain.edu joes.garage_sale.com 
+
+클라이언트 설정 
+흔히 쓰이는 브라우저에 프록시 설정 부분이 있다. 
+
+하지만 프록시 서버 운영을 위해서는 Squid 와 같은 전문 프로그램을 사용하는 것이 좋다. 
+
+
+
+5. 가상 호스트 
+아파치의 IP 별칭(Alias) 기능은 가상호스트 기능을 지원한다. 
+흔히 ISP 들이 제공하는 웹호스팅을 할 수 있는 능력이 있는 것이다.가상호스트의 기능이다. 
+
+IP 별칭 기능을 사용하여 하나의 네트웍 인터페이스에 여러개의 주소를 부여할 수 있다. 
+
+도메인 네임 서버에 하나의 IP 주소에 대하여 여러개의 서로 다른 이름을 부여할 수 있다. 
+
+아파치 웹서버는 서로 다른 IP 주소 또는 서로 다른 호스트 이름에 대하여 한번의 실행을 통해서도 동시에 서비스를 할 수 있다. 
+
+위의 세가지 기능중 두가지 방식으로 가상 호스트 기능을 구현할 수 있다. 
+
+먼저 IP 주소도 다르고, 도메인 이름도 다른 경우. 
+이때는 도메인 이름(들)과 IP 주소들을 확보해야 한다. 
+IP 주소가 다르다고 여러대의 컴퓨터를 사용할 필요는 없다. 
+한대의 컴퓨터는 정확하게 말해서 하나의 네트웍 인터페이스에 두 개 이상의 IP 주소를 부여 할 수 있는 방법을 제공한다. 
+# ifconfig eth0:0 192.168.1.2 
+# ifconfig eht0:1 192.168.1.3 
+# ifconfig eth0:2 192.168.1.4 
+
+다음은 IP 주소는 하나인데, 도메인 이름이 여러개인 경우 
+IP 사용측면에서 보면 경제적이다. 하나의 번호(주소)만이 필요하기 때문에.. 
+하지만 HTTP1.1 이하의 웹브라우저에서는 엉뚱한 결과를 초래한다. 
+
+IP 주소가 하나뿐이므로 IP 별칭 기능을 사용할 때처럼 네트웍 인터페이스를 설정할 필요는 없다. 
+단지 도메인 네임 서버에 제대로 이름을 등록만 하면 된다. 
+
+그리고 httpd.conf 파일에 다음과 같은 형식으로 작성한다. 
+
+
+ServerAdmin moon@localhost 
+DocumentRoot /home/moon/html 
+ServerName moon.sarang.net 
+ErrorLog logs/moon-error_log 
+TransferLog logs/moon-access_log 
+
+
+설정하고자 하는 가상 호스트의 개수만큼 위의 설정을 반복한다. 
+만약 별도의 IP 를 사용한다면 첫줄에 IP 를 그렇지 않다면 이름을 적어준다. 
+특별히 특정 가상 호스트와 특정 IP 주소를 결합시키고자 할 때는 위의설정 내부에 
+BindAddress IP 주소 설정을 사용한다 
+
+
+
+6. 그밖에.. 
+위에 설명한 기능이외에도 아파치와 관련된 많은 프로젝트들이 있다. 
+
+일단 여기서는 중요한 것 몇가지만을 언급하겠다.(제목만) 
+
+- 아파치 SSL (Secure Socket Layer) 
+
+- PHP/FI 프로젝트 
+http://www.vex.net/ph 
+
+- 아파치/JSDK 프로젝트 
+http://java.apache.org 
+
+- 아파치/펄 통합 프로젝트 
+http://perl.apache.org 
+
+- 매거진 Apache Week 
+http://www.apacheweek.com 
+
+
+
+
+
+
+
+access.conf - 보안 접근 제어 설정파일 
+httpd - srm - access - order 
+
+
+
+access.conf - 보안 접근 제어 설정파일 
+1. 아파치의 보안설정 파일 
+이 파일은 웹서버에게 접근 정책을 수립하는데 사용한다. 
+아파치는 크게 두가지 파일로 결정하는데, 하나는 전체적인 기본설정을 하는 access.conf 이고, 다른 하나는 각 디렉토리 별로 자세히 결정하는 .htaccess 파일이다. 
+
+기본 형식은 다음과 같다. 
+
+디렉토리 이하에 대한 접근 정책 정의 
+
+
+마치 html 페이지를 작성하는 것처럼 되어 있다. 중요한 디렉토리로는 일단 모든 문서의 루트가 되는 DocumentRoot, 그리고 보안상의 이슈가 되는 CGI 디렉토리 등이 있다. 
+
+
+2. 문서 디렉토리에 대한 설정 
+디렉토리 이름에는 와일드 카드 문자(?,*) 를 사용할 수 있다. 
+
+
+우선 Options에 대하여 알아보자. 
+
+먼저 All 과 None 는 거의 사용되지 않을 것이다. 모든 것을 허용하는 것은 보안의 위협 요소인 반면, 모든 것을 허용하지 않는다면 뭐하러 서버를 구축하겠는가? 
+
+Indexes 는 디렉토리를 가리키는 URL 의 경우에 index.html 등의 DirectoryIndex에서 정의한 파일이 없는 경우, 웹서버가 알아서 디렉토리의 파일 목록을 보여 줄 것인지를 결정한다. 
+
+- ExecCGI : 그 디렉토리 이하에 있는 CGI 스크립트의 실행을 허가한다. 
+- Includes : SSI 서버측 인클루드를 허용할 것을 결정한다. 
+- IncludesNOEXEC : SSI 를 허용하되 #exec 명령과 CGI 스크립트 #include를 불허 한다. 
+- SymLinksIfOwnerMatch : 대상 파일이나 디렉토리가 심볼릭 링크와 같은 사용자에 의해 소유될 때만 심볼릭 링크를 따르도록 한다. 
+- MultiViews : 상대 클라이언트 브라우저 능력에 따라 내용을 다르게 보내는 기능을 말한다. All을 선택하더라도 이것은 포함되지 않으므로 직접 명시해야 한다. 
+
+
+다음으로 AllowOverride에 대해서 
+
+이 부분은 각 디렉토리의 특수한 보안설정파일 .htaccess에서 지금 여기서 설정하고있는 기본값을 변경할 수 있도록 할 것인지,또는 어떤 어떤 값에 대해서만 변경을 허용할 것인지를 정의한다. 영어 단어 뜻 그대로다. 
+
+일반적으로는 아무것도 할 수 없는 none 라고 하는 것이 안전하다. 
+
+Options 는 각 디렉토리에 대하여 Options 에 대한 설정을 변경할 수 있도록 한다. 
+FileInfo 는 문서 형태를 제어 할 수 있는 AddEncoding, AddLanguage, AddTypeDefaultType, 그리고 LanguagePriority 지시자를 사용할 수 있도록 한다. 
+AuthConfig 는 인증 방법 지시자를 사용할 수 있다. AuthDBMGroupFile, AuthDBMUserFile, AuthGroupFile, AuthName, AuthType, AuthUserFile, 그리고 require 등이 있다. 
+Limit 는 호스트 접근 제어 지시자를 변경 할 수 있도록 해준다. allow, deny 그리고 order 등이 바로 그것이다. 이에 대한 설명은 곧 이어 나올 것이다. 
+Indexes 는 디렉토리 인덱싱에 관련된 지시자들을 사용할 수 있도록 허용한다. AddDescription, AddIcon, AddIconByEncoding, AddIconByType, DefaultIcon, DirectoryIndex, FancyIndexing, HeaderName, IndexIgnore, IndexOptions, ReadmeName 등 
+
+다음은 서버에의 접근 권한에 대한 설정 2개이다. 
+order 
+접근 정책에 대한 순서를 설정한다. 
+보통 2가지 경우가 가능한데, order allow,dery 처럼 우선 허용 다음 거부,또 order deny,allow 가 그 반대이다. 
+그외에도 mutual-failure 는 allow, deny 등에 의해 명시적으로 설정된것이 아닌 경우에는 모두 거절하는 빡빡한 설정이다. 
+
+allow 또는 deny 
+사용 형식은 allow from all 또는 도메인명이다. 예를 들어 
+allow from all 은 모든 곳으로부터의 요청을 허용함을 의미한다. 반대로, 
+deny form all 은 모든 곳으로부터의 요청을 일단 거부한다. 다음으로 
+allow from kornet.nm.kr 이라고 적으면 도메인명이 kornet.nm.kr 에 속한 호스트들의 요청을 허용한다. 
+보통 인트라넷의 경우에는 순서를 deny,allow 놓은후, 
+하나씩 접근을 허용할 호스트들 또는 도메인 집단을 적어 나간다. 
+
+
+
+# First, we configure the "default" to be a very restrictive set of 
+# permissions. 
+먼저 우리는 "기본설정(default)" 를 아주 엄격한 권한 제어를 한다. 
+
+
+Options FollowSymLinks 
+AllowOverride None 
+
+
+/ 디렉토리는 Option으로 FollowSymLinks만을 가지며, AllowOverride는 허용되지 않는다. 
+
+# Note that from this point forward you must specifically allow 
+# particular features to be enabled - so if something's not working as 
+# you might expect, make sure that you have specifically enabled it 
+# below. 
+
+# This should be changed to whatever you set DocumentRoot to. 
+
+
+
+# This may also be "None", "All", or any combination of "Indexes", 
+# "Includes", "FollowSymLinks", "ExecCGI", or "MultiViews". 
+# Note that "MultiViews" must be named *explicitly* --- "Options All" 
+# doesn't give it to you. 
+
+다음 옵션은 None 또는 All 이라고 설정하거나, 개별적인 옵션들 Indexes, 
+Includes, FollowSymLinks, ExecCGI, MultiViews 를 조합하여 표현할 수 있다. 
+주의할 것은 마지막의 MultiViews 는 All 이라고 설정하는 것과 상관없이 
+명시적으로 표시해 주어야 한다. 
+
+Options Indexes Includes ExecCGI 
+
+# This controls which options the .htaccess files in directories can 
+# override. Can also be "All", or any combination of "Options", "FileInfo", 
+# "AuthConfig", and "Limit" 
+
+다음은 각자 디렉토리 안에 놓인 .htaccess 파일의옵션 중 어떤 것이 전체설정값을 
+무시할 수 있는지를 결정한다. 
+마찬가지로 All 을 사용할 수도 있고, Options, FileInfo, AuthConfig, Limit 등의 
+값을 조합하여 표현 가능하다. 
+
+AllowOverride None 
+
+# Controls who can get stuff from this server. 
+
+위 설정은 매우 빡빡한 설정으로 .htaccess 에서의 옵션 변화를 허용하지 않는다. 
+
+order allow,deny 
+allow from all 
+
+서버에 접근하도록 허용하는 정책이다. 
+
+
+
+
+CGI 디렉토리에 대한 설정 
+# @@ServerRoot@@/cgi-bin should be changed to whatever your ScriptAliased 
+# CGI directory exists, if you have that configured. 
+
+
+AllowOverride None 
+Options None 
+
+
+위의 설정이 가장 무난하다고 하겠다. .htaccess 파일에 어떤 변화도 허용하지 않으며, 
+아무런 옵션도 지정하지 않는다. CGI 디렉토리는 매우 중요한 곳이기 때문이다. 
+
+# Allow server status reports, with the URL of http://servername/server-status 
+# Change the ".your_domain.com" to match your domain to enable. 
+
+
+SetHandler server-status 
+
+order deny,allow 
+deny from all 
+allow from localhost 
+
+
+# There have been reports of people trying to abuse an old bug from pre-1.1 
+# days. This bug involved a CGI script distributed as a part of Apache. 
+# By uncommenting these lines you can redirect these attacks to a logging 
+# script on phf.apache.org. Or, you can record them yourself, using the script 
+# support/phf_abuse_log.cgi. 
+
+# 
+#deny from all 
+#ErrorDocument 403 http://phf.apache.org/phf_abuse_log.cgi 
+# 
+
+# You may place any other directories or locations you wish to have 
+# access information for after this one. 
+
+　 
+
+3. 인증메커니즘 설정하기 
+사이에 들어가는 접근제한 관련 태그중에서 AuthType 는 해당 디렉토리의 인증 방식을 결정한다. Basic, Digest(브라우저들이 이를 지원해야만 한다.) 등의 방식이 있다. 
+
+
+......... 
+AuthType Basic 
+AuthName Hey! It's a Test 
+AuthUserFile /etc/httpd/conf/.htpasswd 
+AuthGroupFile /etc/httpd/conf/.htgroup 
+
+order allow, deny 
+allow form all 
+require user manager 
+require group admin 
+
+
+
+여기서 AuthName 은 임의로 중복되지 않는 이름을 주면 된다. 
+브라우저들이 이 인증 영역이름을 기억해두었다가 매번 귀찮게 입력하지 않도록 하게끔 할때 사용된다. 
+AuthName 값을 보고 이미 인증 과정을 거쳤던 사용자명과 패스워드를 자동으로 전송해준다. 
+
+AuthUserFile 과 AuthGroupFile 은 각각 사용자와 패스워드 정보를 저장하고 있는 파일, 그리고 사용자를 그룹으로 등록한 파일이다. 
+
+require 문은 require user 다음에 사용자명을 나열하거나 require gropu 다음에 그룹명을 적어 인증에 사용될 사용자 범위를 정한다. 
+위의 예에서는 사용자명이 manager 이거나, 그룹명이 admin 에 속하는 사람들만 허용한다. 
+여기에 나열되지 않은 사람들은 패스워드를 물어볼 기회조차 얻지 못하는 것이다. 
+
+
+
+
+
+
+
+srm.conf - 서버 자원 관련 설정파일 
+httpd - srm - access - order 
+
+
+
+httpd.conf 가 웹서버 전체에 대한 설정파일이라면, srm.conf 는 웹서버가 관리하는 자원에 대한 설정파일이다. 
+
+DocumentRoot - 문서 루트 디렉토리 지정 
+# DocumentRoot: The directory out of which you will serve your 
+# documents. By default, all requests are taken from this directory, but 
+# symbolic links and aliases may be used to point to other locations. 
+
+DocumentRoot /home/httpd/html 
+
+중요한 설정이다. 서비스할 웹서버가 바로 이 디렉토리 이하로 부터 시작된다. 
+위의 설정은 래드햇의 설정을 따른 것이다. 
+
+UserDir - 사용자 각자의 홈페이지 디렉토리 
+# UserDir: The name of the directory which is appended onto a user's home 
+# directory if a ~user request is recieved. 
+
+UserDir public_html 
+
+각 사용자의 계정 밑에 public_html 이라는 디렉토리를 만들고 그곳을 각 사용자 계정의 웹 루트디렉토리로 설정한다. 
+불러올때는 틸드(~) 문자를 사용해야 한다. 
+http://www.linux.org/~iloveu 
+
+DirectoryIndex - 디렉토리에서 기본 문서 찾는 순서 
+# DirectoryIndex: Name of the file or files to use as a pre-written HTML 
+# directory index. Separate multiple entries with spaces. 
+
+DirectoryIndex index.html index.htm index.cgi index.php3 
+
+http://www.linux.org/~iloveu 처럼 디렉토리로 URL 이 끝났을때 보여주는 기본 문서를 지정한다. 
+
+FancyIndexing - 디렉토리 파일 인덱스 표시방법 
+# FancyIndexing is whether you want fancy directory indexing or standard 
+
+FancyIndexing on 
+
+원하는 문서가 없는 경우 디렉토리에 들어 있는 파일을 어떻게 표시할 것인지를 정한다. 
+on 하면 보기 좋게 아이콘과 함께 화면을 잘 표시해 준다. 
+
+각파일에 맞는 아이콘 설정하기 
+# AddIcon tells the server which icon to show for different files or filename 
+# extensions 
+
+파일의 Encoding 인코딩과 각종 타입에 따라 아이콘을 지정하는 방법이다. 
+
+AddIconByEncoding (CMP,/icons/compressed.gif) x-compress x-gzip 
+
+이것은 x-compress, x-gzip 자료형에 대하여 /icon/디렉토리에 있는 compressed.gif 파일을 아이콘으로 사용하겠다는 것이다. 
+
+AddIconByType (TXT,/icons/text.gif) text/* 
+AddIconByType (IMG,/icons/image2.gif) image/* 
+AddIconByType (SND,/icons/sound2.gif) audio/* 
+AddIconByType (VID,/icons/movie.gif) video/* 
+
+이것은 파일 유형에 따라 각각 알맞는 아이콘을 부여한다. 
+
+다음 아래는 파일의 확장자를 보고 아이콘을 부여하는 방법이다. 
+
+AddIcon /icons/binary.gif .bin .exe 
+AddIcon /icons/binhex.gif .hqx 
+AddIcon /icons/tar.gif .tar 
+AddIcon /icons/world2.gif .wrl .wrl.gz .vrml .vrm .iv 
+AddIcon /icons/compressed.gif .Z .z .tgz .gz .zip 
+AddIcon /icons/a.gif .ps .ai .eps 
+AddIcon /icons/layout.gif .html .shtml .htm .pdf 
+AddIcon /icons/text.gif .txt 
+AddIcon /icons/c.gif .c 
+AddIcon /icons/p.gif .pl .py 
+AddIcon /icons/f.gif .for 
+AddIcon /icons/dvi.gif .dvi 
+AddIcon /icons/uuencoded.gif .uu 
+AddIcon /icons/script.gif .conf .sh .shar .csh .ksh .tcl 
+AddIcon /icons/tex.gif .tex 
+AddIcon /icons/bomb.gif core 
+
+AddIcon /icons/back.gif .. 
+AddIcon /icons/hand.right.gif README 
+AddIcon /icons/folder.gif ^^DIRECTORY^^ 
+AddIcon /icons/blank.gif ^^BLANKICON^^ 
+
+AddIcon 이라는 지시자를 쓰며, 뒤에 적은 이름으로 끝나는 파일에 적용한다. 
+맨 마지막의 4개는 약간 특별하게 보이는데, 상위디렉토리, README 파일, 디렉토리, 블랭크 아이콘 표시를 색다르게 한 것이다. 
+
+# DefaultIcon is which icon to show for files which do not have an icon 
+# explicitly set. 
+
+DefaultIcon /icons/unknown.gif 
+
+위에서 지정한 어떠한 규칙에도 해당하지 않는 파일에 대한 아이콘을 설정한다. 
+
+# AddDescription allows you to place a short description after a file in 
+# server-generated indexes. 
+# Format: AddDescription "description" filename 
+
+AddDescription "GIF 파일" .gif 
+
+일반적으로 빈칸으로 출력되는 파일 설명 필드에 설명을 적어 넣을 수 있다. 
+
+기본 README 파일명, HEADER 파일명 정하기 
+# ReadmeName is the name of the README file the server will look for by 
+# default. Format: ReadmeName name 
+# 
+# The server will first look for name.html, include it if found, and it will 
+# then look for name and include it as plaintext if found. 
+# 
+# HeaderName is the name of a file which should be prepended to 
+# directory indexes. 
+
+ReadmeName README 
+HeaderName HEADER 
+
+웹 서버가 기본적으로 찾아볼 README 파일의 이름을 정한다. 위에서 ReadmeName README 라고 정하면, 
+우선 README.html 파일을 검색하여 문서에 포함시킨다. 없다면 README 라는 텍스트 파일을 포함한다. 
+HEADER 는 디렉토리의 내용을 보여줄 때 만들어지는 자동 HTML 의 앞부분에 그 파일의 내용이 추가된다. 
+
+인덱스에서 제외할 파일 
+# IndexIgnore is a set of filenames which directory indexing should ignore 
+# Format: IndexIgnore name1 name2... 
+
+IndexIgnore .??* *~ *# HEADER* README* RCS 
+
+필요한 내용으로, 도트(.) 로 시작하는 파일명, # 문자로 시작하는 파일명, 그리고 인덱스 페이지의 앞뒤에 첨부되는 HEADER, README 파일은 인덱스에서 보여주지 않는다. 
+
+각 디렉토리에 대한 접근 제한 파일 
+# AccessFileName: The name of the file to look for in each directory 
+# for access control information. 
+
+AccessFileName .htaccess 
+
+아파치 서버는 NCSA 서버와 동일한 방식의 문서 접근 제한 매커니즘을 가지고 있다. 각 디렉토리에 AccessFileName 이 지치아는 파일을 두어 문서 접근에 대한 권한을 제어한다. 
+일반적으로 .htaccess 라는 이름을 사용한다. 
+
+기본문서 유형 결정 
+# TypesConfig describes where the mime.types file (or equivalent) is 
+# to be found. 
+
+TypesConfig conf/mime.types 
+
+# DefaultType is the default MIME type for documents which the server 
+# cannot find the type of from filename extensions. 
+
+DefaultType text/plain 
+
+서버가 파일 확장자 등으로 문서의 MIME 유형을 판별하지 못할때는, 
+DefaultType에서 지정한 문서형으로 간주하도록 한다. 
+
+전송중 압축 자료 풀기 
+# AddEncoding allows you to have certain browsers (Mosaic/X 2.1+) uncompress 
+# information on the fly. Note: Not all browsers support this. 
+
+AddEncoding x-compress Z 
+AddEncoding x-gzip gz 
+
+# AddLanguage allows you to specify the language of a document. You can 
+# then use content negotiation to give a browser a file in a language 
+# it can understand. Note that the suffix does not have to be the same 
+# as the language keyword --- those with documents in Polish (whose 
+# net-standard language code is pl) may wish to use "AddLanguage pl .po" 
+# to avoid the ambiguity with the common suffix for perl scripts. 
+
+AddLanguage en .en 
+AddLanguage fr .fr 
+AddLanguage de .de 
+AddLanguage da .da 
+AddLanguage el .el 
+AddLanguage it .it 
+
+# LanguagePriority allows you to give precedence to some languages 
+# in case of a tie during content negotiation. 
+# Just list the languages in decreasing order of preference. 
+
+LanguagePriority en fr de 
+
+# Redirect allows you to tell clients about documents which used to exist in 
+# your server's namespace, but do not anymore. This allows you to tell the 
+# clients where to look for the relocated document. 
+# Format: Redirect fakename url 
+
+
+# Aliases: Add here as many aliases as you need (with no limit). The format is 
+# Alias fakename realname 
+
+# Note that if you include a trailing / on fakename then the server will 
+# require it to be present in the URL. So "/icons" isn't aliased in this 
+# example. 
+
+Alias /icons/ /home/httpd/icons/ 
+
+매우 중요한 기능이다. 형식은 보통 
+Alias /가짜이름/ /진짜 이름/ 으로 적는다. 
+위의 예는 /icons/ 라는 부분은 모두 /home/httpd/icons/ 라고 대체되어 해석된다는 것이다. 
+여러가지 장점이 있다. 혹시 실제 이름이 바뀐다 할지라도 이부분만을 바꿔주면 된다는것. 
+또, 외우기 쉽고, 짧은 이름 사용이 가능하다는 것 등이다. 
+
+# ScriptAlias: This controls which directories contain server scripts. 
+# Format: ScriptAlias fakename realname 
+
+ScriptAlias /cgi-bin/ /home/httpd/cgi-bin/ 
+
+위의 별칭(Alias)와 같은 기능이다. 
+
+# If you want to use server side includes, or CGI outside 
+# ScriptAliased directories, uncomment the following lines. 
+
+# AddType allows you to tweak mime.types without actually editing it, or to 
+# make certain files to be certain types. 
+# Format: AddType type/subtype ext1 
+
+# For example, the PHP3 module (not part of the Apache distribution) 
+# will typically use: 
+#AddType application/x-httpd-php3 .phtml 
+#AddType application/x-httpd-php3-source .phps 
+
+# AddHandler allows you to map certain file extensions to "handlers", 
+# actions unrelated to filetype. These can be either built into the server 
+# or added with the Action command (see below) 
+# Format: AddHandler action-name ext1 
+
+# To use CGI scripts: 
+
+AddHandler cgi-script .cgi 
+
+ScriptAlias 로 지시한 디렉토리 외부에서도 스크립트 실행이 가능하게 할때 설정한다. 
+여기서 .cgi 라는 파일에 대하여 서버는 스크립트 처리를 의미하는 cgi-script 라는 서버 기능을 호출하도록 설정한다. 
+보안상의 이유로 ScriptAlias 지시어가 가리키는 디렉토리 외부의 CGI 스크립트를 믿을 수 없다고 판단할 때는 설정하지 않는 것이 좋다. 
+
+# To use server-parsed HTML files 
+AddType text/html .shtml 
+AddHandler server-parsed .shtml 
+
+
+# Uncomment the following line to enable Apache's send-asis HTTP file 
+# feature 
+#AddHandler send-as-is asis 
+
+# If you wish to use server-parsed imagemap files, use 
+AddHandler imap-file map 
+
+# To enable type maps, you might want to use 
+#AddHandler type-map var 
+
+# Action lets you define media types that will execute a script whenever 
+# a matching file is called. This eliminates the need for repeated URL 
+# pathnames for oft-used CGI file processors. 
+# Format: Action media/type /cgi-script/location 
+# Format: Action handler-name /cgi-script/location 
+
+# MetaDir: specifies the name of the directory in which Apache can find 
+# meta information files. These files contain additional HTTP headers 
+# to include when sending the document 
+
+#MetaDir .web 
+
+# MetaSuffix: specifies the file name suffix for the file containing the 
+# meta information. 
+
+#MetaSuffix .meta 
+
+# Customizable error response (Apache style) 
+# these come in three flavors 
+# 
+# 1) plain text 
+#ErrorDocument 500 "The server made a boo boo. 
+# n.b. the (") marks it as text, it does not get output 
+# 
+# 2) local redirects 
+#ErrorDocument 404 /missing.html 
+# to redirect to local url /missing.html 
+#ErrorDocument 404 /cgi-bin/missing_handler.pl 
+# n.b. can redirect to a script or a document using server-side-includes. 
+# 
+# 3) external redirects 
+#ErrorDocument 402 http://some.other_server.com/subscription_info.html 
+# 
+
+에러 파일을 설정 할 수 있다. 
+형식은 ErrorDocument <에러번호> <출력내용> 이다. 
+세가지 내용이 올수 있다. 특정 텍스트, 특정페이지, 외부 페이지 연계 등. 
+예) ErrorDocument 404 /missing.html 
+ErrorDocument 404 http://localhost/missing.html 
+
+
+# mod_mime_magic allows the server to use various hints from the file itself 
+# to determine its type. 
+#MimeMagicFile conf/magic 
+
+# The following directives disable keepalives and HTTP header flushes. 
+# The first directive disables it for Netscape 2.x and browsers which 
+# spoof it. There are known problems with these. 
+# The second directive is for Microsoft Internet Explorer 4.0b2 
+# which has a broken HTTP/1.1 implementation and does not properly 
+# support keepalive when it is used on 301 or 302 (redirect) responses. 
+
+BrowserMatch "Mozilla/2" nokeepalive 
+BrowserMatch "MSIE 4\.0b2;" nokeepalive downgrade-1.0 force-response-1.0 
+
+# The following directive disables HTTP/1.1 responses to browsers which 
+# are in violation of the HTTP/1.0 spec by not being able to grok a 
+# basic 1.1 response. 
+
+BrowserMatch "RealPlayer 4\.0" force-response-1.0 
+BrowserMatch "Java/1\.0" force-response-1.0 
+BrowserMatch "JDK/1\.0" force-response-1.0 
+
+
+
+
+
+
+
+
+Web Performance Tuning 
+Web Performance Tuning 
+
+한별 텔레콤 Internet Business Center 
+정성욱 [ Netkiller ] 
+비트 교육센터 강사 
+netkiller@hbtel.com | info@netkiller.com 
+
+
+1. Web Performance Tunning 소개 및 정의 
+웹 서비스의 성능 최적화는 오직 서버측에서만의 튜닝을 생각하기 쉬운데 사실, 정확한 의미의 성능 최적화는 웹 서비스 이용자와 서버측 모두의 성능 개선에 있다. 이 글은 아파치 웹 서버나, 유닉스, 리눅스 그리고 웹 브라우저에 이르기까지 통합적인 웹 서비스 성능 개선 방안을 다루므로, 세부적인 웹 서버 구축에 대한 설명등은 포함하지 않았다. 그러나 글의 후반부에서는 가상 호스팅 관리자를 위한 아파치 웹 서버의 성능 개선에 필요한 요소나 관련 세부 옵션에 대한 언급을 하고 있다. 
+필자는 현재 인터넷 관리자를 위한 온라인 공동체라는 [ 넷킬러 웹 사이트 : http://www.netkiller.com ]를 운영하고 있으며, 글에 대한 세부적인 질문과 의견은 해당 분야별 게시판을 이용하기 바란다. : - ) 
+
+2. 기본적인 성능 개선 방안 
+
+가. 이용자측의 성능 개선 [익스플로러, 네스케이프] 
+
+웹 브라우저의 캐시를 최대한 활용한다. 
+브라우저의 옵션을 보면 다운 로드 받은 웹 문서를 브라우저의 캐시에 저장하여 다음 접속시 문서 변경 확인 여부 설정을 할수 있다. 
+여기서 가급적 자동(섹션당 한번)으로 설정해 준다. 익스플로러의 경우 캐시 사용량까지 미리 정해 줄수 있다. 
+
+
+Proxy 서비스를 활용한다. 
+프락시 서버는 이용자가 요청한 웹 페이지를 서버의 캐시에 임시로 저장하여 다음 요청이 있을시 해당 캐시 파일을 보내주어 속도의 개선 및 인터넷 부하를 줄여준다. 
+
+더 빠른 DNS 서버를 사용한다. 
+임의의 웹 사이트를 접속할 때 자주 볼수 있는 웹 브라우저의 접속 상황 메시지는 Contacting Host , Host Connected, File Transferred at 3.4kbps 등이다. 여기서 Contacting Host에서 Host Connected의 시간 간격이 비정상적으로 길다면 DNS 서버를 한번 체크해볼 필요가 있다. DNS 서버는 이용자가 인터넷 에 접속할 때마다 사용하는 서비스이므로, 가급적 자신의 ISP에서 제공하는 빠른 네임 서버를 쓰는 것이 좋다. 
+
+자신의 ISP가 제공하는 프로그램 배포 관련Mirror 사이트를 활용한다. 
+해외 인터넷 사이트에서 프로그램 다운로드등에 대한 부하를 감소시키기 위하여 국내 ISP들은 대부분 자사의 홈페이지아래 각종 Mirroring 사이트를 운영하고 있다. 예를 들어 tucows라는 인터넷 유틸리티 전문 사이트는 국내 isp에서 주기적으로 웹 사이트 전체를 복사하여 Mirror 사이트를 운영하고 있다. 
+
+자바 애플릿을 웹 브라우저에 미리 설치한다. 
+자바의 로딩 속도를 향상 시키기 위하여 필요한 자바 애플릿의 클라스 파일들을 이용자 웹 브라우저의 자바 라이브러리에 미리 설치한다. 가령 네스케이프의 경우 zip으로 압축된 라이브러리 파일을 열어 필요한 클라스 파일들을 추가하고 다시 zip으로 묵어주면 된다. 또는 임의의 디렉토리안에 클라스 파일들을 넣어 이용자가 직접 CLASSPATH에 해당 디렉토리를 추가하면 웹 서버로부터 애플릿을 다운받아 로컬에 설치된 코드를 참조하여 사용할 수 있다. 그러나 이 방법은 임의의 이용자를 위한 성능 개선안이 될순 없다. 
+[O’Reilly : Web Performance Tuning 인용] 
+
+더 빠른 모뎀과 시스템 그리고 더 나은 그래픽 카드를 구입한다. 
+모뎀은 인터넷 속도를 좌우하므로 빠를수록 좋으며 그래픽 카드가 좋을수록 화면에 브라우징하는 속도가 개선될 수 있다. 
+
+나. 서버측의 성능 개선 [ 웹 서버 ] 
+
+더 빠른 인터넷 전용선을 확보한다. 
+성능을 개선할수 있는 가장 확실한 선택은 바로 더 빠른 전용선을 확보하는 것이다. 그러나 비용면에서 월 유지비가 많이 들어 가급적 사용량에 따라 최적의 전용선 속도를 선택하는 것이 현명하다. 인터넷 전용선 사용량은 Unix, Linux 용 네트워크 모니터링 프로그램으로 널리 알려진 MRTG(http://ee-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html)를 가 많이 쓰인다. 이미 국내 모 ISP에서는 전용선 가입자에 대한 MRTG 및 보안 체크 서비스까지 제공하고 있다. MRTG에서 자사의 인터넷 사용량(IN/OUT)이 전용선 속도의 80% 이상까지 다다르면 패킷 손실이 생겨 폭주 및 과부하가 자주 발생할수 있으므로, 전용선 업그레이드를 고려할 필요가 있다. 
+
+
+최적의 Subnet Mask를 설정한다. 
+라우터의 경우 불필요한 Subnet Mask를 줄여줄 필요가 있다. 
+가령 같은 라우터에 연결된 컴퓨터들의 IP address 갯수가 30개밖에 되지 않으면서 굳이 subnetmask를 255.255.255.0로 잡아 사용하게 되면 나머지 225개의 D class IP address를 검색하느라 라우팅 속도가 느려질 수 있다. 
+
+웹 서비스만을 위한 단독 시스템을 확보한다. 
+웹 서버와 메일 서버, 그리고 DNS 서버에 이르기까지 하나의 시스템으로 사용하는 경우가 많은데, 이것은 웹 서비스로는 치명적이다. 보안 문제가 생길수도 있으며, 웹 서버의 부하에 의해 다른 서비스에 차질이 생길수 있다. 물론, 그 반대의 경우도 가능하다. 가급적이면 웹 서버 시스템을 따로 구성하는데, 웹 서버 시스템의 경우 보통 RAM 용량을 충분히 확보하고 하드 드라이브는 빠른 스카시 타입을 사용함으로써 IO의 부하를 줄여 속도 향상을 가져올 수 있다. 연산이 과도한 CGI 프로그램이나 대용량의 DB 서버가 없다면 CPU까지는 굳이 업그레이드 할 필요는 없다. ^^ 
+
+운영체제의 각종 제한 수치를 조정한다. 
+Linux의 경우 Sun과 같이 대용량 시스템이 아닌 PC급 서버를 기본 플렛폼으로 개발되고 서비스되는 까닭에 OS의 기본 설정이 Solaris에 비해 낮게 설정되어 있다. 결국 Linux에서 과부하를 이겨내기 위해서는 Linux 커널의 수정이 불가피하다. 그리고 운영체제에서의 TCP 재전송 최대 대기 시간 (TCP retransmit timeout)을 증가시킬 필요가 있다. 보통200 msec로 잡혀 있는데 느린 인터넷 환경에서는 200msec의 경우 TCP의 재전송 최대 대기 시간으론 부족할 수 있다. 이 외에도 웹 서버의 성능을 위해 각종 프로세스 관련 제한 수치를 조정할 필요가 있다. 
+
+웹 서버 프로그램의 성능을 최적화 한다. 
+웹 서버의 config 파일등에서 성능 향상을 위한 적절한 설정이 필요하다. 특히 아파치 웹 서버의 경우 기본 디폴트 값이 중 대형 웹 서비스를 하기엔 부족한면이 없지 않다. 최신 버전으로 업그레이드를 거듭할수록 더 많은 부하 및 속도에 대한 향상이 이루어 지므로, 가급적이면 최신 버전으로 업데이트를 해주는것도 좋은 방안이 될것이다. 이 글의 후반부에서 아파치 웹 서버에 대한 자세한 튜닝을 언급할 것이다. 
+
+자주 사용되는 cgi 결과들은 FILE(HTML…) 로 만든다. 
+이용자가 자주 실행하는 CGI 프로그램에 대한 결과나 DB 검색 결과등은 주기적으로 File(HTML…)로 만들 필요가 있다. 실행할 때마다 DB connect 에 의한 부하등을 획기적으로 줄일수 있기 때문이다. 현재 대부분의 검색 사이트들은 위와 같이 자주 읽히는 검색 결과들을 crontab을 이용하여 주기적으로 File로 만들어 두고 있다. 
+
+웹 서버를 분산 시킬 필요가 있다. 
+그래도 과부하에 의해 서비스가 지연될 경우에는 부하가 많이 걸리는 웹 사이트들을 따로 분리할 필요가 있다. 또는 DNS에서의 Round Robin 설정을 통해 이용자가 nslookup할때마다 다수의 IP 주소를 순차적으로 보내어 같은 웹 페이지를 가진 여러대의 웹 서버로 접속을 분산하면 그만큼 부하가 줄어들 것이다. 이외에도 전문 로드 밸런싱 소프트웨어를 이용하면 웹 서버의 접속 분산에 있어서 보다 지능화된 연결이 가능하다. 가령 DNS에서의 Round Robin 방식의 경우 단순히 IP 주소만을 달리 말해줄 뿐이지만, 전문 로드 밸런싱 서버를 이용하면 그때 마다의 각 웹 서버별 부하량을 체크하여 가장 부하가 적은 웹 서버로 접속을 유도할 수 있다. 물론, 접속 분산에 대한 스케줄 설정까지 가능하다. 유명한 무료 개인 홈페이지 제공 업체인 Geocity의 경우 지능형 로드 벨런싱 서버를 이용하여 수십대의 웹 서버를 분산시켜 운영하고 있다. 
+
+다. 웹 페이지의 성능 개선 [ HTML 문서] 
+
+HTML 문서의 용량을 최소한으로 줄인다. 
+여기서 말하는 HTML 문서의 용량은 웹 페이지에 속하는 각종 이미지등을 모두 고려한 용량을 말한다. 가령 이미지가 너무 크거나 웹 페이지의 소스가 필요없이 길경우 전체적인 웹 페이지의 용량은 증가하기 마련이다. 가령 56kbit/sec 모뎀의 이용자는 최대 초당 7 kbyte/sec 의 용량을 받을 수 있으므로, 웹 페이지의 전체 용량이 약 70Kbyte를 넘어설 경우 최소 10초 이상의 다운 로딩 시간이 필요하게 된다. 국내 및 해외 유명 웹 사이트들은 그 용량이 보통 60K 이하이다. 
+
+웹 브라우저의 캐시 기능을 활용한다. 
+전체적인 웹 페이지의 용량을 고려할 때 가급적 70K를 넘지 않는 것이 좋다고 했는데, 용량이 큰 이미지가 있다면 바로 앞의 용량에 여유가 있는 웹 페이지안에 픽셀 크기를 1로 잡아 점으로 처리하여 이용자의 브라우저 캐시에 미리 넣어 두는것도 좋은 방법이다. 물론, 목적 페이지에 도달하면 브라우저의 캐시에 저장된 이미지가 단숨에 로딩된다. 
+
+3. 웹 부하량 체크 방법 
+
+제대로된 튜닝을 하기 위해서는 우선 자신의 네트워크 및 시스템에 대한 부하를 체크할 필요가 있다. 여기서는 네트워크 및 웹 서버에 대한 종합적인 부하량 측정 방안을 알아보겠다. 
+
+가. 네트워크 부하량 체크 
+
+Traceroute (ftp://ftp.ee.lbl.gov/traceroute.tar.Z) 
+네트워크 연결 경로에 대한 라우팅 홉(HOP)지점마다의 주소와 그 속도를 측정할수 있는 유틸리티로 Linux의 경우 기본적으로 설치되어 있다. 
+- Sample - 
+[root@ns named]# traceroute -q 3 www.netkiller.com 
+## www.netkiller.com 에 대한 각 지점간 연결 속도를 3번씩 측정 
+
+traceroute to www.netkiller.com (210.103.183.35), 30 hops max, 40 byte packets 
+1 204.252.144.146 (204.252.144.146) 1.465 ms 1.433 ms 1.419 ms 
+2 210.116.126.41 (210.116.126.41) 17.030 ms 17.389 ms 357.989 ms 
+3 203.235.126.250 (203.235.126.250) 132.341 ms 18.414 ms 19.626 ms 
+4 210.103.227.38 (210.103.227.38) 203.928 ms 206.006 ms 179.701 ms 
+5 210.103.183.35 (210.103.183.35) 243.521 ms 24.088 ms 20.738 ms 
+
+Ping 
+양 끝단의 전체적인 속도 및 패킷 에러율을 체크하고자 할 경우 ping을 통해 일정량의 패킷을 보내어 다시 받을 때까지 걸리는 전체 시간과 패킷 손실율을 측정할 수 있다. 
+
+- Sample - 
+[root@ns named]# ping -c 10 www.netkiller.com 
+## www.netkiller.com 으로 총 10번의 ping을 실행한다. 
+PING www.netkiller.com (210.103.183.35): 56 data bytes 
+64 bytes from 210.103.183.35: icmp_seq=0 ttl=251 time=377.5 ms 
+64 bytes from 210.103.183.35: icmp_seq=1 ttl=251 time=417.6 ms 
+64 bytes from 210.103.183.35: icmp_seq=2 ttl=251 time=247.7 ms 
+64 bytes from 210.103.183.35: icmp_seq=3 ttl=251 time=367.1 ms 
+64 bytes from 210.103.183.35: icmp_seq=4 ttl=251 time=462.1 ms 
+64 bytes from 210.103.183.35: icmp_seq=5 ttl=251 time=957.6 ms 
+64 bytes from 210.103.183.35: icmp_seq=6 ttl=251 time=179.3 ms 
+64 bytes from 210.103.183.35: icmp_seq=7 ttl=251 time=77.0 ms 
+64 bytes from 210.103.183.35: icmp_seq=8 ttl=251 time=69.9 ms 
+64 bytes from 210.103.183.35: icmp_seq=9 ttl=251 time=498.8 ms 
+
+--- www.netkiller.com ping statistics --- 
+10 packets transmitted, 10 packets received, 0% packet loss 
+round-trip min/avg/max = 69.9/365.4/957.6 ms 
+
+이 경우 Avg Round-Trip time이 365.4 ms 가 나왔다. 
+일반적으로 자사의 라우터와 ISP간에 약 1,000 번의 ping 결과에서 에러율이 3~4% 미만이어야 한다. 
+
+netstat , ifconfig 
+서버의 전체적인 네트워크 패킷 충돌율을 체크할 경우 netstat – i 나 ifconfig –a 의 결과에서 직접 계산할 수 있다. 
+- Sample - 
+[root@ns named]# ifconfig -a 
+lo Link encap:Local Loopback 
+inet addr:127.0.0.1 Bcast:127.255.255.255 Mask:255.0.0.0 
+UP BROADCAST LOOPBACK RUNNING MTU:3584 Metric:1 
+RX packets:99477 errors:0 dropped:0 overruns:0 frame:0 
+TX packets:99477 errors:0 dropped:0 overruns:0 carrier:0 
+collisions:0 
+
+eth0 Link encap:Ethernet HWaddr 00:10:5A:69:ED:92 
+inet addr:203.231.38.2 Bcast:203.231.38.255 Mask:255.255.255.0 
+UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1 
+RX packets:813704 errors:0 dropped:0 overruns:0 frame:0 
+TX packets:646433 errors:0 dropped:0 overruns:0 carrier:0 
+collisions:17681 
+Interrupt:10 Base address:0xec00 
+여기서 lo는 로컬이므로 의미가 없으며, eth0란에서 Collisions수만큼의 충돌이 TX packets (출력 패킷)에 대해 발생하였으므로 (17681/646433) X 100 을 통해 충돌율이 약 2.7% 라는것을 확인할수 있다. 
+보통 약 8% 이상의 충돌율을 보인다면 네트워크를 점검해 보아야 한다. 
+
+MRTG등의 네트워크 전문 유틸리티를 통한 부하량 체크 
+앞서 언급한 MRTG나 XNI 등의 부하량 및 패킷 전문 체크 프로그램을 이용하면 보다 시각적으로 패킷 에러와 속도를 측정할 수 있다. 
+
+- Sample http://www.xni.com - 
+
+
+나. 웹 성능 측정 방법들 
+
+time 
+time은 유닉스에서 프로그램의 실행 시간을 측정해주는 기본 명렁어이다. 웹 서버의 접속 및 첫 Source를 받아오는데 걸리는 시간을 정확히 측정하고자 한다면 아래와 같이 해볼수 있다. 
+
+- Sample - 
+
+[root@ns named]# time lynx -source http://www.netkiller.com > /dev/null 
+0.05user 0.05system 0:02.34elapsed 4%CPU (0avgtext+0avgdata 0maxresident)k 
+0inputs+0outputs (1651major+639minor)pagefaults 0swaps 
+
+이것은 www.netkiller.com 의 웹 사이트에 lynx 브라우저로 접속하여 초기 웹 페이지의 source를 가져오는데 걸리는 총 시간을 측정한 결과인데, 소스의 경우 굳이 볼 필요가 없으므로 /dev/null로 보냈다. User : 0.05 , System : 0.05 그리고 총 실행 시간이 0:02.34 (2초 34) 가 걸렸으므로, 실제 접속 시간은 2.34 – (0.05 + 0.05) = 2.24초가 된다. 보다 정확한 측정을 위하여 위의 명령을 몇번 실행시켜 평균 시간을 측정하여야 될것이다. 특히 처음 접속은 DNS서버의 캐시를 이용하지 않기 때문에 가장 느릴수 있기 때문이다. 
+
+
+ApacheBench (http://www.zeustech.net/) 
+아파치 서버를 위한 전문 측정 툴이다. 이 유틸리티는 레드햇 5.2 정품 리눅스의 경우 기타 application CD에 RPM으로 함께 제공되고 있는데 상당히 세밀하게 웹 서버의 성능을 체크할수 있다. 
+
+- Sample - 
+[root@ns named]# ab 
+ab: wrong number of arguments 
+Usage: ab [options] [http://]hostname[:port]/path 
+Options are: 
+-n requests Number of requests to perform 
+-c concurrency Number of multiple requests to make 
+-t timelimit Seconds to max. wait for responses 
+-p postfile File containg data to POST 
+-T content-type Content-type header for POSTing 
+-v verbosity How much troubleshooting info to print 
+-V Print version number and exit 
+-k Use HTTP KeepAlive feature 
+-h Display usage information (this message) 
+[root@ns named]# ab -n 10 http://www.netkiller.com:80/ 
+This is ApacheBench, Version 1.2 
+Copyright (c) 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/ 
+Copyright (c) 1998 The Apache Group, http://www.apache.org/ 
+
+Server Software: Apache/1.3.1 
+Server Hostname: www.netkiller.com 
+Server Port: 80 
+
+Document Path: / 
+Document Length: 11417 bytes 
+
+Concurrency Level: 1 
+Time taken for tests: 16.625 seconds 
+Complete requests: 10 
+Failed requests: 0 
+Total transferred: 115460 bytes 
+HTML transferred: 114170 bytes 
+Requests per second: 0.60 
+Transfer rate: 6.94 kb/s received 
+
+Connnection Times (ms) 
+min avg max 
+Connect: 65 209 390 
+Processing: 886 1453 2210 
+Total: 951 1662 2600 
+
+TOP 
+상당히 많이 사용되고 있는 Processor의 상태를 보여주는 유틸리티로 RAM, CPU, IO , SwapSpace의 사용량까지 %로 자세히 보여준다. 
+특히 웹 서버의 경우 CPU 사용량이 계속적으로 50% 이상이고 IO쪽의 사용량이 크면서 하드 드라이브의 소음(?)이 심해지면 이것은 웹 서버 부하에 대한 시스템의 부족한 RAM에 의해 CPU가 과도한 일을 하고 있는 것이므로 CPU가 아닌 RAM의 증가가 필요하다. 
+
+
+4. 아파치 웹 서버의 성능 개선안 
+
+실제 유닉스 환경에서 가장 많이 사용되고 있는 웹 서버가 아파치 웹 서버인데, 이제 마지막으로 아파치 웹 서버에서의 성능을 개선하기 위한 방안을 한번 알아보자. 
+
+가. httpd.conf , srm.conf , access.conf 파일의 최적화 수정 
+예전에는 httpd.conf, srm.conf, access.conf 파일로 나누어져 있었지만 요즘의 아파치 웹 서버는 모든 config 관련 내용이 httpd.conf에 들어가 있다. 
+
+a. ServerType : StandAlone 
+이것은 이용자 접속 요청시 웹 서버의 Child Processor의 생성에 있어서 기존 Spare Child Processor를 복사(Fork)하여 빠르게 대쳐할수 있도록 한다. 가령 100명의 이용자가 동시에 웹 서버로 접속할 경우 그때마다 config 파일을 참고로 하여 새로운 Child Processor가 만들어지는 inetd 방식보다 기존의 여유 Child processor를 fork 하여 대응하는 것이 훨씬 빠르고 효율적이다. 
+b. HostNameLookup off 
+이것은 접속자의 IP 주소에 대한 Reverse Lookup 을 방지한다. 대부분의 이용자들은 자신의 IP 주소에 대한 호스트, 도메인 이름이 없다. 그러므로 만일 HostNameLookup on 을 하여 웹 서버가 매번 접속 요청자에 대한 네임 서버 검색 후 로그 파일을 작성하도록 하면 그 만큼 접속 시간과 부하량이 증가하게 된다. 
+c. Rotate log를 사용한다. 
+이용자가 접속할때마다 기록되는 access_log의 경우 한번 접속당 약 85Byte가 증가하여 하루 100만번의 접속으로 access_log 파일은 무려 약 405MByte가 증가한다. 이렇게 되면 접속때마다 log file을 access 하는데 상당한 시간과 부하가 발생된다. 그러므로 로그 파일을 일정 시간마다 초기화 함으로서 언제나 경량화 시켜줄 필요가 있는데, 이것은 httpd/support 디렉토리에 존재하는 rotatelogs라는 유틸리티를 쓰면 해결할 수 있다. 레드햇 리눅스 5.2 이상의 경우 syslog을 이용하여 log 파일을 관리하고 있다. 
+[ 형 식 : rotatelog logfilename time ] 
+httpd.conf의 TransferLog logs/access_log를 아래와 같이 수정 
+TransferLog “|/usr/loca/etc/httpd/support/rotatelogs /usr/local/etc/httpd/logs/access_log 86400” 
+## 86,400초 (24시간)마다 access_log을 갱신한다는 뜻 
+참고 : error log 역시 위와같은 방법으로 수정 가능 
+d. ServerAlias를 이용한다. 
+가상 호스팅 추가시 ServerName www.domain.com 외에 ServerAlias *.domain.com domain.com 를 아래에 추가하여 Alias 도메인의 가상 호스팅을 위해 불필요한 필드의 추가를 생략할 수 있다. 
+e. Error_log파일을 통합한다. 
+가상 호스팅의 경우 가급적 error_log 파일들은 하나의 error_log 파일로 지정해 관리한다. (운영체제의 동시 file open수 제한을 피하는 소극적 방법?) 
+f. KeepAlive on 
+이것은 접속 요청자에게 웹 서버 프로세스가 웹 페이지들을 전송할 때 내부의 여러 개체(그림파일) 전송까지 새로운 프로세스를 만들지 않고 담당 프로세스가 계속 접속을 유지 할 수 있도록 한다. 
+g. MaxRequestPerChild 를 증가시킨다. 
+프로세스가 일정 횟수의 클라이언트 요청을 처리하고 종료되는 추치인 MaxRequestPerChild 30을 시스템의 안정성에 따라 증가시켜준다. 보통 100 이상을 권한다. 만일 자신의 웹 서버 시스템이 상당히 안정적이라면 아예 1,000을 주기도 한다. 
+h. StartServer, Min, Max Spare Server 수를 가급적 증가시켜준다. 
+디폴트는 각각 5, 5, 10정도인데 웹 서버가 standalone 방식을 경우 새로운 접속 요청을 받으면 기존의 spare Child Processor를 Fork 하여 새로운 Child Processor를 만들어 내므로 기본적으로 Spare 프로세스가 많을 수 록 폭주에 빨리 대처할 수 있다. 각각 비례적으로 증가시키는 것이 바람직하다. 
+예) StartServer 20, Min SpareServer 20, Max SpareServer 40 (4배씩 증가) 
+i. MaxClient 150 
+이것은 동시에 떠 있을수 있는 최대 Processor 수를 제한하는 것인데, 이것은 결국 최대 동시 이용자수 제한과 같다. 물론, http 프로토콜의 특성상 접속자체가 비연결성을 가지므로, 150정도가 충분할수 있으나 필요시 더 늘려줄수도 있다. 그러나 OS에서의 기본 제한 수치를 넘어설 수 있으므로, 주의 해야 한다. 가령 nobody가 만들어낼수 있는 최대 프로세스의 개수가 150개로 OS에서 제한하고 있는데 MaxClient를 그 이상으로 조정하면 문제가 생길수 있다. 
+
+나. 운영체제(OS)의 각종 제한 설정 확인 
+앞서 언급한 각 Processor 수치와 가상 호스팅을 위한 동시에 Open되는 Log 파일의 개수를 확장하기 위해서는 해당 웹 서버의 운영체제의 자원에 대한 제한 수치를 확인할 필요가 있다. 
+
+ulimit 
+ulimit은 운영체제의 각종 Limit을 확인하는 명령어로서 아래의 수치를 확인할수 있다. 
+The Max number of system processess 
+The Max number of processes per user 
+The Max number of open files (can have open files) 
+
+웹 서버는 보통 nobody라는 이용자 권한을 가진 ChildProcessor에 의해 서비스된다. 가령 레드햇 리눅스의 경우 6.0 버전 이상부터 그 기본 수치가 상당히 증가되었는데, 이전 5.2버전의 경우 ulimit –a 으로 아래의 결과를 보인다. 
+
+[root@ns named]# ulimit -a 
+core file size (blocks) 1000000 
+data seg size (kbytes) unlimited 
+file size (blocks) unlimited 
+max memory size (kbytes) unlimited 
+stack size (kbytes) 8192 
+cpu time (seconds) unlimited 
+max user processes 256 
+pipe size (512 bytes) 8 
+open files 256 
+virtual memory (kbytes) 2105343 
+
+여기서 max user processes가 256 정도인데, 아파치 웹 서버의 conf 파일에서 MaxClient 를 256 이상 설정하면 OS의 기본 설정을 초과하므로 문제가 발생할 수 있다. 
+OpenFiles 역시 256이므로, access_log, error_log를 각 가상 호스팅 이용자에게 따로 부여할 경우에는 웹 서버의 log 파일의 총 개수가 256보다 아래여야 할것이다. 물론 이용자가 cgi 프로그램을 동시에 실행하여 open되는 file수도 고려해야 한다. 
+
+참고로 ulimit는 OS의 기본 설정을 확인하거나 기본 수치에 대해 줄일 때 사용할수 있다. 그러므로 ulimit을 통해 각 분야별 수치를 증가시키는 것은 아무런 효과가 없다. 
+OS의 기본 제한 수치를 증가시키고자 한다면 리눅스의 경우 별도의 커널 수정과 커널 컴파일이 필요하다. 그러나 레드헷 6.0부터 커널의 각종 설정들이 상당히 증가되어 (예 : openfiles, max user processes 가 1024로 증가) 이젠 굳이 커널을 수정하여 컴파일할 필요가 없다. 
+
+ 

@@ -1,0 +1,2 @@
+AddType application/x-httpd-php .php .php3 .php4 .html .htm .inc(원하는 확장면 추가하면 자동으로 php파서가 해석함)
+AddType application/x-httpd-php-source .phps

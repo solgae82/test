@@ -1,0 +1,157 @@
+1. 심볼릭링크
+윈도우XP에서 한글2005를 실행시킬때의 구조를 살펴보자. 
+설치시 특별히 디렉토리를 변경하지 않았다면, 실행파일은 다음의 위치에 있다.
+    C:\HNC\Hwp65\hwp.exe
+그러나, 우리는 탐색기를 열어서.. C:\HNC\Hwp65\hwp.exe 파일을 더블클릭해서 직접 
+실행하지는 않는다. 보통은, '시작>프로그램>한글과컴퓨터>한글2005>한글 2005'를 
+실행하거나, 아니면, 바탕화면의 단축아이콘을 더블클릭한다.
+단.축.아.이.콘...!!
+윈XP에서의 단축아이콘이 리눅스에서의 심볼릭링크이다.
+2. /etc/rc.d/init.d/* 파일들의 이해
+MS윈도우즈에서 프로그램을 설치하면 대부분 'C:\Program Files' 안에 설치된다. 
+물론, 다른 디렉토리에 설치해도 된다. 
+리눅스도 각각의 프로그램들(데몬들)을 원하는 디렉토리에 설치할 수 있다. 
+rpm으로 설치한다면, 특정 디렉토리가 지정되어 있겠지만... 
+소스로 설치할 때는 원하는 디렉토리에 설치한다.
+apache를 소스설치할 때, --prefix 옵션으로 설치 디렉토리를 지정할 수 있는 것처럼 말이다. 
+물론, 관습적으로 대부분 /usr/local/ 밑에 설치하는 경향이 많다. 이렇게 각각의 디렉토리에 
+설치된 각각의 데몬들을 실행하거나, 중지하는 등의 관리를 할 때는 상당히 불편하다. 
+각 데몬이 어디에 설치되어 있는지 모두 알아야 하기 때문이다.
+생각해보자.
+어느누가 네임서버 데몬을 실행시키는데...
+    # /usr/sbin/named
+와 같이 데몬의 실행파일을 직접 실행시키겠는가..?? 
+보통은...
+    # /etc/rc.d/init.d/named start
+와 같이 실행시킨다...
+그렇다. 각 데몬의 실행파일들이 어디에 있는지와 상.관.없.이, 관리의 편의를 위하여.... 
+각 데몬들을 실행할 수 있게 만든 쉘스크립트파일을 모아놓고 관리를 한다.
+그 디렉토리가 /etc/rc.d/init.d/ 디렉토리이며, 
+/etc/rc.d/init.d/ 밑의 모든 파일들은 vi 편집기로도 열리는, 쉘스크립트 파일들이다. 
+마치, 윈XP에서 각 프로그램들을 하드에 설치하고.. 실행할 때는 '시작>프로그램>....' 
+에서 실행하는 것과 비슷하다.
+3. 런레벨의 이해 
+기본적으로 다음 두 가지는 알고 있다고 가정하자.
+① 런레벨 종류 
+    - 런레벨 1 : 싱글모드 부팅. MS윈도우즈의 안전모드와 비슷 
+    - 런레벨 3 : 콘솔모드로 부팅 
+    - 런레벨 5 : X 윈도우로 부팅 
+    - 런레벨 6 : 계속 재부팅만 한다.
+② 런레벨 수정 
+    - /etc/inittab 파일에서 다음 항목의 숫자를 직접 수정함으로 변경 가능 
+      id:3:initdefault:
+이제, 윈XP의 '시작>프로그램>시작프로그램' 을 생각해 보자. 
+시작프로그램에 특정 프로그램을(프로그램의 단축아이콘을) 등록해 놓으면, 
+컴퓨터를 켤 때 그 프로그램이 자동으로 실행된다. 
+리눅스도 시작할 때 자동으로 실행될 프로그램(=데몬)을 등록할 수 있다. 
+윈XP에서는 '시작프로그램'에 등록하지만, 리눅스는 디렉토리에 심볼릭링크를 만들어서 등록한다.
+    - /etc/rc.d/init.d/rc3.d   :
+런레벨 3으로 부팅될 때 자동실행할 데몬을 등록하는 곳
+    -/etc/rc.d/init.d/rc5.d   :
+런레벨 5로 부팅될 때 자동실행할 데몬을 등록하는 곳
+필자는 런레벨 3으로 부팅하며, 다음과 같은 심볼릭링크 파일들을 볼 수 있다.
+# cd /etc/rc.d/rc3.d/ 
+# ls -al 
+drwxr-xr-x    2 root   root    4096 12월 15 10:32 ./ 
+drwxrwxr-x   10 root   root    4096 12월 15 19:02 ../ 
+lrwxrwxrwx    1 root   root    13 12월 15 19:01 K15gpm -> ../init.d/gpm* 
+lrwxrwxrwx    1 root   root    20 12월 15 19:02 K44rawdevices -> ../init.d/rawdevices* 
+lrwxrwxrwx    1 root   root    18 12월 15 19:02 K45arpwatch -> ../init.d/arpwatch* 
+lrwxrwxrwx    1 root   root    15 12월 15 19:02 K75netfs -> ../init.d/netfs* 
+lrwxrwxrwx    1 root   root    15 12월 15 10:30 K95kudzu ->../init.d/kudzu* 
+lrwxrwxrwx    1 root   root    17 12월 15 19:02 S10network ->../init.d/network*   
+lrwxrwxrwx    1 root   root    16 12월 15 19:01 S12syslog -> ../init.d/syslog* 
+lrwxrwxrwx    1 root   root    18 12월 15 19:00 S17keytable -> ../init.d/keytable* 
+lrwxrwxrwx    1 root   root    16 12월 15 19:02 S20random -> ../init.d/random* 
+lrwxrwxrwx    1 root   root    17 12월 15 19:02 S29sysstat -> ../init.d/sysstat* 
+lrwxrwxrwx    1 root   root    15 12월 15 10:32 S55named ->../init.d/named* 
+lrwxrwxrwx    1 root   root    16 12월 15 19:02 S56xinetd -> ../init.d/xinetd* 
+lrwxrwxrwx    1 root   root    15 12월 15 19:02 S90crond -> ../init.d/crond* 
+lrwxrwxrwx    1 root   root    11 12월 15 19:02 S99local -> ../rc.local* 
+lrwxrwxrwx    1 root   root    23 12월 15 19:02 S99oops-firewall -> color=#008000>../init.d/oops-firewall*
+디렉토리 안을 살펴보니, 모두 심볼릭링크 파일이라는 것을 알 수 있다. 
+심볼릭링크 파일은 제일 앞의 퍼미션을 나타내는 부분이 'l' 로 시작되며, 
+어떤 파일을 심볼릭링크했는지 화살표로 표시해 준다. 
+살펴보면, 모든 심볼릭링크의 원본파일들이 상위 디렉토리(../)의 init.d 디렉토리 내의 파일들,
+즉, /etc/rc.d/init.d/파일들 이라는 것을 볼 수 있다.
+따라서, 각 데몬의 실행파일을 관리하는 스크립트 파일들을 심볼릭링크한 것이다.
+/etc/rc.d/rc3.d/ 밑의 파일들의 파일명을 살펴보면 다음과 같은 형식이다.
+  S[혹은 K]{숫자}{데몬파일명}
+S 로 시작되는 링크파일은 부팅할 때 시작(Start)되는 스크립트파일이다. 
+K 로 시작되는 링크파일은 부팅할 때 시작되지 않는(Kill) 스크립트파일이다. 
+{숫자}는 실행되는 우선순위를 나타낸다.
+crond 데몬보다, named 데몬이 중요하고 꼭 실행되어야 한다면... crond 링크보다 숫자를 낮은 
+숫자로 하면 된다.예전에는 컴퓨터(서버)의 사양이 좋지 않아, '어떻해도 가장 중요한 데몬'을 
+실행시키기 위해서 있었지만.. 지금은 별 의미가 없다.. 
+실행되지 않을 정도의 하드웨어 사양을 찾기가 힘들다... ^^;
+{숫자}는 같은 숫자로 중복해서 사용할 수도 있다.
+ntsysv 명령어로 각 데몬을 체크하거나, 체크를 지우는 것도... 
+알고보면 S 를 K 로 바꾸거나, K 를 S 로 바꾸는 작업이다.
+/etc/rc.d/rc3.d/ 디렉토리에서는 S로 시작해서 심볼릭링크가 되어 있고, 
+/etc/rc.d/rc5.d/ 디렉토리에서는 K로 시작해서 심볼릭링크가 되어 있다면... 
+같은 /etc/rc.d/init.d/ 밑의 같은 데몬스크립트 파일이라고 하더라도.. 
+런레벨마다 실행되거나, 실행되지 않을 수 있다.
+
+
+
+
+1. 실행시킬 스크립트 작성
+
+vi /etc/rc.d/init.d/작성할파일명
+ex) vi /etc/rc.d/init.d/tomcat
+
+####################################
+# auto start tomcat
+####################################
+#!/bin/sh
+# chkconfig를 사용하기 위한 구문
+# chkconfig: 345  90  20 
+# description: GridCenter is Cluster Power Middleware .. 
+
+export TOMCAT_HOME=/app/tomcat      #경로 설정
+ 
+#
+case "$1" in
+start)     #시작시 행동
+echo -n "Starting tomcat: "
+daemon $TOMCAT_HOME/bin/startup.sh
+echo
+;;
+stop)      #종료시 행동
+echo -n "Shutting down tomcat : "
+daemon $TOMCAT_HOME/bin/shutdown.sh
+echo
+;;
+restart)     #재시작시 행동
+$0 stop
+$0 start
+;;
+*)            #기타 인수 없을때 메세지
+echo "Usage : $0 {start|stop|restart}"
+exit1
+esac
+exit 0
+
+
+2. 생성한 스크립트 권한 변경 후 정상작동 테스트
+
+chmod 755 파일명
+
+etc/rc.d/init.d/ 에서
+
+./파일명 start
+
+
+3. chkconfig 등록
+
+chkconfig --add <scripts file name> 
+
+위에서 설정한
+# chkconfig: 345  90  20 
+
+chkconfig 뒤의 345 는 런레벨을 의미하고 90 20 은 booting, halt 시 start, stop 되는 순서이다. 
+
+
+이렇게 되면 설정한 런레벨 경로에
+시작파일은 S<레벨><파일이름> 형식으로 심볼릭 링크가 생성되고
+종료파일은 K<레벨><파일이름> 형식으로 심볼릭 링크가 생성된다.

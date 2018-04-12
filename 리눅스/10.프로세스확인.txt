@@ -1,0 +1,2 @@
+ps -ef
+ps -ef | grep 프로그램명

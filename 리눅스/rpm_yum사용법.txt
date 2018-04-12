@@ -1,0 +1,50 @@
+- 설치
+rpm -Uvh 패지파일.rpm
+
+- 삭제
+rpm -e  패키지이름
+rpm -e httpd
+
+- 설치된 패키지 조회
+rpm -qa httpd <- 시스템에 패키지가 설치되었는지 확인.
+httpd-2.4.6-45.el7.centos.4.x86_64
+
+rpm -qf /etc/httpd <-이미 설치된 파일이 어느 패키지에 포함되었는지 확인.
+httpd-2.4.6-45.el7.centos.4.x86_64
+
+rpm -ql httpd <-특정 패키지가 어떤 파일들이 포함되었는지 확인, 설치된 경로등을 확인할 수 있음.
+/etc/httpd
+/etc/httpd/conf
+/etc/httpd/conf.d
+/etc/httpd/conf.d/README
+.
+.
+
+
+
+rpm -qi httpd <-설치된 패키지의 상세정보
+Name        : httpd
+Version     : 2.4.6
+.
+.
+
+
+------------------------------------------yum
+/etc/yum.repos.d/ <-저장소 파일이 있는 위치
+
+yum -y install 패키지이름 <- yum으로 설치
+yum -localinstall rpm파일.rprm <-yum 으로 rpm파일 설치(의존성까지 같이 받아줌)
+
+yum check-update <-업데이트 가능한 목록 출력
+yum update 패키지이름 <-없다면 새로 설치, 이미 있다면 업데이트
+
+yum remove 패키지이름 <-설치된 패키지 삭제
+yum info  패키지이름 <-패키지 요약정보 보여준다
+
+yum list http* <-http가 들어간 모든 패키지 리스트를 보여준다
+yum list installed git <- 설치된 git 패키지를 보여준다(설치여부확인)
+yum list installed | grep git <- git 문자열이 들어간 패키지목록 (설치여부나 기타여부 확인)
+
+
+
+

@@ -1,0 +1,7 @@
+service status iptables (centos 7 이전버전)
+또는
+systemctl status iptables
+
+켜져 있다면
+systemctl stop iptables
+systemctl mask iptables (start 명령을 해도 안 되게 설정(unmask 하면 풀림))

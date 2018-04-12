@@ -1,0 +1,15 @@
+1.yum -y install ethtool (없으면 설치)
+
+2.ethtool eth0 (체크)
+	-- 아래와 같이 나와야 함.
+	Supports Wake-on: pumbg
+	Wake-on: g <- g인지 체크
+
+3.ethtool -s eth0 wol g (위체크로 Wake-on: g 가 아니라면 이렇게 설정)
+	: /etc/rc.local 파일 안에 추가하라는 글도 있음..(참고)
+
+4.ifconfig eth0 |grep HWaddr (맥어드레스 출력, 켜기 위한 정보 메모)
+
+5.리눅스 shutdown -h now
+
+6. 다른 PC에서 wake-on 프로그램에 맥어드레스, 아이피어드레스, 서브넷마스크, 포트등 입력 후 테스트해 봄

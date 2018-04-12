@@ -1,0 +1,40 @@
+[root@chat1 ~]# sestatus (SELinux 켜져있나 확인) 
+SELinux status:                 disabled <- 현재 꺼져있다
+
+켜기
+
+vi /etc/sysconfig/selinux
+
+	SELINUX=disabled <-  끄기 인 것을
+	..
+	SELINUX=enforcing <-활성화로 편집
+:wq
+
+시스템 재부팅해야 활성화 된다.(비활성화 또한 마찬가지)
+reboot
+
+-----------------------------------------------------
+[root@chat1 ~]# sestatus (SELinux 켜져있나 확인) 
+SELinux status:  enforcing <- 현재 켜져있다
+SELinuxfs mount: /selinux
+Current mode: enforcing
+Mode from config file: enforcing
+Policy version: 24
+Policy from config file: targeted
+
+----------------------------------------------------- (일시정지)
+
+개발 서버일 경우 특정 daemon 이나 서비스에 문제가 있을 경우 
+setenforce 0 
+으로Permissive mode 로 전환하여 문제 해결후 enforce mode 로 전환하는걸 추천한다.
+
+
+# setenforce 0 <- Permissive로 변경, 1은 켜기
+# sestatus	<- 상태확인
+ 
+SELinux status: enabled
+SELinuxfs mount: /selinux
+Current mode: permissive	<- 변경되었다
+Mode from config file: enforcing
+Policy version: 24
+Policy from config file: targeted

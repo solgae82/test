@@ -1,0 +1,186 @@
+﻿-------------------// yum  저장소 추가
+# yum install epel-release
+# rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+# rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+# rpm -Uvh http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+
+/etc/yum.repos.d <- 저장소 위치
+
+--enablerepo <-- yum 명령시 동적으로 리포지터리 활성화 시키는 옵션 
+ex) yum --enablerepo=epel,remi ...
+
+-------------------// apache 설치
+
+# yum --enablerepo=epel,remi -y install httpd
+
+
+/etc/httpd/conf/ <- 설정파일 있는 곳
+/usr/sbin/httpd <-실행파일 있는 곳
+
+//구성파일 설정
+vi /etc/httpd/conf/httpd.conf
+
+User nobody
+Group nobody
+
+ServerAdmin hankyulsoft@daum.net
+
+ServerName localhost
+
+DocumentRoot /home/ddoddome/www
+
+서버에 홈디레토리 접근 권한을 주어야 한다.
+<Directory "/home/ddoddome/www">
+	AllowOverride All
+	Require all granted
+</Directory>
+
+짧은 주소를 이용하고 싶다면 추가
+vi /etc/httpd/conf.modules.d
+LoadModule rewrite_module modules/mod_rewrite.so <-주석처리 확인
+
+
+가상호스트 사용한다면, 모든 디렉토리에 맞는 설정 필요
+/etc/httpd/conf/conf.d/userdir.conf
+
+<Directory "/home/*/www">
+    AllowOverride FileInfo AuthConfig Limit Indexes
+    /*Options MultiViews SymLinksIfOwnerMatch IncludesNoExec*/
+    /*FollowSymlinks 심볼릭링크 허용(다른 계정에서도 /data디렉토리 접근할 수 있게)*/
+    Options MultiViews FollowSymlinks IncludesNoExec 
+    Require all granted
+</Directory>
+
+
+
+가상호스트 설정
+/etc/httpd/conf.d/httpd-vhosts.conf
+
+<VirtualHost *:80>
+ServerAdmin hankyulsoft@daum.net
+DocumentRoot /home/ddoddome/www
+ServerName ddoddo.me
+	<Directory "/home/ddoddome/www">
+		디렉토리 설정..추가가능
+	</Directory>
+</VirtualHost>
+
+//설정 파일에서 각종 설정 후 
+
+# systemctl start|stop|restart httpd <- 아파치 시작,정지,재시작
+# systemctl enable httpd <-서버 시작하면 자동 시작
+
+
+
+-------------------// php 설치
+/**
+* php 7.1로 했다가 코드이그나이터에서 세션오류로, 다시  php7.0으로 다운그레이드 함
+*/
+
+php70w-mysqlnd <- 요걸로 해야지 데이터베이스 에러 안남(mariadb)
+php70w-mysql <- mysql일때 요걸로 설치
+
+설치한다
+
+yum --enablerepo=epel,remi-php70 -y install php70w \
+php70w-mbstring \
+php70w-mcrypt \
+php70w-pdo \
+php70w-soap \
+php70w-xml \
+php70w-xmlrpc \
+php70w-gd \
+php70w-mysqlnd \
+php70w-pecl-mongodb \
+php70w-pecl-memcached \
+php70w-pecl-redis
+
+
+
+/var/lib/php <- php관련 캐시파일이 모여있는 장소 같다. 모두 쓸 수 있는 권한을 주자
+
+chmod 777 /var/lib/php/session/ <-세션파일 쓰기 권한주기
+chown -R root.nobody /var/lib/php/session/ <-권한 바꾸기(아파치에서 nobody로 바꿨기때문에)
+
+# vi /etc/php.ini <- php 설정파일
+max_execution_time = 60
+memory_limit = 512M
+display_errors = On 
+display_startup_errors = On
+track_errors = On
+post_max_size = 108M
+upload_max_filesize = 100M
+max_file_uploads = 20
+date.timezone ="Asia/Seoul"
+
+
+-------------------// 마리아DB 
+# vi /etc/yum.repos.d/MariaDB.repo 
+
+[mariadb]
+name = MariaDB
+baseurl = http://yum.mariadb.org/10.1/centos7-amd64
+gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+
+설치
+yum --enablerepo=mariadb -y install mariadb-server
+
+
+# systemctl start mysql 시작
+# mysql_secure_installation <-초기& 보안 & root비밀번호등 설정
+
+/etc/my.cnf <- 설정 파일 
+/etc/my.cnf.d <- 설정 파일 include파일 모음 디렉토리
+/var/lib/mysql/ <- 데이터베이스 파일 저장 경로
+
+
+캐릭터 셋 변경해보자 
+/etc/my.cnf.d/server.cnf --- 아래내용 추가
+[mysqld]
+collation-server=utf8_unicode_ci
+character-set-server=utf8
+init_connect="set collation_connection=utf8_unicode_ci"
+init_connect="set names utf8"
+
+/etc/my.cnf.d/client.cnf --- 아래내용 추가
+[client]
+default-character-set=utf8
+
+
+/etc/my.cnf.d/mysql-clients.cnf --  아래내용 추가
+[mysql]
+default-character-set=utf8
+
+[mysqladmin]
+default-character-set=utf8
+
+[mysqldump]
+default-character-set=utf8
+
+
+이제 캐릭터셋 변경 되었는지 확인해보자
+# systemctl restart mysql 재시작
+mysql -uroot -p
+show variables like 'c%';  <- 테이블에 캐릭터 셋 변경 확인
+exit;
+
+
+-------------------// etc
+버전 체크
+php -v
+httpd -v
+mysql -V
+
+
+SELinux 여부 체크..(요놈 때문에 접근 못할 수 있음)
+[root@chat1 home]# sestatus -v | head -1
+SELinux status:                 enabled <- 활성화 되었음
+
+켜고 끄기 방법은 
+setenforce 1 <- 켜기
+setenforce 0 <- 끄기
+
+getenforce	<- 확인
+	Permissive	<- 꺼짐
+	Enforcing	<- 켜짐

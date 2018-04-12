@@ -1,0 +1,291 @@
+﻿https://dslee1.blogspot.kr/
+
+1. 개요
+
+	리눅스는 대부분 서버를 구성하기 위해서 많이 사용한다. 윈도우처럼 데스크탑용으로 사용하는 경우는 극히 드물며, centos 의 경우는 더더욱 사용률이 적다. 특히 우리나라는 데스크탑 사용자는 찾아보기가 힘들다는게 많은 아쉬움이 남는다.
+
+	오늘은 그래서 서버용으로 설치된 centos7 에 많은 사람들이 사용하는 apache+php+mysql 설치 및 구성에 대해서 살펴볼 것이다. 또한 현재 일자(2016.4.8) 기준으로 최신버전을 다운받아 설치할것이며, 간단한 테스트용 사이트 화면까지 확인하고 글을 마무리할 예정이다.
+
+	설치 버전은 다음과 같다.
+	   - apache 2.4.x
+	   - php 7.x
+	   - mysql 5.6.x
+
+2. 설치 및 구성
+
+	기본적으로 centos 가 설치된 상태에서 혹시나 rpm 으로 apache+php+mysql(apm) 이 설치가 되어있다면, 지우는 걸 추천한다.
+
+		yum remove -y httpd*
+		yum remove -y php*
+		yum remove -y mysql*
+
+	rpm 으로 설치된 어플리케이션은 소스컴파일보다 여러가지 설정을 컨트롤 하기 쉽지 않으며, 소스컴파일은 설치 과정에서 조금더 최적화 를 진행할수 있는게 장점이다. 또한 디렉토리 관리 데이터 관리 또한 간편하다. (이건 주관적인 입장이다)
+
+	그래서 본 포스팅은 소스컴파일 위주로 진행하고, 부득이한 부분은 yum 으로 대처하도록 하겠다.
+
+	설치 순서는 필수라이브 러리 -> mysql -> apache -> php 순으로 진행 할 예정이다. 설치는 크게 어렵지 않으며, 순서대로 잘 따라와주면 된다.
+
+2-1 필수라이브러리 설치
+
+	apache+php+mysql 설치에 앞서 리눅스 os 시스템에 필수 라이브러리를 설치해야된다. yum 을 이용해서 설치하도록 한다.
+
+		yum -y install vim php-gd
+		yum -y install net-tools
+		yum -y install zlib libpng freetype jpeg gd libxml2
+		yum -y install freetype-devel
+		yum -y install gmp-devel
+		yum -y install libX11-devel
+		yum -y install libtermcap-devel ncurses-devel
+		yum -y install make cmake
+		yum -y install gcc g++ cpp gcc-c++
+		yum -y install perl
+		yum -y install gdbm-devel
+		yum -y install ncurses-devel
+		yum -y install bison
+		yum -y install zlib curl
+		yum -y install curl-devel
+		yum -y install openssl openssl-devel
+		yum -y install bzip2-devel
+		yum -y install libtermcap-devel libc-client-devel
+		yum -y install wget unzip
+		yum -y install libxml2*
+		yum -y install bzip2*
+		yum -y install libjpeg-devel
+		yum -y install expat-devel*
+		yum -y install gd-devel*
+		yum install -y perl-Module-Install.noarch
+
+	so 파일 동적 라이브러리 주소로 링크 복사
+
+		ln -s /usr/lib64/libjpeg.so /usr/lib
+		ln -s /usr/lib64/libpng.so /usr/lib
+		ln -s /usr/lib64/libXpm.so.4 /usr/lib64/libXpm.so
+
+2-2 mysql 설치
+	mysql 설치 버전은 5.6.30 버전이다(현재 2016.4.8일자). 각각의 버전별로 설치방법이 조금씩 다르고 구성방법들도 조금씩 달라졌다. 왜 5.6.x 버전을 설치하는지 이유는 간단하다. 이전버전보다 훨씬더 좋은 퍼포먼스를 제공하고 있기 때문이다. 당연한 말이지만..
+	(5.7.x 버전의 경우 php 라이브러리 연동문제가 발생하여 현재 분석이 조금 더 필요하다)
+
+	자 그럼 아래 설치순서를 진행해보자.
+
+	mysql 을 다운받는다.
+		wget http://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.30.tar.gz
+
+	cmake 를 이용해서 configuration 및 make install 를 함께 진행하도록 한다.
+		cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql-5.6.30 -DMYSQL_DATADIR=/usr/local/mysql-5.6.30/data -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_EXTRA_CHARSETS=all -DENABLED_LOCAL_INFILE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DMYSQL_UNIX_ADDR=/tmp/mysql.sock -DSYSCONFDIR=/etc -DMYSQL_TCP_PORT=3306 && make && make install
+
+	설치된 mysql 디렉토리를 심볼릭링크로 쉽게 접근할수있도록 변경한다.
+		ln -s /usr/local/mysql-5.6.30/ /usr/local/mysql
+
+	mysql 실행 유저를 생성한다
+		useradd mysql
+
+	mysql 디렉토리 권한을 mysql 실행유저로 변경을 해줘야지 서비스가 정상적으로 올라갈수있다.
+		chown -R mysql.mysql /usr/local/mysql-5.6.30
+		ln -s /usr/local/mysql-5.6.30/ /usr/local/mysql
+
+	Centos 6.x 버전 이전에 사용하던 시스템 서비스 관리 명령어를 실행하기 위해서 링크를 걸어주는것이다. 이렇게 링크 설정을 하게되면, /etc/init.d/mysqld start 식으로 명령어를 실행할수있으며 service mysqld start 도 동일하다.
+		ln -s /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+
+	mysql data 파일을 생성하는 명령어다. 쉽게 말해서 초기 DB 구성 및 환경설정 작업을 진행한다.
+		/usr/local/mysql/scripts/mysql_install_db --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+
+		/usr/local/mysql/bin/mysql --verbose --help | grep -A 1 'Default options'
+
+	mysql 기본환경설정 셋팅(튜닝x)을 진행한다.
+		vi /etc/my.cnf
+		-------------추가----------------------------------------
+		[mysqld]
+		datadir=/usr/local/mysql/data
+		socket=/tmp/mysql.sock
+		user=mysql
+		character-set-server=utf8mb4
+		collation-server=utf8mb4_unicode_ci
+
+		[mysqld_safe]
+		log-error=/usr/local/mysql/data/mysqld.log
+		pid-file=/usr/local/mysql/data/mysqld.pid
+		port=3306
+		-----------------------------------------------------------
+
+	실행파일을 심볼릭링크를 걸어줌으로써 간편히 명령어를 사용할수 있다.
+		ln -s /usr/local/mysql/bin/mysql /usr/sbin/
+		ln -s /usr/local/mysql/bin/mysqldump /usr/sbin/
+		ln -s /usr/local/mysql/bin/mysqladmin /usr/sbin/
+
+	64bit 환경에서 php 설치시에는 아래와 같이 lib 디렉토리를 lib64디렉토리로 심볼릭링크 해줘야 설치를 진행할수 있을 것이다. 32bit 는 상관없다.
+		cd /usr/local/mysql/
+		ln -s lib lib64
+	
+	mysql 라이브러리를 지정해줘야지, 나중에 php와 연동할때 꼭 필요하다
+		cd /etc/ld.so.conf.d	      <- 이곳에 공유 라이브러리 주소 파일을 작성하면된다.. *.conf안에 라이브러리 경로를 넣으면 된다.
+		touch mysql-x86_64.conf	      <-라이브러리 include 파일만들기
+		vi touch mysql-x86_64.conf
+			/usr/local/mysql/lib/ <-mysql 경로저장
+
+		ldconfig #갱신
+
+	mysql 실행한다.
+		service mysqld start
+
+	root 패스워드 설정해준다(초기에는 없다)
+		mysqladmin -u root password '패스워드설정'
+
+
+2-3 Apache 설치
+
+	apache.org 공식홈페이지에서 최신버전을 다운로드 받도록 한다
+	wget http://archive.apache.org/dist/httpd/httpd-2.4.18.tar.bz2
+
+	tar xvf httpd-2.4.18.tar.bz2
+	
+
+	-------//-----------설치전 의존 라이브러리를 복사 및 설치한다
+	apache 2.0.x 또는 2.2.x 버전에서는 발생하지 않던 문제가 발생하였는데, 이러한 경우는 추가적인 라이브 러리를 설치하지 않아서 발생된 문제다.
+	아래와 같이 진행하면 해결된다.
+		wget http://mirror.apache-kr.org//apr/apr-1.5.2.tar.gz
+		tar xvf apr-1.5.2.tar.gz
+		mv apr-1.5.2 /usr/local/src/httpd-2.4.18/srclib/apr	<- 풀어 놓은 아파치 소스디렉토리에 이동
+
+		wget http://mirror.apache-kr.org//apr/apr-util-1.5.4.tar.gz
+		tar xvfz apr-util-1.5.4.tar.gz
+		mv apr-util-1.5.4 /usr/local/src/httpd-2.4.18/srclib/apr-util <- 풀어 놓은 아파치 소스디렉토리에 이동
+
+		wget http://ftp.exim.llorien.org/pcre/pcre-8.30.tar.gz
+		tar xvf pcre-8.30.tar.gz
+		cd pcre-8.30
+		./configure && make && make install	<- 소스 컴파일 & 설치
+
+	자신이 설치하는 apache 버전을 잘 확인해서 변경하면 될 것이다.
+	------//---------의존 라이브러리 복사&설치완료
+
+	컴파일 전 소스에 폴더에서 preforck 방식 및 worker 방식의 최대접속 값을 지정한다.
+	기본값은 너무 낮게 설정되어있기 때문에 튜닝이 필요하다.
+		vi server/mpm/prefork/prefork.c
+		#define DEFAULT_SERVER_LIMIT 4096 (수정)
+		vi server/mpm/worker/worker.c
+		#define DEFAULT_SERVER_LIMIT 20
+
+	ssl 인증서를 함께 사용해야되기 때문에 그에 관련된 개발도구를 설치하도록한다.
+		yum install openssl-devel
+
+	환경설정 및 본격적인 설치를 진행하도록 한다.
+		./configure --prefix=/usr/local/httpd-2.4.18 --enable-mods-shared=most --enable-ssl  --enable-modules=ssl --enable-rewrite --with-included-apr --with-included-apr-util --enable-deflate --enable-expires --enable-headers --enable-proxy --enable-mpms-shared=all --with-mpm=prefork && make && make install
+
+	동작방식은 기본 event 방식이 prefork 및 worker 방식보다 좋단다. 
+	**  PHP 컴파일 에러가 나서 prefork방식으로 하기로(--with-mpm=prefork) **
+
+	//---------- 아파치 설정후 초기 튜닝하기
+		vi /usr/local/apache/conf/httpd.conf
+		apache 2.4.x 버전에서는 아래부분을 수정해준다.
+		<Directory />
+		    AllowOverride All
+		#    Require all denied
+		</Directory>
+	아래 주석처리된부분을 풀어줘야된다.
+		ServerName localhost:80
+
+	사용자,그룹이 기본 daemon -> nobody 로변경
+		User nobody
+		Group nobody
+
+	apache 2.4.x 버전에서 아래 모듈을 올려줘야지 apache 시작이 가능하다
+		LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+
+	디렉토리 index 값을 선언하는 부분이며, 어떠한 확장자를 가진 파일을 apache에서 호출을 할것인지를 선언한다.
+		DirectoryIndex index.html index.php
+
+	에러로그에 대한 로테이션을 설정하는 부분이다. 86400 이란 의미는 초 단위다. 이 값을 계산하면 24시간이 되기 때문에 1일치 데이터를 일자별로 저장하겠다는 의미이다.
+		ErrorLog "|/usr/local/apache/bin/rotatelogs /usr/local/apache/logs/error_log.%Y-%m-%d 86400"
+
+	아래 설정값 또한 아파치 access 로그를 남기는 방법에 대해서 기술한것이다.
+		LogFormat "%h %l %u %t %{Host}i \"%r\" %>s %b PID: %P TIME: %T" dslee
+		SetEnvIfNoCase Request_URI (gif|png|jpg|css|js|bmp|jpeg|swf)$ IMAGE=1
+		CustomLog "|/usr/local/apache/bin/rotatelogs /usr/local/apache/logs/access_log_%y%m%d 86400" dslee env=!IMAGE
+
+	php 확장자를 호출할수있도록 해준다
+		AddType application/x-httpd-php .php
+		AddType application/x-httpd-php-source .phps
+
+	아래 포함된 설정을 주석해제한다.
+		###주석해제####
+		Include conf/extra/httpd-userdir.conf  #/home/*/public_html
+		(LoadModule userdir_module modules/mod_userdir.so) <- 위 설정파일을 사용하려면, 관련 모듈도 같이 해제해야한다
+
+		Include conf/extra/httpd-vhosts.conf   #가상호스트, 쓰지 않을 거면 주석처리
+
+		Include conf/extra/httpd-default.conf  #디폴트...
+
+	접속자와 관련된 설정값은 아래 파일명을 수정하도록 하자. 자신이 사용하고 있는 엔진이 worker,prefork, event 방식중에
+	어느부분에 해당되는지를 확인 한 이후에 설정하자.(필자는 prefork 방식이다)
+
+		vi /usr/local/apache/conf/extra/httpd-mpm.conf
+
+		<IfModule mpm_prefork_module>
+		    StartServers          5
+		    MinSpareServers       5
+		    MaxSpareServers      10
+		    MaxClients          1024 <-요기 추가
+		    MaxRequestsPerChild   0
+		</IfModule>
+
+	아파치 최소한의 기본 설정(튜닝)이 완료되었다. 이 정도만 튜닝해도 서비스하는데에는 큰 문제는 없을거라 생각 된다.
+	//---------- 아파치 설정후 초기 튜닝하기 End.
+
+	시스템 서비스 관리 명령어를 실행하기 위해서 링크를 걸어준다(service httpd start|stop)
+	ln -s /usr/local/apache/bin/apachectl /etc/init.d/httpd
+
+
+2-4 PHP 설치
+
+	------------ mcrypt 에러 발생시
+	mcrypt 라는 라이브러리가 설치되어있지 않아 발생된 문제임으로, 아래 설치 가이드를 진행하면된다.
+		wget http://heanet.dl.sourceforge.net/mcrypt/libmcrypt-2.5.8.tar.gz
+		tar xvfz libmcrypt-2.5.8.tar.gz
+		cd libmcrypt-2.5.8
+		./configure && make && make install
+		echo "/usr/local/lib" >> /etc/ld.so.conf
+		ldconfig
+	------------ mcrypt 에러 발생시 End.
+
+	PHP 기본적으로 설치는
+		cd /usr/local/src
+	이곳에서 진행 한다.
+
+	아래 공식홈페이지에서 php7 버전을 다운로드 한다
+
+		wget http://ar2.php.net/get/php-7.0.4.tar.gz/from/this/mirror -O php-7.0.4.tar.gz
+		tar xvfz php-7.0.4.tar.gz
+		cd php-7.0.4
+	컴파일 & 설치 진행
+		./configure --prefix=/usr/local/php-7.0.4 --with-config-file-path=/usr/local/php-7.0.4/lib --with-apxs2=/usr/local/apache/bin/apxs --with-gd --with-freetype-dir --with-zlib --enable-sockets --enable-gd-native-ttf --with-png-dir --with-jpeg-dir --enable-sigchild --with-gettext --enable-mbstring --enable-inline-optimization --enable-bcmath --enable-shmop --enable-calendar --enable-ftp --with-gdbm --with-iconv --enable-mbregex --with-openssl --with-curl=/usr/bin --enable-soap --disable-debug --with-mcrypt --with-kerberos --enable-zip --with-zlib-dir --enable-exif --enable-fpm --with-fpm-user=nobody --with-fpm-group=nobody  --with-mysqli=/usr/local/mysql/bin/mysql_config --with-pdo-mysql=shared,/usr/local/mysql && make && make install
+
+	앞에서 심볼링 링크 작업한것처럼 이곳에서도 작업을 진행한다. 소스컴파일을 할 경우 수동으로 작업해줘야되는 부분이 많이 존재한다.
+		ln -s /usr/local/php-7.0.4/ /usr/local/php
+		ln -s /usr/local/php/bin/php /usr/sbin/
+		ln -s /usr/local/php/bin/phpize /usr/sbin/
+
+		php -v
+		PHP 7.0.4 (cli) (built: Apr  8 2016 16:41:41) ( NTS )
+		Copyright (c) 1997-2016 The PHP Group
+		Zend Engine v3.0.0, Copyright (c) 1998-2016 Zend Technologies
+
+	php.ini 환경설정값을 php 설치된 디렉토리로 복사한다.
+		cp /usr/local/src/php-7.0.4/php.ini-development /usr/local/php-7.0.4/lib/php.ini
+
+2-5 최종테스트
+	아파치 설정파일 열어서 Vhost 나 DocumentRoot 설정을 통해 실행 경로 설정
+		vi /usr/local/apache/conf/httpd.conf 
+		..
+		DocumentRoot "/home/chat1/public_html"
+		<Directory "/home/chat1/public_html">
+		
+	실행경로에 index.php 작성
+		cd /home/chat1/public_html
+		touch index.php
+		vi index.php <-파일열어서 테스트 코드작성 후 저장
+			<?php
+				phpinfo();
+			 ?>
+	service httpd start
+
+	curl http://localhost/index.php <- 최종확인

@@ -1,0 +1,5 @@
+* firewalld 실행여부 확인하기
+firewall-cmd --state
+
+또는
+systemctl status firewalld.service //systemd로 관리되고 있나 확인

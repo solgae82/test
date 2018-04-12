@@ -1,0 +1,85 @@
+## 리눅스에서 무슨무슨 so 파일이 없다고 할 때
+
+	리눅스에서 어떠한 프로그램을 설치할 때 무슨무슨 so 파일, 가령 libX11.so.6 파일처럼 *.so.* 파일이 없다고 할 때는 다음과 같은 방법으로 문제를 해결해야 한다. 
+
+	우선 so 파일이 무엇인지 알아 보자. so 파일은 shared object 파일이란 뜻으로 *.so.* 일텐데, 특정한 기능을 구현해 놓은 파일을 의미한다. 즉, 프로그램들은 일반적으로 필요한 기능을 전부 구현하기 보다는 특정 기능이 이미 구현되어 있으면 그 기능이 구현된 파일을 메모리에 올린 후 그 기능을 사용하게 된다. 마치 물건을 조립하는 것과 비슷한 이치인데, 컴퓨터를 조립할 때 쿨러가 필요하면 쿨러를 만드는 회사에서 잘만쿨러 같은 것을 사서 붙이듯이, 예를 들면 인터넷에서 파일을 다운로드 받는 기능이 필요하면 그 기능이 구현된 파일을 메모리에 올린 후 그 기능을 사용하게 되는 것이다. 이처럼 한 프로그램이라 하더라도 일반적으로 사용되는 여러 기능이 내부에서 다른 so 파일들을 통해서 이루어 지게 된다.
+
+	그래서, 만약 내가 설치하고자 하는 파일이 특정 기능 때문에 어떤 so 파일이 필요하다고 할 때, 어떤 경우는 설치시 so 파일 존재 여부를 확인해 보거나, 어떤 경우는 설치된 이후 실제 so 파일에 구현된 기능이 필요할 때 메모리에 올리기 위해 그 so 파일을 찾다가 없어서 에러가 날 때도 있다. 그런 경우 주로 다음과 같은 에러 메세지가 나타난다. 
+
+	libstdc++.so.5: cannot open shared object file: No such file or directory
+	libgcc_s.so.1: cannot open shared object file: No such file or directory
+
+	왜 저런 말이 나타냤느냐 하면, 일반적으로 so 파일을 어디에서 찾아야 하는지를 설정해 놓은 경로를 모두 찾아 보았음에도 불구하고 libstdc++.so.5 와 libgcc_s.so.1 파일을 찾을 수 없었기 때문이다. 물론 저 파일이 실제로 어딘가에 있기 때문에, 심지어 현재 경로에 있기 때문에 대체 왜 저런 에러가 나타났을까 의아해 할 수도 있는데, so 파일은 그것과 상관이 없이 다음과 같은 순서로 경로들을 순회하면서 찾게 되고, 그렇게 돌았던 경로에서 찾지 못하면 위와 같은 에러 메세지가 나타난다. 
+
+	so 파일을 찾는 경로 설정
+	1. system default 경로
+	2. LD_LIBRARY_PATH
+	3. binary code 에 hard-coding 된 경로
+
+-----------------------------//
+
+1. system default 경로
+
+	일반적으로 /usr/local/bin 과 /usr/bin 이다. 이 값은 /etc/ld.so.conf 파일에 설정이 된 값이다. 한 번 살펴 보자. 
+
+	[root@localhost] $ more /etc/ld.so.conf
+	include ld.so.conf.d/*.conf
+	/usr/local/bin
+	/usr/bin
+
+	즉, /etc/ld.so.conf 파일에 설정된 경로를 차례대로 돌아 가면서 원하는 so 파일을 찾는다. 물론, 만약 내가 어떤 프로그램을 만들었고, 그것을 내 프로그램이 설치된 경로 밑의 lib 경로에 넣고 그것을 ld.so.conf 에 넣고 싶으면, /etc/ld.so.conf.d/ 경로 밑에 *.conf 파일 이름으로 저장 후 그 파일에 그 경로를 집어 넣으면 된다는 것을 위 첫 번째 줄로부터 알 수 있다. 즉, 첫 번째 줄이 
+
+	include ld.so.conf.d/*.conf
+
+	이니까, ld.so.conf.d 경로에 있는 conf 로 끝나는 파일들을 살펴 보면, 
+
+	[adnoctum@bioism ~]$ ll /etc/ld.so.conf.d/
+	total 16
+	-rw-r--r-- 1 root root 15 Sep  4  2009 mysql-i386.conf
+	-rw-r--r-- 1 root root 20 Sep 14  2007 qt-i386.conf
+	-rw-r--r-- 1 root root 25 Dec 10 08:44 xulrunner-32.conf
+
+	가 있고, 여기서 다시 mysql-i386.conf 파일의 내용을 보면, 
+
+	[adnoctum@bioism ~]$ more /etc/ld.so.conf.d/mysql-i386.conf
+	/usr/lib/mysql
+
+	꼴랑 한 줄이다. 즉, include 구문에 의해, ld.so.conf.d 안에 있는 *.conf 파일의 내용들이 ld.so.conf 파일에 모두 들어 가게 된다. 그냥 ld.so.conf 파일에 모두 넣지 왜 이렇게 하나 궁금할 수도 있는데, 만약 어떤 프로그램이 10 개의 경로에 so 파일을 분산시켜 넣는다고 하면 괜히 그것 때문에 ld.so.conf 파일이 지저분해 지게 되고, 또 다른 so 파일을 찾을 때 그것 때문에 여러 경로를 순회하므로 다른 프로그램들 성능까지 떨어 뜨리게 된다. 만약 그렇게 지저분했던 프로그램을 지우면 더 골치아파지겠지. 저렇게 했다면 ld.so.conf.d 에 있던, 가령 myprogam.so.conf 파일 (이 파일이 10개의 경로를 갖고 있었다면) 만 지우면 간단히 해결되는 것이었음에도 불구하고, 그 내용이 모두 ld.so.conf 파일에 있었다면 그 경로를 지워도 되는지 (다른 so 파일이 거기 있었으면 지우면 안 될테니까) 아닌지 곤란해 지게 된다1. 하여튼, 저렇게 되어 있는 것이 깔끔하다. 
+
+	저렇게 수정을 했으면 적용하기 위해 ldconfig 명령어를 실행시켜 준다. 
+	:ldconfig 명령은 /etc/ld.so.cache 파일을 갱신시켜주는 명령어이다.
+	ldconfig - /etc/ld.so.conf 설정된 동적 라이브러리 정보를 /etc/ld.so.cache 파일로 만들어 주는 일을 한다. 이로서 로더는 ld.so.cache 정보를 기반으로 보다 빠르게 라이브러리를 찾아 낼 수 가 있다. ld.so.conf 설정을 변경하면 반드시 ldconfig 명령을 수행하여 cache 를 갱신해 주도록 하자.
+
+2. LD_LIBRARY_PATH
+
+	이 값은 환경 변수인데, 다음과 같이 직접 써 넣어 줄 수 있다
+
+	vi ~/.bash_profile 
+	LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH
+
+	저장 후 환경변수 갱신
+	source ~/.bash_profile 
+
+	그런데 이런 방법은 그리 권장되는 것은 아닌듯 싶다. 
+
+3. binary code에 hard-coding 된 경로
+   
+	이 경우는 프로그래머가 아예 소스 코드에 so 파일 경로를 설정해 버린 경우인데, 실제의 예는, 내가 동적 라이브러리를 설명한 글에서 가져 온 다음의 코드이다. 
+	const char* lib_path[] = { "/home/adnoctum/test/libabcd.so.1.0", "/home/adnoctum/test/libabcc.so.1.0"};
+
+
+	그런데 이런 경우는 별로 없을 것이다. 또한 이런 경우 문제가 생기면 사용자가 해결할 수 있는 유일한 방법은 그 경로에 so 파일을 가져다 놓는 것인데, 프로그래머가 hard-coding 한 경로를 알지 못하면 도무지 방법이 없겠지. 하여튼 이런 경우는 거의 없다. 
+	위와 같이 설정된 경로에서 찾지 못했다고 한 so 파일은 그렇다면 어디에 있는가? 일단 locate 명령어로 찾아 본다. 그런데 아직 index 가 update 되지 않았을지도 모르므로 root 권한으로 updatedb 를 해주고 나서 locate 를 해준다. 
+
+	[root@localhost]# updatedb
+	locate libstdc++so.5 | more
+	.
+	.
+	.
+
+	그렇게 해서 원하는 so 파일을 찾았으면 /etd/ld.so.conf 파일에 그 so 파일이 있는 경로를 집어 넣거나, 아니면 so 파일을 /usr/local/bin 과 같은 곳으로 이동시키거나 link 를 만들어 준다. 그런데 일반적으로 프로그램은 여러 개의 so 파일이 사용하게 되므로 하나 옮기거나 링크 만들어도 또 다른 so 파일에서 동일한 에러가 날 수 있으므로 ld.so.conf 파일에 그 경로를 집어 넣는 것이 좋아 보인다. 혹은 LD_LIBRARY_PATH 에 그 경로를 덧붙이거나. 
+
+	그런데 locate 로 했는데 정말로 원하는 so 파일이 없는 것이라면, 마지막 방법으로 구글링을 해본다. 그러면 그 so 파일이 어떤 라이브러리에 있는지, 그래서 어떤 라이브러리를 설치해야 하는지를 알 수 있다.
+	(윈도우즈에서도 프로그램 삭제할 때 "다른 프로그램이 이 파일의 기능을 사용할 수도 있는데 지울 것이냐?" 하고 dll 파일 삭제하기 전에 묻는 경우를 많이 봤을 것이다. 이 경우와 완전히 같다.)
+

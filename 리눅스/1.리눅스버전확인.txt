@@ -1,0 +1,5 @@
+1. cat /etc/issue (보안 문제로 막혀있을 수 있다)
+2. cat /etc/*-release (확실)
+2. rpm -qa *-release (레드헷 계열)
+
+

@@ -1,0 +1,30 @@
+현재시간 보기
+[root@zetawiki ~]# date
+Sun Nov 17 08:49:12 PST 2013 <-태평양 표준시(PST)로 되어 있음
+
+한국표준시로 변경 (/etc/localtime 을 Seoul로 링크해준다)
+[root@zetawiki ~]# ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+[root@zetawiki ~]# date
+Mon Nov 18 01:49:20 KST 2013 <-한국 표준시(KST)로 변경됨
+
+수동시간설정
+[root@zetawiki ~]# date -s "2013-12-01 00:00:00" 
+Sun Dec  1 00:00:00 PST 2013
+
+코넷시간서버와 동기화
+rdate -s time.bora.net
+
+하드웨어시간도 동기화
+hwclock --systohc
+
+최종확인
+date
+hwclock
+
+------------------------------------------------//한방에 설정
+시간대 KST로, 시스템 시간 맞추고, hwclock까지 맞춤
+ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+rdate -s time.bora.net
+hwclock --systohc
+date
+hwclock

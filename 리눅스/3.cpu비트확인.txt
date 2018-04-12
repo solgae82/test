@@ -1,0 +1,29 @@
+- 몇 비트인지 확인
+arch
+	x86_64
+
+getconf LONG_BIT
+	x86_64
+
+uname -m
+	x86_64
+
+
+-  cpu정보 확인
+cat /proc/cpuinfo
+
+- cpu 코어전체 갯수
+grep -c processor /proc/cpuinfo
+
+
+- cpu(물리적) 갯수
+grep ^processor /proc/cpuinfo | wc -l
+
+- cpu 당(물리적갯수) 코어 갯수
+grep "cpu cores" /proc/cpuinfo | tail -1
+
+- 실시간 cup 상용률 체크
+top
+
+
+
