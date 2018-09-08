@@ -1,0 +1,156 @@
+### 리스트 
+
+
+	blank = []	#빈리스트 생성
+	blank_1 = list() #빈리스트 생성
+
+
+	score = [0,1,2,3,4,5,6,7,8,9]
+	name = ["최상미","이한승", "김기남"]
+	namescore = ["최상미",88,"이한승",95] #다른 자료형도 섞어 쓸 수 있다
+	str = list("korea")
+
+# list[begin:end:step] 
+
+	score = [0,1,2,3,4,5,6,7,8,9]
+	str = list("korea")
+
+	print(score[0]) # 0
+	print(score[-1]) # 9
+	print(str) #['k','o','r','e','a']
+	print(score[2:4]) #[2, 3]
+	print(score[:4]) #[4, 5, 6, 7, 8,9]
+	print(score[6:]) #[6, 7, 8, 9]
+	print(score[1:7:2]) # [1, 3, 5]
+
+
+#리스트 바꾸기
+	score = [0,1,2,3,4,5,6,7,8,9]
+	score[2:5] = [20,30,40] # [0,1,20,30,40,5,6,7,8,9]
+	score[6:8] = [90,91,92,93,94] # [0,1,20,30,40,5,90,91,92,93,94,8,9]
+
+#리스트 삭제
+	score = [0,1,2,3,4,5,6,7,8,9]
+	score[2:5] = [] # [0,1,5,6,7,8,9]
+	del score[4] # [0,1,5,6,8,9]
+
+
+#리스트 결합
+	list_1 = [1,2,3,4,5]
+	list_2 = [10,11]
+	listadd = list_1 + list_2
+	print(listadd) # [1,2,3,4,5,10,11]
+
+	list_multi = list2 * 3
+	print(list_multi) # [10,11,10,11,10,11]
+
+	
+#이중 리스트
+	lol = [[1,2,3], [4,5], [6,7,8,9]]
+	print(lol[1]) #[4, 5]
+	print(lol[2][1]) #7
+
+	for sub in lol:
+	    for item in sub:
+		print(item , end='')
+
+	    print()
+
+	..
+	123
+	45
+	6789
+
+
+#리스트 comprehension
+	list_1 = [n *2 for n in range(1,11)]
+	print(list_1) # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+	list_2 = [n * 2 for n in range(1,11)]
+	print(list_2) # [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+
+	list_3 = [n for n in range(1,11) if n %3 ==0]
+	print(list_3) #[3, 6, 9]
+
+
+#리스트삽입
+	nums = [1,2,3,4]
+	nums.append(5) #[1, 2, 3, 4, 5]
+
+	nums = [1,2,3,4]
+	nums.insert(2, 99)  #[1, 2, 99, 3, 4, 5]
+
+
+	nums = [1,2,3,4]
+	nums[2:2] = [33,34, 35 ,36] # [1, 2, 33, 34, 35, 36, 3, 4]
+	nums[2:3] = [33,34, 35 ,36] # [1, 2, 33, 34, 35, 36, 4]
+	nums[2] = [33,34, 35 ,36] # [1, 2, [33, 34, 35, 36], 4]
+
+	list_1 = [1,2,3,4,5]
+	list_2 = [10,11]
+	list_1.extend(list_2) #이미 있는 리스트 확장하기
+
+	print(list_1) #[1,2,3,4,5,10,11]
+
+#리스트삭제
+	score = [0,1,3,2,4,5,2]
+	score.remove(2) #값기준 삭제(매치되는 첫번째 값만 삭제), 없으면 예외발생
+	print(score) #[0, 1, 3, 4, 5, 2]
+
+	score = [0,1,2,3,4,5,2]
+	del(score[2]) , del score[2] #인덱스삭제
+	print(score) #[0,1,3,4,5,2]
+
+	score = [0,1,3,2,4,5,2]
+	score[1:4] = [] , del score[1:4] #범위삭제
+	print(score) #[0, 4, 5, 2]
+
+	#모두삭제
+	score[:] = []
+	del score[:]
+	score.clear()
+
+#리스트 pop(빼내고 삭제)
+	score = [0,1,3,2,4,5,2]
+	item = score.pop() # score.pop(-1) 같음
+	print(item) # 2
+	print(score.pop(2)) # 3
+	print(score) # [0,1,2,4,5]
+
+#리스트 검색 
+	score = [91,92,93,94,95,92]
+	item = score.index(92) #값이 없으면 예외발생시
+	print(item) # 첫번째 92값을 찾아서  index값 1을 반환
+	print(score.count(92)) #92라는 값을 모두 조사, 2 반환
+
+	print(min(score)) #최소값 반환 91
+	print(max(score)) #최대값 반환 95
+	print(len(score)) #리스트 길이 반환 6
+
+	#if 비교값 in [리스트] 문으로 검색
+	q = 'y'
+	if q in ['y','예', '당근', 'ok']:
+		print("감사합니다")
+	else:
+		print("죄송합니다")
+
+#정렬
+	score = [91,92,93,94,95,90]
+	score.sort() , score.sort(reverse=False) #[90, 91, 92, 93, 94, 95]
+	score.reverse() #[95, 94, 93, 92, 91, 90]
+	
+	# sort(reverse) 인수
+	score = [91,92,93,94,95,90]
+	score.sort(reverse=True) #[95, 94, 93, 92, 91, 90]
+
+	score = ["korea","japan","CHINA","america"]
+
+	score.sort()
+	print(score) #['CHINA', 'america', 'japan', 'korea']
+	score.sort(key=str.lower) #비교때만 소문자로 변경해서 정렬
+	print(score) #['america', 'CHINA', 'japan', 'korea']
+
+	score = [91,92,93,94,95,90]
+	sort = sorted(score) , sorted(score, reverse=False)
+	print(score)	#[91,92,93,94,95,90]
+	print(sort)	#[90,91,92,93,94,95]

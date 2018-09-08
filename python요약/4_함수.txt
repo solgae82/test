@@ -1,0 +1,161 @@
+#함수
+	def 함수명(인수 목록):
+		본체
+		return
+
+	def sum(end):
+		sum = 0
+		for num in range(end + 1):
+			sum += num
+
+		return sum
+
+	all_sum = sum(5) #15 반환
+
+
+#pass 명령
+	#임의의 빈함수를 설정시 
+	def sum(end): #이렇게만 선엄하면 에러
+
+	def sum(end):
+		pass #나중에 구현해도 된다
+	
+	..	
+
+	if True :
+		pass # 빈자리 잡기 명령어 , C언어에 {}같은 것
+	else:
+		pass 
+
+
+#위치 인수
+	위치에 맞게 입력하면 해당 위치 인수 변수가 받는 구조
+	
+	def sum(begin, end, step):
+		sum =0
+		for n in range(begin, end, step):
+			sum += n
+
+		return sum
+		
+	print(sum(1, 6 , 1)) # 15
+
+#키워드 인수
+	그냥 (위치) 인수는 위치에 맞게 값만 넣어도 되고(기본)
+	인수 이름을 적고 대입값을 적어도 된다  (키워드인수)
+	인수 순서가 바뀌어도 인수를 제대로 매칭하게 해준다
+	
+	def sum(begin, end, step):
+		sum =0
+		for n in range(begin, end, step):
+			sum += n
+
+		return sum
+
+	print(sum(1, 6 , 1)) # 15
+	print(sum(end=6, begin=1 , step=1)) #15
+	print(sum(1, step = 2 , end=6)) #9 (위치인수 와 조합)
+
+#가변인수
+	*기호를 사용한다
+	함수당 맨마지막에 하나만 와야한다
+	인수를 [튜플]로 묶어서 전달해준다(자동)
+
+	def intsum(*ints): # 앞 쪽에 일반인수는 얼마든지(other , *ints):
+		sum  = 0
+		for n in ints:
+			sum += n
+
+		return sum
+
+	intsum(1,2,3)
+	intsum(1,2,4,10,100)
+	
+#기본값 인수
+	인수마다 기본값을 정할 수 있다 (step = 1)
+	기본값 정한 인수 뒤에 일반 인수가 올수는 없다(구분이 안 되니)
+
+	def sum (begin , end , step=1):
+		sum=0
+		for num in range(begin, end, step):
+			sum += num
+
+		return sum
+
+	
+	sum(1,11) #55
+	sum(1,11,2) #25
+
+
+	
+
+#키워드 가변인수
+	**기호를 붙인다
+	키워드 인수를 전달하면 dictionary로 만들어서 전달한다(키:값)
+	키=값,.. (키워드 인수) 형태로만 전달해야한다
+
+	def sum(**dic):
+		sum =0
+		begin = dic['b']
+		end = dic['e']
+		step = dic['s']
+		for n in range(begin, end, step):
+		    sum += n
+
+		return sum
+
+	    
+	print(sum(e=6, b=1 , s = 2)) # 9
+
+
+#위치인수 + 가변인수 + 키워드 가변인수
+	순서는 (위치.. , 가변, 키워드 가변) , 상식적으로 생각하면 된다
+	
+	def cal (name , *score, **option):
+		.
+		.
+	cal("dong",99,88,77,21, avg= True)
+	cal("dong",99,88,59,99,88, avg= false)
+
+
+#지역변수,전역변수
+	함수 내부 변수는 지역변수
+	함수 외부 변수는 전역변수
+
+		sum = 100	#전역변수
+		def cal(n):
+			sum =n	#지역변수
+		cal(10)
+		print(sum) # 100
+
+		#global 키워드 함수 내부에 쓰기
+
+			sum = 100	#전역변수
+			def cal():
+				global sum #외부 전역변수 쓰기
+				sum =10	
+
+			cal()
+			print(sum) # 10
+		
+#docstring
+	함수 선언다음 바로 아래 스트링 함수 설명 문자열
+	""" 을 주로 쓰고, 문자열 방식의 ' , "도 된다
+	연속된 한줄만 인식한다
+
+	def cal(n):
+		"""정수에 100곱하기함수"""
+		sum = n * 100
+		return sum
+
+	help(cal)
+	>Help on function sum in module __main__:
+
+	>sum(begin, end, step=1)
+	    정수에 100곱하기함수
+
+	print(cal.__doc__)
+	>정수에 100곱하기함수
+		
+#내장함수
+	파이썬 내부에 이미 내장된 함수들 (built in function)

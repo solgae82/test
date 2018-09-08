@@ -1,0 +1,14 @@
+제어문
+	if else elif for while break continue
+상수
+	True False None
+논리연산자
+	and or not in
+함수
+	def return lambda nonlocal global
+예외처리 
+	try except finally raise
+모듈
+	import from class
+기타 
+	is del with as yield assert pass
