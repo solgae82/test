@@ -1,4 +1,4 @@
-$.param() : 폼 요소들의 값을 변환하여 직렬화된 문자열로 표현한다.
+﻿$.param() : 폼 요소들의 값을 변환하여 직렬화된 문자열로 표현한다.
 var params = {width : 1680, height : 1050};	// 배열 선언
 var str = $.param(params); // Ajax로 전송가능하도록 직렬화 , width=1680&height=1050
 ---------------------------------------//		     
@@ -24,5 +24,5 @@ $.post("test.php", params, function(data,status){..});// data:출력데이터, s
 
 ---------------------------------------//
 $.get() : get 방식으로 ajax 통신을 한다. 서버에서 가져온다.
-var params = 'a=1&b=hi'; //또는 {a;1, b:'hi'}
+var params = 'a=1&b=hi'; //또는 {'a':'1', 'b':'hi'}
 $.get("test.php",params ,  function(data, status){..});  // data:출력데이터, status:success, error 문자열 상태
