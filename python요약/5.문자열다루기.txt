@@ -1,0 +1,177 @@
+#문자열은 기본 리스트 일종이다
+#문자열은 변경 불가능한(immutable) 자료형이다
+	s = "python"
+	s[2] #t 
+	S[-1] #n
+
+	for c in s:
+		print(c, end=',')
+	>p,y,t,h,o,n,
+
+	for i in (len(s)):
+		print(s[i], end',')
+	>p,y,t,h,o,n,
+
+	s[2] = 'k' # 에러!
+
+#슬라이스 [begin : end : step]
+	문자열뿐만 아니라, 리스트 , 튜플등에도 쓸 수 있다.
+
+	s = "python"
+	print(s[2:5]) #tho
+	print(s[3:]) #hon
+	print(s[:4])  #pyth
+	print(s[2:-2]) #th
+	print(s[::2]) #pto
+	print(s[::-1]) #nohtyp , 거꾸로 출력
+	print(s[::-2]) #nhy
+
+
+#검색 메서드들
+	s = "python programing"
+
+	print(len(s)) #17 , 문자열, 리스트, 듀플, 사전등 컬렉션등에 사용가능
+	print(s.find('n')) #5 , 앞에서 검색해서 첫번째 찾은 위치,0부터index , 없으면 -1리턴
+	print(s.rfind('n')) #15 , 뒤에서 검색해서 첫번째 찾은 위치, 0부터index , 없으면 -1리턴
+	print(s.index('n')) #5 , find와 같다, 없으면 예외발생
+	print(s.rindex('n')) #5 , rfind와 같다, 없으면 예외발생
+	print(s.count('n')) #2 , 문자, 문자열 갯수 검색, 없으면 0
+
+#(in, not in) 키워드
+	
+	문자열뿐만 아니라, 리스트 , 튜플등에도 쓸 수 있다.
+	
+	s = "python programing"
+
+	print('a' in s) #True
+	print('a' not in s) #False
+	print('z' in s) #False
+
+	if 'z' in s:
+	    print('ok')
+	else:
+	    print('no') # <- 출력
+
+#기타 조사 메소드
+	name = "김한결"
+	if name.startswith('김'):
+	    print("김가입니다") #출력
+
+	file = "man.jpg"
+	if name.endswith('.jpg'):
+	    print("jpg 파일입니다") #출력
+
+
+	name.isalpha() : 모든 문자가 알파벳인지 조사 ,True, False 반환
+	name.islower() : 모든 문자가 소문자인지 조사 ,True, False 반환
+	name.isupper() : 모든 문자가 대문자인지 조사 ,True, False 반환
+	name.isspace() : 모든 문자가 공백문자인지 조사 ,True, False 반환
+	name.isalnum() : 모든 문자가 알파벳 , 숫자,(알파벳+숫자)인지 조사 ,True, False 반환
+	name.isdecimal() : 모든 문자가 숫자인지 조사 ,True, False 반환
+	name.isdigit() : 모든 문자가 숫자인지 조사 ,True, False 반환
+	name.isnumeric() : 모든 문자가 숫자인지 조사 ,True, False 반환
+	name.isidentifier() : 모든 문자가 변수,함수명등으로 쓸수 있는지 조사 ,True, False 반환
+	name.isprintable() : 모든 문자가 인쇄 가능한 문자인지  조사 ,True, False 반환
+
+#변경 메서드들
+	s = 'Good morning. My love Kim '
+
+	print(s.lower()) #good morning. my love kim
+	print(s.upper()) #GOOD MORNING. MY LOVE KIM
+	print(s.swapcase()) #gOOD MORNING. mY LOVE kIM
+	print(s.capitalize()) #Good morning. my love kim
+	print(s.title()) #Good Morning. My Love Kim
+
+#공백 벗기기
+	s= "   angel   "
+
+	print(':' + s + ':') #:   angel   :
+	print(':' + s.lstrip() + ':') #:angel   :
+	print(':' + s.rstrip() + ':') #:   angel:
+	print(':' + s.strip() + ':') #:ange:
+
+#구분자로 분할하기
+	s = "짬뽕 짜장 볶음밥"
+
+	print(s.split()) #['짬뽕', '짜장', '볶음밥'] , 디폴트 공백 기준 분할
+
+	s2 = "서울-대전-대구-부산-광주"
+	print(s2.split('-')) #['서울', '대전', '대구', '부산', '광주']
+
+	s3 = """동해물과
+	백두산이
+	마르고 닳도록"""
+
+	s4 = s3.splitlines()
+	print(s4) #['동해물과', '백두산이', '마르고 닳도록']
+	print(".-.".join(s4)) #동해물과.-.백두산이.-.마르고 닳도록
+
+#문자열 바꾸기
+	s = "짬뽕 짜장 볶음밥"
+	print(s.replace('볶음밥',"삼선볶음밥")) #짬뽕 짜장 삼선볶음밥
+
+#특정폭 정해서 출력
+	인수로 물자열 폭을 강제 지정한다(남는 폭은 공백이 된다)
+	폭이 문자열보다 적다면 무시된다.
+
+	s = "짬뽕"
+
+	print('|'+ s.ljust(10) + '|') #|짬뽕        |
+	print('|'+ s.rjust(10) + '|') #|        짬뽕|
+	print('|'+ s.center(10) + '|') #|    짬뽕    |
+	print('|'+ s.center(1) + '|') #|짬뽕|
+
+
+#기본 출력 포맷팅
+	%d : 정수
+	%f : 실수
+	%s : 문자열
+	%c : 문자하나
+	%h : 16진수
+	%o : 8진수
+	%% : %문자
+
+	print("궁금하면 %d원" % 500) #궁금하면 500원
+	print("%d월 %d일은 %s이다." % (8,15,"광복절")) #8월 15일은 광복절이다.
+
+	#자리공간 강제지정
+	v = 123
+
+	print("|%d|" % v) #|123|
+	print("|%5d|" % v)#|  123|, 우측정렬
+	print("|%-5d|" % v)#|123  |, 좌측정렬
+
+	#실수 포맷팅
+	v2 = 3.14159265
+
+	print("*%10f*" % v2)    #*  3.141593* , 소숫점 지정 없으면 반올림한 6자리가 기본
+	print("*%10.2f*" % v2)  #*      3.14*
+	print("*%-10f*" % v2)   #*3.141593  *
+
+#신형 포맷팅.format()
+	
+	
+
+	#index
+		name = "한결"
+		age = 16
+		height = 162.5
+		
+		print("나이:{1}, 키:{2}, 이름:{0}".format(name,age,height)) #나이:16, 키:162.5, 이름:한결
+
+		print("키:{2:8.2f}|".format(name,age,height))  #키:  162.50|
+		print("키:{2:<8.2f}|".format(name,age,height)) #키:162.50  | , < (좌로 정렬)
+		print("키:{2:>8.2f}|".format(name,age,height)) #키:  162.50| , > (우로 정렬)
+		print("키:{2:^8.2f}|".format(name,age,height)) #키: 162.50 | , ^ (가운데 정렬)
+		print("키:{2:$>8.2f}| , 이름:{0:@^10s} , 나이:{1:!<5d}".format(name,age,height)) 
+		#키:$$162.50| , 이름:@@@@한결@@@@ , 나이:16!!!
+
+	#인수명
+		print("나이:{age}, 키:{height}, 이름:{name}".format(name="김한결",age=16,height=165.5))
+		#나이:16, 키:165.5, 이름:김한결
+
+
+	# dictionary
+		boy1 = {"name":"김한결1", "age":17, "height":172.5}
+		boy2 = {"name":"김한결2", "age":16, "height":165.5}
+		print("나이:{0[age]}, 키:{1[height]}, 이름:{0[name]}".format(boy1, boy2)) #나이:17, 키:165.5, 이름:김한결1
