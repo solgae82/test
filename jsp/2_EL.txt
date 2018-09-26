@@ -1,0 +1,155 @@
+지시자
+<%@ page import="java.util.*" %>
+
+선언문
+<%! int y = 3; %>
+
+스클립틀릿
+<% String str= "스클립틀릿"; %>
+
+표현식
+<%=str%>
+
+표준액션
+<jsp:include page="foo.html" />
+
+EL표현식
+email : ${pageScope.email}
+
+
+** el(expression language) 기본  **
+
+- pageContext, request, session, application 속성의 값을 표현할때 쓴다
+- 4개의 영역의 속성이 중복될때는 작은 범위부터 해석한다
+	page > request > session > application
+
+	<%
+	pageContext.setAttribute("result", "page");
+	request.setAttribute("result","request");
+	%>
+
+	${result} //page 출력 
+
+- 4개 영역중에 콕 찝어서 하고 싶을때 해당 영역 scope를 붙인다
+	${pageScope.result}
+	${requestScope.result}
+	${sessionScope.result}
+	${applicationScope.result}
+
+- EL 내장객체 목록
+
+	pageScope : Map
+	requestScope : Map
+	sessionScope : Map
+	applicationScope : Map
+	param : Map
+	paramValues : Map
+	header : Map
+	headerValues : Map
+	cookie : Map
+	initParam : Map
+	pageContext : PageContext
+
+- 기본 표현법
+	해당 값이 없더라도 에러가 나지 않는다. 출력하지 않을 뿐.
+
+	- 파라미터 값 가져오기
+		${param.num} or ${param["num"]}
+		${paramValues.fruits[0]} or ${paramValues.["fruits"][0]}
+
+	- 헤더값 가져오기
+		${header["User-Agent"] }
+		//Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36
+
+		${header.host } //localhost:8080
+
+	- 복수의 헤더 값이 있을 경우엔 headerValues로 접근
+		${headerValues.Accept[1] } //ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+
+	- 쿠키 접근
+		${cookie.CART.value}, ${cookie.["CART"].value}, ${cookie.["CART"]["value"]}, ${cookie.CART["value"]}
+
+		${cookie.CART.domain}
+		${cookie.CART.path}
+		${cookie.CART.maxAge}
+
+
+	- initParam 내장객체 접근
+
+		${initParam.DB_NAME} , ${initParam["DB_NAME"]}
+
+	- pageContext 객체 접근
+		- 파라미터가 없는 pageContext 객체의 get 메소드만 접근가능.
+		${pageContext.request.requestURI}..
+
+- 연산자
+	산술연산자
+		+ ,0 - , * , /[div], %[mod]
+	비교연산자
+		<  , lt
+		>  , gt
+		<= , le
+		>= , ge
+		== , eq
+		!= , ne
+	논리연산자
+		&& , and
+		|| , or
+		!  , not
+
+	조건 연산자
+		?:
+	엠프티 연산자
+		empty
+		
+		${empty param.id ? "없다":param.id }
+		test.jsp? //없다
+		test.jsp?id= //없다
+		test.jsp?id=yes //yes
+
+	대괄호, 마침표연산자
+		- 대괄호와 마침표 연산자로 가리킬 수 있는 항목
+		:(배열, List, Map, java Bean)
+		[] .
+	괄호
+		()
+		
+- 자바빈 프로퍼티 접근
+	privae String name2;
+
+	public String getName(){
+		return name2;
+	}
+
+	위와 같은 형식의 Bean이라면,
+	getName() 메소드의 get을 지우고 , 나머지 첫글자를 소문자로 만든 이름(Name -> name)이 프로퍼티명이 된다
+	
+	${id.name} , ${id["name"]}
+
+
+- EL 정적 함수 만들기(tag 라이브러리 사용)
+	- static 메소드를 호출하는 것.(예제에서는 Math.sqrt(int) 호출)
+
+	1. /WEB-INF/tlds/math-functions.tld 만들어서 작성 (버전 2.1)
+	<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+		<tlib-version>1.0</tlib-version>
+		<short-name>math</short-name>
+		<function>
+			<name>sqrtroot</name>
+			<function-class>java.lang.Math</function-class>
+			<function-signature>double sqrt(double)</function-signature>
+		</function>
+	</taglib>
+
+	2. web.xml에 추가 (서블릿 버전별 약간씩 다름 , 여기선 2.5버전)
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://localhost:8080/tlds/math-function.tld</taglib-uri>
+			<taglib-location>/WEB-INF/tlds/math-functions.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+
+	3. jsp파일에서 호출
+	<%@taglib prefix="m" uri="http://localhost:8080/tlds/math-function.tld" %>
+
+	${m:sqrtroot(4)} // 2.0

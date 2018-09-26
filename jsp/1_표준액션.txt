@@ -1,0 +1,164 @@
+지시자
+<%@ page import="java.util.*" %>
+
+선언문
+<%! int y = 3; %>
+
+스클립틀릿
+<% String str= "스클립틀릿"; %>
+
+표현식
+<%=str%>
+
+표준액션
+<jsp:include page="foo.html" />
+
+EL표현식
+email : ${pageScope.email}
+
+
+** 표준 액션 **
+
+--------- Bean 표준액션 
+
+	--------- 기본
+	Employee p = new Employee();
+	p.setName("대한민국");
+	request.setAttribute("person", p); //person 키
+
+	//id ="person"
+	<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request"/>
+	<jsp:getProperty name="person" property="name" /> // "대한민국"
+
+	--------- property 이름
+	private String name1;
+
+	public String getName() {
+		return name1;
+	}
+
+	이런 Bean 이라면
+		
+	<jsp:getProperty name="person" property="name" /> (옳음)
+	<jsp:getProperty name="person" property="name1" /> (틀림)
+
+	--------- 빈이 없을시 초기값 지정하기
+	<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request">
+		<jsp:getProperty name="person" property="name" /> // "대한민국"
+	</jsp:useBean>
+
+	--------- 다형성
+	<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request" />
+	Person p = new Employee();
+
+	- type 이 있을경우 class는 type에 명시한 클래스를 상속 또는 구현한 클래스여야 함.(당연)
+	- class 없이 type만 사용할 경우 반드시 빈이 존재해야한다(부모클래스나 해당클래스여야함. 없으면 에러)
+		Person p = new Employee();
+		<jsp:useBean id="person" type="com.solgae.bean.Person" scope="request"/>	//(o)
+		<jsp:useBean id="person" type="com.solgae.bean.Employee" scope="request"/>	//(o)
+
+		Employee2 p = new Employee();
+		<jsp:useBean id="person" type="com.solgae.bean.Person" scope="request"/>	//(o)
+		<jsp:useBean id="person" type="com.solgae.bean.Employee" scope="request"/>	//(o)
+
+	- type은 없고 class만 있을경우 해당 클래스이거나 상속받은 해당 클래스가 맞으면 출력, 맞지 않으면 에러
+		Person p = new Employee();
+		p.setName("대한민국");
+		request.setAttribute("person", p);
+
+		<jsp:useBean id="person" class="com.solgae.bean.Person" scope="request"/>
+		<jsp:getProperty name="person" property="name" /> //대한민국
+
+		<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request"/>
+		<jsp:getProperty name="person" property="name" /> //대한민국
+
+		Person 객체가 일반 클래스라면,  클래스 속성에 사용할 수 있다.
+		<jsp:useBean id="person" class="com.solgae.bean.Person" scope="request"/> (o)
+		
+		Person 객체가 추상클래스나 인터페이스이면, 클래스 속성에는 사용할 수 없다.
+		<jsp:useBean id="person" class="com.solgae.bean.Person" scope="request"/> (x)
+
+	**결론**
+		type x = new class()
+
+--------- 다양한 입력
+
+	표준액션으로 객체 만들고 스클립틀릿으로 넣기
+	<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request"/>
+	<%
+		person.setName(request.getParameter("name"));
+	%>
+
+	표현식으로 넣기
+	<jsp:setProperty name="person" property="name" value="<%=request.getParameter("name")%>" />
+
+	EL로 넣기
+	<jsp:setProperty name="person" property="name" value="${param.name}" />
+
+	속성으로 넣기
+	<jsp:setProperty name="person" property="name" param="name" />
+	// param 속성이 지정되지 않으면 자동으로 프로퍼티와 같은 name 파라미터로 셋팅해준다
+	<jsp:setProperty name="person" property="name"  /> 
+
+	파라미터명과 일치하는 set파라미터에 자동 셋팅
+	<jsp:setProperty name="person" property="*"  /> 
+
+
+--------- 포함 및 제어 넘기기 표준액션
+
+	인클루드
+		<jsp:include page="include.jsp" />
+		또는
+		<jsp:include page="include.jsp">
+			<jsp:param name="tiltle" value="대한민국"/>
+		</jsp:include>
+
+		include.jsp
+		${param.titile} //대한민국
+
+
+	제어 넘기기
+		<jsp:forward page="next.jsp" />
+		<jsp:forward page="next.jsp">
+			<jsp:param name="next" value="하하" />
+		</jsp:forward>
+
+		next.jsp
+		${param.next} //하하
+
+--------- 기타 표준액션
+애플릿 표준액션
+	<jsp:plugin type="applet" code="Good.class" width="500" height="300"">
+		<jsp:params>
+			<jsp:param name="morning" value="good">
+		</jsp:params>
+	</jsp:plugin>
+
+
+스클립트릿 표준액션
+	<% int cnt = 0; %>
+	위 아래가 같다
+	<jsp:scriptlet>int cnt = 0;</jsp:scriptlet>
+
+표현식 표준액션
+	<%=cnt%>
+	위 아래가 같다
+	<jsp:expression>cnt</jsp:expression>
+
+선언문 표준액션
+	<%!
+		public int add(int v1, int v2){return v1 + v2;}
+	%>
+	위 아래가 같다
+	<jsp:declaration>
+		public int add(int v1, int v2){return v1 + v2;}
+	</jsp:declaration>
+
+지시자 표준액션
+	<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+	위 아래가 같다
+	<jsp:derective.page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"/>
+
+	<%@ include file="footer.jsp" />
+	위 아래와 같다
+	<jsp:derective.include file="footer.jsp" />

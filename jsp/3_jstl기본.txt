@@ -1,0 +1,165 @@
+지시자
+<%@ page import="java.util.*" %>
+
+선언문
+<%! int y = 3; %>
+
+스클립틀릿
+<% String str= "스클립틀릿"; %>
+
+표현식
+<%=str%>
+
+표준액션
+<jsp:include page="foo.html" />
+
+EL표현식
+email : ${pageScope.email}
+
+
+** JSTL 기본  **
+
+-----c:set , c:remove-----
+	- c:set 이용한 변수는 자바변수가 되는 것이 아니라 page 데이터 영역의 attribute가 된다
+	- 그러므로 el표현식을 쓴다
+	- 자바변수를 value값으로 넣을 수는 있다.
+
+	<% int num=200; %>
+	<c:set var="num" value="<%=num %>" />
+	<c:set var="num1" value="<%=num + 100 %>" />
+	num:${num}
+	num1:${num1 }
+
+	<c:remove var ="num1" />
+	num1:${num1 }
+
+-----c:if 실행-----
+	<c:set var="num" value="200" />
+
+	<c:if test="${num > 100 }">
+	100 넘는다
+	</c:if>
+
+	<c:if test="${num >= 200 }">
+	200과 같거나 넘는다
+	</c:if>
+
+	<c:if test="${num > 300 }">
+	300 넘는다
+	</c:if>
+
+	<c:if test="true">
+	 항상 출력된다
+	</c:if>
+
+	<c:if test="false">
+	 항상  출력 안된다
+	</c:if>
+
+-----c:choose 실행-----
+	<c:set var="num" value="200" />
+	<c:choose>
+		<c:when test="${num > 100 and num < 200 }">
+			101 ~ 199 이내
+		</c:when>
+		<c:when test="${num >= 200 and num < 300}">
+			200 ~ 299 이내
+		</c:when>
+		<c:when test="${num >= 300 }">
+			300 이상
+		</c:when>
+		
+		<c:otherwise>
+			100이 넘지 않는다
+		</c:otherwise>
+	</c:choose>
+
+
+-----c:forEach-----
+	<c:forEach  begin="1"  end="10">
+		10번
+	</c:forEach>
+	-----c:forEach counter var-----
+	<c:forEach var="i" begin="1"  end="10">
+		${i}번
+	</c:forEach>
+
+	-----c:forEach odd-----
+	<c:forEach var="i" begin="1"  end="10" step="2">
+		${i}번
+	</c:forEach>
+
+
+-----c:forEach items 사용-----
+	<%
+		ArrayList<String> arr = new ArrayList<String>();
+
+		arr.add("1번");
+		arr.add("2번");
+		arr.add("3번");
+		arr.add("4번");
+		arr.add("5번");
+
+	%>
+	<c:forEach var="str" items="<%=arr %>">
+		${str}
+	</c:forEach>
+
+-----c:forEach items (과일출력)사용-----
+	String[] arr = {"사과","딸기","배","바나나"};
+	request.setAttribute("fruit", arr);
+	
+	<c:forEach var="fruit" items="${fruit}">
+		${fruit}
+	</c:forEach>
+	
+
+
+-----c:forTokens-----
+	<c:forTokens var="token" items="사과 배 딸기 포도"  delims=" ">
+		${token}
+	</c:forTokens>
+
+
+-----c:catch-----
+	<%
+		int num1 = 10;
+		int num2 = 0;
+		int result = 0;
+	%>
+	<c:catch var="e">
+		나누기 결과: <%=num1 / num2%>
+	</c:catch>
+
+	<c:if test="${e != null }">
+		 에러 메시지 : ${e.message}
+	</c:if>
+
+
+-----c:redirect : sendRedirect와 같다-----
+	<c:redirect url="next.jsp">
+		<c:param name="next" value="다음" >< /c:param>
+	</c:redirect>
+
+
+-----c:import-----
+	- <jsp:include> 처럼  실행시 결과를 포함한다. 
+	- 다른 url 결과도 포함할 수 있다
+
+	<c:import url="http://abc.kr" / >
+
+-----c:url set 변수 셋팅 처럼 자동 url변수 셋팅-----
+	<c:url var="my" value="http://abc.kr" >
+		<c:param name="mode" value="view" />
+		<c:param name="menu" value="2" />
+	</c:url>
+	${my} //http://abc.kr?mode=view&menu=2
+
+-----c:out-----
+	- 자동으로  태그나, 엠퍼샌드,홑따옴표,쌍따옴표등을 escape 해준다
+	
+	<c:out value="<strong>강하게</strong>"	 /> //&lt;strong&gt;강하게&lt;/strong&gt;
+	<c:out value="<strong>강하게</strong>"	 escapeXml="false" /> //<strong>강하게</strong>
+
+	//[?id=] 파라미터 있고 값이 있건 없건 value 출력 ,[?] 파라미터 자체가 없을때 guest 출력
+	<c:out value="${param.id}" default="guest" /> 
