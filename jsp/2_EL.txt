@@ -150,6 +150,10 @@ email : ${pageScope.email}
 	</jsp-config>
 
 	3. jsp파일에서 호출
+	taglib-uri 값으로 해도 되고
 	<%@taglib prefix="m" uri="http://localhost:8080/tlds/math-function.tld" %>
+	또는 
+	taglib-location 값으로 해도 된다
+	<%@taglib prefix="m" uri="/WEB-INF/tlds/math-functions.tld" %>
 
 	${m:sqrtroot(4)} // 2.0
