@@ -1,0 +1,155 @@
+---------// 기초 명령어
+
+ls -al		#현재 디레토리 숨김 파일 까지 리스트로 보기
+
+cd ~		#홈디렉토리로 이동
+cd /etc		#/etc 디렉토리 이동
+cd ../		#상위 디렉토리 이동
+
+pwd		#현재 디렉토리 경로 출력
+
+
+
+rm -rf test/abc		#test/abc  디렉토리 삭제
+
+cp abc.txt cb.txt	# abc.txt 를 cb.txt라는 이름으로 바꿔 복사
+cp -r abc bbb		#abc 디렉토리와 그안의 모든 디렉토리 파일 복사해서  bbb디렉토리 이름으로 생성
+
+touch  abc.txt		#크기가 0인 파일 생성,이미 파일이 존재한다면 파일 최종수정시간을 변경
+touch .abc		#리눅스에서는 파일명이나 디렉토리명 앞에 .(점)을 붙이면 숨김속성 파일이 된다.
+
+mv abc.txt /etc/sysconfig  #abc.txt를 /etc/sysconfig/ 디렉토리로 이동.
+mv aaa bbb ccc ddd		# aaa, bbb, ccc 디렉토리를 ddd 디렉토리로 이동
+mv abc.txt ddd.txt		#abc.txt 이름을 ddd.txt로 변경해서 이동(결국 이름 바뀌는 결과)
+
+mkdir abc		# abc 디렉토로 생성
+mkdir -p abc/ddd	# abc 디렉토리 없다면 부모 디렉토리도 생성하고 그 아래에 ddd 생성
+
+rmdir abc		# abc 디렉토리 삭제(삭제 전 디렉토리가 비어 있어야 함)
+
+cat a.txt b.txt		# a.txt b.txt 를 연결해서 출력한다
+
+head -3	a.txt		# a.txt 앞 3줄 출력
+tail -3 a.txt		# a.txt 뒤 3줄 출력
+
+
+more a.txt		# 페이지 단위로 출력, [space: 다음이동][b:이전이동][q:종료]
+more +100 a.txt		# 100행부터 출력
+
+less a.txt		# more 와 사용법은 같고, 더 확장됨 [pageUP, pageDown] 사용가능.
+less +100 a.txt		# 100행부터 출력
+
+file a.txt		# 파일 종류 출력
+
+clear			# 화면지우기
+
+man ls	# ls 명령어 사용법 출력
+	# j , k 전후 이동
+	# space , b 페이지 전후 이동
+	# q 끝내기
+
+whoami	# 현재 내가 누군지 출력
+root
+
+who	# 현재 내가 누군지, 언제 접속했고, 아이피가 뭔지 출력
+root     pts/0        2018-11-17 11:27 (192.168.0.150)
+
+
+
+---------// 사용자 관련
+adduser dong	#dong 사용자 생성
+
+passwd	#내 패스워드변경
+passwd dong	#dong 사용자 패스워드 정하기
+
+su - #root로 switch user하기
+Password: #root 패스워드 입력해야 로그인 된다
+
+su dong	#root에서 dong 유저로 로그인 하기
+
+userdel dong		# dong 사용자 삭제
+userdel -r dong		# dong 사용자 삭제(홈디렉토리까지 삭제)
+
+---------// vi 편집기
+vi a.txt
+
+명령모드
+dd #해당 커서의 행 삭제
+yy #해당 커서의 행 복사
+p  #복사 붙여넣기(현재 커서 이후)
+
+
+명령 모드에서 i, a 키 누르면 입력모드 전환
+
+입력모드 빠져나오기 -> esc 키 누른 후
+:set number #행번호 표시
+:q #끝내기
+:wq #저장 후 끝내기
+:wq! #강제로 저장 후 끝내기
+
+
+---------// 마운트
+mount -t <파일시스템type> <장치파일> <마운트 포인트>
+
+mount -t iso9660 /dev/cdrom /media/cdrom
+또는 
+mount  /dev/cdrom /media/cdrom
+
+mount #모든 마운트 보기
+..
+/dev/sr0 on /media type iso9660 (ro) # <- /dev/sr0 에 cd가 마운트 되었다(/dev/cdrom 과 같다)
+
+
+cd /media/cdrom
+ls #CD 내용이 보인다
+
+
+언마운트
+해당 디렉토리에서 나와야한다
+pwd
+/mdia/cdrom
+cd ../ #마운트 해제하기 위해 마운트 디렉토리 탈출
+
+마운트 해제
+umount /dev/cdrom 
+또는
+umount /dev/sr0
+또는
+umount /media
+
+
+---------//디렉토리 용량체크
+du		# 현재 디렉토리 + 하부디렉토리별 + 최종 현재 디렉토리 용량 출력
+12	./abc/ddd
+24	./abc
+48	.	# 현재 디렉토리 총 용량
+
+du -h		# ++ 사람이 알아보기 편리한 용량 기호 표시 K,M,G등
+12K	./abc/ddd
+24K	./abc
+48K	.
+
+du -s		#현재 디렉토리 총용량만 표시하기
+48	.
+
+du -sh		#현재 디렉토리 총용량 + 용량기호 표시
+48K	.
+
+
+du -h *		#현재디렉토리에 있는 파일별 용량표시 + 하부디렉토리는 용량만 표시
+12K	abc/ddd
+24K	abc
+20K	httpd.txt #현재 디렉토리에 있는 파일
+
+
+---------// 파일시스템 용량 체크
+df -h #파일시스템 사용용량을 K,M,G로 표시
+df -T #파일시스템 type포함해서 출력
+df -Th
+
+
+
+
+
+
+
