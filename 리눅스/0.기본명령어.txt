@@ -49,14 +49,22 @@ man ls	# ls 명령어 사용법 출력
 	# q 끝내기
 
 whoami	# 현재 내가 누군지 출력
-root
+	root
 
 who	# 현재 내가 누군지, 언제 접속했고, 아이피가 뭔지 출력
-root     pts/0        2018-11-17 11:27 (192.168.0.150)
+	root     pts/0        2018-11-17 11:27 (192.168.0.150)
 
+find /etc -name "*.conf" #/etc 디렉토리 하위에 .conf로 끝나는 파일들 검색
+
+which java	# which <실행파일명> , path 에 설정된 절대경로 포함한 실행파일 위치검색
+	/usr/bin/java
+
+whereis java	# whereis <실행파일명> , path 에 설정된 절대경로 포함한 [실행파일, 소스파일, man페이지] 위치검색, 
+	java: /usr/bin/java /etc/java /usr/lib/java /usr/share/java
 
 
 ---------// 사용자 관련
+
 adduser dong	#dong 사용자 생성
 
 passwd	#내 패스워드변경
@@ -70,7 +78,9 @@ su dong	#root에서 dong 유저로 로그인 하기
 userdel dong		# dong 사용자 삭제
 userdel -r dong		# dong 사용자 삭제(홈디렉토리까지 삭제)
 
+
 ---------// vi 편집기
+
 vi a.txt
 
 명령모드
@@ -89,6 +99,7 @@ p  #복사 붙여넣기(현재 커서 이후)
 
 
 ---------// 마운트
+
 mount -t <파일시스템type> <장치파일> <마운트 포인트>
 
 mount -t iso9660 /dev/cdrom /media/cdrom
@@ -148,8 +159,179 @@ df -T #파일시스템 type포함해서 출력
 df -Th
 
 
+---------// 파일 허가권
+ls -alh
+	-rwxrw-r--.  2 root root 4.0K Mar 22  2014 aa.txt
+	     
+-rwxrw-r--	: 파일이며,  [파일소유자:읽고쓰고실행]|[그룹:읽고쓰기]|[그외(other):읽기] 만 가능하다
+2		: 링크수
+root		: 소유자
+root		: 소유그룹
+4.0K		: 용량
+Mar 22 2014	: 2014.03.22 최종 수정일
+aa.txt		: 파일명
+
+-:파일
+d:디렉토리
+b:블록 디바이스
+c:문자 디바이스
+l:링크
+
+r[4]w[2]x[1] = 7
+r[4]w[2]-[0] = 6
+r[4]-[0]-[0] = 4
+
+chmod 776 aa.txt	#허가권 변경하기
+ls -alh
+	-rwxrwxrw-.  2 root root 4.0K Mar 22  2014 aa.txt
+
+또는
+chmod u+rwx aa.txt
+chmod g+rw-x aa.txt
+chmod o+r-wx aa.txt
+
+---------// 파일 소유권
+
+chown dong aa.txt	#파일 소유자 변경
+ls -al
+	-rwxrwxrw-. 1 dong root 18601 May  6  2018 aa.txt
+
+chown dong.dong aa.txt	#파일 소유자 + 소유그룹도 변경
+ls -al
+	-rwxrwxrw-. 1 dong dong 18601 May  6  2018 aa.txt
+
+---------// 링크
+하드링크와 소프트링크(symbolic link)가 있다
+하드링크는 inode를 공유한다 
+심볼릭 링크는 inode를 공유하지 않고 원본파일 파일포인터를 가지고 가르키고 있다(윈도우 바로가기 아이콘처럼)
+
+ls -ali # inode 출력
+	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa
+
+ln aa hard_link_aa	#하드링크 생성
+	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
+	260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa # inode가 같다
+
+# aa를 편집하면 hard_link_aa 내용도 똑같이 바뀐다
+
+ln -s ln -s aa symbolic_link_aa	 #심볼릭 링크 생성
+
+ls -ali
+	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
+	260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa			# inode가 같다
+	260624 lrwxrwxrwx. 1 root root    2 Nov 18 21:33 symbolic_link_aa -> aa		# inode가 다르다
+
+원본을 옯기면 심볼릭링크는 원본을 가르킬 수가 없어서 에러 표시 된다!
+
+---------// RPM
+#설치
+rpm -Uvh python-2.6.6-66.el6_8.i686.rpm 
+
+#삭제
+rpm -e python-2.6.6-66.el6_8.i686
+또는 
+rpm -e python
+
+
+#질의
+
+rpm -q python	#python rpm으로 설치되었는지 검색
+또는
+rpm -qa | grep python
+
+rpm -ql python	#패키지가 설치된 파일들 위치 표시
+
+	/usr/bin/pydoc
+	/usr/bin/python
+	/usr/bin/python2
+	/usr/bin/python2.6
+	/usr/share/doc/python-2.6.6
+	/usr/share/doc/python-2.6.6/LICENSE
+	/usr/share/doc/python-2.6.6/README
+	/usr/share/man/man1/python.1.gz
+
+rpm -qi python #설치된 패키지 상세정보 
+	Name        : python                       Relocations: (not relocatable)
+	Version     : 2.6.6                             Vendor: CentOS
+	Release     : 66.el6_8                      Build Date: Fri 19 Aug 2016 12:08:56 AM KST
+	..블라블라
+
+rpm -qf /usr/bin/pydoc #해당 파일이 어느 패키지 소속인지 출력
+	python-2.6.6-66.el6_8.i686
 
 
 
+---------// yum 
+RPM 의존성을 해결해주는 툴.
+/etc/yum.repos.d/ 에 의존성관련 URL 파일이 있다.
+
+yum install python  #파이썬 설치하기
+yum -y install pythone #중간에 나오는 Yes/No를 무조건 y로 하게 하고 설치
+
+yum update python  #패키지 업데이트 하기, 쓸일 없다.
+
+yum remove python #파이썬 패키지 삭제하기
+
+yum list installed python	#파이썬 패키지로 설치되었는지 확인
+
+yum info python	#파이썬 패키지 정보 출력
 
 
+---------// 파일압축
+ls -alh
+	-rwx--xr--. 1 dong dong 19K May  6  2018 httpd.txt
+
+### gzip
+
+gzip httpd.txt  #파일을 압축하고 .gz를 붙인 파일명으로 변경
+ls -alh
+	-rwx--xr--. 1 dong dong 6.1K May  6  2018 httpd.txt.gz
+
+gzip -d httpd.txt.gz  # .gz 압축 파일풀기
+또는
+gunzip httpd.txt.gz
+
+
+### bzip2
+
+bzip2 httpd.txt  #파일을 압축하고 .bz2 를 붙인 파일명으로 변경
+ls -alh
+	-rwx--xr--. 1 dong dong 5.7K May  6  2018 httpd.txt.bz2
+
+bzip2 -d httpd.txt.bz2  # .bz2 압축파일 풀기
+또는
+bunzip2 httpd.txt.bz2
+
+
+### xz
+
+xz httpd.txt	#파일을 압축하고 .xz 를 붙인 파일명으로 변경
+ls -alh
+	-rwx--xr--. 1 dong dong 5.9K May  6  2018 httpd.txt.xz
+
+xz -d httpd.txt.xz	# .xz 압축파일 풀기
+또는
+unxz httpd.txt.xz
+
+
+### zip
+zip httpd.txt.zip httpd.txt	#httpd.txt파일을 httpd.txt.zip으로 압축한 파일을 하나 만든다
+ls -alh
+	-rwx--xr--. 1 dong dong  19K May  6  2018 httpd.txt
+	-rw-r--r--. 1 root root 6.2K Nov 19 12:44 httpd.txt.zip
+
+unzip httpd.txt.zip	# .zip 파일을 푼다
+
+---------// 파일묶고 풀기
+#abc 디렉토리와 aa.txt를 abc.tar.gz 이란 이름으로 gzip을 이용해 압축해서 묶음.
+tar cvfz abc.tar.gz abc aa.txt  
+tar xvfz abc.tar.gz	#현재 디렉토리에 gzip 압축풀고, 묶은 파일들 풀기
+
+
+#abc 디렉토리와 aa.txt를 abc.tar.bz2 이란 이름으로 bzip2를 이용해 압축해서 묶음.
+tar cvfj abc.tar.bz2 abc aa.txt
+tar xvfj abc.tar.bz2  #현재 디렉토리에 bzip2로 된 압축풀고, 묶은 파일들 풀기
+
+#abc 디렉토리와 aa.txt를 abc.tar.xz 이란 이름으로 xz를 이용해 압축해서 묶음.
+tar cvfJ abc.tar.xz abc aa.txt
+tar xvfJ abc.tar.xz  #현재 디렉토리에 xz로 된 압축풀고, 묶은 파일들 풀기
