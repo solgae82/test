@@ -1,4 +1,4 @@
-### 리스트 
+######### 리스트 
 
 
 	blank = []	#빈리스트 생성
@@ -154,3 +154,53 @@
 	sort = sorted(score) , sorted(score, reverse=False)
 	print(score)	#[91,92,93,94,95,90]
 	print(sort)	#[90,91,92,93,94,95]
+
+
+######### 튜플
+#선언
+	()로 표현하고, 정수, 문자열, 심지어 ()를 제거해도 튜플로 인식한다.
+	한번 설정된 값은 변경 삭제 할 수 없고, 읽을 수만 있다
+
+	tu = (100, 99, 88)	#튜플
+	tu0 = (100,"한글",99)	#튜플
+	tu1 = 2,		#튜플
+	value =2		#변수
+	tu2 = "한개","두개"	#튜플
+
+#변수에 대입
+
+	tu = ("한글", "두글", "세글)
+	one, two, three = tu	#요소갯수와 변수 갯수가 같아야 한다.
+	print(one, two, three) #한글 두글 세글
+
+# swap
+	a,b = 12, 34
+	print(a, b)	# 12, 34
+	a,b = b, a
+	print(a,b)	# 34, 12
+
+# 함수 리턴값으로 튜플사용
+	import time
+
+	def gettime():
+	    now = time.localtime()
+	    return now.tm_hour , now.tm_min
+
+	result = gettime()
+	hour, min = result
+
+	print(result)			# (21, 5)
+	print(result[0], result[1])	# 21, 5
+	print(hour, min)		# 21, 5
+
+# list -> tuple , tuple -> list 변환 함수
+
+	score = [88, 95, 70, 100, 99]
+	tu = tuple(score) 
+	print(tu)	#(88, 95, 70, 100, 99)
+
+	list_0 = list(tu)
+	print(list_0)	# [88, 95, 70, 100, 99]
+
+
+
