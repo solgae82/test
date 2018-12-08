@@ -1,0 +1,197 @@
+### 사전(dictionary)
+	중복 허용하지 않고 순서가 없다
+	Map 구조로 키와 쌍으로 이뤄진다.
+	키가 없으면 예외발생, 
+	변경가능
+	---------// 기본 생성 사용
+		
+	test = {} #빈 사전 생성
+	dic = {'boy':'소년', "school":'학교' , 'book':"책"}
+	print(dic) # {'boy': '소년', 'school': '학교', 'book': '책'}
+	print(dic['boy']) #소년
+
+	#키가 없으면 예외 발생
+
+		dic = {'boy':'소년', "school":'학교' , 'book':"책"}
+		print(dic.get('student')) #None
+		print(dic.get('student' , '학생은 없습니다')) #학생은 없습니다
+
+		if 'student' in dic:
+		    print(dic['student'])
+
+		else:
+		    print("없는 키입니다")	#출력
+
+
+	---------// 사전 관리
+
+	dic = {'boy':'소년', "school":'학교' , 'book':"책"}
+
+	#수정
+		dic['boy'] = '남자녀석' # 수정
+
+	#추가
+		dic['girl']= ' 소녀' #추가
+
+	#삭제
+		del dic['book'] # 삭제
+
+		print(dic)
+		#{'boy': '남자녀석', 'school': '학교', 'girl': ' 소녀'}
+		
+		#모두삭제
+		dic.clear() #{}
+
+	# keys() :  키값목록 dict_keys 리스트스타일 객체 반환
+		
+		dic_key = dic.keys()
+
+		print(dic_key) # dict_keys(['boy', 'school', 'girl'])
+
+		for key in dic_key:
+		    print(key)
+		
+		#출력
+		boy
+		school
+		girl
+
+		#리스트로 꼭 만들고 싶다면
+		dic_key_list = list(dic_keys())
+
+	# values() : 값 목록  dict_values 리스트스타일 객체 반환
+
+		dic_v = dic.values() 
+
+		print(dic_v) # dict_values(['남자녀석', '학교', '소녀'])
+
+		for v in dic_v:
+		    print(v)
+		
+		#출력
+		남자녀석
+		학교
+		소녀
+
+		#리스트로 꼭 만들고 싶다면
+		dic_value_list = list(dic_values())
+
+	# items() : 키와 쌍을 튜플로 묶은 dict_items 리스트스타일 객체 반환
+
+		dic_i = dic.items()
+
+		print(dic_i) #dict_items([('boy', '남자녀석'), ('school', '학교'), ('girl', '소녀')])
+
+		for i in dic_i:
+		    print(i)
+
+		    # 튜플 출력
+		    ('boy', '남자녀석')
+		    ('school', '학교')
+		    ('girl', '소녀')
+
+		#리스트로 꼭 만들고 싶다면
+		dic_item_list = list(dic_items())
+
+
+	#update() : 두개의 사전을 병합한다
+		  중복키는 최신 자료로 덮어쓴다.
+
+		dic1 = {"boy":"소년", "school":"학교" , "book":"책"}
+		dic2 = {"teacher":"선생님", "student":"학생" , "book":"만화책"}
+
+		dic1.update(dic2)
+
+		print(dic1)
+		#{'boy': '소년', 'school': '학교', 'book': '만화책', 'teacher': '선생님', 'student': '학생'}
+
+	#dict 함수 : 빈 사전을 만들거나, 다른 자료형으로 사전을 변환(2차원 자료형[리스트,튜플]을 사전으로 변환)
+
+		# 아래 3개 자료형 모두 사전형식이므로 변환 가능.
+		list = [['boy','소년'],['girl','소녀'],['book','책']]
+		tuple = (('boy','소년'),('girl','소녀'),('book','책'))
+		combine = (['boy','소년'],['girl','소녀'],['book','책'])
+
+		dic3 = dict(list)
+
+		print(dic3) #{'boy': '소년', 'girl': '소녀', 'book': '책'}
+
+### 집합(set)
+
+	순서가 없고, 중복 허용하지 않는다
+	사전과 같은 {} 이고 빈 {}표시로 생성하면 사전이므로, set()함수를 이용해 생성해야한다
+	set()의 인수로 사전을 넣으면 key 값만 값으로 포함한다.
+
+
+	#생성
+		test = {} # 이렇게 생성하면 빈사전(dictionary) (x)
+
+		asia = {"china","korea","japan","korea"}
+
+		print(asia) #{'china', 'korea', 'japan'}
+		print(set("happy")) #{'p', 'y', 'h', 'a'}
+		print(set([10,11,12])) #{10, 11, 12}
+		print(set(("한양","서울","개성"))) #{'서울', '개성', '한양'}
+		print(set({"boy":"소년", "girl":"소녀"})) #{'girl', 'boy'}
+		print(set()) # set()
+
+
+	#추가,삭제
+		asia.add("vietnam") #추가
+		asia.add("china") #중복,추가 안됨
+		asia.remove("japan") #삭제
+		print(asia) #{'korea', 'china', 'vietnam'}
+
+	#합집합
+		asia2 = {"singapore","hongkong","korea"}
+		asia.update(asia2)
+		print(asia) #{'china', 'korea', 'hongkong', 'singapore', 'vietnam'}
+
+
+	#연산
+		a = {2,4,6,8,10,12}
+		b = {1,3,5,7,9,12}
+
+		print("교집합", a & b) # a.intersection(b) 같다
+		print("합집합", a | b) # a.union(b)
+		print("차집합", a - b) # a.difference(b)
+		print("차집합", b - a) # b.difference(a)
+		print("배타적차집합", a ^ b) # a.symmetric_difference(b)
+
+
+		#출력
+		교집합 {12}
+		합집합 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12}
+		차집합 {2, 4, 6, 8, 10}
+		차집합 {1, 3, 5, 7, 9}
+		배타적차집합 {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	#부분집합
+		mammal = {"코끼리" ,"고릴라","사자","고래","사람","원숭이","개"}
+		mammal = {"사람","원숭이", "고릴라","a"}
+		primate = {"사람","원숭이", "고릴라"}
+
+		if "사자" in mammal:
+		    print("사자는 포유류다")
+		else:
+		    print("사자는 포유류가 아니다")
+
+
+		print(primate <= mammal) #왼쪽이 오른쪽의 부분집합이면 True ,primate.issubset(mammal)
+		print(primate < mammal)  #왼쪽이 오른쪽의 부분집합이면서 오른쪽이 원소가 더 있을 경우 True
+		print(primate <= primate) #같아도 부분집합이 된다.
+		print(primate < primate) #오른쪽이 더 원소가 많아야 하는데 아니므로 False
+
+	#포함집합
+		부분집합의 반대 기호
+		>= , >
+
+#frozeset()
+	변경 불가능한 집합 
+	추가,삭제만 빼고 나머지 연산(교집합,합집합,차집합,부분집합등)은 같다.
+	리스트와 튜플의 관계에서 튜플과 비슷하다
+	frozeset() 함수를 이용해서 생성한다
+
+	#생성
+		a = frozenset({"하늘","땅","물","불"})
+		print(a) #frozenset({'불', '땅', '하늘', '물'})
