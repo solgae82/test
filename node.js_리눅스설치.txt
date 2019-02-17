@@ -1,9 +1,9 @@
---------------------- 바이너리 설치
+﻿--------------------- 바이너리 설치
 
 mkdir /usr/local/node
 xd -d node-v6.9.2-linux-x64.tar.xz <=xz 풀기
 tar -xvf node-v6.9.2-linux-x64.tar <= tar풀기
-move -r ./node-v6.9.2-linux-x64 /usr/local/node <=쉬운디렉토리로 변경해서옮김
+mv  ./node-v6.9.2-linux-x64 /usr/local/node <=쉬운디렉토리로 변경해서옮김
 
 #패스설정
 vi /etc/profile

@@ -1,0 +1,87 @@
+#ServiceName , SID
+	- SID = DB 하나의 인스턴스
+	- ServiceName =  여러개의 인스턴스를 모아 하나의 서버 혹은 시스템을 구성한 것
+		보통 서버한대라면 sid = servicename 은 같다
+		클러스터(RAC)으로 구성했을경우  sid(ORCL1, ORCL2),   serviceName= ORCL 등으로 구성한다.
+	
+	//오라클 serviceName 확인
+	select name,db_unique_name from v$database;
+	
+	//오라클 sid 확인
+	select instance from v$thread;
+
+#기동전 sqlplus접속법
+
+	sqlplus "/as sysdba" 
+
+	또는
+
+	sqlplus /nolog
+	SQL>  connn /as sysdba
+
+
+# 기동후  sqlplus 접속법(각계정들로 접속 가능하다)
+	sqlplus system/"1234" //system 계정접속
+	sqlplus DONG/"1234"   //DONG 계정접속
+
+	또는
+
+	sqlplus
+	사용자 입력:  system
+	비밀번호 입력: ******
+	SQL > 
+
+#sqlplus 접속 후 접속계정 확인하기
+	
+	show user;  #현재 연결계정보기
+
+# 계정관련 테이블들
+	select * from ALL_USERS; //모든계정에 대한 정보 확인
+	select * from DBA_USERS;  //모든 계정에 대한 정보 확인
+
+	//DONG 사용자 정보 조회(계정은 모두 대문자로 생성된다)
+
+	select * from ALL_USERS where username='DONG' 
+	select * from DBA_USERS where username='DONG'
+	select * from DBA_OBJECTS where owner='DONG'
+
+# 사용자 생성 ,정보변경, 삭제 
+	- 사용자 계정은 모두 대문자로 생성된다고 생각하라
+	
+	//사용자 dong으로 만들어도 -> DONG 으로 생성된다,테이블 검색엔 'DONG'으로 해야함.
+	create user dong identified by "1234"; 
+	alter user dong identified by "100you"; //패스워드 변경
+	drop user dong cascade; //사용자 + 사용자객체 삭제
+
+
+# 사용자 권한 생성
+	- [시스템권한] 과 [객체권한] 이 있다.
+
+	grant [시스템권한]  to [사용자 / role / publc] [with admin option]; //권한주기
+	revoke [시스템권한] from [사용자 / role / publc] //권한취소
+
+	grant resource, create session,  create table to dong; //권한주기
+	revoke resource, create session,  create table from dong; //권한 취소
+
+# 사용자 시스템권한 조회
+	select grantee , privilege, admin_option from dba_sys_privs where grantee='DONG'; //권한 확인.
+	select username, privilege, admin_option from user_sys_privs where grantee='DONG'; 
+
+# 사용자 객체권한 
+	-  특정 사용자가 생성한 객체에 대한 권한을 뜻한다.
+	
+	//권한주기
+	Grant [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [with grant option];
+	grant select on scott.TEMP to DONG; // DONG사용자게게 scott계정의 TEMP 테이블 조회권한을 준다.
+
+	//객체권한 취소
+	revoke [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [cascade constrains/force];
+	revoke select on scott.TEMP from DONG cascade;
+
+# 사용자 객체권한 조회
+	select * from dba_tab_privs where owner='DONG';
+	select * from user_tab_privs where owner='DONG';
+
+# 사용자(user) 또는 role에 부여된 role 조회
+	select * from dba_role_privs;
+	select * from user_role_privs;

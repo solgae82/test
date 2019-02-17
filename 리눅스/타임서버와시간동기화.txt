@@ -1,0 +1,14 @@
+yum -y install rdate
+
+rdate -s bora.net
+
+위에것으로 잘 안되면 아래 것들중 하나 골라서 한다
+zero.bora.net
+ time2.kriss.re.kr
+ time.bora.net
+ ntp.kornet.net
+ ntp.postech.ac.kr
+
+
+date && clock -r && clock -w (바뀐 것 확인)
+

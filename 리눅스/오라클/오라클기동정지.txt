@@ -1,0 +1,38 @@
+1. 시동
+
+	su - oracle  #사용자 변경
+	emctl start dbconsole # 엔터프라이즈 매니저 실행
+	isqlplusctl start	#iSQl*PLUS   실행
+	lsnrctl start	#리스너 실행
+
+	# 기본 프로세스 올린 후 sqlplus 실행
+
+	sqlplus /nolog
+	SQL>connect sys/password as sysdba
+	SQL>startup # 오라클 인스턴스 기동
+
+	#기동후 sqlplus 종료
+	SQL>quit
+
+
+2.끄기 (시동시 역순으로 프로세서 정지)
+
+	----sqlplus로 인스턴스 중지
+	sqlplus /nolog
+	SQL>connect sys/password as sysdba
+	SQL>shutdown immediate # 오라클 인스턴스  정지
+	..
+
+	SQL>quit #sqlplus 종료
+
+
+	----리스너 중지
+	lsnrctl stop
+
+	----isqlplus 중지
+	isqlplusctl stop
+
+	---- oracle Enterprise Manager Database Console / DB Console 정지
+	emctl stop dbconsole
+
+
