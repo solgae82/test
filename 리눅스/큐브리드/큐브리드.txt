@@ -17,7 +17,7 @@
 
 4. 설치 실행
 	
-	./CUBRID-9.3.0.0206-linux.i386.sh 
+	./CUBRID-9.3.0.0206-linux.x86_64.sh 
 
 	q
 	yes
