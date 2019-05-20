@@ -133,7 +133,7 @@ git remote -v # 클론 후 확인해보면 자동 원격저장소가 설정되�
 
 git fetch
 git brach -a
-  remotes/origin/master		#origin/master 가 원격저장소에서 가져오 브랜치
+  remotes/origin/master		#origin/master 가 원격저장소에서 가져온 브랜치
 
 git merge origin/master		#현재 master에 가져온 origin/master를 합친다
 

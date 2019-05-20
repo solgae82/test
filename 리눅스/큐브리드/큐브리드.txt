@@ -1,5 +1,6 @@
 //-------------------------------------------------------------------// 설치
 1. 필수 라이브러리 확인
+	rpm -q glibc #큐브리드 9.3은 glibc 2.3.4 이상 버전에서만 실행된다
 	rpm –q ncurses
 	rpm –q libgcrypt
 	rpm –q libstdc++
@@ -12,7 +13,7 @@
 
 3. 설치파일 다운로드
 
-	# wget 없으면 설치 후 yum -y install wget
+	# wget 없으면 설치 후 yum -y install wget(root계정으로 설치 후 다시 cubrid 로그인)
 	wget http://ftp.cubrid.org/CUBRID_Engine/9.3.0/Linux/CUBRID-9.3.0.0206-linux.x86_64.sh
 
 4. 설치 실행
