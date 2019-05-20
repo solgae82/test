@@ -1,0 +1,115 @@
+1. 깃 설치(리눅스)
+	yum install git
+
+2. 버전확인(리눅스)
+	git --version
+
+3. git 사용자 추가 (리눅스)
+	su -      //현재 root 계정이 아니라면 root 계정 권한을 얻자.
+	adduser git      // git 이라는 사용자를 추가한다
+	passwd git //비밀번호 생성해준다
+
+4. Git 저장소로 사용할 공간 셋팅 (리눅스)
+	su - git	//사용자 변경
+	cd /home/git
+	mkdir myapp.git
+	cd myapp.git
+	git init --bare --shared  //원격저장소를 생성
+	ls -al	//HEAD, config ...등등 있는지 확인
+
+	- 만일 myapp.git 디렉터리의 소유자가 git 이 아닐 경우에
+	- 클라이언트에서 Pull 기능은 되지만 Push 기능에는 Permission 제한이 걸릴 것이다.  
+
+	chown -R git:git /home/git/myapp.git	 //확인 차원에서..
+	
+
+5.PC에서 ssh 키생성 후 리눅스 서버에 등록.(클라이언트) 
+	- 클라이언트 git bash 실행
+	$cd ~      // home directory
+	$mkdir .ssh     //만약 .ssh 폴더가 없다면 만들자
+	$cd .ssh
+	$ssh-keygen  #엔터 엔터 엔터
+	$ls -la #두개의 파일 확인
+		- id_rsa
+		- id_rs.pub 
+
+	- 구축된 서버에 id_rsa.pub 를 리눅스 서버 /home/git/id_rsa.pub 복사(FTP로 해도 된다)
+	- 또는 아래처럼 한방에 보내도 된다
+
+	$scp id_rsa.pub git@192.168.0.3:/home/git/id_rsa.pub
+
+
+6.  리눅스로 전송된 키파일 확인 (리눅스)
+
+	su git	//유저 체인지
+	cd /home/git
+
+	ls	//클라이언트  ssh 키 파일 확인
+		- id_rsa.pub
+
+7.  .ssh/ authorized_keys 키파일 저장소 생성 및 추가 (리눅스)
+
+	//.ssh 디렉토리 생성
+	mkdir /home/git/.ssh		//이 안에 authorized_keys 파일에 키파일 내용 추가해야함.
+	
+	- authorized_keys 에 append 한다.(생성과 추가 동시에 완료)
+
+	cat /home/git/id_rsa.pub >> /home/git/.ssh/authorized_keys
+	cd /home/git/.ssh/ 
+	ls 
+		- authorized_keys
+	cat authorized_keys  //키 추가 확인
+
+	- key 가 제대로 등록 되었는지 테스트 확인 ,PC-> git bash에서 (클라이언트 PC)
+	$ssh git@192.168.0.3
+
+	비밀번호 입력을 요구하고, 서버에 접속이 되면 성공.
+	exit
+
+8. git 사용자의 권한을 제한하기 위한 작업(리눅스)
+	- git 기능만 사용가능하도록 권한을 제한한다. 
+	- 쉘변경전 경로 확인 
+		which git-shell
+		- /usr/bin/git-shell
+
+	vi /etc/passwd
+
+	아래 내용을 찾는다.
+	git:x:1000:1000::/home/git:/bin/bash
+
+	쉘을 아래와 같이 변경한다.
+	git:x:1000:1000::/home/git:/usr/bin/git-shell
+	
+	→ 이것을 적용하면 bash 쉘을 사용할 수 없게 되며, 클라이언트 키를 추가로 등록하는 것도 수행할 수 없게 된다.
+	→ 클라이언트 키를 추가로 등록하려면 chsh git -s /bin/bash를 임시로 적용했다가 등록 후 다시 이것을 적용하도록 하자.
+
+9. PC git bash 에서 확인을 해0 보자.  접속 안 되어야 한다.
+	$ssh git@192.168.0.3
+	fatal: What do you think I am? A shell?
+	Connection to gitserver closed.
+
+	-- END --
+
+추가정보 : 저장소 생성/삭제
+
+	# 추가 생성
+	mkdir -p /home/git/test.git
+	cd /home/git/test.git
+	git init --bare --shared  //원격저장소를 생성
+
+	#삭제
+	rm -rf /home/git/test.git
+
+------------------------------------------------ 원격 저장 및 가져오기
+
+# pc 해당 프로젝트 디렉토리에서 원격주소 설정
+$ git remote add origin ssh://git@192.168.0.3: /home/git/myapp.git
+
+#원격 커밋
+$ git push origin master
+
+# 가져오기
+git pull origin master # 주소설정 후 가져오기
+
+#최초에 그냥 가져올때, init도 필요없이 가져온다(test 디렉토리로, test 없으면 myapp)
+git clone ssh://git@192.168.0.3: /home/git/myapp.git test
