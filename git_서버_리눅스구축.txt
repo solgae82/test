@@ -83,14 +83,14 @@
 	→ 이것을 적용하면 bash 쉘을 사용할 수 없게 되며, 클라이언트 키를 추가로 등록하는 것도 수행할 수 없게 된다.
 	→ 클라이언트 키를 추가로 등록하려면 chsh git -s /bin/bash를 임시로 적용했다가 등록 후 다시 이것을 적용하도록 하자.
 
-9. PC git bash 에서 확인을 해0 보자.  접속 안 되어야 한다.
+9. PC-> git bash 에서 확인을 해보자.  접속 안 되어야 한다. (PC)
 	$ssh git@192.168.0.3
 	fatal: What do you think I am? A shell?
 	Connection to gitserver closed.
 
 	-- END --
 
-추가정보 : 저장소 생성/삭제
+	저장소 생성/삭제(리눅스서버)
 
 	# 추가 생성
 	mkdir -p /home/git/test.git
