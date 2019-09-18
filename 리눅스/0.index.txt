@@ -1,0 +1,63 @@
+﻿
+시스템 아키텍쳐
+	리눅스버전, cpu비트 아키텍쳐 확인
+
+cpu,메모리체크
+	top , free
+
+하드 용량관리
+	du , df
+
+프로세스 관리
+	ps
+
+포트관리
+	netstat
+
+사용자관리
+	adduser, userdel,  passwd
+
+
+로그관리
+
+
+네트웍설정
+	
+	/etc/hosts 
+	/etc/host.conf
+	/etc/resolv.conf 
+	/etc/sysconfig/network
+	/etc/syconfig/network-scripts/ifcfg-eth0 
+
+
+
+
+프로그램 설치법
+	소스설치 
+	rpm 
+	yum 
+
+시스템 자동실행 등록
+	/etc/init.d/<서비스명> <옵션>
+	/etc/xinetd.d/ : 수퍼데몬
+	chkconifg : systemctl (centos7)
+
+
+프로그램 실행
+
+	직접 경로에 가서 실행
+	service 로 실행 : systemctl (centos7)
+
+방화벽
+
+	iptables : firewalld (centos7)
+
+
+파일묶고 풀기
+	tar
+
+스케줄
+	crontab
+
+파일권한,소유권
+	chmod , chown

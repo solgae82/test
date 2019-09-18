@@ -1,0 +1,80 @@
+오라클 함수는 내장함수 와 사용자 정의함수 로 나뉜다.
+
+내장함수는 단일행함수, 다중행 함수로 세분화된다.
+
+-- 형변환
+to_char : 숫자 또는 날짜 데이터를 문자데이터로 변환
+to_number : 문자데이터(숫자와 같은)를 숫자데이터로 변환
+to_date : 문자데이터(날짜와 같은)를 날짜 데이트로 변환
+
+묵시적 형변환
+select empno, ename, empno + '100' from emp where ename='SCOTT'; // 7788	 SCOTT	7888
+
+날짜데이터 문자로 변환
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') from dual;	// 2019-09-06 02:25:04
+
+-- to_char
+	숫자나, 날짜형식을 다양한 문자열로 변환
+
+	월 표현
+	select sysdate,
+	    to_char(sysdate,'MM') as MM,
+	    to_char(sysdate,'MON') as MON,
+	    to_char(sysdate,'MONTH') as MONTH,
+	from dual;
+	//19/09/17	09	9월 	9월 
+
+	요일표현
+	select sysdate,
+	    to_char(sysdate,'DD') as DD,
+	    to_char(sysdate,'DY') as DY,
+	    to_char(sysdate,'DAY') as DAY
+	from dual;
+	//19/09/17	17	화	화요일
+
+	특정 언어에 맞춰서 월 출력
+	select sysdate
+	    ,to_char(sysdate,'MM') AS MM
+	    ,to_char(sysdate,'MON' , 'NLS_DATE_LANGUAGE = KOREAN') AS MON_KOR
+	    ,to_char(sysdate,'MON' , 'NLS_DATE_LANGUAGE = JAPANESE') AS MON_JAPANESE
+	    ,to_char(sysdate,'MON' , 'NLS_DATE_LANGUAGE = ENGLISH') AS MON_ENGLISH
+	from dual;
+	// 19/09/17	09	9월 	9月 	SEP
+
+	특정 언어에 맞춰서 일 출력
+	select sysdate
+	    ,to_char(sysdate,'MM') AS MM
+	    ,to_char(sysdate,'DY' , 'NLS_DATE_LANGUAGE = KOREAN') AS MON_KOR
+	    ,to_char(sysdate,'DY' , 'NLS_DATE_LANGUAGE = JAPANESE') AS MON_JAPANESE
+	    ,to_char(sysdate,'DY' , 'NLS_DATE_LANGUAGE = ENGLISH') AS MON_ENGLISH
+	from dual;
+	// 19/09/17	09	화	火	TUE
+
+	다양한 시간지정 형식
+	 select sysdate
+	    ,to_char(sysdate, 'HH24:MI:SS')
+	    ,to_char(sysdate, 'HH12:MI:SS AM')
+	    ,to_char(sysdate, 'HH:MI:SS P.M.')
+	from dual;
+	// 19/09/17	21:50:12	09:50:12 오후	09:50:12 오후
+
+	 다양한 숫자형식 지정
+	select sal							//800
+	    ,to_char(sal, '$999,999')			//$800
+	    ,to_char(sal, 'L999,999')			//\800
+	    ,to_char(sal, '999,999.00')			//800,99
+	    ,to_char(sal, '000,999,999.00')		//000,000,800.00
+	    ,to_char(sal, '000999999.99')		// 000000800.00
+	    ,to_char(sal, '999,999.00')			//800.00
+	from emp  where sal=800;
+
+
+--to_number
+	문자열을 숫자형으로 변환
+	select to_number('1,300', '999,999') from dual; // 1300
+	select to_number('1,300', '999,999') - to_number('700','999,999') from dual; // 600
+
+--to_date
+	문자열을 date형식으로 변환
+	select to_date('2018-04-04', 'YYYY-MM-DD') from dual; // 18/04/04
+	select to_date('20180404', 'YYYY-MM-DD') from dual; // 18/04/04

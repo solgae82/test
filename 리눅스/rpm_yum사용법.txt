@@ -1,5 +1,5 @@
-- 설치
-rpm -Uvh 패지파일.rpm
+﻿- 설치
+rpm -Uvh 패키지파일.rpm
 
 - 삭제
 rpm -e  패키지이름
