@@ -13,14 +13,28 @@
 #기동전 sqlplus접속법
 
 	sqlplus "/as sysdba" 
+	휴지 인스턴스에 접속되었습니다
+
+	또는
+
+	sqlplus
+	사용자명 입력: /as sysdba
+	휴지 인스턴스에 접속되었습니다
 
 	또는
 
 	sqlplus /nolog
 	SQL>  connn /as sysdba
+	휴지 인스턴스에 접속되었습니다
+
+	그리고 시작
+
+	SQL> startup
+	ORACLE 인스턴스가 시작되었습니다.
 
 
-# 기동후  sqlplus 접속법(각계정들로 접속 가능하다)
+# 기동후  sqlplus 로 계정 접속법(각계정들로 접속 가능하다)
+	
 	sqlplus system/"1234" //system 계정접속
 	sqlplus DONG/"1234"   //DONG 계정접속
 
@@ -30,6 +44,26 @@
 	사용자 입력:  system
 	비밀번호 입력: ******
 	SQL > 
+
+	또는
+
+	sqlplus /nolog
+	conn
+	사용자 입력:  system
+	비밀번호 입력: ******
+	SQL >
+
+	또는
+
+	sqlplus /nolog
+	conn system/"1234"
+	SQL >
+
+	또는
+
+	sqlplus /nolog
+	connect system/"1234"
+	SQL >
 
 #sqlplus 접속 후 접속계정 확인하기
 	

@@ -7,8 +7,15 @@
 
 	# 기본 프로세스 올린 후 sqlplus 실행
 
+	sqlplus "/as sysdba"
+
+	또는 
+
 	sqlplus /nolog
 	SQL>connect sys/password as sysdba
+	
+	
+	접속 후 기동
 	SQL>startup # 오라클 인스턴스 기동
 
 	#기동후 sqlplus 종료
@@ -17,9 +24,16 @@
 
 2.끄기 (시동시 역순으로 프로세서 정지)
 
-	----sqlplus로 인스턴스 중지
+	sqlplus "/as sysdba"
+
+	또는 
+
+	
 	sqlplus /nolog
 	SQL>connect sys/password as sysdba
+	
+
+	접속 후 셧다운
 	SQL>shutdown immediate # 오라클 인스턴스  정지
 	..
 
