@@ -11,10 +11,12 @@
 	C:\oracle\ : 에  instantclient-basic-nt-11.2.0.4.0.zip 풀어서 모두 넣기
 	C:\oracle\ : 에  instantclient-sqlplus-nt-11.2.0.4.0.zip 풀어서 파일 모두 넣기
 
-3. network\admin 디렉토리 만들기
+3. 환경변수 Path 에 C:\oracle ; 설정
+
+4. network\admin 디렉토리 만들기
 	C:\oracle\network\admin : tnsnamse.ora 파일과 sqlnet.ora 파일을 넣을 공간 마련.
 
-4. tnsnames.ora 파일 작성
+5. tnsnames.ora 파일 작성
 	ora10 =
 	  (DESCRIPTION =
 	    (ADDRESS_LIST =
@@ -26,7 +28,7 @@
 	    )
 	  )
 
-5.sqlnet.ora 파일 작성
+6.sqlnet.ora 파일 작성
 	SQLNET.AUTHENTICATION_SERVICES= (NTS)
 	NAMES.DIRECTORY_PATH= (TNSNAMES, ONAMES, HOSTNAME)
 
