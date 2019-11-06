@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<meta name="viewport" content="width=device-width,height=device-height, initial-scale=1" />
+
+
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" ></script>
+
+</head>
+<body>
+
+<div style="text-align: right">
+	<button id="ing_btn_add_joo">주성분등록</button>
+	<button id="ing_btn_add_honhap">혼합성분등록</button>
+	<button id="ing_btn_remove_all">전체행삭제</button>
+</div>
+<table border="1" id="ing_table">
+	<thead>
+		<tr>
+			<th>순번</th>
+			<th>상위구분</th>
+			<th>구분</th>
+			<th>성분코드</th>
+			<th>성분명</th>
+			<th>배합비율</th>
+			<th>추가</th>
+		</tr>
+	</thead>
+	<tbody>
+
+	</tbody>
+
+
+</table>
+<script>
+	
+	$(function(){
+		$('#ing_btn_add_joo').on('click',function(){Ingrediant.addJoo()});
+		$('#ing_btn_add_honhap').on('click',function(){Ingrediant.addHonhap()});
+		$('#ing_btn_remove_all').on('click',function(){Ingrediant.addAllRowsRemove()});
+		$(document).on('click','button.ing_btn_c_remove',function(){Ingrediant.removeRow(this)});
+		$(document).on('click','button.ing_btn_c_add_boo',function(){Ingrediant.addRowBoo()});
+		$(document).on('click','button.ing_btn_c_add_boohonhap',function(){Ingrediant.addRowBooHonhap()});
+		$(document).on('click','button.ing_btn_c_add_joo',function(){Ingrediant.addJoo()});
+	});
+
+	var Ingrediant = {
+		
+		parentNumber:0,
+
+		getTableRowHtml : function(){
+			var html = '\
+				<tr>\
+					<td>2</td>\
+					<td>1</td>\
+					<td>부\
+					<input type="hidden" name="bokhap" value="N" title="복합성분여부"  />\
+					<input type="hidden" name="honhap" value="N" title="혼합성부여부" />\
+					</td>\
+					<td><input type="text" name="code" value="" title="성분코드" /></td>\
+					<td><input type="text" name="nm" title="성분명"/></td>\
+					<td><input type="text" name="ratio" title="배합비율" /></td>\
+					<td>\
+						<button class="ing_btn_c_remove">삭제</button>\
+						<button class="ing_btn_c_add_boo">부성분추가</button>\
+						<button class="ing_btn_c_add_boohonhap">부혼합성분추가</button>\
+						<button class="ing_btn_c_add_joo">주성분삽입</button>\
+					</td>\
+				</tr>';
+
+			return html;
+		},
+		/*[- 주성분 등록 , 행 주성분삽입 -]*/
+		addJoo:function(){
+			$('table#ing_table tbody').append(this.getTableRowHtml());
+		},
+		/*[- 혼합성분 등록 -]*/
+		addHonhap:function(){
+
+		},
+		/*[- 전체행삭제 -]*/
+		addAllRowsRemove:function(){
+			$('table#ing_table tbody').empty();
+		},
+		/*[- 현재행 삭제 -]*/
+		removeRow:function(obj){
+			var idx = $(obj).parent().parent().index();
+			$('table#ing_table tbody tr').eq(idx).remove();
+		},
+		/*[- 부성분 추가 -]*/
+		addRowBoo:function(){
+			this.addJoo();
+		},
+		/*[- 부혼합 등록 -]*/
+		addRowBooHonhap:function(){
+			this.addJoo();
+		}
+		
+
+		
+	};
+</script>
+
+</body>
+</html>
