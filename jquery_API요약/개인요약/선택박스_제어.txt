@@ -1,0 +1,43 @@
+<select>
+	<option value="banana">바나나</option>
+	<option value="apple">애플</option>
+	<option value="melon" selected>멜론</option>
+
+</select>
+<button id="apple_like">애플 좋아!</button>
+<button id="sel_default">선택초기화</button>
+<script>
+	
+	$(function(){
+		var count = $('select option').length;
+		var value = $('select option:selected').val();
+		var index = $('select option:selected').index();
+		
+		console.log('옵션갯수->',count);
+		console.log('선택된 값->',value);	//선택된 값-> melon
+
+		console.log('선택된 option index->',index);//선택된 option index-> 2
+
+		$('select').on('change',function(){
+			var value = $(this).val();
+			alert('선택된 값:'+value);
+		});
+
+		$('#apple_like').on('click',function(){
+			$('select option').eq(1).prop('selected',true); // 애플선택됨
+		});
+
+		$('#sel_default').on('click',function(){
+			// 모든옵션에 selected  제거,  처음 옵션으로 선택됨(초기화)
+			$('select option').prop('selected',false); 
+		});
+	});
+
+</script>
+
+---------------------//정리
+$('select option').length #갯수
+$('select option:selected').val(); #선택된 option의 value 속성값 뽑기
+$('select option:selected').text(); #선택된 option의 text 값 뽑기
+$('select option').eq(1).prop('selected',true); #특정 선택값 선택하기
+$('select option').prop('selected',false); # 선택 초기화
