@@ -37,6 +37,7 @@
 
 ---------------------//정리
 $('select option').length #갯수
+$('select option:selected').index(); #선택된 option의 index 뽑기
 $('select option:selected').val(); #선택된 option의 value 속성값 뽑기
 $('select option:selected').text(); #선택된 option의 text 값 뽑기
 $('select option').eq(1).prop('selected',true); #특정 선택값 선택하기
