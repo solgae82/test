@@ -3,7 +3,7 @@
 	<th:block th:if="${mStat.first}" >
 	<tr>
 	</th:block>
-		<td th:text="|${m }|">¼ººÐ</td>
+		<td th:text="|${m }|">ì„±ë¶„</td>
 	<th:block th:if="${mStat.count >= col and (mStat.count % col) ==0}">
 		<th:block th:if="${mStat.count < (mStat.size)}">
 	</tr>
