@@ -1,25 +1,21 @@
-    <table border="1">
-    	<th:block th:each="m : ${list}" th:with="col=5,b=${mStat.size % col}">
-    		<th:block th:if="${mStat.first}" >
-    		<tr>
-    		</th:block>
-    			<td th:text="|${m }|">성분</td>
-    		<th:block th:if="${mStat.count >= 5 and (mStat.count % col) ==0}">
-    			<th:block th:if="${mStat.count < (mStat.size)}">
-    		</tr>
-    		<tr>
-    			</th:block>
-    		</th:block>
-    		<th:block th:if="${mStat.last}" th:with="bdCnt=${col - b}">
-    			<td th:each=" m : ${#numbers.sequence(1,bdCnt)}">&nbsp;</td>
-    		</tr>
-    				
-    		</th:block>	
-    		
-    	</th:block>
-    </table>
-	 
-	<!--/* Tip. 숫자로 반복문 돌리기 */-->
-    <ul>
-    	<li th:each=" m : ${#numbers.sequence(1,4)}" th:text="${m}">허허</li>
-    </ul>
+<table border="1">
+<th:block th:each="m : ${list}" th:with="col=5,b=${mStat.size % col}">
+	<th:block th:if="${mStat.first}" >
+	<tr>
+	</th:block>
+		<td th:text="|${m }|">성분</td>
+	<th:block th:if="${mStat.count >= col and (mStat.count % col) ==0}">
+		<th:block th:if="${mStat.count < (mStat.size)}">
+	</tr>
+	<tr>
+		</th:block>
+	</th:block>
+	<th:block th:if="${mStat.last}" th:with="bdCnt=${col - b}">
+		<th:block th:if="${bdCnt < col}">
+		<td th:each=" m : ${#numbers.sequence(1,bdCnt)}">&nbsp;</td>
+		</th:block>
+	</tr>
+	</th:block>	
+	
+</th:block>
+</table>
