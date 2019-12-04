@@ -1,0 +1,32 @@
+jquery 에서 이벤트 바인딩 하면 기본적으로 해당 객체가  this가 된다.
+만약, 객체를 바인딩 하면 this의 혼선이 생긴다..
+그때 $.proxy(객체변수, '메소드명') 가 구원해 주리라..
+
+선택박스 변경시 객체에 연결된 this가 해당 객체를 가르키게 해주는 예제다
+그냥 보통처럼 연결해보라. 해당 객체의 메소드를 찾으며 에러를 뿜는 것을 보게 된다.
+
+
+<select id="sel">
+	<option value="banana">바나나</option>
+	<option value="apple">애플</option>
+	<option value="melon" selected>멜론</option>
+</select>
+
+<script>
+	
+	$(function(){
+		$('#sel').on('change',   $.proxy(Obj,'proc') );
+	});
+
+	var Obj = {
+		msg : '어여 먹어봐',
+		proc: function(){
+			this.warn();
+		}
+		,
+		warn : function(){
+			alert('어이! ' + this.msg);
+		}
+	};
+
+</script>
