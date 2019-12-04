@@ -1,10 +1,19 @@
-jquery 에서 이벤트 바인딩 하면 기본적으로 해당 객체가  this가 된다.
-만약, 객체를 바인딩 하면 this의 혼선이 생긴다..
+jquery 에서 이벤트 바인딩 하면 기본적으로 해당 이벤트 발생하는 객체가  this로 된다.
+예를 들어  선택박스에  onchange 이벤트를 바인드 했다면 그 선택박스가 this가 될 것이다.
+
+하지만,
+만약, 바인딩을 일반 함수가 아닌  객체의 함수를 바인딩 하면 this의 혼선이 생긴다..
+객체 내부에서 사용하는  this는 그 객체로 대부분 bind 되었을테니..
+
+
 그때 $.proxy(객체변수, '메소드명') 가 구원해 주리라..
 
-선택박스 변경시 객체에 연결된 this가 해당 객체를 가르키게 해주는 예제다
-그냥 보통처럼 연결해보라. 해당 객체의 메소드를 찾으며 에러를 뿜는 것을 보게 된다.
+그냥 보통처럼 on으로 이벤트를 연결해보면. 
+이벤트 걸린 html 객체가  this가 되어 그 this의 없는 메소드를 찾게되고
+"Uncaught TypeError : this.testFuc is not a function"
+같은 메시지 에러를 보게 된다.
 
+아래 예제로 테스트 해보라
 
 <select id="sel">
 	<option value="banana">바나나</option>
@@ -15,6 +24,11 @@ jquery 에서 이벤트 바인딩 하면 기본적으로 해당 객체가  this�
 <script>
 	
 	$(function(){
+
+		 //아래처럼 하면 객체 내부  this는 선택박스가 되고 에러가 난다
+		//$('#sel').on('change',   Obj.proc); 
+		
+		// 객체로 이벤트를 걸땐 아래처럼 $.proxy를 사용해야 된다.
 		$('#sel').on('change',   $.proxy(Obj,'proc') );
 	});
 
