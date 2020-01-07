@@ -13,20 +13,20 @@
 <body>
 
 <div style="text-align: right">
-	<button id="idr_btn_add_joo">ÁÖ¼ººĞµî·Ï</button>
-	<button id="idr_btn_add_honhap">È¥ÇÕ¼ººĞµî·Ï</button>
-	<button id="idr_btn_remove_all">ÀüÃ¼Çà»èÁ¦</button>
+	<button id="idr_btn_add_joo">ì£¼ì„±ë¶„ë“±ë¡</button>
+	<button id="idr_btn_add_honhap">í˜¼í•©ì„±ë¶„ë“±ë¡</button>
+	<button id="idr_btn_remove_all">ì „ì²´í–‰ì‚­ì œ</button>
 </div>
 <table border="1" id="idr_table">
 	<thead>
 		<tr>
-			<th>¼ø¹ø</th>
-			<th>»óÀ§±¸ºĞ</th>
-			<th>±¸ºĞ</th>
-			<th>¼ººĞÄÚµå</th>
-			<th>¼ººĞ¸í</th>
-			<th>¹èÇÕºñÀ²</th>
-			<th>Ãß°¡</th>
+			<th>ìˆœë²ˆ</th>
+			<th>ìƒìœ„êµ¬ë¶„</th>
+			<th>êµ¬ë¶„</th>
+			<th>ì„±ë¶„ì½”ë“œ</th>
+			<th>ì„±ë¶„ëª…</th>
+			<th>ë°°í•©ë¹„ìœ¨</th>
+			<th>ì¶”ê°€</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -48,95 +48,95 @@
 	});
 
 	var idrrediant = {
-		columnName: ['ÁÖ','ºÎ','È¥ÇÕ','ºÎÈ¥ÇÕ'],
-		rowIdx :-1, /* Ç¥Çà¹øÈ£ 0ºÎÅÍ ½ÃÀÛ */
+		columnName: ['ì£¼','ë¶€','í˜¼í•©','ë¶€í˜¼í•©'],
+		rowIdx :-1, /* í‘œí–‰ë²ˆí˜¸ 0ë¶€í„° ì‹œì‘ */
 		errIdx : -1, 
 		getTableRowHtml : function(){
 			var html = '\
 				<tr>\
-					<td><input type="text" name="order" value="0" title="¼ø¹ø"  /></td>\
-					<td><input type="text" name="upper" value="0" title="»óÀ§°ª"  /></td>\
+					<td><input type="text" name="order" value="0" title="ìˆœë²ˆ"  /></td>\
+					<td><input type="text" name="upper" value="0" title="ìƒìœ„ê°’"  /></td>\
 					<td><span></span>\
-					<input type="hidden" name="bokhap" value="N" title="º¹ÇÕ¼ººĞ¿©ºÎ"  />\
-					<input type="hidden" name="honhap" value="N" title="È¥ÇÕ¼ººÎ¿©ºÎ" />\
+					<input type="hidden" name="bokhap" value="N" title="ë³µí•©ì„±ë¶„ì—¬ë¶€"  />\
+					<input type="hidden" name="honhap" value="N" title="í˜¼í•©ì„±ë¶€ì—¬ë¶€" />\
 					</td>\
-					<td><input type="text" name="code" value="" title="¼ººĞÄÚµå" /></td>\
-					<td><input type="text" name="nm" value="1" title="¼ººĞ¸í" readonly /><button class="idr_btn_code_search">°Ë»ö</button></td>\
-					<td><input type="text" name="ratio" title="¹èÇÕºñÀ²" /></td>\
+					<td><input type="text" name="code" value="" title="ì„±ë¶„ì½”ë“œ" /></td>\
+					<td><input type="text" name="nm" value="1" title="ì„±ë¶„ëª…" readonly /><button class="idr_btn_code_search">ê²€ìƒ‰</button></td>\
+					<td><input type="text" name="ratio" title="ë°°í•©ë¹„ìœ¨" /></td>\
 					<td>\
-						<button class="idr_btn_c_remove">»èÁ¦</button>\
-						<button class="idr_btn_c_add_boo">ºÎ¼ººĞÃß°¡</button>\
-						<button class="idr_btn_c_add_boohonhap">ºÎÈ¥ÇÕ¼ººĞÃß°¡</button>\
-						<button class="idr_btn_c_add_joo">ÁÖ¼ººĞ»ğÀÔ</button>\
+						<button class="idr_btn_c_remove">ì‚­ì œ</button>\
+						<button class="idr_btn_c_add_boo">ë¶€ì„±ë¶„ì¶”ê°€</button>\
+						<button class="idr_btn_c_add_boohonhap">ë¶€í˜¼í•©ì„±ë¶„ì¶”ê°€</button>\
+						<button class="idr_btn_c_add_joo">ì£¼ì„±ë¶„ì‚½ì…</button>\
 					</td>\
 				</tr>';
 
 			return html;
 		},
-		/*[- ÁÖ¼ººĞ µî·Ï , Çà ÁÖ¼ººĞ»ğÀÔ -]*/
+		/*[- ì£¼ì„±ë¶„ ë“±ë¡ , í–‰ ì£¼ì„±ë¶„ì‚½ì… -]*/
 		addJoo:function(){
-			//'Ãà»ê¹°' + '°¡°ø' Ã¼Å©
+			//'ì¶•ì‚°ë¬¼' + 'ê°€ê³µ' ì²´í¬
 
-			// ·Î¿ì°¡ ÀÖ°Å³ª, ÀÖ´Ù¸é ÅØ½ºÆ®°¡ ºñ¾ú´ÂÁö Ã¼Å©
+			// ë¡œìš°ê°€ ìˆê±°ë‚˜, ìˆë‹¤ë©´ í…ìŠ¤íŠ¸ê°€ ë¹„ì—ˆëŠ”ì§€ ì²´í¬
 			
 			if( !this.checkRowInputs() ){this.alert(0); return;}
-			// ¾øÀ¸¸é Ãß°¡Çà »ı¼º
+			// ì—†ìœ¼ë©´ ì¶”ê°€í–‰ ìƒì„±
 			this.createRow();
-			// ¼ø¹ø ³Ö¾îÁÖ±â
+			// ìˆœë²ˆ ë„£ì–´ì£¼ê¸°
 			this.createOrder();
-			//»óÀ§±¸ºĞ ³Ö¾îÁÖ±â
+			//ìƒìœ„êµ¬ë¶„ ë„£ì–´ì£¼ê¸°
 			
 
 		},
-		/*[- È¥ÇÕ¼ººĞ µî·Ï -]*/
+		/*[- í˜¼í•©ì„±ë¶„ ë“±ë¡ -]*/
 		addHonhap:function(){
-			// ·Î¿ì°¡ ÀÖ°Å³ª, ÀÖ´Ù¸é ÅØ½ºÆ®°¡ ºñ¾ú´ÂÁö Ã¼Å©
+			// ë¡œìš°ê°€ ìˆê±°ë‚˜, ìˆë‹¤ë©´ í…ìŠ¤íŠ¸ê°€ ë¹„ì—ˆëŠ”ì§€ ì²´í¬
 			if( !this.checkRowInputs() ){this.alert(0); return;}
-			// ¾øÀ¸¸é Ãß°¡Çà »ı¼º, 
+			// ì—†ìœ¼ë©´ ì¶”ê°€í–‰ ìƒì„±, 
 			this.alert(1);
-			// °æ°í ¾È³»Ã¢ º¸¿©ÁÖ°í , °Ë»ö µ¸º¸±â »ç¶óÁö°Ô ÇÏ°í, ¼öµ¿ ÀÔ·Â °¡´ÉÇÏ°Ô ÇØ¾ßÇÔ
+			// ê²½ê³  ì•ˆë‚´ì°½ ë³´ì—¬ì£¼ê³  , ê²€ìƒ‰ ë‹ë³´ê¸° ì‚¬ë¼ì§€ê²Œ í•˜ê³ , ìˆ˜ë™ ì…ë ¥ ê°€ëŠ¥í•˜ê²Œ í•´ì•¼í•¨
 			this.createRow('no_search');
-			// ¼ø¹ø ³Ö¾îÁÖ±â
+			// ìˆœë²ˆ ë„£ì–´ì£¼ê¸°
 			this.createOrder();
-			//»óÀ§±¸ºĞ ³Ö¾îÁÖ±â
+			//ìƒìœ„êµ¬ë¶„ ë„£ì–´ì£¼ê¸°
 		},
-		/*[- ÀüÃ¼Çà»èÁ¦ -]*/
+		/*[- ì „ì²´í–‰ì‚­ì œ -]*/
 		addAllRowsRemove:function(){
 			$('table#idr_table tbody').empty();
 		},
-		/*[- ÇöÀçÇà »èÁ¦ -]*/
+		/*[- í˜„ì¬í–‰ ì‚­ì œ -]*/
 		removeRow:function(obj){
 			var idx = $(obj).parent().parent().index();
 			$('table#idr_table tbody tr').eq(idx).remove();
 		},
-		/*[- ºÎ¼ººĞ Ãß°¡ -]*/
+		/*[- ë¶€ì„±ë¶„ ì¶”ê°€ -]*/
 		addRowBoo:function(){
 			this.addJoo();
 
-			//»óÀ§±¸ºĞ ¹Ù·Î À§ row ¹øÈ£
+			//ìƒìœ„êµ¬ë¶„ ë°”ë¡œ ìœ„ row ë²ˆí˜¸
 			var t = $('table#idr_table tbody tr:last td:eq(1) input[name=upper]').val(this.rowIdx);
 
 
-			//ºÎ¼ººĞ ÀÌ´Ï±î º¹ÇÕÀÌ´Ù -> Y³Ö±â
+			//ë¶€ì„±ë¶„ ì´ë‹ˆê¹Œ ë³µí•©ì´ë‹¤ -> Yë„£ê¸°
 		//	$('table#idr_table tbody tr:last td:eq(2) input[name=bokhap]').val('Y');
-			//ºÎ¼ººĞ Ãß°¡ ÀÌ´Ï±î ±¸ºĞÀº 'ºÎ' ÀÌ´Ù
+			//ë¶€ì„±ë¶„ ì¶”ê°€ ì´ë‹ˆê¹Œ êµ¬ë¶„ì€ 'ë¶€' ì´ë‹¤
 		//	$('table#idr_table tbody tr:last td:eq(2) span').text(this.columnName[1]);
 			
 		},
-		/*[- ºÎÈ¥ÇÕ µî·Ï -]*/
+		/*[- ë¶€í˜¼í•© ë“±ë¡ -]*/
 		addRowBooHonhap:function(){
 			this.addHonhap();
-			//ºÎÈ¥ÇÕ ÀÌ´Ï±î º¹ÇÕ + ÃB¤²ÀÌ´Ù -> Y,Y³Ö±â
+			//ë¶€í˜¼í•© ì´ë‹ˆê¹Œ ë³µí•© + í˜¾ã…‚ì´ë‹¤ -> Y,Yë„£ê¸°
 			$('table#idr_table tbody tr:last td:eq(2) input[name=bokhap]').val('Y');
 			$('table#idr_table tbody tr:last td:eq(2) input[name=honhap]').val('Y');
-			//»óÀ§±¸ºĞ ¹Ù·Î À§ row ¹øÈ£
+			//ìƒìœ„êµ¬ë¶„ ë°”ë¡œ ìœ„ row ë²ˆí˜¸
 			$('table#idr_table tbody tr:last td:eq(1) input').val(this.rowIdx + 1);
 		},
-		/*[-¸¶Áö¸·Çà ÅØ½ºÆ®¹Ú½º ´Ù Ã¤¿öÁ³´ÂÁö Ã¼Å©-]*/
+		/*[-ë§ˆì§€ë§‰í–‰ í…ìŠ¤íŠ¸ë°•ìŠ¤ ë‹¤ ì±„ì›Œì¡ŒëŠ”ì§€ ì²´í¬-]*/
 		checkRowInputs : function(){
 
-			if(this.rowIdx < 0){ return true}; /* Ã³À½ÀÏ¶©  ±×³É ½ÇÇà*/
-			//µé¾îÀÖ´Â °ªµé Ã¼Å©
+			if(this.rowIdx < 0){ return true}; /* ì²˜ìŒì¼ë•  ê·¸ëƒ¥ ì‹¤í–‰*/
+			//ë“¤ì–´ìˆëŠ” ê°’ë“¤ ì²´í¬
 			var size = $('table#idr_table tbody tr').length;
 		
 			
@@ -160,7 +160,7 @@
 			switch(mode){
 				case 'no_search': 
 					$('table#idr_table tbody').append(this.getTableRowHtml());
-					/*È¥ÇÕÀº °Ë»ö¹öÆ° ¾ø¾Ø´Ù*/
+					/*í˜¼í•©ì€ ê²€ìƒ‰ë²„íŠ¼ ì—†ì•¤ë‹¤*/
 					$('table#idr_table tbody tr:last button.idr_btn_code_search').remove();
 					$('table#idr_table tbody tr:last input[name=nm]').prop('readonly',false);
 					
@@ -185,10 +185,10 @@
 		alert : function(mode){
 			switch (mode){
 				case 0:
-					alert('ÇöÀç [' + (this.errIdx + 1) + ']Çà ºñ¾î ÀÖ¾î');
+					alert('í˜„ì¬ [' + (this.errIdx + 1) + ']í–‰ ë¹„ì–´ ìˆì–´');
 					break;
 				case 1:
-					alert('È¥ÇÕÀº 2°³ÀÌ»ó');
+					alert('í˜¼í•©ì€ 2ê°œì´ìƒ');
 					break;
 			}
 		}
