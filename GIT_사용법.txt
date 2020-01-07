@@ -1,4 +1,4 @@
-﻿working directory = working tree = working copy : 작업공간
+working directory = working tree = working copy : 작업공간
 staging area = index = cache : 커밋 전 등록하는 곳
 repository = history = tree : 최종확정본 
 
