@@ -1,0 +1,33 @@
+<ul>
+	<li><span><em>0번</em></span><span></li>
+	<li><span><em>1번</em></span><span></li>
+	<li><span><em>2번</em></span><span></li>
+	<li><span><em>3번</em></span><span></li>
+</ul>
+<script>
+	
+	$(function(){
+
+		$(document).on('click','button.idr_btn_c_add_joo',function(){idrrediant.addJoo()});
+
+		$('ul li').each(function(index, item){
+			var t = $('span em', item).text(); // == $('span em', this)
+			console.log(t);
+		});
+		
+		var obj = $('ul');
+		var tt1 = $('li:eq(3) em',obj).text();
+		var tt2 = $(obj).find('li:eq(1) em').text();
+		
+		console.log("$('css 선택자',선택자변수)->",tt1);
+		console.log("find()->",tt2);
+	});
+
+</script>
+
+--출력
+1번
+2번
+3번
+$('css 선택자',선택자변수)-> 3번
+find()-> 1번
