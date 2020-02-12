@@ -1,0 +1,6 @@
+vi /etc/ssh/sshd_config #설정 파일 편집
+
+	UseDNS no
+	GSSAPIAuthentication no
+	
+systemctl restart sshd #재기동

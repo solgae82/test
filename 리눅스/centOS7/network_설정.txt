@@ -1,0 +1,95 @@
+네트워크 설정 관련 파일들
+1. /etc/hosts 
+	#도메인을 설정할 수 있는 곳. ip와 도메인 1:1 매핑가능.
+
+	ex)
+	127.0.0.1 loclhost localhost.localdomain
+	::1	  loclhost localhost.localdomain
+
+
+2. /etc/sysconfig/network 
+	#네트웤 글로벌한 설정값들을 설정하는 곳
+
+	ex)
+	NETWORKING=yes 
+	HOSTNAME=uzuro.com 
+	GATEWAY=192.168.0.1
+
+
+
+3. /etc/resolv.conf 
+	#네임서버 설정하는 곳
+
+	ex)
+	nameserver 168.126.63.1 
+	nameserver 168.126.63.2
+
+4. /etc/sysconfig/network-scripts
+	# 네트워크 카드별로 설정 할 수 있는 곳
+	대체로 ip link 명령어로 보면 네트워크명 나오는데 매핑하면 된다
+
+	예를 들어 
+		ip link
+
+		1: lo:~~
+		2: enp3s0:~~
+
+	가 나왔다면 네트워크 카드가 현재 1개이고, 네트워크명은 'enp3s0' 이다.
+
+	그래서 이곳에서 ls -al 해보면 'ifcfg-enp3s0' 이라는 파일이 있을 것이다.
+	이 파일이  enp3s0 네트워크 카드 설정파일이다
+
+	여기에 설정값들이 위에 1,2,3번 설정보다도 우선한다.
+	그러므로 여기에서 다 설정하면 편하다
+
+
+-------------------- 실전 네트워크 카드 설정 해보기
+
+ip addr list #ifconfig 같은 명령어
+
+cd /etc/sysconfig/network-scripts # 이곳에 네트웤 설정 파일들이 위치해 있다
+
+ls -al # 살펴보면 ifcfg-enp3s0 같은 설정파일 있을 것이다 
+
+# 네트워크 설정파일을 편집 해보자
+	
+	vi ifcfg-enp3s0 
+	
+	# (여기 설정값이 위에 설정한  파일(network,resolv.conf)들보다 우선한다)
+
+	###### 아마도 아래처럼 기본으로 설정 되었을 것이다
+	TYPE=Ethernet	#Wrieless , Bridge, Bond 등이 있다
+	PROXY_METHOD=none
+	BROWSER_ONLY=no
+	DEFROUTE=yes
+	IPV4_FAILURE_FATAL=no
+	IPV6INIT=yes
+	IPV6_AUTOCONF=yes
+	IPV6_DEFROUTE=yes
+	IPV6_FAILURE_FATAL=no
+	IPV6_ADDR_GEN_MODE=stable-privacy
+	NAME=enp3s0
+	UUID="기본 값 있으면 걍 놔둔다"
+	DEVICE=enp3s0
+	ONBOOT=yes #요거 설정이 yes가 아니면 네트웤 재시작해도 먹지 않는다.
+	#ETHTOOL_OPTS="wol g"  #요건 원격 부팅용 옵션
+
+	#여기부터 진짜 타이핑 추가
+	BOOTPROTO=none	#static 이라는 값은 없다.  dbcp, boottp(dbcp와 비슷한 구형 프로토콜), none  정도만 쓰인다
+	IPADDR=192.168.0.6
+	NETMASK=255.255.255.0
+	GATEWAY=192.168.0.1
+	DNS1=168.126.63.1
+	DNS2=168.126.63.2
+	#####
+
+# 네트웤 기동, 또는 reboot 해서 하시등가..
+	systemctl restart nertwork 
+
+----------------------tip
+수동으로 네트웤 카드 활성화 시키기
+	ifup enp3s0 # 장치 수동 활성화
+	ifdown enp3s0 # 장치 수동 비활성화
+
+랜카드명 정보 확인
+ip link

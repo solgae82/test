@@ -1,0 +1,42 @@
+1. 네트웤 먼저 설정
+
+2. net-tools 설치 바람(편함)
+	yum install -y net-tools
+
+	설치 후 port(:22) 확인
+
+	netstat -an | grep LISTEN
+
+3. SSH가 켜져있는지 체크 
+
+	systemctl is-active sshd
+
+	- port 설정 풀려 있는지 확인
+	vi /etc/ssh/sshd_config
+
+		port 22
+
+4. firewalld 에 ssh.xml 추가 되었는지 확인
+	cp /usr/lib/firewalld/services/ssh.xml /etc/firewalld/services #ssh관련 파일 복사
+	vi /etc/firewalld/services/ssh.xml 
+		<port protocol="tcp" port="22" /> #설정 파일 편집
+
+	firewall-cmd --reload #재기동
+
+5. SELinux 꺼버림..
+	sestatus  #동작 확인
+
+	#끄기 설정
+	vi /etc/sysconfig/selinux
+		SELINUX=disabled
+	reboot
+
+
+6. 로그인 속도가 지랄맞게 느리면 '로그인시_느릴때.txt' 참조
+
+	vi /etc/ssh/sshd_config 
+
+		UseDNS no
+		GSSAPIAuthentication no
+		
+	systemctl restart sshd 

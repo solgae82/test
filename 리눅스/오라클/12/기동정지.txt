@@ -1,0 +1,10 @@
+$ su - oracle
+
+$ sqlplus "/as sysdba"
+SQL>startup	#시작
+SQL>shutdown immediate #중지
+SQL>exit #sqlplus 빠져나옴
+
+---------리스너 시작
+$ lsnrctl start #리스너 시작
+$ lsnrctl stop #리스너 중지
