@@ -1,8 +1,13 @@
 1. 시동
+	기본적으로 오라클 실행과, 리스너 실행만 하면 된다.
+	오라클은 실행은 sqlplus 를 실행으로 시작한다.
+	----------------------------- 아래는 오라클 10 설치후 책에 있는 대로 쓴 것임.
 
 	su - oracle  #사용자 변경
-	emctl start dbconsole # 엔터프라이즈 매니저 실행
-	isqlplusctl start	#iSQl*PLUS   실행
+
+	emctl start dbconsole # 엔터프라이즈 매니저 실행(안해도 된다)
+	isqlplusctl start	#iSQl*PLUS   실행(안해도 된다)
+	
 	lsnrctl start	#리스너 실행
 
 	# 기본 프로세스 올린 후 sqlplus 실행

@@ -1,0 +1,37 @@
+## 일하면서 직접 테스트 하며 틈틈히 정리한 것이다.
+
+ start~!
+
+ 선언해야 xml 파싱이 되는가 보다
+ <html xmlns:th="http://www.thymeleaf.org">
+
+ 0. th:text
+	
+	기본 문자열 출력
+	'홑따옴표 와 | 문자 표현법이 있다.
+	<> 태그 문자등은 html 엔티티로 변화되어 출력된다.
+	
+	-----------
+	?test=구름
+
+	코드:<span th:text="'하늘'">데이터</span>
+	출력:<span>하늘</span>
+
+	코드:<span th:text="|하늘|">데이터</span>
+	출력:<span>하늘</span>
+
+	코드:<span th:text="'하늘 ' + ${param.test}">데이터</span>
+	출력:<span>하늘 구름</span>
+
+	코드:<span th:text="|하늘 ${param.test}|">데이터</span>
+	출력:<span>하늘 구름</span>
+
+	코드:<span th:text="|<b>하늘</b>|">데이터</span>
+	출력:<span>&lt;b&gt;하늘&lt;/b&gt;</span>
+	-----------
+
+1. th:utext
+	
+	문자열출력
+	th:text 와 비교해서 , html 엔티티 변환없이 출력되는 점만 다르고 모두 같다
+

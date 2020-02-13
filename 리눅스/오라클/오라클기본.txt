@@ -106,7 +106,7 @@
 	
 	//권한주기
 	Grant [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [with grant option];
-	grant select on scott.TEMP to DONG; // DONG사용자게게 scott계정의 TEMP 테이블 조회권한을 준다.
+	grant select on scott.TEMP to DONG; // DONG사용자에게 scott계정의 TEMP 테이블 조회권한을 준다.
 
 	//객체권한 취소
 	revoke [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [cascade constrains/force];
