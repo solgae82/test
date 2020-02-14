@@ -1,0 +1,123 @@
+Take out both two Earbuds then re-insert them into the casse to activate the earphones.
+이어 버드 2 개를 모두 꺼내서 케이스에 다시 삽입하여 이어폰을 활성화하십시오.
+--------------------
+Notes. If EarBuds fail to be charged, please charge the case via USB casble(for details, please refer th following step).
+노트. EarBud가 충전되지 않으면 USB 케이블을 통해 케이스를 충전하십시오 (자세한 내용은 다음 단계를 참조하십시오).
+-------------------
+How to Pair
+
+Push both EarBuds into charging case to activate them then take out from the case and they will auto power on and pair with each other.
+Right EarBud will auto enter paring mode when LED on left EarBud turns off.
+On cellphone, search for QCY-T1_R and tap to connect cellphone to both EarBuds.
+
+[Please try the following steps, in case you fail to build connction.]
+
+Power off two EarBuds and tap and hold MFBs on both of them for 20 seconds.(LED will blink red and white then turn off and 10 seconds later blink red an white 3 times).
+Tap and hold two EarBuds for 1 second to power on(LED blinks red an white twice) and two EarBuds will auto pair with each other. Then right EarBud will auto enter paring mode(LED blinks red an white) when LED on left EarBud turn off.
+On cellphone, search fo QCY-T1_R and tap to connect both EarBuds with cellphone.
+Note: if two EarBuds fail to pair with each other in 20 seconds, they will enter pairing mode(connectable to cellphone).
+
+페어링하는 방법
+
+두 이어 버드를 충전 케이스에 밀어 넣어 활성화 한 다음 케이스에서 꺼내면 자동으로 켜지고 서로 페어링됩니다.
+왼쪽 EarBud의 LED가 꺼지면 오른쪽 EarBud가 페어링 모드로 자동 전환됩니다.
+휴대폰에서 QCY-T1_R을 검색하고을 눌러 휴대폰을 두 EarBud에 연결하십시오.
+
+[연결을 구축하지 못한 경우 다음 단계를 시도하십시오.]
+
+두 개의 이어 버드 전원을 끄고 MFB를 20 초간 길게 누릅니다 (LED가 빨간색과 흰색으로 깜박 인 다음 꺼졌다가 10 초 후에 빨간색으로 흰색으로 세 번 깜박임).
+이어 버드 2 개를 1 초 동안 길게 누르면 전원이 켜지고 (LED가 빨간색으로 흰색으로 두 번 깜박임) 이어 버드 2 개가 자동으로 페어링됩니다. 그런 다음 왼쪽 EarBud의 LED가 꺼지면 오른쪽 EarBud가 페어링 모드 (LED가 빨간색으로 흰색으로 깜박임)로 자동 전환됩니다.
+휴대폰에서 QCY-T1_R을 검색하고 두 이어 버드를 휴대폰에 연결하려면 누릅니다.
+참고 : 두 개의 EarBud가 20 초 내에 서로 페어링되지 않으면 페어링 모드 (휴대폰에 연결 가능)로 들어갑니다.
+-------------------
+
+Functions
+기능들
+---------
+Power-on
+Method 1 : take earphones out from the charging case and the will auto power on (LED glows solid white).
+Method 2 : power off earphones and hold MFB fo 1 second to power on(LED glows solid white).
+
+전원 켜짐
+방법 1 : 충전 케이스에서 이어폰을 꺼내면 자동 전원이 켜집니다 (LED가 흰색으로 점등).
+방법 2 : 이어폰의 전원을 끄고 1 초 동안 MFB를 길게 눌러 전원을 켭니다 (LED가 흰색으로 켜짐).
+---------
+Power-off
+Hold MFB from 3 seconds(red LED will turn on for 2 seconds).
+
+전원 끄기
+MFB를 3 초에서 길게 누릅니다 (빨간색 LED가 2 초 동안 켜집니다).
+---------
+Ignore Call
+Hold MFB for 1 second to ignore incoming call.
+
+전화 무시
+수신 통화를 무시하려면 MFB를 1 초 동안 누르십시오.
+---------
+
+Answer Call
+Tab MFB to answer incoming call and tap again to end it.
+
+전화 받기
+수신 통화에 응답하려면 MFB를 탭하고 종료하려면 다시 탭하십시오.
+---------
+Switch Audio Output
+When calling, hold MFB for 1second to switch audio output between cellphone and earphones.
+
+오디오 출력 전환
+전화 할 때 MFB를 1 초 동안 누르고 있으면 휴대폰과 이어폰간에 오디오 출력이 전환됩니다.
+---------
+Mute-on/off
+When calling, double tap MFB to swich mute on/off
+
+음소거 켜기 / 끄기
+전화를 걸 때 MFB를 두 번 탭하여 음소거 켜기 / 끄기
+---------
+Playback / Pause
+when stanby in streo mod, tap MFB to play and tap agin to pause.
+
+재생 / 일시 정지
+스테레오 모드로 대기 중일 때 MFB를 탭하여 재생하고 agin을 탭하여 일시 중지
+---------
+Skip Track Forward / Backward
+when playing, double press MFB on right/left Earbud Skip track forward / backward.
+
+앞으로 / 뒤로 트랙 건너 뛰기
+재생시 오른쪽 / 왼쪽 이어 버드 트랙 건너 뛰기 앞으로 / 뒤로 MFB를 두 번 누릅니다.
+---------
+Voice Assistant
+When stanby, hold MFB for 1 second to activate voice assistant (like Siri).
+
+음성 길잡이
+대기 상태 인 경우 MFB를 1 초 동안 누르고 있으면 음성 지원 (예 : Siri)이 활성화됩니다.
+
+-------------------
+추가 안내
+
+
+The Fllowing Functions Can Only be Enjoyed in Mono Mode
+
+Single EarBud Re-connection
+Power on single EarBud(LED will turn on white), tap MFB to re-connect to the last device in connection records, if any.
+
+단조로운 기능은 모노 모드에서만 즐길 수 있습니다
+
+단일 이어 버드 재 연결
+단일 EarBud의 전원을 켜고 (LED가 흰색으로 켜짐) MFB를 눌러 연결 기록에서 마지막 장치에 다시 연결합니다 (있는 경우).
+
+---------
+Charge the Earphones
+Insert the earphones into charging case(pogo pins should be well-contacted).
+LED will be solid red  when charging and turn to white for 60 seconds once topped up
+
+이어폰 충전
+충전 케이스에 이어폰을 삽입하십시오 (포고 핀이 잘 닿아 야합니다).
+충전시 LED가 빨간색으로 켜지고 충전이 완료되면 60 초 동안 흰색으로 바뀝니다.
+
+---------
+Charge the case
+Plese charge the case via USB cable.
+LED glows solid green  when the case is being charged. and turn off once topped up
+
+USB 케이블을 통해 케이스를 충전하십시오.
+케이스를 충전 할 때 LED가 녹색으로 계속 켜져 있습니다. 일단 충전되면 끄십시오
