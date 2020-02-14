@@ -404,3 +404,421 @@
 	출력: 
 			<p>하이</p>
 	-----------
+	
+	같은 블록에 th:with 변수설정 하고 그 변수를 같은 블록태그에 th:if 에 쓰면 그 변수는 null 로 인식
+	선언과 로직을 동시에 하면 안 되는 듯하다
+	
+	코드: 
+		<th:block th:with="name='이순신' th:if="${name} != null">
+			<span th:text="${name}">이름</span>
+		</th:block>
+	출력: 출력안함
+	-----------
+	다음처럼 해야 기대대로 작동한다.
+
+	코드:
+		<th:block th:with="name='이순신'>
+			<th:block th:if="${name} != null">
+			<span th:text="${name}">이름</span>
+			</th:block>
+		</th:block>
+	출력:	<span>이순신</span>
+	-----------
+
+14. th:if
+	
+	단일 조건문
+	이미 위 예제에서 많이 했다.
+
+	-----------
+	기본
+
+	코드:<span th:if="${true}">있다</span>
+	출력:<span>있다</span>
+
+	코드:<span th:if="${false}">있다</span>
+	출력:출력안함
+	-----------
+
+	위에서 배운 th:block을 이용해서 이해해보자.
+
+	코드:
+		<th:block th:if="${true}">
+			<span>있다</span>
+		</th:block>
+	출력:		<span>있다</span>
+	
+	코드:
+		<th:block th:if="${false}">
+			<span>있다</span>
+		</th:block>
+	출력: 출력안함
+	-----------
+
+15. ?: (삼항연산자)
+	
+	th:속성은 아니고 연산로직에서 쓰인다.
+	일반 프로그래밍, jstl의 그것과 같다.
+
+	-----------
+	기본
+	코드:<span th:text="${true}?'있다':'없다'"></span>
+	출력:<span>있다</span>
+
+	쿼리스트링 파라미터에서 파라미터 존재여부 체크에 자주 쓰임
+	http 파라미터는 배열로 인식함은 자바스크립트 모드에서와 같다.
+	-----------
+	파라미터 존재여부 체크후 출력
+	url: ?test=A
+
+		코드:<span th:text="${param.test !=null}?${param.test}:'없다'"></span>
+		출력:<span>A</span>
+	-----------
+	값을 비교할 경우
+
+		코드:<span th:text="${param.test == 'A'}?'A가 맞다':'A가 아님'"></span>
+		출력:<span>A가 아님</span>
+
+	원하는 대로 안 나온다..배열로 체크를 해야한다..잊지말자
+	-----------
+	http 파라미터에서는 배열로 값을 비교해야한다.
+	<script th:inline="javascript"> 스크립트 모드에서도 배열 개념은 같다.
+	
+		코드:<span th:text="${param.test[0] == 'A'}?'A가 맞다':'A가 아님'"></span>
+		출력:<span>A가 맞다</span>
+	-----------
+	실수 자주하는 부분이니 값을 비교할때 #strings 유틸을 쓰자.
+	http 파라미터 모든 값은 '문자열'로 처리된다
+	test파라미터가 한개일때는 [0]을 빼고 입력해도 자동으로 [0]째 인덱스 값을 가져와서 비교한다
+
+		코드:<span th:text="${#strings.equals(param.test,'A')}?'A가 맞다':'A가 아님'"></span>
+		출력:<span>A가 맞다</span>
+
+	아래처럼 인덱스 [0]으로 접근해도 결과는 같다
+
+		코드:<span th:text="${#strings.equals(param.test[0],'A')}?'A가 맞다':'A가 아님'"></span>
+		출력:<span>A가 맞다</span>
+	-----------
+
+	#strings.equals(param.파라미터명, '비교값')를 기억하자 , th:if 문에서도 자주 쓰일 것이다.
+	
+
+15-1. ?: (디폴트 표현식, Elvis operator)
+
+	형식 : ${null}?:'디폴트';
+
+	부울이 아니라 null  기준으로 조건평가 단축 표현법
+	?: 처럼  true 실행부분이 없고 붙어있는 형식
+
+	true,false가 아니라 null 여부로 출력 아니면 디폴트 출력 여부가 결정.
+	${..} 이 null이 아니면 출력하고, 아니면 디폴트 값이 출력.
+	
+	코드로 이해하자
+	-----------
+	model.addAttribute("greeting","하이");
+	model.addAttribute("good",null);
+
+	코드:<span th:text="${greeting}?:'null이다'"></span>
+	출력:<span>하이</span>
+
+	코드:<span th:text="${good}?:'null이다'"></span>
+	출력:<span>null이다</span>
+	-----------
+	아래처럼 하면 어떻게 될까?
+
+	코드:<span th:text="${true}?:'null이다'"></span>
+	출력:<span>true</span>
+
+	코드:<span th:text="${false}?:'null이다'"></span>
+	출력:<span>false</span>
+
+	true,false 는 null이 아니므로 문자열로 출력
+	-----------
+
+	결론은 값이 있으면 '출력', 아니면 '디폴트' 값 출력
+
+16. th:switch
+	
+	프로그래밍 switch 문과 비슷하다
+	같은 태그에 th:with  와 th:switch를 썼을 경우 
+	th:with에서 설정한 변수를 th:switch 변수로 바로 적용할 수 있다.
+	-----------
+	코드:
+		<div th:with="data='eeee'" th:switch="${data}">
+			<span th:case="'e'">1개</span>
+			<span th:case="'ee'">2개</span>
+			<span th:case="'eee'">3개</span>
+			<span th:case="'*'">4개 이상</span>
+		</div>
+	출력:
+		<div th:with="data='eeee'" th:switch="${data}">
+			
+
+
+			<span th:case="'*'">4개 이상</span>
+		</div>
+
+
+17. th:each
+
+	반복문은 이것만 사용하면 된다.
+	List, Set, Map 사용법을 먼저 분석해보자.
+
+	-----------
+	List
+
+		List<String> list = new ArrayList<String>();
+		list.add("하나");
+		list.add("둘");
+		list.add("셋");
+		model.addAttribute("list", list);
+
+		코드:
+			<ul>
+				<li th:each="m : ${list}" th:text="${m}">데이터</li>
+			</ul>
+		출력:
+			<ul>
+				<li>하나</li>
+				<li>둘</li>
+				<li>셋</li>
+			</ul>
+	-----------
+	Set
+
+		Set<String> set = new HashSet<String>();
+		set.add("하나");
+		set.add("둘");
+		set.add("셋");
+		model.addAttribute("set", set);
+
+		코드:
+			<ul>
+				<li th:each="m : ${set}" th:text="${m}">데이터</li>
+			</ul>
+		출력:
+			<ul>
+				<li>둘</li>
+				<li>하나</li>
+				<li>셋</li>
+			</ul>
+	-----------
+	Map
+		Map<String> map = new HashMap<String>();
+		map.push("one","하나");
+		map.push("two","둘");
+		map.push("three","셋");
+		model.addAttribute("map", map);
+
+		코드:
+			<ul>
+				<li th:each="m : ${map.keySet()}" th:text="|${m} : ${map.get(m)}|">데이터</li>
+			</ul>
+		출력:
+			<ul>
+				<li>three : 셋 </li>
+				<li>one : 하나</li>
+				<li>two : 둘</li>
+			</ul>
+
+	-----------
+	배열도 한번 출력해보자
+		
+		String[] str = {"하나","둘",""};
+		model.addAttribut("arr",str);
+
+		코드:
+			<ul>
+				<li th:each="m : ${arr}">
+					<span th:if="${not m.isEmpty()}" th:text="${m}">있다</span>
+					<span th:if="${m.isEmpty()}">없다</span>
+				</li>
+			</ul>
+		출력:
+			<ul>
+				<li>
+					<span>하나</span>
+					
+				</li>
+				<li>
+					<span>둘</span>
+					
+				</li>
+				<li>
+					
+					<span>없다</span>
+				</li>
+			</ul>
+
+	-----------
+	자동정의된 반복 변수들
+
+	반복 돌릴때 기본 정의된 변수들이 있다.
+	예를 들면 현재 반복 index값을 가져오는 경우
+
+		List<String> list = new ArrayList<String>();
+		list.add("하나");
+		list.add("둘");
+		list.add("셋");
+		model.addAttribute("list", list);
+
+		코드:
+			<ul>
+				<li th:each="m : ${list}" th:text="|${mStat.index}. ${m}|">데이터</li>
+			</ul>
+		출력:
+			<ul>
+				<li>0. 하나</li>
+				<li>1. 둘</li>
+				<li>2. 셋</li>
+			</ul>
+	현재 반복변수 m 변수에 'Stat' 라는 문자를 덧붙이면 도움 유틸리티 변수를 쓸 수가 있다..
+	다음 아래와 같은 자동 도움 변수를 쓸 수가 있다
+
+		mStat.size	: 리스트 전체 크기
+		mStat.count	: 현재 카운트 번호 (1부터 시작)
+		mStat.index	: 현재 인덱스 번호 (0부터 시작)
+		mStat.current	: 현재 변수를 가르킨다. 'm' (쓸모 없는 듯한데...)
+		mStat.even	: 현재 반복변수가 짝수 카운트일때 true.
+		mStat.odd	: 현재 반복변수가 홀수 카운트일때 true.
+		mStat.first	: 현재 반복변수가 첫번째 반복일때  true.
+		mStat.last	: 현재 반복변수가 마지막 반복일때  true.
+
+	접미사 'Stat'가 맘에 안들면 직접 변수명을 추가해서 사용할 수 있다.
+	아래처럼 'loop'라는 변수명을 반복변수 옆에 콤마로 구분해서 작성하면 된다.
+
+		코드:
+			<ul>
+				<li th:each="m , loop : ${list}" th:text="|${loop.index}. ${m}|">데이터</li>
+			</ul>
+		출력:
+			<ul>
+				<li>0. 하나</li>
+				<li>1. 둘</li>
+				<li>2. 셋</li>
+			</ul>
+	-----------
+	기타
+
+	코딩하다 보니 몇번 반복할지 횟수를 직접 지정하고 싶을때가 있더라..
+	이럴땐 ${#numbers} 유틸을 써보자. 
+	
+		코드:
+			<ul>
+				<li th:each="m , loop : ${#numbers.sequence(1,3)}"  
+					th:text="|인덱스:${loop.index}, 값:${m}|"></li>
+			</ul>
+		출력:
+			<ul>
+				<li>인덱스:0, 값:1</li>
+				<li>인덱스:1, 값:2</li>
+				<li>인덱스:2, 값:3</li>
+			</ul>
+
+	이해 할 것이다. 시작숫자에서 마지막 번호까지 반복한다.
+	-----------
+
+18. th:attr
+
+	태그속성 강제지정
+
+	코드를 먼저 보자
+	-----------
+		코드:<span style="color: red" th:attr="style=|color: black|">데이터</span>
+		출력:<span style="color: black">데이터</span>
+
+	요런 것이다..태그 속성을 강제로 덮어쓸 수 있는 기능
+	-----------
+	한번에 두개 이상 값 설정
+		코드:<img src="t.jpg" th:attr="src=@{/img/a.png} , title='안녕하세요', alt='인사말'" />
+		출력:<img src="/img/a.png"  title='안녕하세요' alt='인사말'" />
+
+	-----------
+	덮어쓰기가 아닌 뒤로 추가하기용 속성 th:attrappend
+
+		코드:<img src="t.jpg" th:attrappend="alt=' 안녕하세요'" alt='인사말'" />
+		출력:<img src="t.jpg" alt='인사말 안녕하세요'" />
+
+	자매품 th:attrprepend 도 있다(앞에 추가하기용)
+	-----------
+	그런데 이미 자주 쓰는 태그 속성등은 이미 설정되어 있다..
+	th:src, th:checked , th:value, th.style, th.onclick...등등..
+	난 정해진 속성을 쓰는 것이 낫다고 생각하는데..
+
+	th.attr 는 알려진 속성 말고 사용자 지정 속성등에 사용하는게 더 바람직 할랑가. 당신 맘대로..
+	-----------
+
+19. fragment
+
+	예상하듯이 include 같은 거다..조각 내서 합치는..
+	코드로 보는게 낫다
+	-----------
+	코드:
+	footer.html
+
+		<!DOCTYPE html>
+		<html xmln:th="http:www.thymeleaf.org">
+		<head></head>
+		<body>
+			<section th:fragment="copy">
+				<span>헤이</span>
+			</section>
+		<body></html>
+
+	test.html
+		
+		<body>
+			<div th:insert="footer :: copy">footer 가져오기</div>
+			또는
+			<div th:insert="~{footer :: copy}">footer 가져오기</div>
+		</body>
+
+	출력:
+		<body>
+			<div><section>
+				<span>헤이</span>
+			</section></div>
+		</body>
+		
+
+20. 주석
+
+	Thymeleaf 주석은 컴파일 전 원본에서만 볼 수 있고, 컴파일 후 출력 소스에는 나타나지 않는다..
+	보안적으로도 사용자에게 주석코드가 보일 필요는 없다.
+	소스코드를 깔끔히 유지시켜주는 좋은 기능이라 생각된다.
+	-----------
+	html 주석: 
+		형식: <!--/* 주석내용 */-->
+	
+		코드:
+			<span>옘병</span>
+			<!--/* 컴파일 전에만 볼 수 있는 텍스트 */-->
+			<span>하네</span>
+		출력:
+			<span>옘병</span>
+
+			<span>하네</span>
+
+	또 다른 html 주석:
+		<!--/*/ 실행코드 주석 /*/-->
+
+		컴파일 전 html static 모드에서 브라우저로 볼땐 안 보이게 하고,
+		컴파일 후 브라우저에선 컴파일된 결과가 보이게 하는 주석기법.
+
+		코드:<!--/*/ <span th:text="'컴파일 후'">데이터</span> /*/-->
+		출력:<span>컴파일 후</span>
+	-----------
+	javascript 주석:
+		형식: /*[- 주석 내용 -]*/
+		
+		url : ?page=1
+		코드:
+			<script th:inline="javascript">
+				/*[- 리스트 페이지 파라미터-]*/
+				var page = [[${param.page}]];
+			</script>
+		출력: 
+			<script th:inline="javascript">
+
+				var page = ["1"];
+			</script>
