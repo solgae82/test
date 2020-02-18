@@ -1,0 +1,44 @@
+----------------------------------- instance 클라이언트로 설정하기
+1.instance client 다운로드
+	-instance client 다운로드 주소(32bit용)
+	https://www.oracle.com/technetwork/topics/winsoft-085727.html
+
+	- 두개 다운로드 받는다
+	1) instantclient-basic-nt-11.2.0.4.0.zip (basic)
+	2) instantclient-sqlplus-nt-11.2.0.4.0.zip(sqlplus)
+
+2. 설정 디렉토리에 설치(예 : C;\oracle)
+	C:\oracle\ : 에  instantclient-basic-nt-11.2.0.4.0.zip 풀어서 모두 넣기
+	C:\oracle\ : 에  instantclient-sqlplus-nt-11.2.0.4.0.zip 풀어서 파일 모두 넣기
+	
+3. 환경변수 Path 에 C:\oracle ; 설정
+
+4. network\admin 디렉토리 만들기
+	C:\oracle\network\admin : tnsnamse.ora 파일과 sqlnet.ora 파일을 넣을 공간 마련.
+
+5. tnsnames.ora 파일 작성
+	ora10 =
+	  (DESCRIPTION =
+	    (ADDRESS_LIST =
+	      (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.3)(PORT = 1521))
+	    )
+	    (CONNECT_DATA =
+	      (SERVER = DEDICATED)
+	      (SERVICE_NAME = ora10)
+	    )
+	  )
+
+6.sqlnet.ora 파일 작성
+	SQLNET.AUTHENTICATION_SERVICES= (NTS)
+	NAMES.DIRECTORY_PATH= (TNSNAMES, ONAMES, HOSTNAME)
+
+
+---------------------------------------sqlplus 로 접속하기
+
+- cmd 콘솔 접속
+
+	cd C:\oracle\
+
+	sqlplus.exe scott/tiger@ora10  # 접속
+
+	SQL> select * from dept; #쿼리 날려보기

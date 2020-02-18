@@ -1,0 +1,102 @@
+오라클 함수는 내장함수 와 사용자 정의함수 로 나뉜다.
+
+내장함수는 단일행함수, 다중행 함수로 세분화된다.
+
+--대소문자 바꾸기
+	upper : 모두 대문자 변경
+	lower : 모두 소문자 변경
+	initcap : 첫글자만 대문자 나머지는 모두 소문자로 변경
+
+	select ename,upper(ename),lower(ename),initcap(ename) from emp;
+	select * from emp where lower(ename) = 'smith'; // 소문자로 모두 변경할 열에서  'smith'  찾기
+
+-- 문자길이 
+	select ename, length(ename) , length('한글') from emp; // '한글' 은 2 반환
+
+	// length= 2[글자수] , lengthb = 6 [바이너리수 반환]
+	select length('한글'), lengthb('한글') from dual;
+
+-- DUAL 테이블
+	SYS계정 소유의 더미 테이블, 임시연산이나 함수 결과값 확인용도로 사용하는 테이블
+
+-- 글자자르기
+	substr(문자열데이터, 시작위치, 추출길이)
+
+	select job , substr(job, 1,2) , substr(job,3,2) , substr(job , 5) from emp; // CLERK	CL	ER	K
+
+-- 글자위치 반환
+	찾은 문자열 위치값 반화
+	instr[문자열, 찾을문자열, [위치찾기 시작위치,기본1],[찾은 총 문자열중 몇 번째 무자열일지 지정 지정,기본1])
+
+	select 
+	    instr('HELLO ORACLE' , 'L'),
+	    instr('HELLO ORACLE' , 'L', 5),
+	    instr('HELLO ORACLE' , 'L', 2, 2)
+	from
+	dual;
+
+	// 3 , 11 , 4
+
+--글자 바꾸기
+	replace(문자열, 찾는 문자, 바꿀문자)
+	select replace('010-1111-2222', '-' ,'*') from dual; // 010*1111*2222
+
+-- LPAD, RPAD 함수
+	LPAD('문자열', 출력 데이터 길이,  데이터 길이가 모자랄때 좌측에 채워질값)
+	RPAD('문자열', 출력 데이터 길이,  데이터 길이가 모자랄때 우측에 채워질값)
+
+	문자열길이가 출력될 데이터 길이 작을때는 [기본 공백, 또는 3번째 인수값]이 좌,우측에 채워진다.
+	문자열길이가 출력데이터 길이보다 클때에는 출력길이에 맞게 (좌우측 관계없이) 끝 문자열이 잘린다.
+
+	select 'Oracle',
+	    LPAD('Oracle', 10, '#'),
+	    RPAD('Oracle', 10, '*'),
+	    LPAD('Oracle', 4, '#'),
+	    RPAD('Oracle', 5, '*')
+	from
+	dual;
+	// Oracle	####Oracle	Oracle****   Orac	Oracl
+
+	select RPAD('971225-', 14, '*')
+	from dual;
+
+	// 971225-*******
+
+
+--  문자열 연결
+	select concat('korea',concat(' team ','fighting')) from dual;  //nkorea team fighting
+	select 'korea' || ' team' from dual; // korea team
+
+
+-- 좌우 공백 제거 (trim, ltrim, rtrim)
+
+	# trim
+
+	leading ['삭제문자, 기본 공백'] from  ' 문자열'  :   좌측 공백 제거
+	trailing ['삭제문자, 기본 공백']  from   ' 문자열'  :  우측 공백 제거
+	both ['삭제문자, 기본 공백'] from	   ' 문자열'  :	좌우측 공백제거
+
+	- trim 테스트
+	// 좌우 두칸 공백이 있는 문자열 ['공백공백__Oracle__공백공백']
+
+	select '[' || '  __Oracle__  ' || ']' from dual;						//	[  __Oracle__  ]
+	select '[' || trim('  __Oracle__  ') || ']' from dual;					//	[__Oracle__]
+	select '[' || trim(leading from '  __Oracle__  ') || ']' from dual;	//	[__Oracle__  ]
+	select '[' || trim(trailing from '  __Oracle__  ') || ']' from dual;		//	[  __Oracle__]
+	select '[' || trim(both from '  __Oracle__  ') || ']' from dual;		//	[__Oracle__]
+
+
+	select '[' || trim(leading '_' from '__Oracle__') || ']' from dual;	//	[Oracle__]
+	select '[' || trim(trailing '_' from '__Oracle__') || ']' from dual;	//	[__Oracle]
+	select '[' || trim(both '_' from '__Oracle__') || ']' from dual;		//	[Oracle]
+
+	# ltrim , rtrim
+	ltrim(문자열, 삭제할 문자집합)
+	rtrim(문자열, 삭제할 문자집합)
+
+	- ltrim  테스트 ( rtrim  도 우측조합이 삭제일뿐  개념은 똑같다)
+	select '[' || ltrim('<__Oracle__>' , '<') || ']' from dual;	 // [__Oracle__>]
+	select '[' || ltrim('<__Oracle__>' , '_') || ']' from dual;	 // [<__Oracle__>]
+	select '[' || ltrim('<__Oracle__>' , '<_') || ']' from dual;	 // [Oracle__>]
+	select '[' || ltrim('<__Oracle__>' , '_<') || ']' from dual;	 // [Oracle__>]
+	select '[' || ltrim('<_<Oracle__>' , '_<') || ']' from dual;	 // [Oracle__>]
