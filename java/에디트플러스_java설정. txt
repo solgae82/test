@@ -1,0 +1,44 @@
+에디트 플러스 자바 컴파일 설정
+기본설정 > 도구 > 사용자도구 에서 설정
+그룹을 새로 생성해서 해도 되고 맘대로..
+
+자바 컴파일 설정
+	추가 > 프로그램 선택
+
+	1: 기본 컴파일
+	메뉴제목 : javac
+	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\javac.exe
+	인수 : $(FileName)
+	디렉토리 : $(FileDir)
+	동작 : 출력내용 캡쳐
+
+	2. UTF-8 로 컴파일
+	메뉴제목 : javac
+	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\javac.exe
+	인수 : -encoding UTF-8 $(FileName)
+	디렉토리 : $(FileDir)
+	동작 : 출력내용 캡쳐
+
+	3. 패키지 포함 컴파일
+	메뉴제목 : javac
+	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\javac.exe
+	인수 : -d . $(FileName)
+	디렉토리 : $(FileDir)
+	동작 : 출력내용 캡쳐
+
+자바 실행 설정
+	추가 > 프로그램 선택
+	
+	1. 기본 실행
+	메뉴제목 : javac
+	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\java.exe
+	인수 : $(FileNameNoExt)
+	디렉토리 : $(FileDir)
+	동작 : 출력내용 캡쳐
+
+	2. 인수 실행
+	메뉴제목 : javac
+	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\java.exe
+	인수 : $(FileNameNoExt) $(Prompt)
+	디렉토리 : $(FileDir)
+	동작 : 출력내용 캡쳐
