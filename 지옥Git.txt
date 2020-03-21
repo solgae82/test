@@ -24,35 +24,42 @@ git add [파일명,.,*]
 
 #깃 로그보기
 	git log
+
+	# 관련 파일 세부변경까지 함께 보기
 	git log --stat (다음:enter , 실행중지: q)
 
-#깃 비교하기
+#비교하기 (작업트리와 리포지터리 버전과 비교하는 것)
 	git diff
 
-#깃 수정된 사항 리포지터리 최신버전으로 복구
-	git restore [파일명,.,*]
+#수정파일 (stage 올리기 전) 리포지터리 최신버전으로 복구
+	
 	git checkout -- [파일명,.,*]
+	git restore [파일,.,*]
 
 #stage에 올린 파일 unstage 하기
+	- 수정된 파일은 그대로 있다.
+	- staged 상태만 취소된다.(modified 상태)
+
 	git reset HEAD [파일명,.,*]
 	git restore --staged [파일명,.,*]
 
-#커밋, staged, update 취소
+#커밋 취소
  
- - 커밋취소 (stated 상태로)
+ - 커밋취소 (staged 상태로)
 	git reset --soft HEAD^
 
- - 커밋취소 + not staged 상태 
+ - 커밋취소 (modified 상태로) 
 	git reset --mixed HEAD^
 	git reset HEAD^ (기본으로 하면 mixed 옵션과 같다)
 
- - 커밋취소 + not staged + before update = 결론은 이전 커밋상태
+ - 커밋취소 (수정 이전상태 = 이전 커밋 상태로)
 	git reset --hard HEAD^
 
 
 #특정 커밋 해쉬 이전으로 되돌리기
-	- [git해쉬id] 이전의 버전이 새로 커밋된다
-	
+	- [git해쉬id] 바로 *이전버전이 새로 커밋된다
+	- 되돌리기 효과 , git log는 늘어남.
+
 	git revert [git해쉬id]
 
 # 브랜치 보기(현재 체크아웃된 브랜치는 (*)표시가 있다)
