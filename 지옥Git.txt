@@ -151,8 +151,3 @@ git add [파일명,.,*]
 		git stash pop
 		git stash apply
 		git stash drop
-
-
-	
-
-
