@@ -4,56 +4,61 @@
 -저장소, repository
 
 #디렉토리 초기화
-git init
-git init test # test 디렉토리 만들고 그안에 설정
+	$ git init
+	$ git init test # test 디렉토리 만들고 그안에 설정
 
 현재 디렉토리 git상태 보기
-git status
+	$ git status
 
 #staging 하기
-git add [파일명,.,*]
-.git/index 에 staging 내용이 저장된다
+	- .git/index 에 staging 내용이 저장된다
+	$ git add [파일명,.,*]
+	
+	
 
 #커밋하기
-	git commit [파일명,.,*]
-	git commit -m "message test"
-	git commit -am "commit with add"
+	$ git commit [파일명,.,*]
+	$ git commit -m "message test"
+	$ git commit -am "commit with add"
 
 #최신버전 커밋메시지 변경
-	git commit --amend
+	$ git commit --amend
 
 #깃 로그보기
-	git log
+	$ git log
 
 	# 관련 파일 세부변경까지 함께 보기
-	git log --stat (다음:enter , 실행중지: q)
+	$ git log --stat (다음:enter , 실행중지: q)
 
 #비교하기 (작업트리와 리포지터리 버전과 비교하는 것)
-	git diff
+	$ git diff
 
 #수정파일 (stage 올리기 전) 리포지터리 최신버전으로 복구
 	
-	git checkout -- [파일명,.,*]
-	git restore [파일,.,*]
+	$ git checkout -- [파일명,.,*]
+	또는
+	$ git restore [파일,.,*]
 
 #stage에 올린 파일 unstage 하기
 	- 수정된 파일은 그대로 있다.
 	- staged 상태만 취소된다.(modified 상태)
 
-	git reset HEAD [파일명,.,*]
-	git restore --staged [파일명,.,*]
+	$ git reset HEAD [파일명,.,*]
+	또는
+	$ git restore --staged [파일명,.,*]
 
 #커밋 취소
  
  - 커밋취소 (staged 상태로)
-	git reset --soft HEAD^
+	$ git reset --soft HEAD^
 
  - 커밋취소 (modified 상태로) 
-	git reset --mixed HEAD^
-	git reset HEAD^ (기본으로 하면 mixed 옵션과 같다)
+	$ git reset --mixed HEAD^
+	또는
+	$ git reset HEAD^ (기본으로 하면 mixed 옵션과 같다)
 
  - 커밋취소 (수정 이전상태 = 이전 커밋 상태로)
-	git reset --hard HEAD^
+	$ git reset --hard HEAD^
 
 
 #특정 커밋 해쉬 이전으로 되돌리기
@@ -61,39 +66,39 @@ git add [파일명,.,*]
 	- 되돌리기 효과 , git log는 늘어남.
 	- 다른 브랜치 해쉬id라도 그것으로 변경되고, 결국 연결이 끊어진 브랜치 커밋은 삭제됨.
 
-	git revert [git해쉬id]
+	$ git revert [git해쉬id]
 
 # 브랜치 보기(현재 체크아웃된 브랜치는 (*)표시가 있다)
-	git branch
+	$ git branch
 	*master #현재 브랜치
 	apple
 
 # t1 브랜치 만들기
-	git branch t1
+	$ git branch t1
 
 # t1 브랜치로 체크아웃하기
-	git checkout t1
+	$ git checkout t1
 
 #깃 로그 각 브랜치별로 한 라인씩 보기
-	git log --oneline --branches
+	$ git log --oneline --branches
 
 #깃 로그 각 브랜치별로 그래프 표시로 보기
-	git log --oneline --branches --graph
+	$ git log --oneline --branches --graph
 
 #깃 로그 브랜치 vs 브랜치로 비교
 	- 아래 예제는 master 브랜치에는 없고, apple 브랜치에만 있는 commit 로그를 보여준다
 
-	git log master..apple
+	$ git log master..apple
 
 # 병합
 	- 체크아웃 한 기준에서 합쳐진다. 아래는 master 브랜치에 합쳐진다고 가정.
 	
-	git merge t1
+	$ git merge t1
 
 #수정중인 파일 감추기 및 되돌리기(임시로 어딘가에 잠깐 저장하기)
 	- 현재 modified 상태의 파일이 있다면
 	
-		git stash (또는  git stash save)
+		$ git stash (또는  git stash save)
 
 	하고 git status 해보면 
 
@@ -111,7 +116,7 @@ git add [파일명,.,*]
 
 	저장한 형식을 다시 불러내고 싶으면 
 		
-		git stash pop
+		$ git stash pop
 
 	그려면 {0} 작업이 다시 modified 상태로 돌아온다.
 	그리고 다시 git stash list 명령으로 숨겨진 stash 리스트를 보면 제일 위에 것이 
@@ -122,28 +127,29 @@ git add [파일명,.,*]
 	일반 프로그래밍 언어 배열 사용법과 같다
 
 	아래처럼 
-		git stash pop 1
+		$ git stash pop 1
 
 	index를 명시적으로 줘서 {1}을 pop 할 수도 있다.
 
 	
 	stash 리스트를 변경하지 않고 그 변경 이력 상태만 가져올 수있다.
-		git stash apply
+		$ git stash apply
 
 	이렇게 하면 최신 stash 상태가 modified 상태로 불려와지고 
 	pop 과 는 달리  git stash list 하면 저장 상태 그대로 있다
 		 
-		git stash list
+		$ git stash list
 		stash@{0}: WIP on master: 438851f f2
 		stash@{1}: WIP on master: 438851f f2
+
 	apply 도 index를 쓸 수 있다
-		git stash apply 1
+		$ git stash apply 1
 
 	명시적인 삭제도 있다
 		
-		git stash drop  # stash 리스트 최신 위에 것 삭제
+		$ git stash drop  # stash 리스트 최신 위에 것 삭제
 		또는 
-		git stash drop 1 # stash 리스트 명시적 인덱스 삭제
+		$ git stash drop 1 # stash 리스트 명시적 인덱스 삭제
 
 	요약:
 		git stash
@@ -151,3 +157,48 @@ git add [파일명,.,*]
 		git stash pop
 		git stash apply
 		git stash drop
+
+--------------------------------------- 원격저장소
+#원격 저장소 연결하기
+	$ git remote add test1 https://github.com/solgae82/git_study.git
+	
+#원격 저장소 내역 보기
+	$ git remote -v
+	test1   https://github.com/solgae82/git_study.git (fetch)
+	test1   https://github.com/solgae82/git_study.git (push)
+
+
+#원격 저장소에 올리기
+
+	사용법 : git push [연결한 원격저장소별칭] [업로드할 현재 로컬 블랜치명] 
+	
+	$ git push test1 master
+
+	$ git push -u test1 master #이렇게 -u옵션 한번만 해주면 다음번엔  'git push' 만 해도 된다.
+
+#원격 저장소 최신 커밋 현재 브랜치에 가져와서 합치기
+	
+	사용법 : git pull [연결한 원격저장소별칭] [가져올 현재 로컬 블랜치명] 
+
+	$ git pull test1 master
+
+
+#원격 저장소 최신 커밋 임시 저장소에 가져오기
+
+	사용법 : git fetch 
+
+	$git fetch 
+
+	- fetch 는 임시로 가져오는 것이다
+	- FETCH_HEAD라는 임시 브랜치에 있다.
+	- 임시 브랜치에서 확인 후 수동으로 현재 브랜치로 합친다..
+	- 그러므로 git pull 기능은 (fetch + merge)라고 볼수 있다.
+
+	$ git checkout FETCH_HEAD
+	$ ls -al #파일등을 확인 후 이상 없으면..
+
+	$ git checkout master
+
+	$ git merge FETCH_HEAD
+
+
