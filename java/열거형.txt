@@ -1,0 +1,296 @@
+1. 열거형 선언하기
+	1) 하나의 java파일로 만들어서 선언하기
+
+		<Type.java>
+		public enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+
+		<Shoes.java>
+		public class Shoes {
+		    public String name;
+		    public int size;
+		    public Type type;
+		}
+	2) 클래스 안에서 선언하기
+
+		<Shoes.java>
+		public class Shoes {
+		    public String name;
+		    public int size;
+		    public enum Type {
+			WALKING, RUNNING, TRACKING, HIKING   
+		    }
+		}
+
+	3) 클래스 밖에서 선언하기
+
+		<Shoes.java>
+		enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+		public class Shoes {
+		    public String name;
+		    public int size;
+		    public Type type;
+		}
+
+	-------------------//
+	열거된 순서에 따라 0 부터 순서값을 가짐. 차례대로 증가함.
+	enum 열거형으로 지정된 상수는 대문자 사용.
+	마지막 끝에 세미콜론(;)을 붙이지 않음.
+	-------------------//
+2. 기본 사용하기
+
+	<Shoes.java>
+	enum Type {
+	    WALKING, RUNNING, TRACKING, HIKING
+	}
+	public class Shoes {
+
+	    public Type type;
+	     
+	    public static void main(String[] qrgs) {
+		Shoes shoes = new Shoes();
+		 
+		shoes.type = Type.RUNNING;
+		 
+		System.out.plintln("신발 종류 = " + shoes.type); //신발 종류 = RUNNING
+	    }
+	}
+
+
+3. 메소드
+	1) values() : 열거된 모든 원소를 배열에 담아 순서대로 반환
+
+		enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+		public class Shoes {
+		     
+		    public static void main(String[] args) {
+			for(Type type : Type.values()) {
+			    System.out.println(type);
+			}
+		    }
+		}
+		# 결과
+		WALKING
+		UNNING
+		TRACKING
+		HIKING
+
+	2) ordinal() : 원소에 열거된 순서를 정수 값으로 반환
+
+		enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+		public class Shoes {
+
+		    public Type type;
+		     
+		    public static void main(String[] args) {
+			Shoes shoes = new Shoes();
+
+			shoes.type = Type.RUNNING;
+			 
+			System.out.println(shoes.type.ordinal()); // 1
+			 
+			Type tp = Type.HIKING;
+			 
+			System.out.println(tp.ordinal()); // 3
+		    }
+		}
+
+
+	3) valueOf() : 매개변수로 주어진 String과 열거형에서 일치하는 이름을 갖는 원소를 반환
+		(주어진 String과 일치하는 원소가 없는 경우 IllegalArgumentException 예외 발생)
+
+
+		enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+		public class Shoes {
+		     
+		    public static void main(String[] args) {
+			Type tp1 = Type.WALKING;
+			Type tp2 = Type.valueOf("RUNNING");
+			Type tp3 == Enum.valueOf(Type.class, "TRACKING");
+
+			System.out.println(tp1); //WALKING
+			System.out.println(tp2); //RUNNING
+			System.out.println(tp3); //WALKING
+		    }
+		}
+
+		-------------------//
+		<값 가져오는 방법>
+		* enum 형 객체를 만들어서 값 가져오기
+		ex) Type.WALKING
+		* valueOf() 메소드를 이용해서 가져오기
+		ex) Type.valueOf("WALKING");
+		-------------------//
+
+	4) name() : 호출된 값의 이름을 String으로 리턴. 
+		enum Type {
+		    WALKING, RUNNING, TRACKING, HIKING
+		}
+		public class Shoes {
+		     
+		    public static void main(String[] args) {
+			 
+			for(Type t : Type.values()){
+				System.out.printlf("이름은? %s", d.name());		
+			}
+			
+			
+		    }
+		}
+		 # 결과
+		이름은? WALKING
+		이름은? RUNNING
+		이름은? TRACKING
+		이름은? HIKING
+
+	5) compareTo() : 작으면 음수 , 같으면 0 , 크면 양수
+		enum Type {EAST, WEST, SOUTH, NORTH}
+
+		public class Shoes {
+			public static void main(String[] args) {
+				Type d1 = Type.EAST;
+				Type d2 = Type.valueOf("WEST");
+				Type d3 = Enum.valueOf(Type.class, "EAST");
+				Type d4 = Enum.valueOf(Type.class, "NORTH");
+
+				System.out.println(d1.compareTo(d3)); //  0
+				System.out.println(d1.compareTo(d2)); //  -1
+				System.out.println(d4.compareTo(d1)); //  3
+
+			}
+		}
+
+	6) equals() : 같은지 비교
+		enum Type {EAST, WEST, SOUTH, NORTH}
+
+		public class Shoes {
+			public static void main(String[] args) {
+				Type d1 = Type.EAST;
+				Type d2 = Type.valueOf("WEST");
+				Type d3 = Enum.valueOf(Type.class, "EAST");
+
+				System.out.println("값:"+ (d1==d2));		// 값:false
+				System.out.println("값:"+ (d1==d3));		// 값:true
+				System.out.println("값:"+ d1.equals(d3));	// 값:true
+
+			}
+		}
+4. 생성자 사용하기
+	enum Type {
+		WALKING("워킹화"), RUNNING("러닝화"), TRACKING("트래킹화"), HIKING("등산화");
+
+		private final String name;
+		
+		Type1(String string) {
+			this.name = string;
+		}
+		
+		public String getName() {
+			return name;
+		}
+	
+	}
+	public class Shoes {
+		public static void main(String[] args) {
+			
+			for(Type type : Type.values()) {
+				System.out.println(type.getName()); 
+			}
+			
+		}
+	}
+	#출력
+		워킹화
+		러닝화
+		트래킹화
+		등산화
+
+	-------------------//
+	생성자 상수는 선언 끝에 ;(세미콜론)을 붙여야한다.
+	-------------------//
+
+5. 상수객체 메서드 사용
+	enum Type3 {
+
+		
+		
+		BUS(100){
+			int fare(int distance) {return distance * BASIC_FARE;}
+		},
+		TRAIN(150){
+			int fare(int distance) {return distance * BASIC_FARE;}
+		},
+		SHIP(100){
+			int fare(int distance) {return distance * BASIC_FARE;}
+		},
+		AIRPLAN(300){
+			int fare(int distance) {return distance * BASIC_FARE;}
+		};
+		
+		abstract int fare(int distance); #abstract  선언
+		protected final int BASIC_FARE;	# protected 선언
+		
+		private Type3(int bASIC_FARE) {
+			BASIC_FARE = bASIC_FARE;
+		}
+		
+		public int getBasicFare() {return BASIC_FARE;}
+		
+	}
+	public class Shoes {
+		public static void main(String[] args) {
+			
+			System.out.println(""+Type3.BUS.fare(100));	//10000
+			System.out.println(""+Type3.TRAIN.fare(100));	//15000
+			System.out.println(""+Type3.SHIP.fare(100));	//10000
+			System.out.println(""+Type3.AIRPLAN.fare(100));	//30000
+				
+		}
+	}
+6. 비교하기
+	== 연산자는 사용가능 , <, > 는 컴파일 에러(비교 불가능, 당연함 객체이므로)
+	compareTo , 또는 equals 메소드로 비교하자
+
+
+7. 조건문
+	if문 : Type.EAST 비교가능
+	switch문 : Type.EAST 하면 에러, EAST로 비교해야함.
+
+
+	enum Type {EAST, WEST, SOUTH, NORTH}
+
+	public class Shoes {
+		public static void main(String[] args) {
+			Type d1 = Type.EAST;
+			
+			switch(d1) {
+		
+				case EAST: //Type.EAST 이렇게 하면 에러..
+					System.out.println("EAST 다");	break;	//EAST 다
+				case WEST:
+					System.out.println("WEST");	break;
+				case SOUTH:
+					System.out.println("SOUTH");	break;
+				case NORTH:
+					System.out.println("NORTH");	break;
+			}
+
+			if(d1 == Type.EAST){ // EAST로 비교 못함.
+
+				System.out.println("east 다"); //east 다
+			}else{
+				System.out.println("east 아니다");
+			}
+
+		}
+	}
+
