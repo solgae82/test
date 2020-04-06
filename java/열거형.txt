@@ -56,6 +56,13 @@
 		shoes.type = Type.RUNNING;
 		 
 		System.out.plintln("신발 종류 = " + shoes.type); //신발 종류 = RUNNING
+
+		if("RUNNING".equals(shoes.type)) {
+			System.out.println("문자열 이다");
+		}else {
+			System.out.println("문자열 아니다"); // # 여기
+			
+		}
 	    }
 	}
 
