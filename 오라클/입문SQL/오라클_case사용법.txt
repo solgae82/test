@@ -29,7 +29,7 @@
 	    end as el
 	from emp;
 
--- else 를 설정하지 않았을때 일치하지 않는 조건이면 NULL이 반환된다.
+-- else 가 없이 사용할때 일치하는 조건이 없다면 NULL이 반환된다.
 	select empno, ename, comm,
 	    case
 		when comm is null then '해당사항없음'
