@@ -17,8 +17,8 @@ select sal AS "월급" from emp;
 select * from emp order by deptno ASC, SAL DESC;
 
 -- 조건절 (where)
-select * from deptno = 30 or job='CLERK';
-select * from deptno = 30 and job='CLERK';
+select * from emp where deptno = 30 or job='CLERK';
+select * from emp where deptno = 30 and job='CLERK';
 
 
 -- 산술 연산자( + , -, * , /)
@@ -58,6 +58,8 @@ select * from emp where ename not like '_C%'; //두번째 글자가 'C'가 아닌 모든 데
 
 -- escape 연산자
 '_'를 데이터로 체크하기 위해 escape '\'를 사용했음[\문자외에 다른문자 사용가능]
+
+ESCAPE 키워드를 문자를 설정하여 이스케이프 사용하기('\'가 아닌 다른 문자 사용도 가능)
 select * from emp where ename like 'A\_%' escape '\'; // A_DB , A_BBB등
 
 
@@ -68,12 +70,12 @@ select * from emp where comm is not null;	//not null이면 true
 
 -- 집합연산자
 select empno, ename from emp where deptno =10
-union
+union<union all, minus, intersect>
 select empno, ename from emp where deptno =10
 
 union : 합집합, 중복제거
 union all : 합집합, 중복허용
-muins : 차집합 
+minus : 차집합 
 intersect : 교집합
 
 열이름 갯수와 자료형이 같아야 출력된다.
