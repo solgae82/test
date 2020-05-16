@@ -1,3 +1,8 @@
+rollup, cube, grouping sets 등은 프로그래밍 언어에서는 쓰이진 않을 것같다.
+DBA 관리자나 쓸까
+상식적으로만 알아두자.
+
+
 -- 예제 group by
 	select deptno , job, count(*)
 	from EMP
@@ -17,8 +22,18 @@
 
 --rollup 함수
 	
-
-	-rollup 함수 적용
+	- 사용법
+		rollup(그룹화시킬 필드명,..)
+	
+	
+	- 큰그룹별 합산 통계를 내준다.
+		count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
+		max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
+		min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
+		sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
+		avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
+	
+	아래 예제로 이해해 보자(예제는 통계 하나만 적용했다..복수 적용도 가능하다)
 	
 	select deptno , job, count(*)
 	from EMP
@@ -38,9 +53,24 @@
 		30	MANAGER	1	
 		30	SALESMAN	4	
 		30	( NULL)		6	
-	( NULL)	( NULL)		14	
+		( NULL)	( NULL)		14	
 
 --cube 함수 (rollup ++)
+
+	- 사용법
+		rollup(그룹화시킬 필드명,..)
+	
+	
+	- 큰그룹별 합산 통계를 내준다.
+		count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
+		max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
+		min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
+		sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
+		avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
+	- 작은 그룹별 통계도 내준다.
+	
+	아래 예제로 이해해 보자
+
 
 	select deptno , job, count(*)
 	from EMP
@@ -60,12 +90,12 @@
 		30	MANAGER	1	
 		30	SALESMAN	4	
 		30	( NULL)		6	
-	( NULL)	ANALYST	2	
-	( NULL)	CLERK		4	
-	( NULL)	MANAGER	3	
-	( NULL)	PRESIDENT	1	
-	( NULL)	SALESMAN	4	
-	( NULL)	( NULL)		14	
+		( NULL)	ANALYST	2	
+		( NULL)	CLERK		4	
+		( NULL)	MANAGER	3	
+		( NULL)	PRESIDENT	1	
+		( NULL)	SALESMAN	4	
+		( NULL)	( NULL)		14	
 
 --rollup 부분적용
 	select deptno , job, count(*)
@@ -89,17 +119,23 @@
 
 
 -- grouping sets 함수
+
+	- 계층화 하지 않고 대그룹으로만 그룹핑하는 함수
+	- select 필드명이 모두 들어가야 한다.
+	- 필드별로 그룹화해서 통계를 보여준다.
+
+
 	select deptno , job, count(*)
 	from EMP
 	group by GROUPING SETS(deptno, job)
 	order by deptno, job;
 
 	-결과-
-	10		(NULL)		3
-	20		(NULL)		5
-	30		(NULL)		6
-	(NULL)	ANALYST	2
+	10	(NULL)		3
+	20	(NULL)		5
+	30	(NULL)		6
+	(NULL)	ANALYST		2
 	(NULL)	CLERK		4
-	(NULL)	MANAGER	3
+	(NULL)	MANAGER		3
 	(NULL)	PRESIDENT	1
 	(NULL)	SALESMAN	4
