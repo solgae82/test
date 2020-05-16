@@ -1,0 +1,65 @@
+형식 
+	select 
+	from
+	where
+	group by [ 그룹할 열들] 
+	having [그룹한 출력값들에서 제한값 조건걸때]
+	order by [정렬하려는 열 지정]
+
+	다중행 함수를 사용하지 않는 일반열을  group by절에 명시 하지 않으면 에러!.
+	where절이 있을경우 where절 처리 후 그룹화가 진행된다.
+
+-- 기본
+	select avg(sal) , deptno from emp 
+	group by deptno
+	order by deptno
+	
+	-결과-
+	2916.6	10
+	2175	20
+	1566.6	30
+
+-- 추가 일반열
+	select avg(sal) ,job, deptno from emp 
+	group by deptno , job /*job을 추가해 줘야한다 */
+	order by deptno , job desc
+
+	-결과-
+	5000	PRESIDENT	10
+	2450	MANAGER	10
+	1300	CLERK		10
+	2975	MANAGER	20
+	950	CLERK		20
+	3000	ANALYST	20
+	1400	SALESMAN	30
+	2850	MANAGER	30
+	950	CLERK		30
+
+-- having절
+
+	select avg(sal) , job , deptno from emp 
+	group by deptno , job
+	having avg(sal) >=2000
+	order by deptno , job desc
+
+	-결과-
+	5000	PRESIDENT	10
+	2450	MANAGER	10
+	2975	MANAGER	20
+	3000	ANALYST	20
+	2850	MANAGER	30
+
+-- where  절 + having 절
+
+	select avg(sal) , job , deptno from emp 
+	where sal <=3000
+	group by deptno , job
+	having avg(sal) >=2000
+	order by deptno , job desc
+
+	-결과-
+	2450	MANAGER	10
+	2975	MANAGER	20
+	3000	ANALYST	20
+	2850	MANAGER	30
+

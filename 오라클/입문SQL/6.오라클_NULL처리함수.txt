@@ -1,0 +1,42 @@
+오라클 함수는 내장함수 와 사용자 정의함수 로 나뉜다.
+
+내장함수는 단일행함수, 다중행 함수로 세분화된다.
+
+NVL
+	NVL(NULL인지 검사할 데이터 또는 열,  데이터가 NULL일 경우 반환할 데이터)
+	- 해당 필드값 반환형은 필드값과 맞춰야한다.
+
+		select 
+		empno,			/*7369*/
+		ename,			/*SMITH*/
+		sal,			/*800*/
+		comm,			/*(NULL)*/
+		sal+comm,		/*(NULL)*/
+		NVL(comm, 0),		/*0*/
+		sal + NVL(comm,0)	/*800*/
+		from emp where empno=7369;
+
+NVL2
+	NVL2(NULL인지 검사할 데이터 또는 열,  
+		데이터가 NULL이 아닐 경우 반환할 데이터 또는 계산식 , 
+		데이터가 NULL일 경우 반환할 데이터 또는 계산식
+	)
+	- 해당 필드값 반환형은 서로 다르게 설정 가능하다
+	하지만, [출력값을 null아닐 경우 null일 경우]  모두 한가지로 통일해야함.
+	
+
+		select empno	/*7369*/
+		    ,ename	/*SMITH*/
+		    ,comm	/*(NULL )*/
+		    ,sal	/*800*/
+		    ,NVL2(comm, 'O', 'X')	/*X*/
+		    ,NVL2(comm, sal*12+comm, sal*12) as annsal	/*9600*/
+		from emp where empno=7369;
+
+		select empno	/*7499
+		    ,ename	/*ALLEN*/
+		    ,comm	/*300*/
+		    ,sal	/*1600*/
+		    ,NVL2(comm, 'O', 'X')	/*O*/
+		    ,NVL2(comm, sal*12+comm, sal*12) as annsal	/*19500*/
+		from emp where empno=7499;
