@@ -1,15 +1,19 @@
-rollup, cube, grouping sets 등은 프로그래밍 언어에서는 쓰이진 않을 것같다.
-DBA 관리자나 쓸까
+아래 소개된 함수들은 프로그래밍 언어에서는 쓰이진 않을 것같다.
+DBA 관리자가 통계 낼때나 쓸까나..
 상식적으로만 알아두자.
 
 
--- 예제 group by
+-- rollup, cube , grouping sets
+
+	# 예제 group by
 	select deptno , job, count(*)
 	from EMP
 	group by deptno, job
 	order by deptno, job;
 
 	-결과-
+	deptno	job		count(*)
+	--------------------------------
 	10	CLERK		1
 	10	MANAGER	1
 	10	PRESIDENT	1
@@ -20,122 +24,297 @@ DBA 관리자나 쓸까
 	30	MANAGER	1
 	30	SALESMAN	4
 
---rollup 함수
+	1. rollup 함수
+		
+		- 사용법
+			rollup(그룹화시킬 필드명,..)
+		
+		
+		- 큰그룹별 합산 통계를 내준다.
+			count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
+			max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
+			min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
+			sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
+			avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
+		
+		아래 예제로 이해해 보자(예제는 통계 하나만 적용했다..복수 적용도 가능하다)
+		
+		select deptno , job, count(*)
+		from EMP
+		group by rollup(deptno, job)
+		order by deptno, job;
+
+		-결과-
+			deptno	job		count(*)
+			--------------------------------
+			10	CLERK		1	
+			10	MANAGER	1	
+			10	PRESIDENT	1	
+			10	( NULL)		3	
+			20	ANALYST	2	
+			20	CLERK		2	
+			20	MANAGER	1	
+			20	( NULL)		5	
+			30	CLERK		1	
+			30	MANAGER	1	
+			30	SALESMAN	4	
+			30	( NULL)		6	
+			( NULL)	( NULL)		14	
+
+	2. cube 함수 (rollup ++)
+
+		- 사용법
+			cube(그룹화시킬 필드명,..)
+		
+		
+		- 큰그룹별 합산 통계를 내준다.
+			count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
+			max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
+			min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
+			sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
+			avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
+		- 작은 그룹별 통계도 내준다.
+		
+		아래 예제로 이해해 보자
+
+
+		select deptno , job, count(*)
+		from EMP
+		group by cube(deptno, job)
+		order by deptno, job;
+
+		-결과-
+			deptno	job		count(*)
+			--------------------------------
+			10	CLERK		1	
+			10	MANAGER	1	
+			10	PRESIDENT	1	
+			10	( NULL)		3	
+			20	ANALYST	2	
+			20	CLERK		2	
+			20	MANAGER	1	
+			20	( NULL)		5	
+			30	CLERK		1	
+			30	MANAGER	1	
+			30	SALESMAN	4	
+			30	( NULL)		6	
+			( NULL)	ANALYST	2	
+			( NULL)	CLERK		4	
+			( NULL)	MANAGER	3	
+			( NULL)	PRESIDENT	1	
+			( NULL)	SALESMAN	4	
+			( NULL)	( NULL)		14	
+
+	3. rollup 부분적용
+		select deptno , job, count(*)
+		from EMP
+		group by deptno, rollup(job)
+		order by deptno, job;
+
+		-결과-
+			deptno	job		count(*)
+			--------------------------------
+			10	CLERK		1
+			10	MANAGER	1
+			10	PRESIDENT	1
+			10	(NULL)		3
+			20	ANALYST	2
+			20	CLERK		2
+			20	MANAGER	1
+			20	(NULL)		5
+			30	CLERK		1
+			30	MANAGER	1
+			30	SALESMAN	4
+			30	(NULL)		6
+
+
+	4. grouping sets 함수
+
+		- 계층화 하지 않고 대그룹으로만 그룹핑하는 함수
+		- select 필드명이 모두 들어가야 한다.
+		- 필드별로 그룹화해서 통계를 보여준다.
+
+
+		select deptno , job, count(*)
+		from EMP
+		group by GROUPING SETS(deptno, job)
+		order by deptno, job;
+
+		-결과-
+			deptno	job		count(*)
+			--------------------------------
+			10	(NULL)		3
+			20	(NULL)		5
+			30	(NULL)		6
+			(NULL)	ANALYST		2
+			(NULL)	CLERK		4
+			(NULL)	MANAGER		3
+			(NULL)	PRESIDENT	1
+			(NULL)	SALESMAN	4
+
+
+-- 그룹화 함수들
+
+	group by 절에 사용한 rollup 과 cube 함수가 있을때,
+	지정한 열이 그룹화 상태인지 아닌지를 확인하는 용도로 사용한다
 	
-	- 사용법
-		rollup(그룹화시킬 필드명,..)
+	1. grouping
+		- cube, rollup 함수에 정의한 필드 중 하나만 정의 가능
+		- 그룹화가 되었다면 0을 출력, 그룹화가 이뤄지지 않았다면 1을 출력
+		
+		select 
+			deptno,
+			job,
+			count(*), 
+			grouping(deptno),
+			grouping(job)
+		from emp
+
+		group by cube(detno, job) 
+		order by deptno, job;
+
+		# 직접 테스트해서 이해해야 한다.
+
+	2. grouping_id
+		- cube, rollup 함수에 정의한 필드 중 하나 또는 복수 정의 가능
+		- 하나만 지정했을때는 grouping 함수와 같다.
+		  (그룹화가 되었다면 0을 출력, 그룹화가 이뤄지지 않았다면 1을 출력)
+		- 복수 지정시는 비트 연산을 한다
+		  (두개 열을 지정했다면 나올 수 있는 값은 0, 1, 2, 3 일 것이다)
+
+		
+		select 
+			deptno,
+			job,
+			count(*), 
+			grouping(deptno),
+			grouping(job),
+			grouping_id(deptno, job)
+		from emp
+
+		group by cube(detno, job) 
+		order by deptno, job;
+
+		# 직접 테스트해서 이해해야 한다.
+
+
+
+-- pivot , unpivot
 	
-	
-	- 큰그룹별 합산 통계를 내준다.
-		count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
-		max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
-		min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
-		sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
-		avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
-	
-	아래 예제로 이해해 보자(예제는 통계 하나만 적용했다..복수 적용도 가능하다)
-	
-	select deptno , job, count(*)
-	from EMP
-	group by rollup(deptno, job)
-	order by deptno, job;
+	1. pivot
+		- 기존 테이블 행을 열로 바꿔서 출력 하는 함수
+		- oracle 11g 이상에서 사용가능.
 
-	-결과-
-		10	CLERK		1	
-		10	MANAGER	1	
-		10	PRESIDENT	1	
-		10	( NULL)		3	
-		20	ANALYST	2	
-		20	CLERK		2	
-		20	MANAGER	1	
-		20	( NULL)		5	
-		30	CLERK		1	
-		30	MANAGER	1	
-		30	SALESMAN	4	
-		30	( NULL)		6	
-		( NULL)	( NULL)		14	
+		select deptno, job, count(sal)
+		from emp
+		group by deptno, job
+		order by deptno, job;
 
---cube 함수 (rollup ++)
+		
+			deptno	job		count(sal)
+			----------------------------
+			10	CLERK		1
+			10	MANAGER		1
+			10	PRESIDENT	1
+			20	ANALYST		2
+			20	CLERK		2
+			20	MANAGER		1
+			30	CLERK		1
+			30	MANAGER		1
+			30	SALESMAN	4
 
-	- 사용법
-		rollup(그룹화시킬 필드명,..)
-	
-	
-	- 큰그룹별 합산 통계를 내준다.
-		count(*) : 그룹별 총 count 한 갯수를 다시 모두 count한 총합 출력
-		max(필드명): 그룹별 가장 큰 값들을 대상으로 다시  가장 큰 값 출력
-		min(필드명): 그룹별 가장 작은 값들을 대상으로 다시 가장 작은 값 출력
-		sum(필드명): 그룹별 합계를 대상으로 다시 더한 총합 출력
-		avg(필드명): 그룹별 평균을 대상으로 다시 평균을 출력
-	- 작은 그룹별 통계도 내준다.
-	
-	아래 예제로 이해해 보자
+		#pivot 사용
 
+			select * from (select deptno, job, sal from emp) 
+			pivot(count(sal) for deptno in (10,20,30))
+			order by job;
 
-	select deptno , job, count(*)
-	from EMP
-	group by cube(deptno, job)
-	order by deptno, job;
+				job		10	20	30
+				-----------------------------------
+				ANALYST		0	2	0
+				CLERK		1	2	1
+				MANAGER		1	1	1
+				PRESIDENT	1	0	0
+				SALESMAN	0	0	4
+			
+			# 3개 필드 중 아무것도 지정되지 않은 job필드로 행 그룹화가 되었고,그 결과에서
+			deptno 로 열 그룹화 후, 행열별 count(sal)을 계산한 듯함.
 
-	-결과-
-		10	CLERK		1	
-		10	MANAGER	1	
-		10	PRESIDENT	1	
-		10	( NULL)		3	
-		20	ANALYST	2	
-		20	CLERK		2	
-		20	MANAGER	1	
-		20	( NULL)		5	
-		30	CLERK		1	
-		30	MANAGER	1	
-		30	SALESMAN	4	
-		30	( NULL)		6	
-		( NULL)	ANALYST	2	
-		( NULL)	CLERK		4	
-		( NULL)	MANAGER	3	
-		( NULL)	PRESIDENT	1	
-		( NULL)	SALESMAN	4	
-		( NULL)	( NULL)		14	
+		# pivot 사용하지 않고 하기 , pivot 같은 결과 만들기(오라클 11g 이하)
 
---rollup 부분적용
-	select deptno , job, count(*)
-	from EMP
-	group by deptno, rollup(job)
-	order by deptno, job;
-
-	-결과-
-		10	CLERK		1
-		10	MANAGER	1
-		10	PRESIDENT	1
-		10	(NULL)		3
-		20	ANALYST	2
-		20	CLERK		2
-		20	MANAGER	1
-		20	(NULL)		5
-		30	CLERK		1
-		30	MANAGER	1
-		30	SALESMAN	4
-		30	(NULL)		6
+		select job,
+		    count(decode(deptno,10, 1)) as "10",
+		    count(decode(deptno,20, 1)) as "20",
+		    count(decode(deptno,30, 1)) as "30"
+		from emp
+		group by job
+		order by job
 
 
--- grouping sets 함수
+	2. unpivot
 
-	- 계층화 하지 않고 대그룹으로만 그룹핑하는 함수
-	- select 필드명이 모두 들어가야 한다.
-	- 필드별로 그룹화해서 통계를 보여준다.
+		# 적용 대상 테이블 보기
+		select * from (select job,
+		    count(decode(deptno,10, 1)) as "d10",
+		    count(decode(deptno,20, 1)) as "d20",
+		    count(decode(deptno,30, 1)) as "d30"
+		from emp
+		group by job
+		order by job)
+
+		job		d10	d20	d30
+		-----------------------------------
+		ANALYST		0	2	0
+		CLERK		1	2	1
+		MANAGER		1	1	1
+		PRESIDENT	1	0	0
+		SALESMAN	0	0	4
 
 
-	select deptno , job, count(*)
-	from EMP
-	group by GROUPING SETS(deptno, job)
-	order by deptno, job;
+		# unpivot 적용
 
-	-결과-
-	10	(NULL)		3
-	20	(NULL)		5
-	30	(NULL)		6
-	(NULL)	ANALYST		2
-	(NULL)	CLERK		4
-	(NULL)	MANAGER		3
-	(NULL)	PRESIDENT	1
-	(NULL)	SALESMAN	4
+		select * from (select job,
+		    count(decode(deptno,10, 1)) as "d10",
+		    count(decode(deptno,20, 1)) as "d20",
+		    count(decode(deptno,30, 1)) as "d30"
+		from emp
+		group by job
+		order by job)
+
+		unpivot(sal for deptno in("d10","d20" ,"d30"))
+
+		job		deptno	sal
+		---------------------------
+		ANALYST		d10	0
+		ANALYST		d20	2
+		ANALYST		d30	0
+		CLERK		d10	1
+		CLERK		d20	2
+		CLERK		d30	1
+		MANAGER		d10	1
+		MANAGER		d20	1
+		MANAGER		d30	1
+		PRESIDENT	d10	1
+		PRESIDENT	d20	0
+		PRESIDENT	d30	0
+		SALESMAN	d10	0
+		SALESMAN	d20	0
+		SALESMAN	d30	4
+
+-- listagg
+
+	- 그룹한 행의 특정열의 값을 한 필드에 가로로 나열할때 쓴다
+	- 구분자를 넣을 수 있다
+	- within group 에 정렬한 필드를 지정할 수 있다(가로 좌측이 기준이 된다)
+
+	select deptno,
+	    listagg(ename,',') within group(order by sal desc) as ename2
+	from emp 
+	group by deptno;
+
+
+	deptno	ename2
+	--------------------------------------------
+	10	KING,CLARK,MILLER
+	20	FORD,SCOTT,JONES,ADAMS,SMITH
+	30	BLAKE,ALLEN,TURNER,MARTIN,WARD,JAMES
