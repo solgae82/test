@@ -1,0 +1,527 @@
+1. let , const
+	let a = 'abc';	//새 변수 선언 키워드
+	const CON = 'EFG'; // 상수 선언 키워드
+
+2. 이터레이션 프로토콜(이터러블 프로토콜 + 이터레이터 프로토콜)
+	
+	프로토콜(규약) : 이렇게 구현해야 한다는 추상적 규약
+		이터러블 규약, 이터레이터 규약이라고도 표현함.
+		이터러블의 형식을 규약하면 그게 이터러블 규약.
+
+	이터러블 : 이터레이터를 리턴하는, [Symbol.iterator] 메소드를 구현한 객체.
+		for of 문, spread 문법 등과 한께 동작하도록 만든 객체.
+		[Symbol.iterator] 메소드는 이터레이터 객체를 반환한다.
+		이터러블 규약을 구현한 대표적 내장객체중에는 
+		Array, String, Map, Set, arguments 등이 있다.(믈론 더 많이 있다)
+
+
+	이터레이터:  next() 메소드가 있는 객체이고 , next() 메소드 호출시
+		{value:[자료] done:[true,false]} 형식의 result 객체를 리턴함.
+	
+
+	--------------------- 이터러블 이해하기 
+
+	예) String 객체를 이용한  for(..of..) 문 출력.
+
+		let str = '가나다';
+		for(let value of str){
+			console.log(value); // '가','나','다' 한글자 씩 출력된다
+		}
+	
+	# String 객체는 이터러블 규약을 구현한 객체이므로 그 안에 이터레이터 메서드가 이미 구현 되어있다.
+	# 그러므로 for(..of..) 문을 사용할 수 있는 것이다.
+	# 일반객체도 내부에 이터레이터 메서드를 구현하면 for(..of..) 문으로 출력 가능하다.
+
+		//아래처럼 구현하면 된다
+		let it ={
+			[Symbol.iterator]:function{
+				여기까지 구현 한것을 이터러블
+				return 
+				{// 여기부터는 이터레이터 영역
+					next : function(){
+						return {value:값, done:[boolean]};
+					}
+				};
+			
+			}
+		};
+
+	
+
+	--------------------- 이터레이터 이해하기 
+
+	# 다음과 같이 이터러블 객체에서 직접 내장 이터레이터 메서드를 이용해 
+	,이터레이터객체를 리턴 받아서 수동으로 사용할 수도 있다.
+
+		let str = '가나다';
+		let it = str[Symbol.iterator]();
+
+	# 이터러블 객체에서 이터레이터를 수동으로 출력해 보자
+
+		let str = '가나다';
+		let it = str[Symbol.iterator](); //내장된 이터레이터 객체를 빼낸다
+		//직접 하나씩 출력
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next());	//{value:undefined ,done: true}
+
+	# 이터러블 객체를 for(..of..) 문으로 출력할 수 있는 이유는, 
+	위 수동출력의 값들에서 볼 수 있는 것처럼,
+	내부적으로 이터레이터 메서드로 이터레이터 받아서 next()메소드를 호출 후 
+	done 값이 true가 아니면 for문을 실행해서 value 값을 for문의 value값에 담겠지..
+	
+
+		let str = '가나다';
+		for(let value of str){ 
+			console.log(value); // '가','나','다' 한글자 씩 출력된다
+		}
+	
+	# while 문으로 출력해 보자
+		let str = '가나다';
+		let it = str[Symbol.iterator]();
+
+		let result;
+
+		result = it.next();
+		while(!result.done){
+			// '가','나','다' 한글자 씩 출력된다
+			console.log(result.value);
+			result = it.next();
+		}
+
+	--------------------- 종합 예제
+	# 일반객체를 이터러블로 만들어서 for(..of..)문을 사용해 보자.
+	# 아래 예제는 이터러블인 것과 동시에 이터레이터 역할도 겸하는 하는 객체다
+		let obj = {
+			i:1,
+
+			[Symbol.iterator]:function(){
+				return this; //이터레이터 리턴시 다시 이 객체를 가리킨다
+			},
+			
+			//내부적으로 이터레이터 구현을 했다
+			next:function(){
+				return (this.i < 4)? {value:this.i++, done: false}:{value:undefined, done: true};
+			}
+			
+		};
+		//이터러블 규약을 만족하고 이터레이터 규약도 구현했으므로 출력가능하다
+		for(let value of obj){ 
+			console.log(value);
+		}
+
+3. Array.forEach
+	형식:
+		array.forEach(callbackFunction(currnetValue, index, array), thisArg);
+	
+	테스트
+		let fruits = ["a","b"];
+		fruits.forEach(function (item) {
+		    console.log(item); //a , b
+		});
+
+		fruits.forEach(function (item,index) {
+		    console.log(item,index);// a 0 , b 1 
+		});
+
+		fruits.forEach(function (item,index,array) {
+		    console.log(array); //["a","b"] 2회 바복
+		});
+
+		let obj = {str:"test"};
+		fruits.forEach(function (item) {
+		    console.log(item +"-"+obj.str); //a-test, b-test
+		},obj);
+
+		fruits.forEach(element => console.log(element)); //a , b
+4. for in 문
+
+	# 객체의 속성명을 반환한다
+	# 속성명은 문자열이다..
+
+	//객체
+	var obj = {x : 1, y : true, z : 'dong'};
+	for (var k in obj) {
+	    console.log(k + ":" + obj[k]); // x:1, y:true, z:dong
+	}
+	//배열
+	var arr = [10, 20, 30];
+	for (var key in arr) {
+	    console.log(n + ":" + arr[key] ); //n:10,n:20,n:30
+	}
+
+	//배열연산 시 주의, 속성명(키)은 문자열이므로 문자열 연산
+	var arr = [10,20,30];
+	arr.add = 100;
+
+	for(var i in arr){
+		console.log(i + 1); // 01,11,21,add1
+	}
+
+5. for..of 문
+	
+	//기본
+	let str = '하루종일';
+
+	console.log(typeof str[Symbol.iterator]()); // object
+
+	for(let value of str){
+		console.log(value); //하,루,종,일
+	}
+
+	// for in 문과는 다르게 배열에서는 배열만 출력한다
+	var arr = [10,20,30];
+	arr.add = 100;
+
+	for(let i of arr){
+		console.log(i); // 10,20,30
+	}
+
+6. 템플릿 리터럴
+
+	` : 여러줄도 가능하다
+	보간표현범 : ${변수} 형식의 표현식
+	
+	예제1)
+	let str = `여러줄
+		두번째줄
+		세번째줄`;
+	console.log(str);
+
+	/**
+	여러줄
+		두번째줄
+		세번째줄
+	*/
+	
+
+	예제2)
+	let a = 100;
+	let b = 200;
+	let str = `a + b 결과는 ${a + b} 입니다`;
+
+	console.log(str); //a + b 결과는 300 입니다
+
+7.태그드 템플릿 리터럴
+	
+	형식:
+		함수명 `문자열[0] ${a} 문자열[1], ${b}`; 
+
+	예제로 보고 이해하자
+
+	function tagged(str, a,b){
+
+		let bigger;
+		(a > b) ? bigger='A' : bigger='B';
+		return str[0] + bigger + str[1];
+	}
+
+	let str = tagged`a 와 b 중 ${100} 가 더 크다 ${200}`;
+	console.log(str); //a 와 b 중 B 가 더 크다
+
+	# 매우 해괴하다
+	# 문자열은 하나라도 문자열배열[0]로 표현해야 한다
+
+
+8. Typed Array
+	바이너리 수준의 조작을 위한 방법.
+
+	타입 배열은 배열과 유사한 객체이며, 이진 데이터(binary data)를
+	보다 빨리 접근하고 조작할 수 있다.
+	타입 배열은 버퍼와 뷰로 나뉘는데 
+	버퍼(ArrayBuffer)는 단순히 데어터 청크를 나타내는 객체이며, 스스로 읽고 쓸 수는 없다.
+	뷰(typed array view)를 통해서만 버퍼의 데이터를 조작할 수 있다.
+	
+	// 버퍼
+	const buffer = new ArrayBuffer(16); //16바이트 버퍼배열 생성
+	console.log(buffer.byteLength);
+	// 뷰
+	const view = new Uint32Array(buffer);
+	console.log(view);
+
+9. 제너레이터(generator)
+
+	이터러블 규약과 이터레이터 규약을 따르는 제너레이터 객체를 만들어 주는 함수
+	직접 이런 객체를 만들려면 코드가 길어진다. 유용한 도움 함수.
+	예제로 이해하자
+
+	# 기본 제너레이터 생성 활용
+		function* gen(){
+			for(let i=0; i<3; i++){
+				yield i;
+			}
+		}
+
+		let generator = gen();
+		for(let value of generator){
+			console.log(value); // 0, 1, 2
+		}
+
+
+	# 제너레이터 이어 붙이기
+		function* gen1(n){
+			yield n + 1;
+			yield* gen2(n); //제너레이터 이어붙이기
+			yield n + 2;
+		}
+
+		function* gen2(n){
+			yield n + 100;
+			yield n + 200;
+		}
+
+		let generator2 = gen1(100);
+		for(let value of generator2){
+			console.log(value); // 101, 200, 300, 102
+		}
+
+
+	# return() 메서드 : 열거 강제 종료
+		function* gen(){
+			for(let i=0; i<3; i++){
+				yield i;
+			}
+
+		}
+
+		let generator =gen();
+		console.log(generator.next());//{value: 0, done: false}
+		generator.return(); //리터 메서드 후 호출하면 
+		console.log(generator.next());//{value: undefined, done: true}
+
+	# throw() 메서드 : 열거 중 강제 오류 발생시킴
+		function* gen(){
+			for(let i=0; i<2; i++){
+				try{
+					yield i;
+				}catch(e){
+					console.log("에러발생:"+e);
+				}
+			}
+		}
+
+		let generator = gen();
+		console.log(generator.next());//{value: 0, done: false}
+		console.log(generator.throw());
+			//에러발생:undefined
+			//{value: 1, done: false}
+		console.log(generator.next());//{value: undefined, done: true}
+
+10. Map 
+
+	자바의 map과 비슷하다.
+
+	size : 맵 향목 갯수 리턴, 메서드가 아니다(속성)
+	set(key,value) : 맵 셋팅 + 맵 인스턴스 반환
+	get(key) : 키에 관련된 값 리턴
+	clear() : 맵 항목 
+	delete(key) : key에 해당하는 항목 삭제
+	entries() : 이터레이터 반환
+	forEach(CallbackFn(key,value,map)) : 맵에 추가된 항목 열거 콜백 
+	has(key) : 키 항목 존재여부  true, false 리턴
+	keys() : key 이터레이터 반환
+	values() : 값 이터레이터 반환
+	[Symbol.iterator]() : entries()와 같다
+
+	예제들)	
+		let obj={name:'dong'};
+		let f = function(){};
+		let map = new Map();
+
+		let map1 = map.set(f, obj); //map1 은 map과 같다
+		map.set('apple', 100);
+
+		console.log(map.size); //2
+		console.log(map.get('apple')); //100
+		console.log(map.get(f)); //{name:'dong'}
+
+		map.delete(f);
+		//map.clear(); // 모두 삭제
+		console.log(map.size); //1
+		console.log(map); //Map(1) {"apple" => 100}
+
+
+		//--------------------- entries()
+
+		let entries = map.entries();
+		console.log(entries);//MapIterator {"apple" => 100}
+
+		for(let value of map){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+		//console.log(map.next()); // 에러: map.next is not a function
+
+		for(let value of entries){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+
+
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		// map은 다시 출력한다
+		for(let value of map){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+		
+		//entries = map.entries(); //주석 풀지 않으면 아래 반복은 실행되지 않는다
+		//이터레이터는 열거가 끝난 상태
+		for(let value of entries){  // 안 돈다
+			console.log('reIterattion',value);
+			console.log(value[0]);
+			console.log(value[1]);
+		}
+
+		 
+		entries = map.entries(); //다시 이터레이터 반환
+		console.log(entries.next()); //{value: ["apple", 100], done: false}
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		//--------------------- forEach(callback)
+
+		//콜백 순서를 잘 기억하자 key-> value -> map
+		map.forEach(function(key, value, map){
+			console.log(key); //100
+			console.log(value); // apple
+			console.log(map);	// {"apple" => 100}
+		});
+
+		//--------------------- keys() 
+		let keys = map.keys(); //이터레이터 반환
+		//console.log(keys.next()); //{value: "apple", done: false}
+		for(value of keys){
+			console.log(value); // apple
+			console.log(map.get(value)); // 100
+		}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		//--------------------- values() 
+		let values = map.values(); //이터레이터 반환
+		//console.log(values.next()); //{value: 100, done: false}
+		for(value of values){
+			console.log(value); // 100
+		}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+		//--------------------- [Symbol.iterator]() 
+		let mapIter = map[Symbol.iterator](); // map.entries() 와 같다
+		for(value of mapIter){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+		}
+
+		//--------------------- has() 
+		let obj2={name:'dong'};
+		let f2 = function(){};
+		let map2 = new Map();
+		map2.set(obj2, f2);
+
+		//객체나 함수가 키일 경우는 참조키가 맞아야 포함된 것으로 인식힌다.
+		if(map2.has(obj2)){
+			console.log('맵있다1');//맵있다1 , (같은 객체) 
+		} 
+		if(map2.has({name:'dong'})){
+			console.log('맵있다2');//(다른객체 , 출력 안함)
+		}
+
+
+		//일반 자료형 키는 같은 키다
+		let fruit = 'banana';
+		map2.set(fruit,10);
+		if(map2.has(fruit)){console.log('바나나1');}	//출력
+		if(map2.has('banana')){console.log('바나나2');}	//출력
+	
+11. Set
+	Map과의 차이는 키가 없다는 것.
+	값은 중복 값을 가질 수 없다.
+	그 외 사용법은 맵과 유사하다.
+
+	예제)
+		let obj={name:'dong'};
+		let f = function(){};
+		let set = new Set();
+
+		let set1 = set.add(obj); //set1 은 set과 같다
+		set.add(f);
+		console.log(set.size); //2
+
+		for(let value of set){ //2회 출력
+			console.log(value);
+			//{name:'dong'} 
+			//function(){}
+		}
+		//set.next(); //요건 맵과 마찬가지로 안 된다.
+
+		//set.clear(); //모두 삭제된다
+		set.delete(f); //일치되는 값 1개 삭제
+
+		//------------------- entries()
+
+		let entries = set.entries();
+		for(let value of entries){
+			console.log('entries',value);
+			/*
+				독특하다..[값,값] 의 배열을 반환한다
+				[{name: "dong"}, {name: "dong"}]
+			*/
+		}
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		//------------------- forEach(callback)
+
+		set.forEach(function(value, key, set){ //맵과 같다
+			console.log(value);	//{name: "dong"}
+			console.log(key);	//{name: "dong"}
+			console.log(set);	//[{name: "dong"}, {name: "dong"}]
+		});
+
+		//------------------- has()
+
+		if(set.has({name:'dong'})){ // 출력하지 않는다, 다른객체이므로 
+			console.log('있다1'); 
+		}
+		if(set.has(obj)){	// 출력한다, 같은 객체이므로
+			console.log('있다2'); // 있다2
+		}
+
+		var t = 100;
+		set.add(t);// 기본자료형 추가
+		if(set.has(100)){	// 출력한다, 같은 값이 있으므로
+			console.log('있다3'); // 있다3
+		}
+		if(set.has(t)){	// 출력한다, 같은 값이 있으므로
+			console.log('있다4'); // 있다4
+		}
+
+		set.delete(100); //삭제
+
+		//----------------- keys(), values(), [Symbol.iterator]()
+		//현재 [{name: "dong"}, {name: "dong"}] 만 있다. size 1
+		//위의 구조 파악으로 해석해보면, 맵과 같은 구조인데, 키가 값과 같다.
+		//그러므로 아래 이터레이트 메서드 3개는 같은 결과인 value를 출력하게 되는 결과가 나온다.
+
+		let keys = set.keys();
+		for(let value of keys){
+			console.log(value); //{name: "dong"}
+		}
+
+		let values = set.values();
+		for(let value of values){
+			console.log(value); //{name: "dong"}
+		}
+
+		let iter = set[Symbol.iterator](); //map에서는 entries()와 같았다
+		for(let value of iter){
+			console.log(value); //{name: "dong"}
+		}
