@@ -329,22 +329,29 @@
 		let f = function(){};
 		let map = new Map();
 
+		//--------------------- set() , size
 		let map1 = map.set(f, obj); //map1 은 map과 같다
 		map.set('apple', 100);
+		console.log(map.size);		//2
+		
+		//--------------------- get()		
+		console.log(map.get('apple'));	//100
+		console.log(map.get(f));		//{name:'dong'}
 
-		console.log(map.size); //2
-		console.log(map.get('apple')); //100
-		console.log(map.get(f)); //{name:'dong'}
-
-		map.delete(f);
-		//map.clear(); // 모두 삭제
-		console.log(map.size); //1
-		console.log(map); //Map(1) {"apple" => 100}
-
+		//--------------------- delete()
+		map.delete(f);			//요소 한개 삭제
+		console.log(map.size);	//1
+		console.log(map);		//Map(1) {"apple" => 100}
+		
+		//--------------------- clear()
+		map.clear();			// 모두 삭제
+		console.log(map.size);	// 0
+		console.log(map);		// Map(0) {}
 
 		//--------------------- entries()
-
-		let entries = map.entries();
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+		let entries = map.entries(); //이터레이터 반환
 		console.log(entries);//MapIterator {"apple" => 100}
 
 		for(let value of map){
@@ -362,10 +369,10 @@
 			
 		}
 
-
+		//이터레이터는 한번 열거하면 끝난다.
 		console.log(entries.next()); //{value: undefined, done: true}
 
-		// map은 다시 출력한다
+		// map은 다시 열거 할 수있다
 		for(let value of map){
 			console.log(value);// ["apple", 100]
 			console.log(value[0]);// apple
@@ -373,52 +380,65 @@
 			
 		}
 		
-		//entries = map.entries(); //주석 풀지 않으면 아래 반복은 실행되지 않는다
-		//이터레이터는 열거가 끝난 상태
-		for(let value of entries){  // 안 돈다
-			console.log('reIterattion',value);
-			console.log(value[0]);
-			console.log(value[1]);
-		}
-
-		 
+	 
 		entries = map.entries(); //다시 이터레이터 반환
+		console.log(entries); ////MapIterator {"apple" => 100}
 		console.log(entries.next()); //{value: ["apple", 100], done: false}
 		console.log(entries.next()); //{value: undefined, done: true}
 
 		//--------------------- forEach(callback)
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
 
 		//콜백 순서를 잘 기억하자 key-> value -> map
 		map.forEach(function(key, value, map){
-			console.log(key); //100
+			console.log(key);	// 100
 			console.log(value); // apple
 			console.log(map);	// {"apple" => 100}
 		});
 
+
 		//--------------------- keys() 
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
 		let keys = map.keys(); //이터레이터 반환
-		//console.log(keys.next()); //{value: "apple", done: false}
+		console.log(keys.next()); //{value: "apple", done: false}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		keys = map.keys(); //이터레이터 반환
 		for(value of keys){
-			console.log(value); // apple
-			console.log(map.get(value)); // 100
+			console.log(value);			// apple
+			console.log(map.get(value));// 100
 		}
 		console.log(keys.next()); //{value: undefined, done: true}
 
 
 		//--------------------- values() 
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
 		let values = map.values(); //이터레이터 반환
-		//console.log(values.next()); //{value: 100, done: false}
+		console.log(values.next()); //{value: 100, done: false}
+		console.log(values.next());	//{value: undefined, done: true}
+
+		values = map.values(); //이터레이터 반환
 		for(value of values){
 			console.log(value); // 100
 		}
-		console.log(keys.next()); //{value: undefined, done: true}
+		console.log(values.next()); //{value: undefined, done: true}
 
 		//--------------------- [Symbol.iterator]() 
+
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+
 		let mapIter = map[Symbol.iterator](); // map.entries() 와 같다
+		console.log(mapIter); //MapIterator {"apple" => 100}
+
 		for(value of mapIter){
-			console.log(value);// ["apple", 100]
-			console.log(value[0]);// apple
-			console.log(value[1]);// 100
+			console.log(value);	// ["apple", 100]
+			console.log(value[0]);	// apple
+			console.log(value[1]);	// 100
 		}
 
 		//--------------------- has() 
@@ -427,20 +447,39 @@
 		let map2 = new Map();
 		map2.set(obj2, f2);
 
+		console.log(map2);//{{name:'dong'}=>function(){}}
+
 		//객체나 함수가 키일 경우는 참조키가 맞아야 포함된 것으로 인식힌다.
 		if(map2.has(obj2)){
-			console.log('맵있다1');//맵있다1 , (같은 객체) 
+			console.log('맵있다1');// 같은 객체이므로 출력
 		} 
 		if(map2.has({name:'dong'})){
 			console.log('맵있다2');//(다른객체 , 출력 안함)
 		}
 
 
-		//일반 자료형 키는 같은 키다
+		//일반 자료형 키는 리터럴이나 변수나 모두 같은 키다
 		let fruit = 'banana';
 		map2.set(fruit,10);
 		if(map2.has(fruit)){console.log('바나나1');}	//출력
 		if(map2.has('banana')){console.log('바나나2');}	//출력
+
+		//--------------------- delete (2)
+
+		let obj3={name:'dong'};
+		map3 = new Map();
+		map3.set(obj3, 100);
+		map3.set("dong3",200);
+
+
+		map3.delete({name:'dong'});	//키값이 같더라도 다른 객체이므로 안 지워진다
+		console.log(map3.size);		//2
+
+		map3.delete(obj3);		//참조키로 해야 지워진다
+		console.log(map3.size);		//1 
+
+		map3.delete("dong3");		// 일반자료형은 지워진다
+		console.log(map3.size);		//0
 	
 11. Set
 	Map과의 차이는 키가 없다는 것.
@@ -449,79 +488,165 @@
 
 	예제)
 		let obj={name:'dong'};
-		let f = function(){};
 		let set = new Set();
 
+		//--------------------- add() , size
 		let set1 = set.add(obj); //set1 은 set과 같다
-		set.add(f);
-		console.log(set.size); //2
+		set.add('apple');
+		console.log(set.size);	//2
+		
+		//--------------------- delete()
+		set.delete(obj);		//요소 한개 삭제
+		console.log(set.size);		//1
+		console.log(set);		//Set(1) {"apple"}
+		
+		//--------------------- clear()
+		set.clear();			// 모두 삭제
+		console.log(set.size);		// 0
+		console.log(set);		// Set(0) {}
 
-		for(let value of set){ //2회 출력
-			console.log(value);
-			//{name:'dong'} 
-			//function(){}
+		//--------------------- entries()
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		let entries = set.entries(); //이터레이터 반환
+		console.log(entries);//SetIterator {"apple=>"apple"}
+
+		for(let value of set){
+			console.log(value);	//apple
+			
 		}
-		//set.next(); //요건 맵과 마찬가지로 안 된다.
+		//console.log(set.next()); //에러: set.next is not a function
 
-		//set.clear(); //모두 삭제된다
-		set.delete(f); //일치되는 값 1개 삭제
-
-		//------------------- entries()
-
-		let entries = set.entries();
 		for(let value of entries){
-			console.log('entries',value);
-			/*
-				독특하다..[값,값] 의 배열을 반환한다
-				[{name: "dong"}, {name: "dong"}]
-			*/
+			console.log(value);	// ["apple", "apple"]
+			console.log(value[0]);	// apple
+			console.log(value[1]);	// apple
+			
 		}
+
+		//이터레이터는 한번 열거하면 끝난다.
 		console.log(entries.next()); //{value: undefined, done: true}
 
-		//------------------- forEach(callback)
+		// set은 다시 열거 할 수있다
+		for(let value of set){
+			console.log(value); //apple
+		}
+		
+	 
+		entries = set.entries(); //다시 이터레이터 반환
+		console.log(entries); ////SetIterator {"apple=>"apple"}
+		console.log(entries.next()); //{value: ["apple", "apple"], done: false}
+		console.log(entries.next()); //{value: undefined, done: true}
 
-		set.forEach(function(value, key, set){ //맵과 같다
-			console.log(value);	//{name: "dong"}
-			console.log(key);	//{name: "dong"}
-			console.log(set);	//[{name: "dong"}, {name: "dong"}]
+		//--------------------- forEach(callback)
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
+		//콜백 순서를 잘 기억하자 key-> value -> set
+		set.forEach(function(key, value, set){
+			console.log(key);	// apple
+			console.log(value);	// apple
+			console.log(set);	// Set(1) {"apple"}
 		});
 
-		//------------------- has()
 
-		if(set.has({name:'dong'})){ // 출력하지 않는다, 다른객체이므로 
-			console.log('있다1'); 
+
+		//--------------------- keys() 
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		let keys = set.keys(); //이터레이터 반환
+
+		console.log(keys);		//SetIterator {"apple"}
+		console.log(keys.next());	//{value: "apple", done: false}
+		console.log(keys.next());	//{value: undefined, done: true}
+
+
+		keys = set.keys(); //이터레이터 반환
+		for(value of keys){
+			console.log(value);	// apple
+			
 		}
-		if(set.has(obj)){	// 출력한다, 같은 객체이므로
-			console.log('있다2'); // 있다2
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		//--------------------- values() 
+
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		let values = set.values(); //이터레이터 반환
+
+		console.log(values);		//SetIterator {"apple"}
+		console.log(values.next());	//{value: "apple", done: false}
+		console.log(values.next());	//{value: undefined, done: true}
+
+		values = set.values(); //이터레이터 반환
+		for(value of values){
+			console.log(value); // apple
+		}
+		console.log(values.next()); //{value: undefined, done: true}
+
+		//--------------------- [Symbol.iterator]() 
+
+		/*
+		Map 에서는 entries와 같았지만, 
+		Set에서는  {[Symbol.iterator]() == keys() == values()} 이다
+		*/
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+
+		let setIter = set[Symbol.iterator](); 
+		console.log(setIter); //SetIterator {"apple"}
+
+		for(value of setIter){
+			console.log(value);	//apple
+
 		}
 
-		var t = 100;
-		set.add(t);// 기본자료형 추가
-		if(set.has(100)){	// 출력한다, 같은 값이 있으므로
-			console.log('있다3'); // 있다3
-		}
-		if(set.has(t)){	// 출력한다, 같은 값이 있으므로
-			console.log('있다4'); // 있다4
-		}
+		//--------------------- has() 
 
-		set.delete(100); //삭제
+		let obj2={name:'dong'};
+		let set2 = new Set();
+		set2.add(obj2);
 
-		//----------------- keys(), values(), [Symbol.iterator]()
-		//현재 [{name: "dong"}, {name: "dong"}] 만 있다. size 1
-		//위의 구조 파악으로 해석해보면, 맵과 같은 구조인데, 키가 값과 같다.
-		//그러므로 아래 이터레이트 메서드 3개는 같은 결과인 value를 출력하게 되는 결과가 나온다.
+		console.log(set2);//Set(1) {{name:'dong'}}
 
-		let keys = set.keys();
-		for(let value of keys){
-			console.log(value); //{name: "dong"}
+		//객체나 함수가 존재여부는 참조키가 맞아야 포함된 것으로 인식힌다.
+		if(set2.has(obj2)){
+			console.log('set 있다1');// 같은 객체이므로 출력
+		} 
+		if(set2.has({name:'dong'})){
+			console.log('set 있다2');//(다른객체 , 출력 안함)
 		}
 
-		let values = set.values();
-		for(let value of values){
-			console.log(value); //{name: "dong"}
-		}
 
-		let iter = set[Symbol.iterator](); //map에서는 entries()와 같았다
-		for(let value of iter){
-			console.log(value); //{name: "dong"}
-		}
+		//일반 자료형 키는 리터럴이나 변수나 모두 같은 키다
+		let fruit = 'banana';
+		set2.add(fruit);
+		if(set2.has(fruit)){console.log('바나나1');}	//출력
+		if(set2.has('banana')){console.log('바나나2');}	//출력
+
+		//--------------------- delete (2)
+
+		let obj3={name:'dong'};
+		set3 = new Set();
+		set3.add(obj3);
+		set3.add("dong3");
+
+
+		set3.delete({name:'dong'});	//값이 같더라도 다른 객체이므로 안 지워진다
+		console.log(set3.size);		//2
+
+		set3.delete(obj3);		//참조키로 해야 지워진다
+		console.log(set3.size);		//1 
+
+		set3.delete("dong3");		// 일반자료형은 지워진다
+		console.log(set3.size);		//0 
