@@ -11,6 +11,8 @@ class Ex
 		map.put("2","two");
 		map.put("3","three");
 
+		System.out.println(map.size());	//3
+
 		if(map.isEmpty()){
 			System.out.println("map empty");
 		}else{
@@ -39,11 +41,11 @@ class Ex
 			String keyTmp = null;
 			while(iter.hasNext()){
 				keyTmp = iter.next();
-				System.out.println("keySet()=iter: " + keyTmp +"=>" + map.get(keyTmp));	
+				System.out.println("keySet(): " + keyTmp +"=>" + map.get(keyTmp));	
 				/*
-					keySet()=iter: 1=>one
-					keySet()=iter: 2=>two
-					keySet()=iter: 3=>three
+					keySet(): 1=>one
+					keySet(): 2=>two
+					keySet(): 3=>three
 				*/
 			}
 
