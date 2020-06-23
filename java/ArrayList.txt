@@ -1,0 +1,77 @@
+import java.util.*;
+
+class Ex 
+{
+	public static void main(String[] args) 
+	{
+		List<String> list = new ArrayList<String>();
+
+		//-------------------// (1) 기본
+		list.add("한글");
+		list.add("두글");
+		list.add("세글");
+		
+		System.out.println(list);//[한글, 두글, 세글]
+		
+		String tmp = null;
+		int size = list.size();
+		
+		System.out.println(size); // 3
+
+		for(int i=0; i<size; i++){
+			tmp = list.get(i);
+			System.out.println(tmp);//한글, 두글, 세글
+		}
+
+		for(String t : list){
+			System.out.println(t); //한글, 두글, 세글
+		}
+		
+		//업데이트하기
+		list.set(2,"세글2");
+		System.out.println(list);//[한글, 두글, 세글2]
+
+		//선택 삭제하기
+		list.remove(1);
+		System.out.println(list);//[한글, 세글2]
+
+		// 모두 삭제
+		list.clear();
+		System.out.println(list);//[]
+
+		//-------------------// (2) 유용 메소드들
+		list.add("한글");
+		list.add("두글");
+		list.add("세글");
+		
+		int index = list.indexOf("두글"); // 처음부터 찾아서 첫벗째 검색된 index
+		System.out.println(index); // 1
+
+		list.add(index, "두글2"); // 1번 index에 껴 넣기
+		System.out.println(list);//[한글, 두글2, 두글, 세글]
+
+		list.add("두글2"); //마지막에 같은 데이터 추가
+		System.out.println(list);//[한글, 두글2, 두글, 세글, 두글2]
+
+		int lastIndex = list.lastIndexOf("두글2"); // 마지막에서 거꾸로 검색해서 첫벗째 검색된 index
+		System.out.println(lastIndex); // 4
+
+		if(list.contains("세글")){
+			System.out.println(list.indexOf("세글") + "번 index에 있다");
+			//3번 index에 있다
+		}
+
+		//이터레이터 패턴 사용하기
+		Iterator iterator = list.iterator();
+		while(iterator.hasNext()){
+			System.out.println("1." + iterator.next());
+			/*
+				1.한글
+				1.두글2
+				1.두글
+				1.세글
+				1.두글2
+			*/
+		}
+	}
+}

@@ -486,6 +486,17 @@
 	값은 중복 값을 가질 수 없다.
 	그 외 사용법은 맵과 유사하다.
 
+	size : set 향목 갯수 리턴, 메서드가 아니다(속성)
+	add(value) : set 셋팅 + set 인스턴스 반환
+	clear() : set 항목 
+	delete(value) : value에 해당하는 항목 삭제
+	entries() : 항목 이터레이터 반환
+	forEach(CallbackFn(key,value,set)) :  set에 추가된 항목 열거 콜백 
+	has(value) : 값 항목 존재여부  true, false 리턴
+	keys() : key(?) 이터레이터 반환,실제로는 value와 같다.[value,value]이기 때문에
+	values() : 값 이터레이터 반환
+	[Symbol.iterator]() : keys() 또는 values() 와 같은 이터레이터 반환(결국 다 같은 것)
+
 	예제)
 		let obj={name:'dong'};
 		let set = new Set();
@@ -547,10 +558,10 @@
 		console.log(set);		//Set(1) {"apple"}
 
 		//콜백 순서를 잘 기억하자 key-> value -> set
-		set.forEach(function(key, value, set){
+		set.forEach(function(key, value, set1){
 			console.log(key);	// apple
 			console.log(value);	// apple
-			console.log(set);	// Set(1) {"apple"}
+			console.log(set1);	// Set(1) {"apple"}
 		});
 
 
@@ -559,6 +570,8 @@
 
 		set.clear(); //초기화
 		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
 		let keys = set.keys(); //이터레이터 반환
 
 		console.log(keys);		//SetIterator {"apple"}
@@ -580,6 +593,8 @@
 
 		set.clear(); //초기화
 		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
 		let values = set.values(); //이터레이터 반환
 
 		console.log(values);		//SetIterator {"apple"}
@@ -602,6 +617,7 @@
 
 		set.clear(); //초기화
 		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
 
 		let setIter = set[Symbol.iterator](); 
 		console.log(setIter); //SetIterator {"apple"}
@@ -650,3 +666,98 @@
 
 		set3.delete("dong3");		// 일반자료형은 지워진다
 		console.log(set3.size);		//0 
+
+12. WeakMap
+	
+	가벼운 맵(key,value)
+	열거 할 수 없고(for of 문 사용 못함), size속성도 없다.
+	키는 참조형만 가능하다(원시타입 사용불가)
+
+	set(key,value) : 위크맵 항목추가 후 위크맵 인스턴스 반환.
+	get(key) : 키값에 해당하는 value 반환.
+	has(key) : 키항목의 존재여부 체크(true, false).
+	delete(key) : 키에 해당하는 항목 삭제 , 삭제항목 존재여부체크 (true , false)반환.
+
+	예제)
+		let weakMap = new WeakMap();
+		let f = function(){};
+
+		weakMap.set(f,200);
+		
+
+		if(weakMap.has(f)){
+			console.log(weakMap.get(f)); // 200
+		
+		} 
+
+		if(weakMap.delete(f)){
+			console.log('항목 제거'); // 실행됨
+		}
+
+
+		console.log(weakMap.get(f)); //undefined
+
+
+		/* 이터레이터 아니므로 열거할 수 없다.
+		//weakMap is not iterable : TypeError
+		for(let value of weakMap){ 
+			console.log(value);
+		}
+		*/
+
+13. WeakSet
+
+	가벼운 Set
+	열거 할 수 없고(for of 문 사용 못함), size속성도 없다.
+	값은 참조타입(원시타입 불가)만 가능하다.
+
+	add(value) : 위크셋 항목추가 후 위크셋 인스턴스 반환.
+	has(value) : 값의 존재여부 체크(true, false).
+	delete(value) : 값(참조키) 해당하는 항목 삭제 , 삭제항목 존재여부체크 (true , false)반환.
+
+	예제)
+		let weakSet = new WeakSet();
+		let f = function(){};
+		weakSet.add(f);
+		
+		if(weakSet.has(f)){
+			console.log("f 존재"); // 실행
+		} 
+
+		if(weakSet.delete(f)){
+			console.log('항목 제거'); // 실행됨
+		}
+
+		/* 이터레이터 아니므로 열거할 수 없다.
+		for(let value of weakSet){ //weakSet is not iterable : TypeError
+			console.log(value);
+		}
+		*/
+
+14. Symbol
+	
+	객체 내장속성명 중복을 피하기 위해 사용되는 type 이다
+	(유니크한 속명키가 생성되는 듯 하다.)
+	심볼 추가 후 for in 문 출력시 속성명으로 indexing 되지 않는다.
+
+	예제)
+		console.log(Symbol()==Symbol()); //false
+		console.log(Symbol('length')==Symbol('length')); //false
+
+		let symbol = Symbol('length');
+		console.log(symbol);	//Symbol(length)
+
+		let arr = [1,2,3];
+		const length = Symbol('length');
+		const length2 = Symbol('length');
+		arr[length] = 100;
+
+		console.log(arr[length]);	// 100
+		console.log(arr[length2]);	// undefined
+		console.log(arr.length);	// 3
+		console.log(arr['Symbol(length)']); // undefined
+
+		//심볼은 for in문에 속성명이 출력되지 않는다
+		for(let prop in arr){
+			console.log(prop); // 0, 1, 2
+		}

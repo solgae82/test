@@ -1,0 +1,97 @@
+import java.util.*;
+
+class Ex 
+{
+	public static void main(String[] args) 
+	{
+		
+		Map<String,String> map = new HashMap<String, String>();
+
+		map.put("1","one");
+		map.put("2","two");
+		map.put("3","three");
+
+		if(map.isEmpty()){
+			System.out.println("map empty");
+		}else{
+
+			if(map.containsKey("1")){
+				System.out.println("key 1 : "+map.get("1")); //key 1 : one
+			}
+
+			if(map.containsValue("two")){
+				System.out.println("two 값이 있다"); //two 값이 있다
+			}
+
+			// 1. 기본 반복 출력
+			for(String k : map.keySet()){
+				System.out.println("for : "+k+"=>" + map.get(k));	
+				/*
+					for : 1=>one
+					for : 2=>two
+					for : 3=>three
+				*/
+			}
+			
+			// 2. keySet() => iterator
+			Set<String> set = map.keySet();
+			Iterator<String> iter = set.iterator();
+			String keyTmp = null;
+			while(iter.hasNext()){
+				keyTmp = iter.next();
+				System.out.println("keySet()=iter: " + keyTmp +"=>" + map.get(keyTmp));	
+				/*
+					keySet()=iter: 1=>one
+					keySet()=iter: 2=>two
+					keySet()=iter: 3=>three
+				*/
+			}
+
+			// 3. entrySet() => iterator
+			Set<Map.Entry<String,String>> set2 = map.entrySet();
+			Iterator<Map.Entry<String,String>> iter2 = set2.iterator();
+			Map.Entry<String, String> entry= null;
+			String key2 = null;
+			String value2 = null;
+			while(iter2.hasNext()){
+				entry = iter2.next();
+				key2 = entry.getKey();
+				value2 = entry.getValue();
+
+				System.out.println("entrySet(): " + key2 +"=>" + value2);	
+
+				/*
+					entrySet(): 1=>one
+					entrySet(): 2=>two
+					entrySet(): 3=>three
+				*/
+			}
+			
+			
+			//업데이트
+			map.put("2", "two2");
+			System.out.println(map); //{1=one, 2=two2, 3=three}
+			
+			//삭제
+			map.remove("2");
+			System.out.println(map); //{1=one, 3=three}
+
+			//삭제 2
+			map.remove("3", "tree"); // 키와 값 매핑이 같은 것만 삭제한다,없으므로 삭제 안 한다
+			System.out.println(map); //{1=one, 3=three}
+
+			//삭제 3
+			map.remove("3", "three"); // 키와 값이 같은 값이 있으므로 삭제한다.
+			System.out.println(map); //{1=one}
+
+			//모두 삭제
+			map.clear();
+			System.out.println(map); //{}
+
+
+		}
+			
+		
+	}
+	
+}

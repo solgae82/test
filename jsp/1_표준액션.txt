@@ -20,17 +20,33 @@ email : ${pageScope.email}
 ** 표준 액션 **
 
 --------- Bean 표준액션 
+	빈 규약에 맞는 클래스여야한다(인자 없는 생성자, private 멤버 , public 메소드 등)
+	빈 규약이 뭔지 검색해볼 것!
+
+	jsp 스크립트릿으로 서블릿 자바 흉내내면 안 됨..
+	같은 jsp 파일에서 스클립트릿 변수와 표준액션 변수명이 같다면 같은 변수 2개 선언한 것임(변수 충돌)
+	표준 액션도 서블릿 자바 코딩과 같다고 생각해야 함.(xml 내용이 서블릿 자바 코드로 변환 되므로..)
+	(테스트 개고생 했음)
 
 	--------- 기본
-	Employee p = new Employee();
-	p.setName("대한민국");
-	request.setAttribute("person", p); //person 키
+	:TestServlet.java
 
-	//id ="person"
-	<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request"/>
-	<jsp:getProperty name="person" property="name" /> // "대한민국"
+		Employee p = new Employee();
+		p.setName("대한민국");
+		request.setAttribute("person", p); //person 키
+
+		RequestDispatcher view = request.getRequestDispatcher("/test.jsp");
+		view.forward(request, response);
+
+	:/test.jsp
+	서블릿 setAttribute 이름이 "person" set했으므로 같은 이름으로 id 이름을 일치시킨다
+
+		<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request"/>
+		<jsp:getProperty name="person" property="name" /> // "대한민국"
 
 	--------- property 이름
+	빈 규약은 속성 이름과 관계없고, 메소드 이름과 관계있다.
+
 	private String name1;
 
 	public String getName() {
@@ -41,6 +57,10 @@ email : ${pageScope.email}
 		
 	<jsp:getProperty name="person" property="name" /> (옳음)
 	<jsp:getProperty name="person" property="name1" /> (틀림)
+
+	jsp:getProperty 를 호출하고(get메소드를 호출하겠다는 것),
+	person객체의  property 속성이 이름이 'name' 이므로 
+	get + 'Name' 의 메소드를 호출한다 => person.getName()
 
 	--------- 빈이 없을시 초기값 지정하기
 	<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request">
