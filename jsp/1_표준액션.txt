@@ -73,15 +73,16 @@ email : ${pageScope.email}
 
 	- type 이 있을경우 class는 type에 명시한 클래스를 상속 또는 구현한 클래스여야 함.(당연)
 	- class 없이 type만 사용할 경우 반드시 빈이 존재해야한다(부모클래스나 해당클래스여야함. 없으면 에러)
-		Person p = new Employee();
+		
+		Person p = new Employee(); // 아래 표준액션과 같다
 		<jsp:useBean id="person" type="com.solgae.bean.Person" scope="request"/>	//(o)
-		<jsp:useBean id="person" type="com.solgae.bean.Employee" scope="request"/>	//(o)
-
-		Employee2 p = new Employee();
-		<jsp:useBean id="person" type="com.solgae.bean.Person" scope="request"/>	//(o)
+		
+		Employee p = new Employee();// 아래 표준액션과 같다
 		<jsp:useBean id="person" type="com.solgae.bean.Employee" scope="request"/>	//(o)
 
 	- type은 없고 class만 있을경우 해당 클래스이거나 상속받은 해당 클래스가 맞으면 출력, 맞지 않으면 에러
+		
+		:TestServlet.java
 		Person p = new Employee();
 		p.setName("대한민국");
 		request.setAttribute("person", p);
