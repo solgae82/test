@@ -16,11 +16,12 @@ class Ex
 		if(map.isEmpty()){
 			System.out.println("map empty");
 		}else{
-
+			// 키 검색
 			if(map.containsKey("1")){
 				System.out.println("key 1 : "+map.get("1")); //key 1 : one
 			}
 
+			// 값 검색
 			if(map.containsValue("two")){
 				System.out.println("two 값이 있다"); //two 값이 있다
 			}

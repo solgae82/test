@@ -33,7 +33,7 @@ class Ex
 					System.out.println(s); // 하나, 두리, 세리
 			}
 
-			Iterator iter = set.iterator();
+			Iterator<String> iter = set.iterator();
 			while(iter.hasNext()){
 				System.out.println("iter: " + iter.next());
 				/*

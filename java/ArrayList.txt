@@ -12,12 +12,13 @@ class Ex
 		list.add("세글");
 		
 		System.out.println(list);//[한글, 두글, 세글]
-		
+				
+		if(!list.isEmpty()){
+			System.out.println("리스트가 "+list.size()+"개 있습니다"); // 리스트가 3개 있습니다.
+		}
+
 		String tmp = null;
 		int size = list.size();
-		
-		System.out.println(size); // 3
-
 		for(int i=0; i<size; i++){
 			tmp = list.get(i);
 			System.out.println(tmp);//한글, 두글, 세글
@@ -47,7 +48,7 @@ class Ex
 		int index = list.indexOf("두글"); // 처음부터 찾아서 첫벗째 검색된 index
 		System.out.println(index); // 1
 
-		list.add(index, "두글2"); // 1번 index에 껴 넣기
+		list.add(index, "두글2"); // 1번 index에 껴 넣기(중간 삽입)
 		System.out.println(list);//[한글, 두글2, 두글, 세글]
 
 		list.add("두글2"); //마지막에 같은 데이터 추가
@@ -56,13 +57,14 @@ class Ex
 		int lastIndex = list.lastIndexOf("두글2"); // 마지막에서 거꾸로 검색해서 첫벗째 검색된 index
 		System.out.println(lastIndex); // 4
 
+		//검색하기
 		if(list.contains("세글")){
 			System.out.println(list.indexOf("세글") + "번 index에 있다");
 			//3번 index에 있다
 		}
 
 		//이터레이터 패턴 사용하기
-		Iterator iterator = list.iterator();
+		Iterator<String> iterator = list.iterator();
 		while(iterator.hasNext()){
 			System.out.println("1." + iterator.next());
 			/*
