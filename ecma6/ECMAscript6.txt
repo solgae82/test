@@ -761,3 +761,438 @@
 		for(let prop in arr){
 			console.log(prop); // 0, 1, 2
 		}
+
+15. Promise
+
+	비동기와 동기 프로그램의 간극을 해결해주는 기법
+	코드로 이해하는게 빠르다.
+
+	-----------// .then() 메소드
+
+		var cnt = 0;
+		let p = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve(++cnt); // 아래 p.then(function($cnt){});에 인수를 넘겨서 실행시킨다
+				
+			}, 1000);
+		});
+
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // (1초후에) 실행: 1
+		});
+
+	-----------// .catch() 메소드
+
+		var cnt = 0;
+		let p = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				//resolve(++cnt); 
+				reject('failed'); // 아래 p.catch(function($msg){});를 실행시킨다
+			}, 1000);
+		});
+
+		//-- 같은 결과 다른 코딩 1
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		});
+
+		p.catch(function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});
+
+		/*
+		//-- 같은 결과 다른 코딩 2 ( 메소드 체이닝을 사용해도 결과는 같다)
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		}).catch(function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});
+		//-- 같은 결과 다른 코딩 3 (then 두번째 인수로 해도 결과는 같다)
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		} , function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});	
+		*/
+
+	----------- Promise.all() 메소드
+
+		var cnt = 0;
+
+		let p1 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p1=>"+ (++cnt));
+				
+			}, 5000);
+		});
+
+		let p2 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p2=>"+ (++cnt));
+				
+			}, 1000);
+		});
+
+
+		Promise.all([p1,p2]).then(function($cnt){
+			console.log("실행: " + $cnt); //실행: [p1=>2,p2=>1]  , 배열로 반환된다. 그러므로 for문을 돌려도 된다.
+			/*(5초 후 실행한 객체 모두 한꺼번에 배열로 반환한다, 결과값은 실행시간 순, 배열은 all[배열순]*/
+		},function($e){
+			
+			console.log("실패: "+$e);
+		});
+
+		/**
+		// 결과 배열이므로 아래처럼 looping 출력도 가능.
+		Promise.all([p1,p2]).then(function($cnt){
+			for(str of $cnt){
+				console.log("실행: " + str);
+				//실행: p1=>2
+				//실행: p2=>1
+			}		
+		},function($e){
+			
+			console.log("실패: "+$e);
+		});
+
+		
+		*/
+
+	----------- Promise.race() 메소드
+
+		var cnt = 0;
+
+		let p1 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p1=>"+ (++cnt));
+				
+			}, 5000);
+		});
+
+		let p2 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p2=>"+ (++cnt));
+				
+			}, 1000);
+		});
+
+
+		Promise.race([p1,p2]).then(function($cnt){
+			console.log("실행: " + $cnt); //실행: p2=>1 (가장 빠른 한개만 실행한다)
+		},function($e){
+			console.log("실패: "+$e);
+		});
+
+
+
+16. Proxy
+	
+	객체 속성을 조회하거나, 할당, 열거, 호출등을 중간에서 관찰.
+	관찰 중인 객체의 변화가 있을 경우 객체보다 먼저 감지하여 여러 행동들을 결정할 수 있다.
+	
+	객체를 바로 조작하는 것이 아닌 중간에 proxy 놓고 조건 조작
+	런타임 전 실행 코드를 가로채서 조작한다
+	프록시 트랩(trap)메소드는 13개가 있다
+		1)  getPrototypeOf : 객체에 __proto__ (프로토타입) 속성을 얻으려 할때
+		2)  setPrototypePf : Object.setPrototypePf 호출시
+		3)  isExtensible : Object.isExtensible 호출시
+		4)  preventExtensions : Object.preventExtensions 호출시
+		5)  defineProperty : Object.defineProperty 호출시
+		6)  getOwnPropertyDescriptor : Object.getOwnPropertyDescriptor 호출시
+		7)  has	: 객체에 in 연산자 수행시
+		8)  get	: 객체에 속성값 얻을시
+		9)  set : 객체에 속성값 설정시
+		10) deleteProperty : 객체에 delete 연산 실행시
+		11) ownKeys : 객체가 지닌 속성키 조회시
+		12) apply : 함수에 call 또는 apply 메서드 호출시
+		13) construct : 객체에  new 연산 수행시
+	Reflect 메소드도 trap 메소드와 동일하게 13개다
+		
+	예제는 10개만 한다(책에 그렇게 나와서...아..귀찮다)
+	쓸데없이 복잡한 기능같다.
+
+	----------- 일단 느낌을 가져보자
+	(예제) set() : 객체 속성 설정시 동작을 가로채 진행 여부 결정
+
+		let target = [];
+
+		let handler = {
+			set:function(target , key, value , receiver){
+				console.log(key, value); // (1) name myproxy
+				return Reflect.set(target , key, value , receiver);
+			}
+		};
+
+
+		let proxy = new Proxy(target , handler);
+		proxy.name = 'myproxy'; // (1) name myproxy
+
+		console.log(target);	// (2) {name:myproxy}
+	
+	----------- (1) getPrototypeOf(target)
+	__proto__ 호출시 동작을 가로채 진행 여부 결정
+
+		function foo() {}
+
+		foo.prototype.a = 100;
+		foo.prototype.b = 200;
+
+		let obj = new foo();
+
+		let proxy = new Proxy(obj, {
+			
+			getPrototypeOf:function(target){
+				console.log('getPrototypeOf 호출');
+				return Reflect.getPrototypeOf(target);
+			}
+		});
+
+		let proto = proxy.__proto__;	//(1) getPrototypeOf 호출
+		console.log(proto);		//(2) {a: 100, b: 200, constructor: ƒ}
+
+	----------- (2) setPrototypeOf(target , prototype)
+	Object.setPrototypeOf 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {};let obj = {};
+		let proxy = new Proxy(obj,{
+			
+			setPrototypeOf:function(target, proto){
+				let bool = Reflect.setPrototypeOf(target, proto);
+				console.log('setPrototypeOf:',bool ,':', proto);
+				return bool;
+			}
+		});
+
+		let p = Object.setPrototypeOf(proxy, {a:100, b:200}); //(1) setPrototypeOf: true : {a: 100, b: 200}
+		console.log(p.__proto__); // (2) {a: 100, b: 200}
+
+	----------- (3) isExtensible(target)
+	Object.isExtensible 메서드 동작을 가로채 진행 여부 결정
+	객체에 새로운 속성 추가 가능여부 판단(true, false)
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			isExtensible:function(target){
+				console.log('isExtensible:',target);
+				return Reflect.isExtensible(target);
+			}
+		});
+
+		let bool = Object.isExtensible(proxy); //(1)isExtensible:{a: 100}
+		console.log(bool); // (2) true
+
+	----------- (4)preventExtensions(target)
+	Object.preventExtensions 메서드 동작을 가로채 진행 여부 결정
+	객체에 새로운 속성 추가 금지 설정
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			preventExtensions:function(target){
+				console.log('preventExtensions:',target);
+				return Reflect.preventExtensions(target);
+			},
+
+			isExtensible:function(target){
+				console.log('isExtensible:',target);
+				return Reflect.isExtensible(target);
+			}
+		});
+
+		//(객체에 새로운 속성 추가 금지 설정)
+		Object.preventExtensions(proxy); //(1)preventExtensions: {a: 100}
+
+		let bool = Object.isExtensible(proxy); //(2)isExtensible: {a: 100}
+		console.log(bool); // (3) false
+
+	----------- (5)defineProperty(target, prop, descriptor)
+	Object.defineProperty 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			defineProperty:function(target, prop, descriptor){
+				console.log('defineProperty(target):',target);
+				console.log('defineProperty(prop):',prop);
+				console.log('defineProperty(descriptor):', descriptor);
+
+				let bool = Reflect.defineProperty(target, prop, descriptor);
+				console.log('bool:', bool);
+				
+				return false; // 속성 추가 여부 반환, false면 Uncaught TypeError
+			},
+
+		});
+
+
+		Object.defineProperty(proxy, 'key',{
+			enumerable: false,
+			configurable : false,
+			writable : false,
+			value : 'static'
+		}); 
+		/* (1) defineProperty 실행
+		defineProperty(target): {a: 100}
+		defineProperty(prop): key
+		defineProperty(descriptor): {value: "static", writable: false, enumerable: false, configurable: false}
+		bool: true
+		*/
+
+
+		//속성 추가 여부에 따라(true) 속성 추가됨
+		console.log(proxy); //(2) Proxy {a: 100, key: "static"}
+
+	----------- (6)getOwnPropertyDescriptor(target, prop)
+	Object.getOwnPropertyDescriptor 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {a:100};
+
+		Object.defineProperty(obj, 'key',{
+			enumerable: true,
+			configurable : true,
+			value : 10
+		}); 
+
+		let proxy = new Proxy(obj,{
+			
+			getOwnPropertyDescriptor:function(target, prop){
+				console.log('getOwnPropertyDescriptor(target):',target);
+				console.log('getOwnPropertyDescriptor(prop):',prop);
+
+				let result = Reflect.getOwnPropertyDescriptor(target, prop);
+				console.log('result:', result);
+				
+				return result; 
+			},
+
+		});
+
+
+		// (1) 설명자(descriptor)가 있는 객체속성 얻기
+		let descriptor = Object.getOwnPropertyDescriptor(proxy,'key');
+		/* getOwnPropertyDescriptor 실행
+		getOwnPropertyDescriptor(target): {a: 100, key: 10}
+		getOwnPropertyDescriptor(prop): key
+		result: {value: 10, writable: false, enumerable: true, configurable: true}
+		*/
+
+		console.log(descriptor); 
+		//(2) {value: 10, writable: false, enumerable: true, configurable: true}
+
+	----------- (7) has(target, prop)
+	in 연산자 실행시 동작 가로채 진행여부 결정
+
+		let obj = {a:100, b:200};
+		let proxy = new Proxy(obj,{
+			
+			has:function(target, prop){
+				console.log('has(target):',target);
+				console.log('has(prop):',prop);
+
+				let bool = Reflect.has(target, prop);
+				console.log('bool:', bool);
+				
+				return bool; 
+			},
+
+		});
+
+		
+		let bool = 'a' in proxy;
+		/* (1)has 실행
+		has(target): {a: 100, b: 200}
+		has(prop): a
+		bool: true
+		*/
+
+		console.log(bool); //(2)true
+
+	-----------(8) get(target, prop,receiver)
+	객체 속성값을 얻으려고 할때 동작을 가로채 진행여부 결정
+
+		let obj = {a:100, b:200};
+		let proxy = new Proxy(obj,{
+			
+			get:function(target, prop,receiver){
+				console.log('get(target):',target);
+				console.log('get(prop):',prop);
+				console.log('get(receiver):',receiver);
+
+				let bool = Reflect.has(target, prop  ,receiver);
+				console.log('bool:', bool);
+				
+				return bool; 
+			},
+
+		});
+
+		let v = proxy.a;
+		/* (1) get() 실행
+		get(target): {a: 100, b: 200}
+		get(prop): a
+		get(receiver): Proxy {a: 100, b: 200}
+		bool: true
+		*/
+
+		console.log(v); //(2) true
+
+	----------- (9) set(target , prop, value , receiver)
+	객체 속성 설정시 동작을 가로채 진행 여부 결정
+
+		let target = {a:100};
+
+		let handler = {
+			set:function(target , prop, value , receiver){
+
+				if(value=='my'){
+					target[prop] = 'myone:my';
+				}else{
+					target[prop] = value;
+				}
+				console.log('target:', target); 
+				console.log('prop:', prop);
+				console.log('value:', value);
+				console.log('receiver:', receiver);
+				//Reflect.set(target , prop, value , receiver); //요걸 쓰면 속성을 조리할 수 없다
+
+				return true;
+			}
+		};
+
+
+		let proxy = new Proxy(target , handler);
+		proxy.name = 'my'; 
+		/* (1) 객체속성 설정시
+		target: {a: 100, name: "myone:my"}
+		key: name
+		value: my
+		receiver: Proxy {a: 100, name: "myone:my"}
+		*/
+
+		console.log(target);	
+		// (2) {a: 100, name: "myone:my"}
+
+	----------- (10) deleteProperty (target ,prop)
+	객체 속성을  delete 연산시 중간에서 가로채 결정여부 결정
+
+		let obj = {a:100};
+		
+		let isDelete = 0; // 1이면 삭제, 
+		let handler = {
+			deleteProperty:function(target ,prop){
+				if(isDelete == 1){
+					console.log('속성 삭제');
+					return Reflect.deleteProperty(target, prop); //삭제 true 반환
+				}else{
+					console.log('속성 삭제 안됨');
+					return false; //삭제 안하면 false 반환
+				}
+				
+			}
+		};
+
+		let proxy = new Proxy(obj , handler);
+		delete proxy.a; // (1) 속성 삭제 안됨 
+		
+		console.log(obj);// (2) {a:100}
