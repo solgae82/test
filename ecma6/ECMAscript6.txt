@@ -1196,3 +1196,107 @@
 		delete proxy.a; // (1) 속성 삭제 안됨 
 		
 		console.log(obj);// (2) {a:100}
+
+17. 펼침연산자 (...)
+	
+	이터러레이션 구현된 객체나 배열만 가능하다.
+	배열의 원소나, 객체(이터레이션)의 속성등을 펼쳐서 할당한다
+	배열 또는 객체(이터레이션)변수 앞에 '...' 문자를 붙인다.
+	배열은 이터레이션 구현된 객체다.
+	일반 객체는 이터레이션 구현을 해야 설정 가능하다.
+
+	//--------- (1) 배열에 설정하기
+	let arr=[1,2,3];
+	let arr2 = [0, ...arr, 4];
+	console.log(arr2); //[0, 1, 2, 3, 4]
+
+	//--------- (2) 함수 인수로 배열 설정하기
+	let arr=[1,2,3];
+	function foo(p1,p2,p3){
+		console.log(p1,p2,p3);
+	}
+	
+	foo(...arr); // 1 2 3
+
+	//--------- (3) 함수 인자의 나머지 선언하기
+	function foo(a,b,...arr){
+		console.log(arr); 
+	}
+
+	foo(1,2,3,4,5);	// [3,4,5]
+
+	//--------- (4) 객체 값 추가 + 업데이트
+	let obj = {p1:1, p2:2};
+	let obj2 = {p2:20, p3:30, ...obj};
+	console.log(obj2); // {p2: 2, p3: 30, p1: 1}
+
+	//--------- (5) 일반객체(이터레이션 구현) 
+	let obj = {
+		i : 0,
+		[Symbol.iterator]:function(){
+			return this; //이터레이터 리턴시 다시 이 객체를 가리킨다
+		},
+		
+		//내부적으로 이터레이터 구현을 했다
+		next:function(){
+			return (this.i < 4)? {value:this.i++, done: false}:{value:undefined, done: true};
+		}
+	};
+
+	function foo(a,b,c,d,e){
+		console.log(a,b,c,d,e); 
+	}
+
+	let iter = obj[Symbol.iterator]();
+	foo(...iter);	// 0 1 2 3 undefined
+
+18. 비구조할당(destructuring)
+	디스트럭링 구문은 배열 또는 객체에서 변수를 추출해내는 표현식이다
+
+	-----------배열 (1) 변수 배열에 값 설정
+	let arr = [0,1,2,3];
+	let [a,b,c] = arr; 
+	//let [a,b,c] = [0,1,2]; // 또는 이렇게
+
+	console.log(a,b,c); // 0, 1, 2
+
+	-----------배열 (2) 일부 변수 배열 원소 삭제 가능
+	let arr = [0,1,2,3];
+	let [a,,c] = arr;
+
+	console.log(a,c); // 0 2
+
+	-----------배열 (3) 초기화 설정한 변수배열에 값 재설정
+	undefined 또는 설정 안한 변수값은 기본 설정값
+	설정된 값이 있으면 그 값으로 설정
+
+	let [a=100,b=200, c=300] = [undefined, ,1000];
+
+	console.log(a,b,c); // 100 200 1000
+
+	-----------배열 (4) 나머지 패턴 설정
+	let arr = [0,1,2,3];
+	let [a, b, ...c] = arr;
+
+	console.log(a,b,c); // 0 1 [2, 3]
+
+	-----------객체 (1) 
+	let {a,b,c} = {b:200, a:100, c:300};
+	console.log(a,b,c); // 100 200 300
+
+	-----------객체 (2)
+	let {a,b,c} = {b:200,  c:300};
+	console.log(a,b,c); // undefined 200 300
+
+	-----------객체 (3) 초기화(기본값) 설정
+	기본값이 있는데,
+	undefined를 전달하면 그냥 기본값으로 셋팅된다(주의) 
+	let {a=1,b=2,c=3} = {a:100, c:undefined};
+	console.log(a,b,c); // 100 2 3 
+
+	-----------객체+배열 (4) 다양한 함수 인수로 설정
+	function foo([a,b,c=300]=[100,200],{d=400,e}={d:undefined, e:500}){
+		console.log(a,b,c,d,e);
+	}
+
+	foo(); // 100 200 300 400 500
