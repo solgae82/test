@@ -1,57 +1,61 @@
-import java.util.*;
+package com.solgae.test;
 
-class Ex 
-{
-	public static void main(String[] args) 
-	{
-				
-		/**
-			Set : 데이터 중복 불가
-		*/
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class SetTest {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
 		Set<String> set = new HashSet<String>();
 		
+		//add
 		set.add("하나");
-		set.add("두리");
-		set.add("세리");
+		set.add("둘");
 		
-		System.out.println(set); //[하나, 두리, 세리]
-		System.out.println("갯수: "+set.size()); //갯수: 3
-
+		//size
+		System.out.println("갯수:"+set.size()); //갯수:2
 		
-
-		if(set.isEmpty()){ //비어 있는지 확인
-			
-			System.out.println("Set 없다");	
+		//remove
+		set.remove("하나");
+		System.out.println(set); // [둘]
 		
-		}else{
-
-			if(set.contains("두리")){
-				System.out.println("두리 있다"); // 두리 있다
-			}
-
-			for(String s : set){
-					System.out.println(s); // 하나, 두리, 세리
-			}
-
-			Iterator<String> iter = set.iterator();
-			while(iter.hasNext()){
-				System.out.println("iter: " + iter.next());
-				/*
-					iter: 하나
-					iter: 두리
-					iter: 세리
-				*/
-			}
+		//clear
+		set.clear();
+		System.out.println(set); // []
+		
+		//isEmpty
+		if(set.isEmpty()) System.out.println("없다"); //없다
+		
+		//다시 값 셋팅
+		set.add("하나");
+		set.add("둘");
+		
+		//contains
+		if(set.contains("둘")) System.out.println("둘 있다"); // 둘 있다
+		
+		//iterator
+		Iterator<String> iter = set.iterator();
+		String str = null;
+		while(iter.hasNext()) {
+			str = iter.next();
+			System.out.println("iter=>"+str);
+			/*
+			iter=>둘
+			iter=>하나
+			 */
+		}
+		
+		for(String str1 : set) {
+			System.out.println("for=>"+str1);
+			/*
+			for=>둘
+			for=>하나
+			 */
 		}
 		
 		
-
-		set.remove("하나");
-		System.out.println(set); //[두리, 세리]
-
-		set.clear();
-		System.out.println("set:" + set); //[]
-
 	}
 
 }

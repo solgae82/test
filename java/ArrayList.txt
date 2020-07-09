@@ -1,79 +1,109 @@
-import java.util.*;
+package com.solgae.test;
 
-class Ex 
-{
-	public static void main(String[] args) 
-	{
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class ListTest {
+
+	public static void main(String[] args) {
+
+
 		List<String> list = new ArrayList<String>();
-
-		//-------------------// (1) 기본
-		list.add("한글");
-		list.add("두글");
-		list.add("세글");
 		
-		System.out.println(list);//[한글, 두글, 세글]
-				
-		if(!list.isEmpty()){
-			System.out.println("리스트가 "+list.size()+"개 있습니다"); // 리스트가 3개 있습니다.
-		}
-
-		String tmp = null;
-		int size = list.size();
-		for(int i=0; i<size; i++){
-			tmp = list.get(i);
-			System.out.println(tmp);//한글, 두글, 세글
-		}
-
-		for(String t : list){
-			System.out.println(t); //한글, 두글, 세글
-		}
+		//add
+		list.add("하나");
+		list.add("둘");
+		list.add("셋");
+		//size
+		System.out.println("size:"+list.size()); //size:3
+		//get
+		System.out.println("get(1):"+list.get(1));//get(1):둘
 		
-		//업데이트하기
-		list.set(2,"세글2");
-		System.out.println(list);//[한글, 두글, 세글2]
-
-		//선택 삭제하기
+		//set (없데이트), 범위에 없는 index면 에러((list.size()-1)까지 가능)
+		list.set(list.size()-1, "둘라");
+		System.out.println(list);//[하나, 둘, 둘라]
+		
+		//remove
 		list.remove(1);
-		System.out.println(list);//[한글, 세글2]
-
-		// 모두 삭제
-		list.clear();
-		System.out.println(list);//[]
-
-		//-------------------// (2) 유용 메소드들
-		list.add("한글");
-		list.add("두글");
-		list.add("세글");
+		System.out.println(list);//[하나, 둘라]
 		
-		int index = list.indexOf("두글"); // 처음부터 찾아서 첫벗째 검색된 index
-		System.out.println(index); // 1
-
-		list.add(index, "두글2"); // 1번 index에 껴 넣기(중간 삽입)
-		System.out.println(list);//[한글, 두글2, 두글, 세글]
-
-		list.add("두글2"); //마지막에 같은 데이터 추가
-		System.out.println(list);//[한글, 두글2, 두글, 세글, 두글2]
-
-		int lastIndex = list.lastIndexOf("두글2"); // 마지막에서 거꾸로 검색해서 첫벗째 검색된 index
-		System.out.println(lastIndex); // 4
-
-		//검색하기
-		if(list.contains("세글")){
-			System.out.println(list.indexOf("세글") + "번 index에 있다");
-			//3번 index에 있다
-		}
-
-		//이터레이터 패턴 사용하기
-		Iterator<String> iterator = list.iterator();
-		while(iterator.hasNext()){
-			System.out.println("1." + iterator.next());
+		//clear
+		list.clear();
+		
+		//isEmpty
+		if(list.isEmpty()) System.out.println("없다"); // 없다
+		
+		//다시 셋팅
+		list.add("하나");
+		list.add("둘");
+		list.add("셋");
+		list.add("넷");
+		list.add("셋");
+		list.add(list.size(), "-추가-"); //끼워넣기,index 가 범위에 벗어나면 에러(.size()+1이상이면 에러)
+		
+		System.out.println(list);//[하나, 둘, 셋, 넷, 셋, -추가-]
+		
+		//contains
+		if(list.contains("하나")) System.out.println("존재해");//존재해
+				
+		//iterator
+		Iterator<String> iter = list.iterator();
+		while(iter.hasNext()) { //반복
+			String str = iter.next();
+			System.out.println("출력=>"+str);
 			/*
-				1.한글
-				1.두글2
-				1.두글
-				1.세글
-				1.두글2
-			*/
+			출력=>하나
+			출력=>둘
+			출력=>셋
+			출력=>넷
+			출력=>셋
+			출력=>-추가-
+			 */
 		}
+		
+		//이터레이터는 한번 반복하면 끝.
+		while(iter.hasNext()) { //   non looping
+			String str = iter.next();
+			System.out.println("출력1=>"+str);
+		}
+		
+		for(String str : list) { //반복
+			System.out.println("for=>"+str);
+			/*
+			for=>하나
+			for=>둘
+			for=>셋
+			for=>넷
+			for=>셋
+			for=>-추가-
+			 */
+		}
+		
+		for(String str : list) {//반복
+			System.out.println("for1=>"+str);
+			/*
+			for1=>하나
+			for1=>둘
+			for1=>셋
+			for1=>넷
+			for1=>셋
+			for1=>-추가-
+			 */
+		}
+		
+		//indexOf
+		int index = list.indexOf("셋"); //없으면 -1
+		System.out.println("처음부터 검색(셋)위치:" +  index);//처음부터 검색(셋)위치:2
+		
+		
+		//lastIndexOf
+		int lastIndex = list.lastIndexOf("셋");
+		System.out.println("끝에서 역으로 검색(셋)위치:"+lastIndex); //끝에서 역으로 검색(셋)위치:4
+		
+		
+		
+		
 	}
+
 }

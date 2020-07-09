@@ -1,100 +1,109 @@
-import java.util.*;
+package com.solgae.test;
 
-class Ex 
-{
-	public static void main(String[] args) 
-	{
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public class MapTest {
+
+	public static void main(String[] args) {
 		
-		Map<String,String> map = new HashMap<String, String>();
-
-		map.put("1","one");
-		map.put("2","two");
-		map.put("3","three");
-
-		System.out.println(map.size());	//3
-
-		if(map.isEmpty()){
-			System.out.println("map empty");
-		}else{
-			// 키 검색
-			if(map.containsKey("1")){
-				System.out.println("key 1 : "+map.get("1")); //key 1 : one
-			}
-
-			// 값 검색
-			if(map.containsValue("two")){
-				System.out.println("two 값이 있다"); //two 값이 있다
-			}
-
-			// 1. 기본 반복 출력
-			for(String k : map.keySet()){
-				System.out.println("for : "+k+"=>" + map.get(k));	
-				/*
-					for : 1=>one
-					for : 2=>two
-					for : 3=>three
-				*/
-			}
-			
-			// 2. keySet() => iterator
-			Set<String> set = map.keySet();
-			Iterator<String> iter = set.iterator();
-			String keyTmp = null;
-			while(iter.hasNext()){
-				keyTmp = iter.next();
-				System.out.println("keySet(): " + keyTmp +"=>" + map.get(keyTmp));	
-				/*
-					keySet(): 1=>one
-					keySet(): 2=>two
-					keySet(): 3=>three
-				*/
-			}
-
-			// 3. entrySet() => iterator
-			Set<Map.Entry<String,String>> set2 = map.entrySet();
-			Iterator<Map.Entry<String,String>> iter2 = set2.iterator();
-			Map.Entry<String, String> entry= null;
-			String key2 = null;
-			String value2 = null;
-			while(iter2.hasNext()){
-				entry = iter2.next();
-				key2 = entry.getKey();
-				value2 = entry.getValue();
-
-				System.out.println("entrySet(): " + key2 +"=>" + value2);	
-
-				/*
-					entrySet(): 1=>one
-					entrySet(): 2=>two
-					entrySet(): 3=>three
-				*/
-			}
-			
-			
-			//업데이트
-			map.put("2", "two2");
-			System.out.println(map); //{1=one, 2=two2, 3=three}
-			
-			//삭제
-			map.remove("2");
-			System.out.println(map); //{1=one, 3=three}
-
-			//삭제 2
-			map.remove("3", "tree"); // 키와 값 매핑이 같은 것만 삭제한다,없으므로 삭제 안 한다
-			System.out.println(map); //{1=one, 3=three}
-
-			//삭제 3
-			map.remove("3", "three"); // 키와 값이 같은 값이 있으므로 삭제한다.
-			System.out.println(map); //{1=one}
-
-			//모두 삭제
-			map.clear();
-			System.out.println(map); //{}
-
-
+		Map<String, String> map = new HashMap<String, String>();
+		
+		//put
+		map.put("1","하나");
+		map.put("2","둘");
+		map.put("3","셋");
+		
+		//size
+		System.out.println(map.size()); // 3
+		
+		//get
+		System.out.println(map.get("1")); // 하나
+		
+		//remove
+		map.remove("1");
+		System.out.println(map);//{2=둘, 3=셋}
+		
+		map.remove("2","두개"); 
+		System.out.println(map);//{2=둘, 3=셋}
+		
+		map.remove("2","둘");
+		System.out.println(map); //{3=셋}
+		
+		//claer
+		map.clear();
+		System.out.println(map); //{}
+		
+		//isEmpty
+		if(map.isEmpty()) System.out.println("없다"); // 없다
+		
+		map.put("1","하나");
+		map.put("2","둘");
+		map.put("3","셋");
+		
+		if(!map.isEmpty()) System.out.println(map.size()); // 3
+		
+		//containsKey
+		if(map.containsKey("1")) System.out.println("키 [1]있다" );//키 [1]있다
+		
+		//containsValue
+		if(map.containsValue("둘")) System.out.println("값 [둘] 있다"); //값 [둘] 있다
+		
+		//keySet
+		Set<String> keySet = map.keySet();
+		Iterator<String> iterKey = keySet.iterator();
+		String key = null;
+		while(iterKey.hasNext()) {
+			key = iterKey.next();
+			System.out.println("iterKey=>"+ map.get(key));
+			/*
+			iterKey=>하나
+			iterKey=>둘
+			iterKey=>셋
+			 */
 		}
-			
 		
-	}
+		for(String str : keySet) {
+			System.out.println("for key=>"+ str);
+			/*
+			for key=>1
+			for key=>2
+			for key=>3
+			 */
+		}
+		
+		//entrySet
+		Set<Map.Entry<String, String>> entrySet = map.entrySet();
+		
 	
+		for(Map.Entry<String, String> entry : entrySet) {
+			System.out.println("["+entry.getKey()+ "]=>" +entry.getValue());
+			/* 
+			[1]=>하나
+			[2]=>둘
+			[3]=>셋
+			 */
+		}
+		
+		Iterator<Map.Entry<String, String>> iterEntry = entrySet.iterator();
+
+		String mKey = null;
+		String mValue = null;
+		Map.Entry<String, String> mEntry = null;
+		while(iterEntry.hasNext()) {
+			mEntry = iterEntry.next();
+			mKey = mEntry.getKey();
+			mValue = mEntry.getValue();
+			
+			System.out.println("{"+mKey + "=>" + mValue +"}");
+			/*
+			{1=>하나}
+			{2=>둘}
+			{3=>셋}
+			 */
+		}
+	}
+
 }
