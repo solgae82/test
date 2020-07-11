@@ -125,7 +125,7 @@
 			<fmt:bundle></fmt:bundle>
 
 		(예제)
-			- /WEB-INF/classes/Intro_ko.properties
+			- /WEB-INF/classes/Intro_ko.properties (회사소개)
 				TITLE=\uD68C\uC0AC\uC18C\uAC1C
 			- /WEB-INF/classes/Intro_en.properties
 				TITLE=About Us
@@ -135,17 +135,17 @@
 				<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 				<fmt:bundle basename="Intro" >
-					<h1><fmt:message key="TITLE" /></h1> //<p>회사소개</p> 출력
-					<fmt:message var="title" key="TITLE" /> // var 속성 사용시 title 변수에 저장, 출력 안함.
+					<h1><fmt:message key="TITLE" /></h1> <!--'회사소개' 출력-->
+					<fmt:message var="title" key="TITLE" /> <!--var 속성 사용시 title 변수에 저장 -->
 					
 				</fmt:bundle>
 
-				<h2>${title}</h2> //회사소개 출력
-				<h3><fmt:message key="TITLE" /></h3> //에러문자 출력, 태그 벗어났으므로
+				<h2>${title}</h2> <!--번들에서 서렁한 var="title" 출력, '회사소개' 출력 -->
+				<p><fmt:message key="TITLE" /></p> <!-- 에러문자 출력, 태그 벗어났으므로 -->
 
 		- profix 속성
-			.properties 파일 내용
-				ko_TITLE=about us
+			.properties 파일 내용 ('ko_'를 주목하자)
+				ko_TITLE=about us  
 
 			
 			<fmt:bundle basename="Intro">
@@ -161,7 +161,7 @@
 	- fmt:message 속성
 		key : 읽어올 메시지의 키값
 
-		var : 메시지를 저장할 변수명 , 출력하지 않고 속성값 변수에 담는다
+		var : 메시지를 저장할 변수명 , el표현식으로 표현한다 (var="a" => ${a})
 
 		scope : 변수가 저장되는 영역지정 (page, request, session , application)
 
@@ -224,7 +224,7 @@
 		- setBundle.jsp
 			<fmt:setBundle var="two" basename="Intro2" />
 			<fmt:message var="greeting" bundle="${two}"  key="GREETING">
-				<fmt:param>후아님</fmt:param>
+				<fmt:param>후아</fmt:param>
 				<fmt:param>4</fmt:param>
 			</fmt:message>
 

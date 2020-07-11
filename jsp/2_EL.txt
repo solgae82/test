@@ -55,7 +55,7 @@ email : ${pageScope.email}
 
 	- 파라미터 값 가져오기
 		${param.num} or ${param["num"]}
-		${paramValues.fruits[0]} or ${paramValues.["fruits"][0]}
+		${paramValues.fruits[0]} or ${paramValues["fruits"][0]}
 
 	- 헤더값 가져오기
 		${header["User-Agent"] }
@@ -67,7 +67,7 @@ email : ${pageScope.email}
 		${headerValues.Accept[1] } //ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
 
 	- 쿠키 접근
-		${cookie.CART.value}, ${cookie.["CART"].value}, ${cookie.["CART"]["value"]}, ${cookie.CART["value"]}
+		${cookie.CART.value}, ${cookie["CART"].value}, ${cookie["CART"]["value"]}, ${cookie.CART["value"]}
 
 		${cookie.CART.domain}
 		${cookie.CART.path}
@@ -108,9 +108,11 @@ email : ${pageScope.email}
 		test.jsp?id=yes //yes
 
 	대괄호, 마침표연산자
-		- 대괄호와 마침표 연산자로 가리킬 수 있는 항목
-		:(배열, List, Map, java Bean)
 		[] .
+
+		대괄호와 마침표 연산자로 가리킬 수 있는 항목
+		(배열, List, Map, java Bean)
+		
 	괄호
 		()
 		

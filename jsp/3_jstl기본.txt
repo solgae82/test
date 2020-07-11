@@ -161,5 +161,7 @@ email : ${pageScope.email}
 	<c:out value="<strong>강하게</strong>"	 /> //&lt;strong&gt;강하게&lt;/strong&gt;
 	<c:out value="<strong>강하게</strong>"	 escapeXml="false" /> //<strong>강하게</strong>
 
-	//[?id=] 파라미터 있고 값이 있건 없건 value 출력 ,[?] 파라미터 자체가 없을때 guest 출력
+	//파라미터가 있으면 value출력, 없으면 default 출력 : get, post 모두 해당
+	// ?test= , ?test=22 => value 출력
+	// 파라미터가 아예 없으면 defalut 출력
 	<c:out value="${param.id}" default="guest" /> 
