@@ -1,0 +1,66 @@
+
+--------------- 성공한 방법
+1. 구성파일에 설정
+	config.filebrowserUploadUrl = '/uploader/upload.php';
+	config.filebrowserUploadMethod = 'form'; 
+
+이렇게 하면 업로드 태그가 생긴다
+
+2. 설정한 /uploader/upload.php 에서 리턴해야할 작업
+	
+	// Required: anonymous function reference number as explained above.
+	$funcNum = $_GET['CKEditorFuncNum'] ;
+
+	// Optional: instance name (might be used to load a specific configuration file or anything else).
+	$CKEditor = $_GET['CKEditor'] ;
+	
+	// Optional: might be used to provide localized messages.
+	$langCode = $_GET['langCode'] ;
+
+	// Optional: compare it with the value of `ckCsrfToken` sent in a cookie to protect your server-side uploader against CSRF.
+	// Available since CKEditor 4.5.6.
+	$token = $_POST['ckCsrfToken'] ;
+
+	// Check the $_FILES array and save the file. Assign the correct path to a variable ($url).
+	$url = '/uploader//data/1.jpg';
+
+	// Usually you will only assign something here if the file could not be uploaded.
+	$message = '업로드 성공';
+
+
+	// 아래처럼 반환하면 된다.
+	echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$url', '$message');</script>";
+
+
+--------------또다른 이미지 플러그인 방법 같음.. 성공은 못했지만 언제가 이 소스를 적용할 일이 생길지도
+
+1. 구성파일에 설정
+	config.extraPlugins = 'uploadfile,uploadwidget,filetools';
+	config.filebrowserUploadUrl = '/uploader/upload.php';
+	config.filebrowserUploadMethod = 'form';
+
+	이미지 업로드 성공의 경우
+
+2. /uploader/upload.php 에서 업로드 후 JSON으로 리턴해야할 값(http 헤더도 json으로)
+	
+	header('Content-Type: application/json; charset=utf-8');
+	echo '
+	{
+	    "uploaded": 1, // 이미지 업로드 처리 성공 여부 1 은 성공 0 은 실패
+	    "fileName": 파일명,
+	    "url": 파일 업로드 경로
+	}
+	';
+
+	
+	이미지 업로드 실패시에는
+	header('Content-Type: application/json; charset=utf-8');
+
+	echo '
+	{
+	    "uploaded": 0, // 이미지 버로드 실패
+	    "error": { // 경고 메시지를 띄울 경우 
+		"message": "The file is too big."
+	    }
+	}
+	';
