@@ -1,5 +1,8 @@
 
 --------------- 성공한 방법
+ckeditor_4.15.0 standard 버전을 다운로드 받아서
+아무런 플러그인도 추가하지 않고 실험했다 
+
 1. 구성파일에 설정
 	config.filebrowserUploadUrl = '/uploader/upload.php';
 	config.filebrowserUploadMethod = 'form'; 
