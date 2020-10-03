@@ -61,3 +61,26 @@ $.post("example.php?Name=ajax&Age=10", {
 .always(function(data,textStatus,jqXHR) {
     alert("finished" );
 });
+
+---------------------------------------//json 형태로 전송하기
+json 형태로 전송하기 위해선 	data 에 json형태의 문자열을 만들어 줘야 한다
+아래처럼 JSON.stringify({..json..})
+
+$.ajax({
+	type : 'post',
+	url : '/replies',
+	headers : {
+		"Content-Type" : "application/json",
+		"X-HTTP-Method-Override" : "POST"
+	},
+	dataType : 'text',
+	data : JSON.stringify({
+		bno : bno,
+		replyer : replyer,
+		replytext : replytext
+	}),
+	success : function(result){
+
+	}
+	
+});
