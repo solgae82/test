@@ -1,0 +1,30 @@
+<select id="pn1" name="pn1">
+	<option value="010">010</option>
+	<option value="011">011</option>
+</select>
+- 
+<input type="text" id="pn2" name="pn2" maxlength="4"/> - 
+<input type="text" id="pn3" name="pn3" maxlength="4"/> 
+
+<script>
+	function pnNumChk(e){
+		var mId = '';
+		$(this).val($(this).val().replace(/[^0-9]/gi,''));
+
+		if(typeof e.data !='undefined' && typeof e.data.moveId != 'undefined'){mId=e.data.moveId;}
+		var nodeId = $(this).attr('id');
+		
+		if(nodeId==mId){
+			if($(this).val().length >= parseInt($(this).attr('maxlength'))){$(this).next().focus();}
+		
+		}
+	}
+
+	$(function (){
+
+		$('#pn2 , #pn3').css({'text-align':'center'});
+		$('#pn2').on('input',{moveId:'pn2'}, pnNumChk);
+		$('#pn3').on('input', pnNumChk);
+
+	});
+</script>
