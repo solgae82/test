@@ -7,10 +7,13 @@ ckeditor_4.15.0 standard 버전을 다운로드 받아서
 	config.filebrowserUploadUrl = '/uploader/upload.php';
 	config.filebrowserUploadMethod = 'form'; 
 
-이렇게 하면 업로드 태그가 생긴다
+	이렇게 하면 업로드 태그가 생긴다
 
 2. 설정한 /uploader/upload.php 에서 리턴해야할 작업
 	
+	$file = $_POST["upload"]; //업로드 파라미터명은 'upload'로 정해져 있다.
+	..(처리 후)
+
 	// Required: anonymous function reference number as explained above.
 	$funcNum = $_GET['CKEditorFuncNum'] ;
 
@@ -46,6 +49,9 @@ ckeditor_4.15.0 standard 버전을 다운로드 받아서
 
 2. /uploader/upload.php 에서 업로드 후 JSON으로 리턴해야할 값(http 헤더도 json으로)
 	
+	$file = $_POST["upload"];  //업로드 파라미터명은 'upload'로 정해져 있다.
+	..(처리 후)
+
 	header('Content-Type: application/json; charset=utf-8');
 	echo '
 	{
