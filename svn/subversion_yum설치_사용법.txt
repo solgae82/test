@@ -28,7 +28,7 @@
 
 2.root 저장소 아래  repository 생성
 	cd /svn
-	svnadmin create --fs-type fsfs repo1ssn
+	svnadmin create --fs-type fsfs repo1
 
 
 3.생성한 repository(repo1) > conf > svnserve.conf 설정
