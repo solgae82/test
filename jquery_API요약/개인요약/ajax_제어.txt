@@ -144,3 +144,4 @@ $file = $_FILES['upfile'];
 ..
 echo '{"path":"data/1.png"}';
 
+
