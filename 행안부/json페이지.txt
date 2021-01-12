@@ -1,0 +1,41 @@
+$(function(){
+		var countPerPage = 10; // 한페이지 10개의 게시물
+		var currentPage = 20;	// 현재 페이지 
+		var totalCount = 252;	//전체 게시물 수
+
+
+	
+		var pageBlock  = 10; // 한번에 보이는 블록이 1~10 페이지까지이다
+
+
+
+		//전체 페이지갯수
+		var tatalPage = (totalCount >= countPerPage) ? Math.ceil(totalCount / countPerPage) : 1;
+		
+		//전체 블록 갯수
+		var totalBock = (tatalPage >= pageBlock) ? Math.ceil(tatalPage / pageBlock) : 1;
+
+
+		//현재 페이지가 몇번째 페이지블록인지 구한다
+		var currentPageBlock = Math.ceil(currentPage / pageBlock);
+
+
+
+		//현재 페이지블록 번호가 구해지면 출력 시작 페이지를 알 수 있다
+		var startPageNum = (pageBlock * currentPageBlock) - pageBlock + 1;
+
+		//출력 마지막
+		var maxBlockPageNum = (pageBlock * currentPageBlock);
+		var endPageNum = (tatalPage >= maxBlockPageNum) ? maxBlockPageNum : tatalPage;
+
+
+		console.log("전체페이지갯수","=>",tatalPage);
+		console.log("현재페이지","=>",currentPage);
+		console.log('');
+		console.log("전체블록페이지수","=>",totalBock);
+		console.log("현재페이지블록","=>",currentPageBlock);
+		console.log('');
+		console.log("startPageNum","=>",startPageNum);
+		console.log("endPageNum","=>",endPageNum);
+
+});

@@ -31,34 +31,44 @@ $.post("test.php", params, function(data, status, jqXHR){..});// data:출력데�
 $.get() : get 방식으로 ajax 통신을 한다. 서버에서 가져온다.
 var params = 'a=1&b=hi'; //또는 {'a':'1', 'b':'hi'}
 $.get("test.php",params ,  function(data, status, jqXHR){..});  // data:출력데이터, status:success, jqXHR
-
+..
 ---------------------------------------//$.get() 체인 메소드
+# jqXHR.readyState==4 와 textStatus=='success' 는 같은 의미
+
 $.get("example.php?Name=ajax&Age=10",function(data,textStatus,jqXHR) {
     alert("success" );
 },'json' /* xml, text, script, html */)
-.done(function(data,textStatus,jqXHR) {
+.done(function(data, textStatus, jqXHR ) {
     alert("second success" );
 })
-.fail(function(data, textStatus, errorThrown) {
+.fail(function(jqXHR, textStatus, errorThrown) {
+	//jqXHR{readyState: 0, getResponseHeader: ƒ, getAllResponseHeaders: ƒ, setRequestHeader: ƒ, statusText: "error", …}
+	//textStatus=> error (jqXHR.statusText와 같다)
+	//errorThrown=>
     alert("error" );
 })
-.always(function(data,textStatus,jqXHR) {
+.always(function(data|jqXHR, textStatus, jqXHR|errorThrown) {
     alert("finished" );
 });
 ---------------------------------------// $.post() 체인 메소드
+# jqXHR.readyState==4 와 textStatus=='success' 는 같은 의미
+
 $.post("example.php?Name=ajax&Age=10", {
     Name:'ajax',
     Age:'10'
 },function(data,textStatus,jqXHR) {
     alert("success" );
 },'json' /* xml, text, script, html */)
-.done(function(data,textStatus,jqXHR) {
+.done(function(data, textStatus, jqXHR ) {
     alert("second success" );
 })
-.fail(function(data, textStatus, errorThrown) {
+.fail(function(jqXHR, textStatus, errorThrown) {
+	//jqXHR{readyState: 0, getResponseHeader: ƒ, getAllResponseHeaders: ƒ, setRequestHeader: ƒ, statusText: "error", …}
+	//textStatus=> error (jqXHR.statusText와 같다)
+	//errorThrown=>
     alert("error" );
 })
-.always(function(data,textStatus,jqXHR) {
+.always(function(data|jqXHR, textStatus, jqXHR|errorThrown) {
     alert("finished" );
 });
 
@@ -84,3 +94,54 @@ $.ajax({
 	}
 	
 });
+
+---------------------------------------// ajax 파일 업로드
+<form id="ajaxForm" name="ajaxForm" action="save.php" method="post" enctype="multipart/form-data">
+	<input type="file" name="upfile" id="upfile" />
+	<button type="button" onclick="ajaxFileUpload()">전송1</button>
+</form>
+<script>
+
+	function ajaxFileUpload() {
+
+		if($('#upfile').val()==''){
+			alert('업로드파일을 선택해주세요');return;
+		}
+		var form = $("#ajaxForm")[0];
+		var formData = new FormData(form);
+		formData.append("message", "ajax로 파일 전송하기");
+		formData.append("upfile", $("#upfile")[0].files[0]);
+
+		$.ajax({
+		      url : "./save.php"
+		    , type : "POST"
+		    , processData : false
+		    , contentType : false
+		    , data : formData
+		    , success:function(json) {
+			
+			var obj = '';
+
+			try{
+				obj = JSON.parse(json);
+			}catch(e){
+				console.log(e);
+				alert('업로드 에러[1]');
+			}
+			var img ='<img src="'+obj.path+'" width="300" />';
+			$('body').append(img);
+		    }
+		    ,error:function(e){
+			alert('서버 에러입니다');
+			console.log("서버 에러=>",e);
+		    }
+		});
+	}
+</script>
+
+.............................save.php
+$file = $_FILES['upfile'];
+..
+echo '{"path":"data/1.png"}';
+
+
