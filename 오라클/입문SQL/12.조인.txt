@@ -56,5 +56,3 @@
 		where e1.mgr(+) = e2.empno /* right outer join */
 	
 	
-
-
