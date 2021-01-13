@@ -9,7 +9,8 @@
 테이블 별칭
 	컬럼에 AS '별칭' 을 쓰지만, 테이블 명 별칭은 한칸 띄우고 바로 별칭명을 기입한다
 
-	select * from emp e;
+	예제)
+		select * from emp e;
 
 등가 조인
 	equi join , 내부 join , inner join 또는 단순 join 으로 불리운다
@@ -18,6 +19,7 @@
 	where 절이 없을 경우 데카르트곱 현상이 일어난다.
 	데카르트 곱 현상을 없애기 위한 where 절 조건식 갯수는 (테이블 갯수 - 1) 이다.
 	
+	예제)
 		select * from emp e , dept d 
 		where e.deptno = d.deptno;
 
@@ -26,6 +28,7 @@
 	범위 내의 조건식을 만족하면 되는 방식
 	(between 최소컬럼값 and 최대컬럼값 ) 형식을 쓴다.
 	
+	예제)
 		select * from emp e, salgrade s
 		where e.sal between s.losal and s.hisal;
 
@@ -34,6 +37,7 @@
 	같은 테이블을 명시하고, 별칭으로 구분지어 조인한다.
 	내부조인(inner join)으로 분류 된다.
 
+	예제)
 		select * from emp e1 , emp e2
 		where e1.mgr = c2.empno;
 
@@ -47,12 +51,153 @@
 
 		right outer join(오른쪽 외부 조인)
 			where table1.column(+) = table2.column
-	예)
+	예제)
 
 		select e1.empno, e1.ename, e1.mgr, e2.empno, e2.ename
 		from emp e1, emp e2
 		where e1.mgr = e2.empno(+) /* left outer join */
 		또는
 		where e1.mgr(+) = e2.empno /* right outer join */
-	
+
+-----------------------------// SQL-99
+ANSI / SQL-99 문법
+
+NATURAL JOIN
+
+	등가 조인.
+	조인대상 두 테이블에 이름과 자료형이 같은 열을 찾은 후 그 열을 기준으로 등가 조인을 해주는 방식.
+	자동 조인된 컬럼(열)은 식별자(테이블 또는 별칭)를 쓰지 않아야 한다.
+	아래 예는 deptno 컬럼을 가지고 있는 emp 와 dept 테이블을 natural join한 예제이다.
+	예제)
+		select 
+		    e.empno 
+		    , e.ename
+		    , e.job
+		    , e.mgr
+		    , deptno /* join된 컬럼, 식별자(테이블 또는 별칭)을 쓰지 않는다*/
+		    , d.dname
+		    , d.loc
+		from
+		    emp e  natural join dept d 
+		where e.sal >= 3000
+		order by deptno , e.empno asc;
+
+JOIN ~ USING
+
+	등가조인.
+	natural join 이 자동으로 기준열을 join 하는 것과 대비되는 방식으로 기준열을 지정하는 방식.
+	natural join과 마찬가지로 조인된 컬럼(열)은 식별자(테이블 또는 별칭)를 쓰지 않아야 한다.
+	예제)
+		select 
+		    e.empno 
+		    , e.ename
+		    , e.job
+		    , e.mgr
+		    , deptno /* join된 컬럼, 식별자(테이블 또는 별칭)을 쓰지 않는다*/
+		    , d.dname
+		    , d.loc
+		from
+		    emp e  join dept d using(deptno)
+		where e.sal >= 3000
+		order by deptno , e.empno asc;
+
+JOIN ~ ON
+
+	가장 많이 사용되는 기본 내부조인 형식
+	ON 키워드 다음에 연결될 컬럼 조건식을 쓴다
+	예제)로 느껴보라
+
+		select 
+		    e.empno 
+		    , e.ename
+		    , e.job
+		    , e.mgr
+		    , e.deptno 
+		    , d.dname
+		    , d.loc
+		from
+		    emp e  join dept d
+		    on
+			e.deptno = d.deptno
+		where e.sal >= 3000
+		order by e.deptno , e.empno asc;
+
+	3개 이상 조인은?
+		table2 t1 join table2 t2
+		on t1.col1 = t2.col1
+
+		join table3 t3	/* 위 조인 그룹을 다시 조인 */
+		on t2.col2 = t3.col1
+
+OUTER JOIN
+
+	외부조인.
+	(+) 기호를 쓰던 오라클 형식에서 left, right  키워드를 합한 outer join을 쓴다
+	왼쪽 외부조인
+		table t1 left outer join table t2
+		on (t1.col1 = t2.col1)
+	오른쪽 외부조인
+		table t1 right outer join table t2 
+		on (t1.col1 = t2.col1)
+
+	예제)
+		select 
+		    e1.empno
+		    ,e1.ename
+		    ,e1.mgr
+		    ,e2.empno as mgr_empno
+		    ,e2.ENAME as mgr_ename
+
+		from
+		    emp e1 left outer join emp e2 
+		    on (e1.mgr = e2.EMPNO)
+		    
+		order by e1.empno;
+
+FULL OUTER JOIN
+
+	오라클 sql 형식으로는 left out join 과 right outer join 출력 결과를 
+	union으로 합친 결과다
+
+	ansi 방법으로는 FULL OUTER JOIN ~ ON 형식으로 한번에 해결된다.
+
+	오라클형식)
+		select 
+		    e1.empno
+		    ,e1.ename
+		    ,e1.mgr
+		    ,e2.empno as mgr_empno
+		    ,e2.ENAME as mgr_ename
+
+		from
+		    emp e1 left outer join emp e2 
+		    on (e1.mgr = e2.EMPNO)
+
+		union
+
+		select 
+		    e1.empno
+		    ,e1.ename
+		    ,e1.mgr
+		    ,e2.empno as mgr_empno
+		    ,e2.ENAME as mgr_ename
+
+		from
+		    emp e1 right outer join emp e2 
+		    on (e1.mgr = e2.EMPNO);
+
+	ANSI/SQL-99형식)
+		
+		select 
+		    e1.empno
+		    ,e1.ename
+		    ,e1.mgr
+		    ,e2.empno as mgr_empno
+		    ,e2.ENAME as mgr_ename
+
+		from
+		    emp e1 full outer join emp e2 
+		    on (e1.mgr = e2.EMPNO)
+		    
+		order by e1.empno;
 	
