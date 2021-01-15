@@ -1,0 +1,91 @@
+
+메인쿼리와 서브쿼리로 구분하자
+예를 들어 이런 형식이다
+	select ename, sal from emp /* 메인 쿼리 */
+	where sal > (select sal from emp where ename='JONES') /* 서브쿼리 */
+
+특징
+	- 연산자와 같은 비교 또는 조회대상의 오른쪽에 놓이며 괄호()로 묶어서 사용
+	- 특수한 몇몇 경우를 제왼한 대부분의 서브쿼리에는 order by 절을 사용할 수 없다.
+	- 메인쿼리 (열,자료형)과 열갯수와 맞춰서 서브쿼리 열을 지정해야 한다.
+	- 연산자가 특정한 자료형과 1개의 자료만 필요할때 대입되는 서브쿼리도 같은 자료형과 단 1개의 행만 출력해야한다
+
+구분
+	단일행 서브쿼리, 다중행 서브쿼리로 나뉜다.
+
+단일행 서브쿼리
+	select * from emp e , dept d
+	where e.deptno = d.deptno
+	and e.sal > (select avg(sal) from emp);
+
+다중행 서브쿼리 와 연산자
+	IN : 메인 쿼리의의 데이터가 서브쿼리의 결과 중 하나라도 일치한 데이터가 있다면 true.
+	ANY,SOME : 메인 쿼리의 조건식을 만족하는 서브쿼리의 결과가 하나 이상히면 true.
+	ALL : 메인쿼리 조건식을 서브쿼리의 결과가 모두 만족해야 true.
+	EXISTS : 서브쿼리의 결과가 존재하면 (행이 1개이상이면) true.
+
+
+	IN 연산자
+		select * from emp
+		where sal in(
+		    select max(sal)
+		    from emp
+		    group by deptno);
+
+	ANY, SOME 연산자(둘은 같은 연산자)
+		아래 두개 쿼리는 같은 결과를 출력한다.
+		any < .. 와  any < max(col) 은 같음을 알 수 있다
+
+		/* any, some [ < , (max)]*/
+
+		select * from emp 
+		where sal < some(select sal from emp where deptno=30)
+		order by sal , empno;
+
+		select * from emp
+		where sal < (select max(sal) from emp where deptno=30)
+		order by sal , empno;
+
+		아래 두개 쿼리는 같은 결과를 출력한다.
+		any > .. 와  any > min(col) 은 같음을 알 수 있다
+
+		/* any, some  [ > , (min)] */
+		select * from emp
+		where sal > any(select sal from emp where deptno=30)
+		order by sal, empno;
+
+		select * from emp
+		where sal > (select min(sal) from emp where deptno=30)
+		order by sal, empno;
+
+	ALL 연산자
+		서브쿼리의 모든 결과가 조건식에 맞아 떨어져야만 true
+		select * from emp 
+		where sal < all(select sal from emp where deptno = 30);
+	
+		서브쿼리 결과(1600,1250,1250,2850,1500,950) 값들보다 작은 값, 
+		곧 950보다 작은 조건열의 행이 출력된다.
+
+	EXISTS 연산자
+		all or nothing
+		서브쿼리 결과가 한개라도 있으면 메인 쿼리 모두 출력, 없으면 출력 안함
+		만족하는 데이터가 있는지 없는지 검색할때 주로 사용된다.
+		count(*)로 존재여부를 체크하기 보단 이 방식이 효율이 더 좋다.
+		존재하면 바로 true 후 더 이상 세지 않고 반환 하는 듯..
+		
+		
+		select * from emp 
+		where exists(select dname from dept where deptno=50);
+
+		deptno=50 가 없으므로 아무것도 출력되지 않는다.
+
+		실무에서는 아래와 같은 형식을 많이 쓴다
+		데이터 존재여부만 빠르게 판단해야 경우에 주로 쓰인다.
+			
+			/* 많이 쓰이는 데이터 존재여부 체크 쿼리 : 외워라 */
+			select 1 as cnt from dual 
+			where exists(select dname from dept where deptno=50 );
+
+		서브쿼리 결과가 존재하면 1을 반환하고, 메인쿼리에서는 cnt 별칭의 1을 반환한다.
+		없으면 아무것도 반환하지 않는다. 
+		(속도 또한 존재 데이터 모두를 count 하는 방식이 아니므로 데이터가 많을 경우는 이 방식이 유리하다)
