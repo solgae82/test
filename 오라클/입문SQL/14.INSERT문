@@ -1,0 +1,64 @@
+
+테이블 복사 생성하기 (데이터 포함)
+	-테이블 구조 + 데이터까지 복사 된다
+	
+	create table dept_temp
+	as
+	select * from dept;
+
+	select * from dept_temp;
+
+
+테이블 복사 생성하기 (데이터 빼고)
+	- 테이블 구조 복사 만
+	create table dept_temp2
+	as
+	select * from dept where 1 <> 1;
+
+
+	select * from dept_temp2;
+	/* 데이터는 없다 */
+	
+
+기본 데이터 삽입
+	insert into dept_temp(deptno , dname, loc)
+	values(50, 'databases' , 'seoul');
+
+컬럼명 빼고 값만 삽입
+	- 컬럼순서와 자료형을 맞춰서 넣어줘야한다
+	insert into dept_temp values(60,'network' , 'busan');
+
+NULL 값 명시적으로 삽입
+	insert into dept_temp (deptno , dname , loc) 
+	values (70, 'web' , NULL);
+
+	insert into dept_temp (deptno , dname , loc) 
+	values (70, 'web' , ''); /* 이것도 NULL 처리로 입력된다 */
+
+
+NULL 값 묵시적으로 삽입
+	dname 컬럼을 빼고 넣기를 하면 기본 NULL 처리 상태로 행삽입 된다
+
+	insert into dept_temp (deptno , loc)
+	values ( 90 , 'Incheon');
+
+
+데이터 형식 넣기
+	- '2020-01-01' 또는 '2020/01/01'
+	- to_date('2020-01-01' , 'YYYY-MM-DD') /* 정석적인 방법 */
+
+	insert into emp_temp(empno, ename, job , mgr, hiredate, sal, comm, deptno)
+	values ( 9999 , '심청이2' , 'manager', 9999 , to_date(sysdate,'YYYY-MM-DD') , 4000, null, 10);
+
+서브쿼리를 이용한 데이터 넣기(이관쿼리에 쓰임)
+	- values 절은 상용하지 않는다
+	- 추가되는 테이블의 열개수와 서브쿼리 열개수가 일치해야 한다
+	- 추가되는 테이블의 열자료형과 서브쿼리 열자료형이 일치해야 한다
+
+	insert into emp_temp(empno , ename, job, mgr , hiredate , sal, comm , deptno) 
+	select e.empno , e.ename, e.job, e.mgr, e.hiredate , e.sal, e.COMM , e.DEPTNO 
+	from emp e , salgrade s
+	where 
+	    e.sal between s.LOSAL and s.HISAL 
+	    and
+	    s.grade = 1;
