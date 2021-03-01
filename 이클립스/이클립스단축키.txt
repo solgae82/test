@@ -1,0 +1,12 @@
+ctrl + / : 블록 지정한 열 한줄 주석 '//' on/off
+ctrl + shift + / : 블록 지정한 열 여러줄 주석 '/*.. */' 생성.
+ctrl + shift + \ : 여러줄 주석 '/*.. */'된 곳 블록 지정 후 삭제.
+
+ctrl + shift + o : 클래스 자동 import 
+ctrl + shift + f : 코드 자동 정렬
+ctrl + spacebar : 코드 어시스턴스
+alt + shif + r : 단어 블록 선택 후 단축키 누르면 한 파일내 같은 단어 동시에 변경가능.
+ctrl + shift + r : 전체 프로젝트내 파일 리소스 찾기
+
+ctrl + m : 에디터 전체 모드 on/off
+alt + shift + s : source 단축메뉴 열기 
