@@ -1,0 +1,175 @@
+특징
+	프로젝트 구조와 빌드단계가 정형화 되어 있다
+	중앙저장소 지원(템플릿 archetype, 의존 관계 라이브러리, 메이븐 플러그인 등 관리, 자동 다운로드)
+
+메이븐 버전 확인
+	mvn -v , mvn -version
+
+기본 자바프로젝트 생성
+
+	메이븐은 프로젝트 종류에 따라 미리 구조가 갖춰진 템플릿 프로젝트로 제공된다.
+	이 같은 기능을 'archetype(아키타입)' 이라 한다
+	archetype은 메이븐 중앙저장소에서 관리한다.
+
+	생성방법1. 옵션 설정으로 프로젝트 생성
+		mvn archetype:generate 
+		-DgroupId=com.solgae 
+		-DartifactId=myfirst 
+		-DarchtypeArtfactId=maven-archetype-quickstart 
+		-DinteractiveMode=false
+
+	생성방법2. 템플릿 프로젝트 생성
+		archetype 종류에 따라 카다로그를 선택 후 리스트를 보고 대화형 모드로 생성
+		
+		mvn archetype:generate -DarchetypeCatalog=internal
+		
+		카다로그
+		- internal : http://docs.codehaus.org/display/MAVENUSER/Archetypes+List' 에서 관리하는 목록
+		- local : 본인이 만든 아키타입 카다로그
+		- remote : 외부 사이트에서 제공하는 아키타입 카다로그.
+
+		직접 대화형으로 설정값들을 입력하며 생성하면 된다.
+
+
+	생성명령어로 'myfirst' 프로젝트 디렉토리가 생성되었을 것이고, 그 디렉토리 안에 pom.xml이 생겼을 것이다
+
+	pom.xml 내용을 보면,
+		<groupId>com.solgae</groupId>
+		<artifactId>myfirst</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<packaging>jar</packaging>
+		<name>myfirst</name>
+		<url>http://maven.apache.org</url>
+
+	등을 주목해 보면, 프로젝트 생성시 설정한 값들이다. 
+	packaging 값이 'jar' 인 것으로 볼때 일반 자바 애플리케이션 프로젝트이다.
+
+
+	생성된 디렉토리 구조
+		myfirst
+			-src
+				-main
+					-java
+						-com
+							-solgae
+				-test
+					-java
+						-com
+							-solgae
+
+			pom.xml
+
+메이븐 빌드 대략적인 기본
+	- 메이븐 명령은 option , goal, phase 조합으로 실행할 수 있다
+		mvn [options] [<goal(s)>] [<phase(s)>]
+
+	- 옵션(option)은 pom.xml이 없는 곳에서도 실행 가능.
+	- 골(goal)과 페이즈(phase)는 메이븐 기반 프로젝트 디렉토리에서 실행 가능.
+
+	- 사용가능 옵션 보기
+		mvn -help
+	- '-D' 옵션은 인자를 전달하는 접두어이다
+	  ex)단위테스트 실행 정지
+	  	mvn -Dmaven.test.skip=true
+
+	- 페이즈 와 골을 조합하여 빌드를 진행한다
+		mvn clean test : clean과 test페이즈를 실행
+		mvn clean compiler:compile : clean 페이즈 실행, compiler플러그인의 complile 골을 실행.
+		mvn -Dmaven.test.skip=true test : 옵션으로 단위테스트 실행 정지, test페이즈 실행.
+
+	- mvn test : 프로젝트 디렉토리에서 이 명령을 내리면 컴파일 및 테스트등의 빌드를 진행한다 
+
+메이븐 설정파일
+	setting.xml : 메이븐 빌드 툴 관련한 설정 파일
+			-MEVEN_HOME/conf/setting.xml 디렉토리에 기본 파일 위치
+			-사용자별로 다른 설정을 한다면 윈도우즈의 경우
+				USER_HOME/.m2/setting.xml 추가 설치 할 수 있다
+
+	pom.xml	: 메이븐 기반 프로젝트 설정 파일. 생성한 프로젝트 디렉토리 바로 안에 있다
+
+
+
+	로컬저장소 설정 : 
+		메이븐은 필요로 하는 의존관계 라이브러리, 플러그인등을 사용자 pc의 로컬 저장소에 다운로드 한다.
+		setting.xml > settings 태그 > localRepository 태그에 값을 설정할 수 있다.
+			ex) <localRepository>D:\repo</localRepository>
+
+		설정된 값이 없다면 윈도우즈 기본 값은 MEVEN_HOME/.m2/repository 디렉토리이다
+
+	
+pom.xml 
+	메이븐은 프로젝트 디렉토리 안의 pom.xml을 읽어들여 빌드를 진행한다.
+	다른 설정 파일로 빌드를 원할 경우 빌드시 -f , --file 옵션을 사용한다.
+
+		ex)mvn -f mypom.xml test 
+	
+	pom.xml 기본 카테고리 영역
+		-프로젝트 기본정보
+		-빌드설정
+		-프로젝트 관계 설정
+		-빌드환경
+
+	기본값 분석
+		<groupId>com.solgae</groupId>
+		<artifactId>myfirst</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<packaging>jar</packaging>
+		<name>myfirst</name>
+		<url>http://maven.apache.org</url>
+
+
+		groupId : 프로젝트 생성 조직 고유 아이디
+
+		artifactId : 프로젝트 식별 아이디 
+		packaging : jar, war, ear, pom 등
+		version : 프로젝트 버전명. 뒤에 접미사 'SNAPSHOT'은 메이븐 예약어이며,
+			'SNAPSHOT'이 붙으면 라이브러리를 다른 방식으로 관리한다.
+		name : 프로젝트 이름
+		url : 프로젝트 사이트가 있다면 site url등록.
+
+		메이븐을 중앙 저장소에 모든 프로젝트를 관리하기 때문에 이름 충돌이 없어야 한다.
+		'groupId' + 'artifactId' 아이디는 전세계적으로 유일해야 한다.
+
+
+	최상위 pom.xml 설정파일
+
+		pom.xml 파일은 상속 구조로 되어 있다.
+		최상위 pom.xml은 어디엔가? 있을 것이며, 
+		이 최상위 pom.xml을 생성한 프로젝트의 pom.xml이 상속 받는 구조로 되어있다.
+		
+		생성한 프로젝트 디렉토리에 안으로 들어가서 아래 명령어로 최상위 pom.xml 에 상속받은 설정된 값들을 확인 할 수 있다.
+			
+			mvn help:effective-pom
+
+		프로젝트 디렉토리의 pom.xml에는 없는 값들이 있을 것이다.
+		이 값들을 재정의 하고 싶다면, 해당 프로젝트 디렉토리의 pom.xml중 해당 태그들을 재정의 하면 된다.
+		기본 설정값이 아닌 플러그인의 설정값들은 plugins > plugin 태그 안에서 재정의 하면된다.
+			ex) 아래 예는 웹프로젝트(war)의 웹 자원 관리 디렉토리를 수정하는 예제이다
+			기본은 src/main/webapp 인데, 줄여서 webapp 디렉토리로 수정한다.
+			웹프로젝트 템플릿은 'maven-war-plugin' 플러그인을 쓴다.
+			<plugins>
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<configuration>
+						<warSourceDirectory>
+						wabapp
+						</warSourceDirectory>
+					</configuration>
+				</plugin>
+			<plugins>
+		하지만, 메이븐의 기본 빌드 라이프 사이클은 변경 할 수 없다.
+
+
+빌드 
+
+	간단한 빌드를 해보자
+
+		mvn package 명령어로 빌드하면 컴파일 , 테스트, war파일로 압축 진행한다.
+		메이븐의 빌드 산출물은 target 디렉토리이다.
+
+
+	메이븐 라이프사이클
+
+		빌드 라이프 사이클은 각 단계를 '페이즈(phase)'라고 한다.
+		'페이즈' 마다 플러그인들이 있으며, 플러그인은 pom.xml에서 플러그인 연결 후 사용한다.
+		'플러그인'의 각 실행 명령어들을 '골(goal)' 이라 한다
