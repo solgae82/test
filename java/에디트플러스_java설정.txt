@@ -26,18 +26,21 @@
 	디렉토리 : $(FileDir)
 	동작 : 출력내용 캡쳐
 
+	**
+	인수는 한칸 공백문자 입력 후 2개이상 설정 가능
+	ex) -d . -encoding UTF-8 $(FileName)
 자바 실행 설정
 	추가 > 프로그램 선택
 	
 	1. 기본 실행
-	메뉴제목 : javac
+	메뉴제목 : java
 	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\java.exe
 	인수 : $(FileNameNoExt)
 	디렉토리 : $(FileDir)
 	동작 : 출력내용 캡쳐
 
 	2. 인수 실행
-	메뉴제목 : javac
+	메뉴제목 : java
 	명령 : C:\Program Files\Java\jdk1.8.0_241\bin\java.exe
 	인수 : $(FileNameNoExt) $(Prompt)
 	디렉토리 : $(FileDir)
