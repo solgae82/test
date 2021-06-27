@@ -54,6 +54,8 @@ git add [파일명,.,*]
 	
 	git revert [git해쉬id]
 
+	tt
+
 
 
 
