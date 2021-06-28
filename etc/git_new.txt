@@ -1,4 +1,4 @@
-기본용어
+기본용어5
 -작업트리, working tree, working directory
 -stage, staging area
 -저장소, repository
@@ -54,7 +54,6 @@ git add [파일명,.,*]
 	
 	git revert [git해쉬id]
 
-	tt
 
 
 
