@@ -397,3 +397,141 @@
 		지역변수 : final
 
 - 다형성 (polymorphism)
+	
+	서로 상속관계인,
+	조상클래스 타입의 참조변수로 자손클래스의 인스턴스를 참조 할 수 있다.
+	
+		TV t = new CaptionTV();
+		또는 
+		TV t = (TV) new CaptionTV();
+
+	참조변수가 사용할 수 있는 멤버의 개수는 인스턴스의 멤버개수 보다 적거나 같아야 한다.
+	그러므로 반대의 경우인 자손클래스 타입의 참조변수로 조상클래스 인스턴스를 참조할 수는 없다.
+	
+	- 형변환
+		형변환은 참조변수 타입을 변경하는 것이지 인스턴스를 변경하는 것이 아니므로, 실제 인스턴스에 아무런 영향이 없다.	
+		
+		up-casting : 자손타입에서 조상타입으로 형변환, 생략가능
+			CaptionTV ct = new CaptionTV();
+			TV t = ct; //형변환 생략가능 , TV t = (TV)ct;
+		
+		down-casting : 조상타입에서 자손타입으로 형변환, 형변환 생략 불가능
+			TV t = new CaptionTV();
+			CaptionTV ct = (CaptionTV) t;
+
+		조상클래스 인스턴스를 자손타입 참조변수로 참조할 수 없기 때문에
+			TV t = new TV();
+			CaptionTV ct = (CaptionTV) t; // 에러..
+
+		위와 같은 형식으로 형변환을 할 수 없다. 실제 인스턴스를 기준으로 형변환이 가능한 것이다
+
+	- instanceOf
+		어떤 타입에 대한 instanceOf 결과가 true 라는 것은 그 타입으로 형변환이 가능하다는 것을 의미한다.
+		
+			CaptionTV ct = new CaptionTV();
+			if(ct instance CaptionTV){..}	// true
+			if(ct instance TV){..}		// true
+			if(ct instance Object){..}	// true
+
+	- 다형성 구현시 주의할 멤버변수
+		부모 또는 자식에 중복된 메서드(오버라이딩)는 실제 인스턴스의 메서드가 호출된다.
+		중복된 멤버변수는(static이든 인스턴스 멤버든) 참조변수 타입에 따라 호출변수가 달라진다.
+
+		class Parent{
+			int x = 100;
+			void print(String msg){	System.out.println("Parent:"+msg);}
+			void print2(){	
+				System.out.println("Parent 입니다");			
+			}
+		}
+		
+		class Child{
+			int x = 200;
+			void print(String msg){	System.out.println("Child:"+msg);}
+			void print2(){	
+				System.out.println("x=" + x);	
+				System.out.println("this.x=" + this.x);
+				System.out.println("super.x=" + super.x);
+			}
+		}
+
+		class Test{
+			public static void main(String[] args){
+				
+				Parent p = new Child();
+				Child c = new Child();
+
+				p.print("Hi");	// Child:Hello
+				c.print("Hello"); // Child:Hello
+
+				//--- 멤벼변수는 참조변수에 따라 참조되는 값이 다르다
+				System.out.println(p.x); // 100
+				System.out.println(c.x); // 200
+
+				//--- 메소드 안의 멤버변수는 실제 인스턴스 변수의 값을 따라간다
+				p.print2();
+					// x=200
+					// this.x=200
+					// super.x=100
+				c.print2();
+					// x=200
+					// this.x=200
+					// super.x=100
+			}
+		}
+
+		위와 같은 참조객체변수별로 달라지는 중복 멤버변수 문제 때문에 직접 접근하지 않고,
+		getter(), setter()로 멤버변수를 접근하는 것같다.(실제 인스턴스 값을 접근하기 위해)
+
+	- 매개변수 다형성
+		class Product{
+			int price;
+			int point;
+		}
+		class TV extends Product{}
+		class Computer extends Product{}
+		
+		class Buyer{
+			void buy(Product p){
+				..
+			}
+		}
+	- 배열 다형성
+		class Product{
+			int price;
+			int point;
+		}
+		class TV extends Product{}
+		class Computer extends Product{}
+		
+		class Buyer{
+
+			public static void main(Strings args[]){
+				Product p[] = new Product(2);
+				
+				p[0] = new TV();
+				p[1] = new Computer();
+			}
+		}
+
+- 추상 클래스, 메소드
+	미완성 클래스
+	상속 받아서 미구현된 메소드(추상메소드)를 구현하라고 강요하기 위한 클래스이다.
+	추상 메소드가 하나 이상 있으면 추상 클래스로 지정해야 한다
+	(하지만, 추상 메소드가 없어도 추상 클래스로 지정할 수 있다)
+	abstract 키워드를 사용한다
+	생성자, 멤버변수, (구현된)메서드도 구현에 포함할 수 있다. 일반 클래스와 다르지 않다
+	인스턴스로 만들 수는 없다.
+	참조변수로 사용할 수 있다.
+	상속해서 추상메소드를 모두 구현하면 일반 클래스가 된다.
+	상속 후 추상메소드들 중 하나라도 구현 안 된게 있다면 그 abstract 키워드로 다시 추상 클래스로 지정해야 한다.
+	
+	- abstract
+		사용가능 한 곳 : 클래스 , 메서드
+		
+		abstract class TV{
+			abstract void setPrice(int p); // {} 몸체가 없다
+		}
+
+- 인터페이스(Interface)
+	
