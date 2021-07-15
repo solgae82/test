@@ -535,3 +535,47 @@
 
 - 인터페이스(Interface)
 	
+
+	더 엄격한 일종의 추상클래스
+
+	오직 추상메서드와 상수변수 만 멤버로 가질 수 있다
+	모든 멤버변수는 public static final 이어야 한다. 생략 가능하지만, 컴파일러에 의해 자동으로 붙는다.
+	모든 메서드는 public abstract 이어야 한다. 생략 가능하지만, 컴파일러에 의해 자동으로 붙는다.
+	(JDK1.8 이상 부터 static 메소드, 디폴트(dufault 키워드를 사용하는) 메서드 추가되었는데 이 메소드들은 예외)
+
+	접근 제어자는 class와 똑같이 public ,(default)만 가능하다
+	interface 키워드로 정의하고 implements 로 구현한다.
+
+
+	- 인터페이스 구현
+		interface Able{
+			String HELLO = "Hi hello"; //pblic static final 이 앞에 자동으로 붙는다.
+			public static final NUM = 10;
+			public abstract print(String msg);
+			public abstract print2(String msg);
+		}
+		
+		class Ex implements Able{
+			public print(String msg){..}
+			public print2(String msg){..}
+		}
+
+		구현을 모두 못했을 경우 추상클래스가 된다
+			abstract class Ex implements Able{
+				public print(String msg){..}
+				// print2() 구현 못함
+			}
+
+		다른 클래스 상속과 구현을 동시에 할 수 있다
+			class Ex extends Unit implements Able{..}
+
+	- 인터페이스 상속
+
+		인터페이스끼리만 상속 가능하며, 다중상속 가능.
+		잍터페이스에는 클래스와는 달리 Object같은 최고 조상이 없다.
+
+			interface A{}
+			interface B{}
+			interface C extends A,B{}
+		
+	
