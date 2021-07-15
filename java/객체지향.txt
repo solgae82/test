@@ -522,7 +522,7 @@
 	abstract 키워드를 사용한다
 	생성자, 멤버변수, (구현된)메서드도 구현에 포함할 수 있다. 일반 클래스와 다르지 않다
 	인스턴스로 만들 수는 없다.
-	참조변수로 사용할 수 있다.
+	참조변수로 사용할 수 있다.(다형성 가능,매개변수 가능, 리턴타입등 가능)
 	상속해서 추상메소드를 모두 구현하면 일반 클래스가 된다.
 	상속 후 추상메소드들 중 하나라도 구현 안 된게 있다면 그 abstract 키워드로 다시 추상 클래스로 지정해야 한다.
 	
@@ -546,12 +546,17 @@
 	접근 제어자는 class와 똑같이 public ,(default)만 가능하다
 	interface 키워드로 정의하고 implements 로 구현한다.
 
+	인스턴스로 만들 수는 없다.
+	참조변수로 사용할 수 있다.(다형성 가능,매개변수 가능, 리턴타입등 가능)
+	추상메소드를 모두 구현하면 일반 클래스가 된다.
+	구현했는데 추상메소드들 중 하나라도 구현 안 된게 있다면 abstract 키워드로 다시 추상 클래스로 지정해야 한다.
+
 
 	- 인터페이스 구현
 		interface Able{
 			String HELLO = "Hi hello"; //pblic static final 이 앞에 자동으로 붙는다.
 			public static final NUM = 10;
-			public abstract print(String msg);
+			print(String msg); // public abstract 이 앞에 자동으로 붙는다.
 			public abstract print2(String msg);
 		}
 		
@@ -572,10 +577,69 @@
 	- 인터페이스 상속
 
 		인터페이스끼리만 상속 가능하며, 다중상속 가능.
-		잍터페이스에는 클래스와는 달리 Object같은 최고 조상이 없다.
-
+		
 			interface A{}
 			interface B{}
 			interface C extends A,B{}
-		
+
+		인터페이스에는 클래스와는 달리 Object같은 최고 조상이 없다. 
+		하지만, 클래스로 구현 객체화하면 Object 의 메소드를 사용할 수 있다..
+		클래스에 자동으로 extends Object가 붙는 법칙은 변하지 않는다.
+		다른 클래스를 상속하고, 동시에 인터페이스를 구현했더라도 마찬가지다
+		(다른 클래스가 Object를 상속했을 테니..)
+
+	- 인터페이스 장점
+		- 개발시간 단축
+		- 표준화 가능
+		- 서로 관계없는 클래스들을 간접으로 연결 해 줄 수 있다
+		- 독립적인 프로그래밍 가능		
 	
+	- static 메서드
+		JDK 1.8 부터 적용
+		구현된 static 메소드다
+		static 키워드만 있을 경우 public static이 된다.(public이 기본이고 생략가능)
+		클래스에서는 인스턴스에서도 접근 가능했지만, 인터페이스는 인터페이스명.메서드 로만 접근 가능
+			
+			interface A{
+				static void print(){ // public static 자동 변경됨
+					System.out.println("interface static");
+				}
+			}
+
+			class AImpl implements A{}
+
+			public static void main(String[] args){
+				A a = new AImpl();
+				a.print(); // 컴파일 에러
+
+				A.print(); // interface static
+			}
+
+	- 디폴트(default) 메서드
+		JDK 1.8 부터 적용
+		구현된 일반 메소드
+		원래 인터페이스 목적에는 구현의 강제성을 위해 추상 메소드만 허용했지만, 
+		구현 완료된 메서드의 상속 기능도 허용된 듯..
+		인터페이스에는 default 키워드를 메서드에 붙여서 구분. 자동으로 public default가 된다 (public이 기본이고 생략가능)
+
+			
+			interface A{
+				default void print2(){ // public default 자동 변경됨
+					System.out.println("interface default");
+				}
+			}
+
+			class AImpl implements A{}
+
+			public static void main(String[] args){
+				A a = new AImpl();
+				a.print2(); //interface default
+
+			}
+
+		-주의사항
+			1. 여러 인터페이스에 디폴트 메서드 간의 충돌 시
+				: 인터페이스를 구현한 클래스에서 디폴트 메서드를 오버라이딩 해야함
+				: 다중 인터페이스를 상속한 인터페이스일 경우 다중상속한 인터페이스에서 오버라이딩 해야함
+			2. 인터페이스 디폴트 메서드와 일반 조상클래스 동시 구현시 메서드 충돌 시
+				: 일반 조상클래스가 상속되고, 인터페이스 디폴트 메서드는 무시됨.
