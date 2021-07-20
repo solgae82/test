@@ -1,0 +1,28 @@
+기본 저장소 변경
+
+	setting.xml
+		메이븐 프로그램 관련 설정 파일이다
+		기본적으로 메이븐 root 디렉토리의 conf/setting.xml에 위치해 있다
+			D:\maven\conf\setting.xml
+		또한 컴퓨터 사용자별로 설정 덮어쓰기가 가능한데 , 윈도우즈의 경우
+			사용자 디렉토리\.m2\
+		디렉토리에 setting.xml을 복사해서 넣고, 그 파일로 설정해도 된다
+
+		메이븐 설치 디렉토리\setting.xml 보다 사용자 디렉토리\.m2\setting.xml 값이  우선한다
+	
+	어떻게 설정하든 그 setting.xml 파일에서 로컬저장소를 변경하면 된다
+	setting.xml에 설정 되어 있지 않다면 기본 Maven Repository 설정은, 
+		${user.home}/.m2/repository
+	으로 고정되어 있을 것이다.
+	
+	이것을 내가 원하는 곳으로 변경하는 것이다
+	setting.xml 파일을 열고 <localRepository>..</localRepository> 태그를 찾아 변경 원하는 곳의 값을 넣는다
+		<localRepository>D:\mavenRepository</localRepository>
+	
+	이클립스를 사용한다면,
+		window>Preference>Maven>User Settings>User Settings
+		란에 변경한 setting.xml을 구성파일로 설정하면
+
+		아래란에 있는 Local Repository 값이 setting.xml의 <localRepository> 값으로 변경되는 것을 확인할 수 있다
+	
+	앞으로 메이븐으로 받는 플러그인, 라이브러리등이 이곳으로 다운로드 될 것이고, 배포할 jar,war등도 이곳에 배포된다.
