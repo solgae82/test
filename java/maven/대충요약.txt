@@ -1,0 +1,56 @@
+메이븐 + 이클립스 정리
+
+빌드?
+ 컴파일 + 테스트 + 패키징 + 인스톨 + 배포 + 문서화 등을 빌드라고 하는 듯.
+
+
+빌드 라이프사이클 
+미리 정의된 빌드순서를 Maven 라이프사이클 이라고 한다
+각 빌드 단계를  Phase 라고 한다
+
+phase > plug-in > goal 의 구조로 이루어져 있음.
+각 phase는 plug-in이 있을 수도 있고 없을 수도 있다.
+plug-in은 내부적으로 다수의 goal이 있다.
+
+ex) 이클립스  프로젝트 > Run as 를 선택하면 이런 빌드 단계들을 볼 수 있다.
+	대략 살펴보면..
+
+	Maven build : 메이븐 빌드를 실행한다.
+	Maven build.... : 새로운 사용자 빌드를 만든다.
+	Maven clean : target에 지정된 모든 소스를 삭제한다.
+	Maven generate-sources : 컴파일 과정에 포함될 소스를 생성한다.
+	Maven install : Local Repository에 패키지를 복사한다.
+
+
+
+이클립스에서 메이븐 사용 Tip
+
+메이븐 pom.xml설정이 바뀌었다면, 프로젝트 >  Maven > Update project 을 실행해준다.
+
+라이브러리 오류시
+
+
+	이클립스 닫고 
+	로컬 리포지터리 삭제
+	다시 이클립스 실행 (새로 라이브러리 다운로드 받음)
+
+
+리포지터리 인덱스를 미리 만들어 놓으면 검색으로 플러그인을 추가할 수도 있다(시간이 엄청 오래 걸림)
+
+내가 만든 라이브러리도 로컬 리포지터리에 설치할 수 있다.
+	Run As >  maven install
+
+내가 만든 라이브러리를 중앙 리포지터리에 배포시
+	Run As > maven deploy
+
+이클립스 setting.xml 만들고 로컬 리포지터리 변경하기
+
+	setting.xml 만들고 
+		<localRepository>D:\sts-4.5.1.RELEASE\repository</localRepository>
+		
+		설정 후
+		이클립스 
+		
+		window > preferences > Maven > User Settings
+			User Settings : 만든 settings.xml 파일 연결
+
