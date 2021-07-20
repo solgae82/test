@@ -7,7 +7,7 @@
 
 기본 자바프로젝트 생성
 
-	메이븐은 프로젝트 종류에 따라 미리 구조가 갖춰진 템플릿 프로젝트로 제공된다.
+	메이븐은 프로젝트 종류에 따라 미리 구조가 갖춰진 템플릿 프로젝트가 제공된다.
 	이 같은 기능을 'archetype(아키타입)' 이라 한다
 	archetype은 메이븐 중앙저장소에서 관리한다.
 
@@ -24,7 +24,7 @@
 		mvn archetype:generate -DarchetypeCatalog=internal
 		
 		카다로그
-		- internal : http://docs.codehaus.org/display/MAVENUSER/Archetypes+List' 에서 관리하는 목록
+		- internal : 'http://docs.codehaus.org/display/MAVENUSER/Archetypes+List' 에서 관리하는 목록
 		- local : 본인이 만든 아키타입 카다로그
 		- remote : 외부 사이트에서 제공하는 아키타입 카다로그.
 
@@ -85,18 +85,15 @@
 			-사용자별로 다른 설정을 한다면 윈도우즈의 경우
 				USER_HOME/.m2/setting.xml 추가 설치 할 수 있다
 
+			로컬저장소 설정 : 
+			메이븐은 필요로 하는 의존관계 라이브러리, 플러그인등을 사용자 pc의 로컬 저장소에 다운로드 한다.
+			setting.xml > settings 태그 > localRepository 태그에 값을 설정할 수 있다.
+				ex) <localRepository>D:\repo</localRepository>
+
+			설정된 값이 없다면 윈도우즈 기본 값은 MEVEN_HOME/.m2/repository 디렉토리이다
+
 	pom.xml	: 메이븐 기반 프로젝트 설정 파일. 생성한 프로젝트 디렉토리 바로 안에 있다
 
-
-
-	로컬저장소 설정 : 
-		메이븐은 필요로 하는 의존관계 라이브러리, 플러그인등을 사용자 pc의 로컬 저장소에 다운로드 한다.
-		setting.xml > settings 태그 > localRepository 태그에 값을 설정할 수 있다.
-			ex) <localRepository>D:\repo</localRepository>
-
-		설정된 값이 없다면 윈도우즈 기본 값은 MEVEN_HOME/.m2/repository 디렉토리이다
-
-	
 pom.xml 
 	메이븐은 프로젝트 디렉토리 안의 pom.xml을 읽어들여 빌드를 진행한다.
 	다른 설정 파일로 빌드를 원할 경우 빌드시 -f , --file 옵션을 사용한다.
@@ -118,14 +115,18 @@ pom.xml
 		<url>http://maven.apache.org</url>
 
 
-		groupId : 프로젝트 생성 조직 고유 아이디
+		- groupId : 프로젝트 생성 조직 고유 아이디
 
-		artifactId : 프로젝트 식별 아이디 
-		packaging : jar, war, ear, pom 등
-		version : 프로젝트 버전명. 뒤에 접미사 'SNAPSHOT'은 메이븐 예약어이며,
+		- artifactId : 프로젝트 식별 아이디 
+
+		- version : 프로젝트 버전명. 뒤에 접미사 'SNAPSHOT'은 메이븐 예약어이며,
 			'SNAPSHOT'이 붙으면 라이브러리를 다른 방식으로 관리한다.
-		name : 프로젝트 이름
-		url : 프로젝트 사이트가 있다면 site url등록.
+		
+		- packaging : jar, war, ear, pom 등
+		
+		- name : 프로젝트 이름
+		
+		- url : 프로젝트 사이트가 있다면 site url등록.
 
 		메이븐을 중앙 저장소에 모든 프로젝트를 관리하기 때문에 이름 충돌이 없어야 한다.
 		'groupId' + 'artifactId' 아이디는 전세계적으로 유일해야 한다.
@@ -135,7 +136,7 @@ pom.xml
 
 		pom.xml 파일은 상속 구조로 되어 있다.
 		최상위 pom.xml은 어디엔가? 있을 것이며, 
-		이 최상위 pom.xml을 생성한 프로젝트의 pom.xml이 상속 받는 구조로 되어있다.
+		이 최상위 pom.xml을, 생성한 프로젝트의 pom.xml이 상속 받는 구조로 되어있다.
 		
 		생성한 프로젝트 디렉토리에 안으로 들어가서 아래 명령어로 최상위 pom.xml 에 상속받은 설정된 값들을 확인 할 수 있다.
 			
@@ -144,6 +145,7 @@ pom.xml
 		프로젝트 디렉토리의 pom.xml에는 없는 값들이 있을 것이다.
 		이 값들을 재정의 하고 싶다면, 해당 프로젝트 디렉토리의 pom.xml중 해당 태그들을 재정의 하면 된다.
 		기본 설정값이 아닌 플러그인의 설정값들은 plugins > plugin 태그 안에서 재정의 하면된다.
+
 			ex) 아래 예는 웹프로젝트(war)의 웹 자원 관리 디렉토리를 수정하는 예제이다
 			기본은 src/main/webapp 인데, 줄여서 webapp 디렉토리로 수정한다.
 			웹프로젝트 템플릿은 'maven-war-plugin' 플러그인을 쓴다.
@@ -157,17 +159,18 @@ pom.xml
 					</configuration>
 				</plugin>
 			<plugins>
+
 		하지만, 메이븐의 기본 빌드 라이프 사이클은 변경 할 수 없다.
 
 
 빌드 
 
-	간단한 빌드를 해보자
+	- 간단한 빌드를 해보자
 
 		mvn package (페이즈명령어)로 빌드하면 컴파일 , 테스트, war파일로 압축 진행한다.
 		메이븐의 빌드 산출물은 target 디렉토리이다.
 	
-	페이즈(phase), 플러그인, 골(goal)
+	- 페이즈(phase), 플러그인, 골(goal)
 		빌드 라이프 사이클은 각 단계를 '페이즈(phase)'라고 한다.
 		'페이즈' 마다 플러그인들이 있으며, 플러그인은 pom.xml에서 플러그인 연결 후 사용한다.
 		'플러그인'의 각 실행 명령어들을 '골(goal)' 이라 한다
@@ -178,9 +181,9 @@ pom.xml
 
 		예를 들어 complile 페이즈를 실행해보자
 
-		mvn compile
+			mvn compile
 
-		이 페이즈를 실행하면 'compile'페이즈에 연결된 'compiler' 플러그인의 'compile'골이 실행된다.
+		이 페이즈를 실행하면 'compile' 페이즈에 연결된 'compiler' 플러그인의 'compile'골이 실행된다.
 
 		이 플러그인을 직접 명령어로 실행할 수도 있다
 		플러그인을 직접 실행하는 명령어 형식은 다음과 같다
@@ -218,14 +221,15 @@ pom.xml
 		플러그인을 실행 시키는 것이 된다.
 					
 			mvn compile  # compile 페이즈 실행 (=compiler:compile)
+			(==)
+			mvn compiler:compile #compiler 플러그인의 compile 골 실행
 
 
 		메이븐에서 모든 실행 명령은 플러그인 명령어이다.
 		위에서 프로젝트 생성시 사용했던 명령어도 사실은 플러그인의 골을 실행 시킨 것이다
 			mvn archetype:generate # 'maven-archetype-plugin' 플러그인의 'generate' 골 실행
 
-	메이븐 라이프사이클
-	
+	- 메이븐 라이프사이클	
 		
 		메이븐 라이프사이클은 크게 3가지로 나뉜다
 		-기본 라이프 사이클
@@ -237,21 +241,21 @@ pom.xml
 
 		3가지 카테고리 별로 자세한 페이즈는 다음과 같다
 
-		- 기본 라이프 사이클 페이즈
-			mvn process-resource : 자원 복사
-			mvn compile : 소스 코드 컴파일
-			mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
-			mvn package : jar, war, ear 등으로 압축
-			mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
-			mvn deply : 원격저장소에 압축파일 배포
-			
-		- clean 라이프 사이클 페이즈
-			mvn clean : 이전에 빌드한 산출물을 모두 삭제. target 디렉토리 모두 삭제
+			- 기본 라이프 사이클 페이즈
+				mvn process-resource : 자원 복사
+				mvn compile : 소스 코드 컴파일
+				mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
+				mvn package : jar, war, ear 등으로 압축
+				mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
+				mvn deploy : 원격저장소에 압축파일 배포
+				
+			- clean 라이프 사이클 페이즈
+				mvn clean : 이전에 빌드한 산출물을 모두 삭제. target 디렉토리 모두 삭제
 
-		- site 라이프 사이클 페이즈
+			- site 라이프 사이클 페이즈
 
-			mvn site : 빌드 후 문서 사이트 생성, target/site 디렉토리에 생성.
-			mvn site-deploy : 빌드 후 새성한 문서사이트를 서버에 배포.
+				mvn site : 빌드 후 문서 사이트 생성, target/site 디렉토리에 생성.
+				mvn site-deploy : 빌드 후 새성한 문서사이트를 서버에 배포.
 
 		- 기본 라이프 사이클 페이즈 => 플러그인 (좀더 상세히 보기)
 		
