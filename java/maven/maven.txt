@@ -144,21 +144,26 @@ pom.xml
 
 		프로젝트 디렉토리의 pom.xml에는 없는 값들이 있을 것이다.
 		이 값들을 재정의 하고 싶다면, 해당 프로젝트 디렉토리의 pom.xml중 해당 태그들을 재정의 하면 된다.
-		기본 설정값이 아닌 플러그인의 설정값들은 plugins > plugin 태그 안에서 재정의 하면된다.
+		기본 설정값이 아닌 플러그인의 설정값들은 해당 프로젝트 pom.xml build > plugins > plugin 태그 안에서 재정의 하면된다.
 
 			ex) 아래 예는 웹프로젝트(war)의 웹 자원 관리 디렉토리를 수정하는 예제이다
 			기본은 src/main/webapp 인데, 줄여서 webapp 디렉토리로 수정한다.
 			웹프로젝트 템플릿은 'maven-war-plugin' 플러그인을 쓴다.
-			<plugins>
-				<plugin>
-					<artifactId>maven-war-plugin</artifactId>
-					<configuration>
-						<warSourceDirectory>
-						wabapp
-						</warSourceDirectory>
-					</configuration>
-				</plugin>
-			<plugins>
+			-----------------pom.xml
+			<xml>
+				<build>
+					<plugins>
+						<plugin>
+							<artifactId>maven-war-plugin</artifactId>
+							<configuration>
+								<warSourceDirectory>
+								wabapp
+								</warSourceDirectory>
+							</configuration>
+						</plugin>
+					<plugins>
+				<build>
+			<xml>
 
 		하지만, 메이븐의 기본 빌드 라이프 사이클은 변경 할 수 없다.
 
@@ -239,15 +244,22 @@ pom.xml
 		메이븐의 기본페이즈에 연결되어 있는 플러그인은 메이븐 중앙저장소에서 자동 다운로드한다.
 		따라서 빌드할때 추가적인 설정을 하지 않아도 된다.
 
-		3가지 카테고리 별로 자세한 페이즈는 다음과 같다
+		3가지 라이프사이클 별로 페이즈는 대략 다음과 같다
 
 			- 기본 라이프 사이클 페이즈
-				mvn process-resource : 자원 복사
-				mvn compile : 소스 코드 컴파일
-				mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
-				mvn package : jar, war, ear 등으로 압축
-				mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
-				mvn deploy : 원격저장소에 압축파일 배포
+			기본 라이프 사이클의 페이즈들은 순서대로 의존관계를 가지며, 특정 페이즈를 실행하면 의존관계에 있는 
+			페이즈를 실행하고 해당 실행 페이즈를 실행한다.
+			아래는 페이즈이 순서를 나타내며 서로 의존 관계로 연결되어 있다
+			mvn test 를 실행하면
+			process-resource -> compile -> test 페이즈 식으로 서론 의존관계 페이즈를 실행한다
+			
+				
+				1. mvn process-resource : 자원 복사
+				2. mvn compile : 소스 코드 컴파일
+				3. mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
+				4. mvn package : jar, war, ear 등으로 압축
+				5. mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
+				6. mvn deploy : 원격저장소에 압축파일 배포
 				
 			- clean 라이프 사이클 페이즈
 				mvn clean : 이전에 빌드한 산출물을 모두 삭제. target 디렉토리 모두 삭제
@@ -257,27 +269,90 @@ pom.xml
 				mvn site : 빌드 후 문서 사이트 생성, target/site 디렉토리에 생성.
 				mvn site-deploy : 빌드 후 새성한 문서사이트를 서버에 배포.
 
-		- 기본 라이프 사이클 페이즈 => 플러그인 (좀더 상세히 보기)
+		기본 라이프 사이클 페이즈 => 플러그인 (좀더 상세히 보기)
 		
-			process-resource => resources:resources
-			compile => compiler:compile
-			process-classes
-			process-test-resources => resources:testResources
-			test-compile => compiler:testCompile
-			test => surefire:test
-			prepare-package
-			package => jar:jar
+				process-resource => resources:resources
+				compile => compiler:compile
+				process-classes
+				process-test-resources => resources:testResources
+				test-compile => compiler:testCompile
+				test => surefire:test
+				prepare-package
+				package => jar:jar
 
+				- process-resource
+					resources 플러그인의 resources 골이 
+					src/main/resources 디렉토리 의 모든 자원들을 target/classes로 복사
 
-			process-resource
-				resources 플러그인의 resources 골이 
-				src/main/resources 디렉토리 의 모든 자원들을 target/classes로 복사
-
-
-			compile => compiler:compile
+				- compile
+					compiler 플러그인의 compile 골이
+					src/main/java 의 모든 자바소스를 target/classes에 컴파일
 				
-				compiler 플러그인의 compile 골이
-				src/main/java 의 모드 자바소스를 target/classes에 컴파일
+				- process-test-resources
+					resources 플러그인의 testResources 골이
+					src/test/resources 디렉토리의 모든 자원들을 target/test-classes로 복사
+				
+				- test-compile
+					src/test/java 의 모든 자바소스를 자바소스를 target/test-classes에 컴파일
 
-			
-		
+				- test
+					targer/test-classes 의 모든 클래스파일을 단위 테스트 실행 하고,
+					테스트 결과를 target/surefire-reports 디렉토리에 파일로 생성
+					
+					테스트에 실패하면 빌드 진행을 멈춘다. 하지만,
+					테스트를 건너 뛰거나 특정 클래스만 실행한다든지 등을 설정 할수 있다 
+					 
+					# HelloTest 클래스만 테스트
+						mvn -Dtest=HelloTest test
+
+					# HelloTest 와 HelloTest2 클래스만 테스트
+						mvn -Dtest=HelloTest,HelloTest2 test 
+
+					# 테스트 건너뛰기(실행하지 않기)
+						mvn -Dmaven.test.skip=true test
+
+					# pom.xml에 테스트 건너뛰기 지정하기
+							
+						<!-- properties 에서 지정하기 -->
+						<properties>
+							<maven.test.skip>true</maven.test.skip>
+						</properties>
+						또는
+						<!-- surefire 플러그인에 설정하기도 가능 -->
+						<plugin>
+							..
+							<configuration>
+								<skipTests>true</skipTests>
+							</configuration>
+						</plugin>
+				
+						<!-- 테스트 실패하더라도 빌든 단계 진행시키기 -->
+						<plugin>
+							..
+							<configuration>
+								<testFailureIgnore>true</testFailureIgnore>
+							</configuration>
+						</plugin>
+				- package
+					pom.xml 의 <packaging /> 값인 jar,war,ear등으로 프로젝트를 빌드 후 압축한다
+					pom.xml 의 <finalName />값이 파일명이 되며, 해당 태그가 지정되어 있지 않다면,
+						${artifactId}-${version}.${packaging} 
+					형식의 파일명으로 지정되어서 target 디렉토리 아래에 생성된다.
+						예)
+							- target
+							wikibook.jar
+							또는 
+							wikibook-1.0-SNAPSHOT.jar 
+
+				- install OR deploy
+					mvn install #로컬저장소에 pakaging한 파일(.jar.war등)을 배포한다
+					mvn deploy  #외부저장소에 pakaging한 파일(.jar.war등)을 배포한다
+
+			clean 라이프 사이클 페이즈
+				mvn clean 을 실행하면 target 디렉토리가 삭제된다. 다른 페이즈등과 연관 없다.
+				mvn clean test  등으로 새 빌드시마다 같이 실행하는 경우가 많다.
+
+			clean 라이프 사이클 페이즈
+				site , site-deploy 가 있다.
+				빌드 리포트등의 결과물 사이트를 생성
+				
