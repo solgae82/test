@@ -356,3 +356,248 @@ pom.xml
 				site , site-deploy 가 있다.
 				빌드 리포트등의 결과물 사이트를 생성
 				
+의존성 라이브러리 관리
+
+	저장소 종류
+		
+		- 로컬 저장소 : 
+			메이븐 설치된 pc의 로컬 저장소
+			기본 설정시 ${USER_HOME}/.m2/repository
+
+		- 원격 저장소 :
+			- 중앙 저장소 : 
+				메이븐 중앙 저장소. 오픈소스 라이브러리, 플러그인, 아키타입을 관리하는 곳
+				개발자가 임의로 라이브러리 배포할 수 없다.
+			- 사내원격저장소 : 프로젝트 하는 장소에 설치해서 사용하는 형태
+			- 외부(공개)원격저장소 : 유명 라이브러리등을 제공하는 사이트등이 제공하는 공개 저장소
+
+	저장소 설정
+		<repository> Element에서 설정.
+		<id> , <name>, <url> 설정하면 된다.
+
+		저장소가 설정된 순서대로 다운로드 되고, 다운로드 되었다면 다음 저장소에 접근하지 않는다.
+		메이븐 기본 부모 pom.xml에 이미 설정된 메이븐 중앙저장소 값이 있다.
+
+
+	라이브러리 설정 관리 
+
+
+		pom.mxl : 
+			<dependencies>
+				<!-- junit 설정 -->
+				<dependency>
+					<groupId>junit<groupId>
+					<artifactId>junit<artifactId>
+					<version>3.8.1<version>
+					<scope>test</scope>
+				</dependency>
+				..
+			</dependencies>
+
+	
+		
+		작동 과정 : 
+			빌드 명령어 실행(mvn compile, test, package, install등)
+			중앙저장소 junit 3.8.1 버전 검색
+				http://repository_url/groupId/artifactId/version/${artifactId}-${version}.jar 파일 다운로드
+			로컬저장소에 다운로드(중앙저장소 형식과 똑같은 디렉토리 생성 후 받는다)
+				${USER_HOME}/.m2/repository/artifactId/version/${artifactId}-${version}.jar
+			groupId 가 "com.solgae" 같은 형식의 도메인일 경우 '.'을 기준으로 디렉토리 생성되고 다운로드.
+				com/solgae/version/${artifactId}-${version}.jar
+			다운로드 뿐만이 아니라 'maven install' 명령어등으로 배포시에도 같은 작동 방식이 적용되어 배포된다.
+
+		라이브러리 검색
+
+			직접 메이븐 리포지터리(http://repo1.maven.org/maven2/junit/junit)에 접속해서 검색해도 되지만,
+			대부분 구글 -> maven 라이브러리명으로 검색 또는..
+			메이븐 검색 사이트인 mvnrepository.com 에 접속해서 검색하고픈 라이브러리 검색
+			하는 것이 편리하다
+		
+		version 범위 지정
+			(,) : 해당 버전을 제외
+			[,] : 해당 버전을 포함
+				
+
+				ex) <version>[3.8,4.8)</version>
+				(3.8 과 같거나 크고 4.8보다 작은 범위의 라이브러리 중 최신버전과 의존관계 형성) 
+
+			<version>LATEST</version> , <version>RELEASE</version>
+				: 항상 로컬저장소와 메이븐 저장소를 검색해 로컬버전보다 최신버전이 있다면, 최신으로 다운로드
+				(항상 최신 버전을 받기 때문에, 개발 중 바뀐 버전으로 인해 에러를 만날 확률이 높다)
+
+			SNAPSHOT :
+				버전명에 SNAPSHOT 이라는 단어가 포함할 경우 
+				현재 개발버전임인 라이브러리를 뜻하고 처리 프로세스도 달라진다
+				예를 들어 아래처럼 1.0-SNAPSHOT 이라고 한다면
+					
+					<version>1.0-SNAPSHOT</version>
+				
+				1.0버전이 현재 개발중임을 뜻하고, 저장소에 1.0-SNAPSHOT 있다는 것은
+				계속 개발 중이라 어제와 오늘의 1.0-SNAPSHOT 버전은 같아도 
+				내용은 업데이트가 되었을 수도 있다는 것을 암시한다(개발중이므로).
+				실제로 버전 + 년도,날짜 시간등이 붙은 파일명이 되는 것같다..
+				이렇게 자잘하게 계속 업데이트 되는 버전을 , 
+				pom.xml 의 snapshots 태그 업데이트 정책 설정을 통해
+
+					<repositories>
+						<snapshots>
+							<enable>true</enable>
+							<updatePolicy>
+							always ,daily interval, never 등등
+							</updatePolicy>
+						</snapshots>
+					</repositories>
+
+				항상 가져오기, 매일, 일정 시간(분 설정), 아예 업데이트 하지 않기 등 
+				업데이트 빈도수를 정할 수 있는 것같다
+
+		의존 라이브러리 스코프
+			예제:
+			<dependency>
+				..
+				<scope>test</scope>
+			</dependency>
+			
+			* compile : 
+				(default)
+				컴파일(필요), 배포(필요)
+			* provided : 
+				컴파일(필요), 배포(불필요)
+				예로 servlet.jar는 was에서 제공된다
+
+			* runtime : 
+				컴파일(불필요), 배포(필요)
+				실행시(실행, test) 필요한 옵션
+
+			* test : 테스트 컴파일과 테스트 실행 시점에만 사용됨.
+
+
+			* system :
+				컴파일(필요), 배포(불필요)
+				provided 와 같지만 라이브러리 제공은 직접 해줘야함(maven이 관리해주지 않음)
+				명시적으로 라이브러리가 있는 시스템 경로를 적어 줘야 함. 
+				예) D:\jar\junit.jar
+
+
+			* import (Maven 2.0.9 이후에서만 적용) : 
+				다른 pom 설정파일에서 정의되어 있는 의존 관계를 이 프로젝트로 가져옵니다.
+				이 영역은 <dependencyManagement>에서만 pom의 의존관계에 대해서 사용됨. 
+				(<dependency /> 태그의 <scope / > 에서는 사용안됨)
+
+				<dependencyManagement>
+				    <dependencies>
+					<dependency>
+					    <groupId>com.fasterxml.jackson</groupId>
+					    <artifactId>jackson-bom</artifactId>
+					    <version>2.9.0</version>
+					    <scope>import</scope>
+					    <type>pom</type>
+					</dependency>
+				    </dependencies>
+				</dependencyManagement>
+		
+		의존 라이브러리 프로젝트로 복사
+			메이븐 저장소에 있는 라이브러리를 프로젝트로 복사하는 플러그인 명령어
+				
+				mvn clean dependency:copy-dependencies package
+				(target/dependency 디레토리에 복사 된다)
+			
+
+		의존성 전이 
+
+			의존성 중개(dependency mediation)
+				버전이 다른 두 개의 라이브러리가 의존 관계에 있다면 메이븐은 더 가까운 의존 관계에 있는 pom 설정 버전과 의존 관계를 가진다.
+				A->B->C->D 2.0 버전, A->E->D 1.0 버전의 의존관계가 있을 경우, A프로젝트는 D 1.0 버전과 의존 관계를 가진다. (2.0을 사용하고 싶을 경우, 명확하게 의존 관계를 명시해야 한다.)
+
+			의존성 관리(dependency management)
+				메이븐 설정파일인 <dependencyManagement/>엘리먼트에 의존 관계에 있는 라이브러리와 버전을 명시적으로 정의한다.
+				앞의 예에서 A 프로젝트에서 D라이브러리의 2.0버전을 사용한다고 <dependencyManagement/>에 설정할 수 있다.
+			
+			의존성 스코프(dependency scope)
+				현재 빌드 상태에 맞는 라이브러리인 경우 의존 관계를 갖는다. (<scope/> 참고)
+			
+			의존성 예외(excluded dependencies)
+				의존 관계에 있는 라이브러리를 <exclusion/> 엘리먼트를 활용하여 명시적으로 제외시킬 수 있다.
+			
+			선택적 의존성(optional dependencies)
+				A->B->C와 같은 구조로 의존 관계를 가지는 경우 
+				B 프로젝트에 C가 optional로 설정되어 있다면, 
+				A 프로젝트를 빌드 할 때 C는 의존 관계를 가지지 않도록 설정하는 기능이다. 
+				<optional/> 엘리먼트를 활용하여 설정할 수 있다.
+
+
+		의존성 라이브러리 구조 파악
+
+			mvn dependency:tree
+
+		의존성 스코프와 의존성 전이와의 관계
+
+			라이브러리 구조 
+				A -> B -> C
+
+			
+			A->B:compile +  B->C:compile = A->C의 의존관계는, compile
+			A->B:compile +  B->C:provided = A->C의 의존관계는, 관계 없음(제외)
+			A->B:compile +  B->C:runtime = A->C의 의존관계는, runtime
+			A->B:compile +  B->C:test = A->C의 의존관계는, 관계 없음(제외)
+
+			A->B:provided +  B->C:compile = A->C의 의존관계는, provided
+			A->B:provided +  B->C:provided = A->C의 의존관계는, provided
+			A->B:provided +  B->C:runtime = A->C의 의존관계는, provided
+			A->B:provided +  B->C:test = A->C의 의존관계는, 관계 없음(제외)
+
+			A->B:runtime +  B->C:compile = A->C의 의존관계는, runtime
+			A->B:runtime +  B->C:provided = A->C의 의존관계는, 관계 없음(제외)
+			A->B:runtime +  B->C:runtime = A->C의 의존관계는, runtime
+			A->B:runtime +  B->C:test = A->C의 의존관계는, 관계 없음(제외)
+
+			A->B:test +  B->C:compile = A->C의 의존관계는, test
+			A->B:test +  B->C:provided = A->C의 의존관계는, 관계 없음(제외)
+			A->B:test +  B->C:runtime = A->C의 의존관계는, test
+			A->B:test +  B->C:test = A->C의 의존관계는, 관계 없음(제외)
+		
+
+속성
+	propertiies 속성
+		pom.xml에서 <propertiies/> 요소에 설정해서 쓰는 변수명 같은 속성 
+	
+		<propertiies>
+			<spring.version>3.0.1</spring.version>
+		</properties>
+		..
+		<dependency>
+			..
+			<version>${spring.version}</version>
+		</dependency>
+
+	pom/project 속성
+		pom.xml에 쓰는 속성
+		pom , project 은 같은 속성명이지만 pom은 최신버전에서는 안씀(3.0 이상)
+		
+		${project.build.directory} : target 디렉토리
+		${project.build.outputDirectory} : target/classes 디렉토리
+		${project.name} : <project>/<name> 설정값
+		${project.version} , ${version} : <project>/<version> 설정값
+		${project.build.finalName} : <project>/<build>/<finalName> 설정값
+
+	
+	settings 속성
+		settings.xml 에 쓰는 속성
+
+		${settings.localRepository} : 로컬 저장소 경로 참소
+
+	env 속성
+		시스템 환경변수 참조
+
+		${env.PATH} : 시스템의 PATH 설정값 참조
+		${env.JAVA_HOME} 시스템 JAVA_HOME 설정 값을 참조
+
+	자바 시스템 속성
+		메이븐은 자바 시스템 속성으로 설정된 모든 속성을 참조할 수 있다.
+		예를 들어 ${basedir} 같은 것이다
+
+		${basedir} : pom.xml 설정 파일이 위치하는 디렉토리
+
+	
+		
+		
