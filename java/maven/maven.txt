@@ -597,7 +597,4 @@ pom.xml
 		예를 들어 ${basedir} 같은 것이다
 
 		${basedir} : pom.xml 설정 파일이 위치하는 디렉토리
-
 	
-		
-		
