@@ -191,12 +191,13 @@
 	내부 클래스 인스턴스에서 외부 클래스 인스턴스의 멤버들을 접근할 수 있다.
 
 	하지만,
-	static 내부 클래스는 인스턴스화 생성시 외부 클래스의 인스턴스가 생기지 않고 독립적으로 내부 클래스만 생기기 때문에
-	외부 클래스와 자동 연결점이 없다. 외부 클래스의 멤버는 접근 할 수 없다.
+	static 내부 클래스는 인스턴스화 생성시 외부 클래스의 인스턴스가 생기지 않고 독립적으로 내부 클래스 인스턴스만 생기기 때문에
+	외부 클래스 인스턴스와 자동 연결점이 없다. 
+	
+	그러므로 외부 클래스의 인스턴스 멤버는 접근할 수 없고, static 멤버만 접근 가능하다
 
-	한마디로 내부 클래스와 외부 클래스가 연동 될 수도 없는, 독립적인 클래스라는 것이다.
-		
 		- 인스턴스 멤버와 static 멤버를 모두 선언 가능.
+		- 외부 클래스의 인스턴스 멤버는 사용 못함(static 멤버만 사용가능)
 		- static 멤버는 인스턴스 멤버를 사용 못하는 일반 클래스 법칙이 똑같이 적용된다.
 
 	자세히 살펴보자
@@ -234,3 +235,40 @@
 			}
 		}
 	
+	외부 클래스 접근은 static 멤버만 가능하다
+
+		class Outer{
+			int ov  = -90;
+			static int osv = 90;
+			int outerInstanceMethod() {return -100;}
+			static int outerStaticMethod() {return 100;}
+			
+			static class StaticInner{
+				
+				/int err1 = ov; //외부 클래스 인스턴스 멤버변수는 접근 불가(x)
+				//int err2 = outerInstanceMethod(); //외부 클래스 인스턴스 멤버 메소드는 접근 불가(x)
+		
+				int iv = osv;		//외부 클래스 static 변수 접근 가능, 
+				static int sv = outerStaticMethod();	//외부 클래스 static 메소드 접근 가능
+				
+				int instanceMethod() { return iv;}	//인스턴스 메소드	
+				static int staticMethod() {return sv;} //static 메소드
+
+			}	
+			
+		}
+
+		public class InnerCalssEx {
+
+				public static void main(String[] args) {	
+				
+					
+					Outer.StaticInner in=  new Outer.StaticInner();
+					
+					
+					System.out.println(in.instanceMethod()); //90
+					System.out.println(in.staticMethod());  // 100
+					System.out.println(Outer.StaticInner.staticMethod()); //100
+					
+				}
+		}
