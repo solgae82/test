@@ -1,0 +1,236 @@
+내부 클래스 종류
+	
+	4 개의 형식이 존재한다
+	
+	1. 인스턴스 내부 클래스
+	2. static 내부 클래스
+	3. 지역 내부 클래스
+	4. 익명 클래스
+
+----------
+4. 익명 클래스는 제일 나중에 살펴보기로 하고 
+1,2,3 부터 분석해 보자.
+---------
+
+선언 위치
+	일반 클래스의 변수 위치와 같다
+	클래스에 static을 정할 수 있다..
+	
+
+	class Outer{
+		class InstanceInner{}		//인스턴스 내부 클래스
+		static class StaticInner{}	//static 내부 클래스
+		void myMethod(){
+			class LocalInner{}	//지역 내부 클래스
+		}
+	}
+
+접근제어자
+
+
+	- 내부 클래스에 접근 제어자 사용 가능
+	- 인스턴스 내부 클래스 , 스택틱 내부 클래스는 일반 클래스의 멤버변수 처럼
+	접근제어자(public, protected, private)을 쓸 수 있다.
+
+	- 지역 내부 클래스는 일반 클래스의 지역 변수처럼 접근제어자를 쓸 수 없다.
+
+	- 내부 클래스들도 클래스 이므로, abstract 와 final 키워드를 쓸 수 있다.
+
+	class Outer{
+		protected class InstanceInner{}		//인스턴스 내부 클래스
+		abstract static class StaticInner{}	//스태틱 내부 클래스
+		void myMethod(){
+			final class LocalInner{}	//지역 내부 클래스는 접근제어자 사용 못함.
+		}
+	}
+
+		
+	
+- 인스턴스 내부 클래스
+	내부 클래스의 외부 클래스 인스턴스를 먼저 생성 후 내부 클래스 인스턴스 생성 가능.
+	일반 멤버변수, 메소드 가능
+	static 멤버변수, static 멤버 메소드 허용 안됨.
+	final static 멤버변수 허용(상수만 허용)
+	final static 메소드 허용 안됨.
+	외부 클래스 멤버변수 또는 메소드를 내부 클래스 변수 안에서 참조 가능
+	(외부클래스  멤버변수 , 멤버 메소드, 외부 static 멤버변수, static 멤버 메소드 모두 참조 가능)
+
+	---가져온 글
+	static이 아닌 멤버 클래스의 인스턴스는 바깥 클래스의 인스턴스와 암묵적으로 연결된다.
+	왜냐하면 static이 아닌 멤버 클래스는 바깥 인스턴스 없이는 생성할 수 없기 때문이다.
+	두 클래스의 관계는 멤버 클래스의 인스턴스 안에 만들어지며, 메모리를 차지한다. 생성도 느리다.
+	---
+
+	예제로 살펴보자
+	//------------ 
+	인스턴스 내부 클래스 생성하기
+		class Outer{
+			class InstanceInner{ /*인스턴스 내부 클래스*/}
+		}
+		
+		public class Test {
+			public static void main(String[] args) {
+				
+				//인스턴스 내부 클래스 생성하기
+				Outer outer = new Outer();
+				Outer.InstanceInner in= outer.new InstanceInner();
+							
+				// 또는 한번에
+				Outer.InstanceInner in2 =  new Outer().new InstanceInner();
+			}
+		}
+
+	//------------ 
+	인스턴스 내부 클래스 인스턴스 변수 접근
+		class Outer{
+			class InstanceInner{ 
+				int iv = 10;
+			}
+		}
+		
+		public class Test {
+			public static void main(String[] args) {
+				Outer.InstanceInner in =  new Outer().new InstanceInner();
+				System.out.println(in.iv); // 10
+			}
+		}
+	//------------ 
+	인스턴스 내부 클래스에 static 변수 선언 못함. static 메소드도 안됨. 컴파일도 안됨.
+	왜 그럴까? static 변수와 메소드는  "클래스명.static변수명 or static 메소드" 으로 접근 가능한데,
+	인스턴스 내부 클래스는 무조건 그 클래스의 외부 클래스도 인스턴스화 되어야하고,
+	자신도 인스턴스가 되어야 사용 가능한 클래스이기 때문이다(라고 하면 될런지)
+	그러므로 클래스명.static변수명 으로 접근할 수도 없는 변수에 static을 붙이는 것은 모순..
+	
+		class Outer{
+			class InstanceInner{ 
+				//static int cv = 100; //컴파일 에러(x), 선언 못함.
+				//static int test() {return 10;}// 메소드도 안됨(x), 선언 못함.
+			}
+		}
+	
+	//------------ 
+	인스턴스 내부 클래스에 final static 상수 선언 가능 
+	외부클래스명.내부클래스명.상수명 접근 가능
+	웃기다..(외부 인스턴스와 내부 인스턴스를 생성해야 쓸 수 있다며...) 
+	암튼 예외적인...상수
+	
+		class Outer{
+			class InstanceInner{ 
+				final static int COUNT = 20; //final static은 상수이므로 허용.
+			}
+		}
+
+		public class Test {
+			public static void main(String[] args) {
+				Outer.InstanceInner in =  new Outer().new InstanceInner();
+				System.out.println(in.COUNT); // 20
+				System.out.println(Outer.InstanceInner.COUNT); // 20
+			}
+		}
+
+	그럼 메소드도 final static 붙이면 되겠네? 안 되더라..
+		class Outer{
+			class InstanceInner{ 
+				//final static int test() {return 10;} //컴파일 에러(x), 선언 못함.
+			}
+		}
+	멤버 상수만 인스턴스 없이 접근 가능하다
+	
+	//------------
+	내부 클래스에서 외부클래스 멤버 접근하기 
+	걍 보고 이해하자
+
+		class Outer{
+			int ov  = -90; 	
+			static int osv = 90;
+			int instanceMethod() {return -100;}
+			static int staticMethod() {return 100;}
+			
+			class InstanceInner{
+				int iv = -10;		//인스턴스 변수
+				//static int sv = 10;	//static 변수 선언 못함
+				
+				
+				int innerInstanceMethod() {return 100;}	//외부 클래스  static 메소드	
+				//static int innerStaticMethod() {return 20;} //static 메소드 선언 못함.
+				
+				//외부클래스 멤버 접근
+				int outerInstanceVar() {return ov;}
+				int outerStaticVar() {return osv;}
+				int outerInstanceMethod() {return instanceMethod();}
+				int outerStaticMethod() {return staticMethod();}
+
+			}	
+			
+		}
+
+		public class Test {
+			public static void main(String[] args) {
+				Outer.InstanceInner in=  new Outer().new InstanceInner();
+			
+				System.out.println(in.outerInstanceVar()); // -90
+				System.out.println(in.outerStaticVar());	//90
+				System.out.println(in.outerInstanceMethod()); // -100
+				System.out.println(in.outerStaticMethod());	// 100
+			}
+		}
+
+- static 내부 클래스 
+
+	두 가지 방법의 사용법이 있다
+	인스턴스를 생성하고 사용하기 방법과, 일반 클래스의 클래스 변수나 클래스 메소드 사용하듯 하는 방법이 있다.
+		- 인스턴스화 해서 변수 접근하기 가능
+		- "외부클래스명.내부클래스명.static변수명 or static 메소드" 접근 가능.
+
+	static 내부 클래스를 인스턴스로 생성시
+	외부 클래스 인스턴스 생성 없이 , static 내부 클래스 인스턴스만 생성된다.
+	이점이 인스턴스 내부 클래스와 다른 점이다.. 
+	
+	인스턴스 내부 클래스는 외부클래스를 생성하고 내부 인스턴스 클래스를 인스터화 생성해야 기능을 사용할 수 있고,
+	내부적으로는 외부클래스 인스턴스와 내부 클래스 인스턴스가 암묵적으로 연결되어 있어서 
+	내부 클래스 인스턴스에서 외부 클래스 인스턴스의 멤버들을 접근할 수 있다.
+
+	하지만,
+	static 내부 클래스는 인스턴스화 생성시 외부 클래스의 인스턴스가 생기지 않고 독립적으로 내부 클래스만 생기기 때문에
+	외부 클래스와 자동 연결점이 없다. 외부 클래스의 멤버는 접근 할 수 없다.
+
+	한마디로 내부 클래스와 외부 클래스가 연동 될 수도 없는, 독립적인 클래스라는 것이다.
+		
+		- 인스턴스 멤버와 static 멤버를 모두 선언 가능.
+		- static 멤버는 인스턴스 멤버를 사용 못하는 일반 클래스 법칙이 똑같이 적용된다.
+
+	자세히 살펴보자
+		
+		class Outer{
+			
+			static class StaticInner{
+				int iv = -10;		//인스턴스 변수
+				static int sv = 10;	//static 변수
+				
+				int instanceMethod() { return -20;}	//인스턴스 메소드	
+				static int staticMethod() {return 20;} //static 메소드
+
+			}	
+			
+		}
+
+		public class Test {
+			public static void main(String[] args) {
+							
+				//static 내부 클래스 인스턴스 생성 접근
+				Outer.StaticInner in=  new Outer.StaticInner();
+				System.out.println(in.iv); 	// -10
+				System.out.println(in.instanceMethod()); // -20
+				System.out.println(in.sv); 	// 10
+				System.out.println(in.staticMethod()); // 20
+				
+				//static 직접 접근
+				System.out.println(Outer.StaticInner.sv); // 10 , static 변수 접근 가능
+				System.out.println(Outer.StaticInner.staticMethod());  //20 , static 메소드 접근 가능
+				//System.out.println(Outer.StaticInner.iv); // (x) 인스턴스 변수 접근할 수 없음. 컴파일 에러
+				//System.out.println(Outer.StaticInner.instanceMethod());  // (x)인스턴스 메소드 접근할 수 없음.컴파일 에러
+
+
+			}
+		}
+	
