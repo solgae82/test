@@ -327,4 +327,142 @@
 				}
 		}
 
+- 지역 내부 클래스
+		일반 클래스 메소드 안에 정의하는 inner 클래스
+		지역 변수 제한과 같다
+		지역 내부 클래스는 당연히 메소드 안에서만 생존 범위가 제한 된다.
+
+		외부 클래스 메소드의 final 지역변수만 메소드 지역 내부 클래스에서 접근할 수 있다.
+			- JDK 1.8부터는 변수명 앞에 final을 자동으로 붙여준다.
+			- 역으로 생각하면 JDK 1.8부터는 지역 메소드 내부에 있는 지역 내부 클래스가 선언되면 
+			지역변수는 모두 final이 된다는 결론이 나온다.
+
+		외부 클래스 메소드 내 final 지역변수만 접근 가능한 이유는,
+		외부 클래스 메소드가 수행이 끝난 뒤 지역변수가 소멸한 뒤에도 소멸된 지역변수를 지역 내부 클래스가 참조하는 경우가 
+		발생할 수 있기 때문이란다. 
 		
+
+		암튼 살펴보자.
+
+			class Outer{
+				
+				private int outerIv = 0;
+				static int outerCv = 0;
+
+				void instanceMethod(){
+				
+					int iv = 0;  //JDK 1.8 이상에서 자동 final int(상수)가 된다.
+					final int LV = 0; // 명시적 final 상수
+					
+					class LocalInner{
+						int iiv = outerIv;
+						int iiv2 = outerCv;
+						int iiv3 = iv; //JDK 1.8 이상에서 테스트 해서 (final int iv) OK. 이하 버전에서는 컴파일 에러.
+						int iiv4 = LV; 
+						
+					}
+				}
+
+				static void staticMethod(){
+				
+					int iv = 0;  //JDK 1.8 이상에서 자동 final int(상수)가 된다.
+					final int LV = 0; // 명시적 final 상수
+					
+					class LocalInner{
+						//int iiv = outerIv; // (x) 외부클래스의 인스턴스 변수 접근 할 수 없다(static 메소드 내이므로)
+						int iiv2 = outerCv;
+						int iiv3 = iv; //JDK 1.8 이상에서 테스트 해서 (final int iv) OK. 이하 버전에서는 컴파일 에러.
+						int iiv4 = LV; 
+						
+					}
+				}
+			}
+
+		
+컴파일 후 생성되는 내부 클래스 .class 파일 이름 형식
+
+	아래 구조와 같은 내부 클래스가 있는 클래스 파일을 컴파일 하면...
+		
+		class Outer{
+			class InstanceInner{}			
+			static class StaticInner{}			
+			void myMethod(){
+				class LocalInner{}
+			}
+		}
+
+		..
+		Outer.class
+		Outer$InstanceInner.class
+		Outer$StaticInner.class
+		Outer$1LocalInner.class // 숫자 1이 앞에 붙은 지역 내부 클래스 .class 파일
+
+	지역 내부 클래스 파일은 숫자가 붙은 .class 파일 생긴다.
+	이유는 다른 메소드에도 같은 이름의 지역 내부 클래스 파일이 정의될 수 있기 때문이다.
+	
+		class Outer{
+			class InstanceInner{}			
+			static class StaticInner{}			
+			void myMethod(){
+				class LocalInner{} //같은 이름의 지역 클래스
+			}
+			void myMethod2(){
+				class LocalInner{} //같은 이름의 지역 클래스
+			}
+		}
+
+		..
+		Outer.class
+		Outer$InstanceInner.class
+		Outer$StaticInner.class
+		Outer$1LocalInner.class // 숫자 1이 앞에 붙은 지역 내부 클래스 .class 파일
+		Outer$2LocalInner.class // 숫자 2이 앞에 붙은 지역 내부 클래스 .class 파일
+
+
+외부 클래스 this
+
+	일반 클래스에서 인스턴스는 this 로 참조 가능하듯이, 같은 의미를 지닌다.
+	인스턴스 내부 클래스, static 내부 클래스, 지역 내부 클래스 를 인스턴스화 하면, this는 그 생선 인스턴스를 의미한다.
+	
+	인스턴스 내부 클래스는 인스턴스화가 되기 위해서 외부 클래스 인스턴스화가 필요하고, 둘은 암묵적으로 연결 되어 있다고 했다.
+	외부 클래스의 인스턴스를 내부 클래스에서 사용할때 참조 키워드가 있을 것이다
+		
+		외부 클래스명.this
+
+	외부 클래스명.this 는 외부 클래스가 인스터화 되었을때 외부 클래스 인스턴스를 의미한다.
+
+	만약 외부, 내부 클래스화가 인스턴화가 되었는데, 외부, 내부 의 멤버 변수명이 같은게 있다면, 외부, 내부 접근하기 위한 
+	구분 this가 필요할 것이다..
+
+	다음과 같이..
+
+		public class Test {
+			public static void main(String[] args) {
+				
+				Outer.InstanceInner in = new Outer().new InstanceInner();
+				
+				in.method();
+			}
+		}
+
+
+		class Outer{
+			
+			int value = 10;
+			
+			class InstanceInner{
+				
+				int value = 20;
+				
+				void method() {
+			
+					int value =30;
+					
+					System.out.println(value); // 30, 지역변수
+					System.out.println(this.value); // 20 , 내부 클래스 변수
+					System.out.println(Outer.this.value); // 10 , 외부 클래스 변수
+					
+				}
+			}
+		}
+	
