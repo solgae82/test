@@ -379,7 +379,7 @@
 			}
 
 		
-컴파일 후 생성되는 내부 클래스 .class 파일 이름 형식
+- 컴파일 후 생성되는 내부 클래스 .class 파일 이름 형식
 
 	아래 구조와 같은 내부 클래스가 있는 클래스 파일을 컴파일 하면...
 		
@@ -419,7 +419,7 @@
 		Outer$2LocalInner.class // 숫자 2이 앞에 붙은 지역 내부 클래스 .class 파일
 
 
-외부 클래스 this
+- 외부 클래스 this
 
 	일반 클래스에서 인스턴스는 this 로 참조 가능하듯이, 같은 의미를 지닌다.
 	인스턴스 내부 클래스, static 내부 클래스, 지역 내부 클래스 를 인스턴스화 하면, this는 그 생선 인스턴스를 의미한다.
@@ -466,3 +466,98 @@
 			}
 		}
 	
+- 익명 클래스 
+	
+	단 하나의 상속 가능한 클래스나 단 하나의 인터페이스, 단 하나의 추상클래스를 대상으로,
+	클래스 내에서 즉석 구현해 버리는 일회용 클래스
+
+		구현 대상:
+		- 상속 가능 클래스
+		- 인터페이스
+
+	이름이 없는 클래스이긴 하지만, 새로 창조하는 클래스는 아니다(혼동 주의)
+
+	단 한개만 코딩시 즉석에서 구현 후 변수에 담아 사용하는 형식
+
+		조상클래스형 참조변수 = new 상속가능 조상클래스 이름{
+			..구현
+		};
+
+		인터페이스형 참조변수 = new 인터페이스 이름{
+			..구현
+		};
+
+		추상클래스 참조변수 = new 추상클래스 이름{
+			..구현
+		};
+
+	참조변수를 보면 알 수 있듯이  , 그 형의 범위만 참조 할 수 있다.
+	상속가능한 클래스로 익명 클래스를 만들어 만약 확장한다 해도, 확장 부분은 어차피 쓸 수 없다는 뜻
+		
+		Object iv = new Object() {void method(){/*구현*/};};
+		// 이렇게 확장했다 더라도 Object 형으로만 받을 수 있으니 확장해봐야 method()는 못 쓴다..무용지물..
+
+	그러므로 상속 가능한 클래스에서는 overriding 만 의미 있을 것이다.
+	인터페이스나 추상클래스야 새로 구현해야 하는 당연한 것이고..
+
+	장황하게 설명했지만, 코드를 보면 간단하다
+	
+	아래는 Object 클래스의 toString 메소드를 overriding 해서 새로 정의한 익명 클래스와
+	추상클래스를 즉석 구현한 익명 클래스 , 인터페이스를 즉석 구현한 익명클래스 사용 예제이다
+
+		public class Test {
+			
+			//object를 상속해서 재정의한 익명 클래스
+			Object iv = new Object() {public String toString(){return "인스턴스 익명 클래스";}}; 
+			
+			
+			//object를 상속해서 재정의한  static 익명 클래스
+			static Object  sv = new Object() {public String toString(){return "static 익명 클래스";}};
+			
+			//메소드 안에 object를 상속해서 재정의한 지역 익명 클래스
+			String myMethod() {
+				Object  sv = new Object() {public String toString(){return "지역 익명 클래스";}};
+				return sv.toString();
+			}
+			
+			//추상 클래스를 즉석 구현한 익명 클래스
+			InnerAb ab = new InnerAb() { public String print() {return "추상 클래스 구현 익명 클래스";}};
+			
+			//인터페이스를 즉석 구현한 익명 클래스
+			InnerInter inf = new InnerInter() {public String print() {return "인터페이스 구현 익명 클래스";}};
+			
+			public static void main(String[] args) {
+				
+				Test ex = new Test();
+				
+				System.out.println(ex.iv.toString());	//인스턴스 익명 클래스
+				System.out.println(ex.sv.toString());	//static 익명 클래스
+				System.out.println(ex.myMethod());	//지역 익명 클래스
+				System.out.println(ex.ab.print());	//추상 클래스 구현 익명 클래스
+				System.out.println(ex.inf.print());	//인터페이스 구현 익명 클래스
+			}
+		}
+
+
+		abstract class InnerAb{
+			abstract String print();
+		}
+
+		interface InnerInter{
+			abstract String print();
+		}
+
+	실무에서는 GUI 프로그램이나 안드로이드 프로그램 같은 곳에서 인터페이스 또는 추상 클래스를 즉석에서 구현하는 용도로 쓰인다.
+
+	- 컴파일 후 생성되는 파일 형식 (.class)
+
+		익명 클래스는 이름이 없기 때문에 "외부클래스명$숫자.class"의 형식을 가진다.
+		위 예제의 컴파일을 했더니 아래와 같은 컴파일된 .class 파일이 생겼다.
+
+			Test.class
+			Test$1.class
+			Test$2.class
+			Test$3.class
+			Test$4.class
+			Test$5.class
+			Test$6.class
