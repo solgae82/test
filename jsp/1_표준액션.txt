@@ -71,7 +71,7 @@ email : ${pageScope.email}
 
 	--------- 빈이 없을시 초기값 지정하기
 	<jsp:useBean id="person" class="com.solgae.bean.Employee" scope="request">
-		<jsp:getProperty name="person" property="name" /> // "대한민국"
+		<jsp:setProperty name="person" property="name" /> // "대한민국"
 	</jsp:useBean>
 
 	--------- 다형성
@@ -163,7 +163,7 @@ email : ${pageScope.email}
 		:test.jsp
 			<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request" />
 			: 아래 자바코드와 같다
-			Person p = new Employee();
+			Person person = (Employee) request.getAttribute("person");
 
 		- Person형이 추상클래스, 또는 인터페이스일 경우에는 type 속성을 써야한다(물론 일반 클래스도 type 사용가능하다)
 		- type 이 있을경우 class는 type에 명시한 클래스를 상속 또는 구현한 클래스여야 함.(당연)
@@ -210,15 +210,15 @@ email : ${pageScope.email}
 		:test.jsp
 			<jsp:useBean id="person" type="com.solgae.bean.Employee" scope="request"/>//(X)
 			<jsp:getProperty name="person" property="name" /> //(x)
-			해설: Person p1 = (Employee) request.getAttribute("person"); // 에러
+			해설: Employee p1 = (Employee) request.getAttribute("person"); // 에러
 
 	**결론**
 		class만 있을 경우
 			class x = (class) request.getAttribute("n");
-			if(x == null) x = new class(); //없으면 같은형의 같은 객체 생성
+			if(x == null) class x = new class(); //없으면 같은형의 같은 객체 생성
 		type + class 설정시
 			type x = (class) request.getAttribute("n");
-			if(x == null) x = new class();
+			if(x == null) type x = new class(); //없으면 같은형의 같은 객체 생성
 		type 만 있을 경우
 			type x = (type) request.getAttribute("n");
 			//자동으로 안 만든다고...그래서 Bean이 꼭 무조건 있어야만 함.
@@ -232,12 +232,15 @@ email : ${pageScope.email}
 	%>
 
 	표현식으로 넣기
+	<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request"/>
 	<jsp:setProperty name="person" property="name" value="<%=request.getParameter("name")%>" />
 
 	EL로 넣기
+	<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request"/>
 	<jsp:setProperty name="person" property="name" value="${param.name}" />
 
 	속성으로 넣기
+	<jsp:useBean id="person" type="com.solgae.bean.Person" class="com.solgae.bean.Employee" scope="request"/>
 	<jsp:setProperty name="person" property="name" param="name" />
 	// param 속성이 지정되지 않으면 자동으로 프로퍼티와 같은 name 파라미터로 셋팅해준다
 	<jsp:setProperty name="person" property="name"  /> 
@@ -299,8 +302,8 @@ email : ${pageScope.email}
 지시자 표준액션
 	<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 	위 아래가 같다
-	<jsp:derective.page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"/>
+	<jsp:directive.page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"/>
 
 	<%@ include file="footer.jsp" />
 	위 아래와 같다
-	<jsp:derective.include file="footer.jsp" />
+	<jsp:directive.include file="footer.jsp" />
