@@ -143,68 +143,82 @@ email : ${pageScope.email}
 		둘:1:2 => , ,
 		(마지막입니다) 셋:2:3 => , ,
 	2)예제 
-		<c:forEach items="${list }" var="info"  varStatus="status" begin="0" end="${list.size() }" step="1">
+		<c:forEach items="${list }" var="info"  varStatus="status" begin="0" end="${list.size() - 1 }" step="1">
 			<c:if test="${status.first }" >(첫벗째입니다)</c:if>
 			<c:if test="${status.last }" >(마지막입니다)</c:if>
 			${info }:${status.index }:${status.count } => ${status.begin }, ${status.end }, ${status.step }<br/>
 		</c:forEach>
 		----출력
-		(첫벗째입니다) 하나:0:1 => 0, 3, 1
+		(첫벗째입니다) 하나:0:1 => 0, 2, 1
 		둘:1:2 => 0, 3, 1
-		(마지막입니다) 셋:2:3 => 0, 3, 1
+		(마지막입니다) 셋:2:3 => 0, 2, 1
 	
 	3)예제 
-		<c:forEach items="${list }" var="info"  varStatus="status" begin="0" end="${list.size() }" step="2">
+		<c:forEach items="${list }" var="info"  varStatus="status" begin="0" end="${list.size()  - 1 }" step="2">
 			<c:if test="${status.first }" >(첫벗째입니다)</c:if>
 			<c:if test="${status.last }" >(마지막입니다)</c:if>
 			${info }:${status.index }:${status.count } => ${status.begin }, ${status.end }, ${status.step }<br/>
 		</c:forEach>
 		----출력
-		(첫벗째입니다) 하나:0:1 => 0, 3, 2
-		(마지막입니다) 셋:2:2 => 0, 3, 2
+		(첫벗째입니다) 하나:0:1 => 0, 2, 2
+		(마지막입니다) 셋:2:2 => 0, 2, 2
 	4)예제 
 
-		<c:forEach items="${list }" var="info"  varStatus="status" begin="1" end="${list.size() }" step="1">
+		<c:forEach items="${list }" var="info"  varStatus="status" begin="1" end="${list.size()  - 1 }" step="1">
 			<c:if test="${status.first }" >(첫벗째입니다)</c:if>
 			<c:if test="${status.last }" >(마지막입니다)</c:if>
 			${info }:${status.index }:${status.count } => ${status.begin }, ${status.end }, ${status.step }<br/>
 		</c:forEach>
 		----출력
-		(첫벗째입니다) 둘:1:1 => 1, 3, 1
-		(마지막입니다) 셋:2:2 => 1, 3, 1
+		(첫벗째입니다) 둘:1:1 => 1, 2, 1
+		(마지막입니다) 셋:2:2 => 1, 2, 1
 	
 -----c:forTokens-----
-	<c:forTokens var="token" items="사과 배 딸기 포도"  delims=" ">
-		${token}
-	</c:forTokens>
+	- forEach 나머지 속성들도 쓸 수 있다.
 
+	<c:forTokens var="token" items="사과/배/딸기/포도" varStatus="status" delims="/">
+		${status.count}.${token}<br />
+	</c:forTokens>
+	
+	1.사과
+	2.배
+	3.딸기
+	4.포도
 
 -----c:catch-----
+
 	<%
-		int num1 = 10;
-		int num2 = 0;
-		int result = 0;
+		int num1= 10;
+		int num2= 0;
 	%>
-	<c:catch var="e">
-		나누기 결과: <%=num1 / num2%>
+	<c:catch var ="e">
+		나누기 결과 : <%=num1 / num2 %>
+		여기는 출력 안된다
 	</c:catch>
-
+	<br />
 	<c:if test="${e != null }">
-		 에러 메시지 : ${e.message}
+		에러 메시지 : ${e.message}
 	</c:if>
-
+	
+	나누기 결과 :
+	에러 메시지 : / by zero
 
 -----c:redirect : sendRedirect와 같다-----
 	<c:redirect url="next.jsp">
-		<c:param name="next" value="다음" >< /c:param>
+		<c:param name="next" value="다음" />
 	</c:redirect>
 
 
 -----c:import-----
 	- <jsp:include> 처럼  실행시 결과를 포함한다. 
 	- 다른 url 결과도 포함할 수 있다
+	- 파라미터 포함 가능
 
 	<c:import url="http://abc.kr" / >
+	
+	<c:import url="inc.jsp">
+		<c:param name="next" value="다음" />
+	</c:import>
 
 -----c:url set 변수 셋팅 처럼 자동 url변수 셋팅-----
 	<c:url var="my" value="http://abc.kr" >
@@ -219,7 +233,9 @@ email : ${pageScope.email}
 	<c:out value="<strong>강하게</strong>"	 /> //&lt;strong&gt;강하게&lt;/strong&gt;
 	<c:out value="<strong>강하게</strong>"	 escapeXml="false" /> //<strong>강하게</strong>
 
-	//파라미터가 있으면 value출력, 없으면 default 출력 : get, post 모두 해당
-	// ?test= , ?test=22 => value 출력
-	// 파라미터가 아예 없으면 defalut 출력
-	<c:out value="${param.id}" default="guest" /> 
+	- default 속성
+		//파라미터가 있으면 value출력, 없으면 default 출력 : get, post 모두 해당
+		// ?test= , ?test=22 => value 출력
+		// 파라미터가 아예 없으면(null) defalut 출력
+
+		<c:out value="${param.id}" default="guest" /> 
