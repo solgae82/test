@@ -1,0 +1,9 @@
+Table에 자료가 있을경우(auto_increment만 초기화)
+
+     alter table<테이블 이름> auto_increment=<지정번호>;
+ex) alter table MEMBER auto_increment = 1 
+
+
+Table에 자료가 없을경우(테이블 전체 초기화)
+
+    truncate table <테이블 이름>; 

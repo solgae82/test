@@ -1,0 +1,7 @@
+SELECT unix_timestamp('2010-05-13 13:40:22'); ->1273725622
+SELECT from_unixtime(1273725622); -> 2010-05-13 13:40:22
+
+--2010-03-01 일보다 작은 것 모두 삭제(우석대)
+
+update uks_b_FC000 set delflag =1 where reg_date < unix_timestamp('2010-03-1')
+select count(*) from uks_b_FC000 where delflag=0

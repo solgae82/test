@@ -1,0 +1,6 @@
+--root패스워드 변경
+
+mysqladmin -u root -p password
+Enter password:
+New password: 
+Confirm new password: 

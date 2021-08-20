@@ -1,0 +1,3 @@
+replace(필드,'대상문자열','바꿀문자열')
+update de_photogallery set Memo =replace(Memo,'/bbs','/de');
+

@@ -1,0 +1,25 @@
+root 권한으로 해야함.
+mysql -u root -p 
+
+사용자 계정 확인
+	mysql> USE mysql;
+	mysql> SELECT host, user, password FROM user;
+
+사용자 계정 추가(dong)
+	// 로컬 접속만 가능 (localhost)
+	mysql> CREATE USER 'dong'@'localhost' IDENTIFIED BY '123489';
+ 
+	// 원격 접속 ('%') , 원격 접속만 가능
+	mysql> CREATE USER 'dong'@'%' IDENTIFIED BY '123489';
+
+'test' 데이터베이스 모든 사용권한 'dong'에게 주기
+	mysql> GRANT ALL PRIVILEGES ON test.* TO 'dong'@'localhost'
+
+'dong'사용자 계정 추가하면서 'test' 데이터베이스에 모든권한 주기
+	mysql> GRANT ALL PRIVILEGES ON test.* TO 'dong'@'localhost' IDENTIFIED BY '123489';
+
+'dong' 사용자의 'test' 데이터베이스 모든 테이블에 권한 제거
+	mysql> REVOKE ALL ON test.* FROM 'dong'@'localhost';
+
+'dong' 사용자 삭제
+	mysql> DROP USER 'dong'@'localhost';
