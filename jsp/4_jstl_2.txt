@@ -27,11 +27,15 @@
 --------- 포맷팅 라이브러리
 	<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
+	<%
+		Date d = new Date();
+			
+	%>
+	<c:set var="date" value="<%=d %>" />
+
 	- fmt:formatDate
-		<%
-			Date d = new Date();
-		%>
-		<c:set var="date" value="<%=d %>" />
+		
+
 		<fmt:formatDate value="${date}" />  //2018. 10. 1
 			아래와 같다
 		<fmt:formatDate value="<%=d %>" /> //2018. 10. 1
@@ -85,6 +89,10 @@
 		<fmt:setLocale value="en_us"/>
 		<fmt:formatDate value="${date}" type="date" dateStyle="full" /> //Monday, October 1, 2018
 		<fmt:formatNumber value="200000" type="currency" /> //$200,000.00
+
+		<fmt:setLocale value="ko_kr"/>
+		<fmt:formatDate value="${date}" type="date" dateStyle="full" /> //2018년 10월 01일 월요일
+		<fmt:formatNumber value="200000" type="currency" /> //₩200,000
 
 
 	- fmt:timeZone
