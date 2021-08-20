@@ -1,11 +1,11 @@
 ---------
-∞Ë¡§∂Ù«Æ±‚
-password -l dong <- 2¥‹∞Ë ∂Ù ∞…±‚
-password -u dong <- 2¥‹∞Ë ∂Ù «Æ±‚
+Í≥ÑÏ†ïÎùΩÌíÄÍ∏∞
+password -l dong <- 2Îã®Í≥Ñ ÎùΩ Í±∏Í∏∞
+password -u dong <- 2Îã®Í≥Ñ ÎùΩ ÌíÄÍ∏∞
 
-usermod -L dong <- 1¥‹∞Ë ∂Ù ∞…±‚
-usermod -U dong <- 1¥‹∞Ë ∂Ù «Æ±‚
+usermod -L dong <- 1Îã®Í≥Ñ ÎùΩ Í±∏Í∏∞
+usermod -U dong <- 1Îã®Í≥Ñ ÎùΩ ÌíÄÍ∏∞
 
-password -l dong <- 2¥‹∞Ë ∂Ù ∞…±‚
+password -l dong <- 2Îã®Í≥Ñ ÎùΩ Í±∏Í∏∞
 usermode -U dong
-usermode -U dong <- µŒπ¯«ÿº≠ ∂Ù «Æ±‚
+usermode -U dong <- ÎëêÎ≤àÌï¥ÏÑú ÎùΩ ÌíÄÍ∏∞

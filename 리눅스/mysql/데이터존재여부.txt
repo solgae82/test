@@ -1,3 +1,3 @@
-select EXISTS (select * from Å×ÀÌºíÀÌ¸§ where ÄÃ·³=Ã£´Â °ª) as success;
+select EXISTS (select * from í…Œì´ë¸”ì´ë¦„ where ì»¬ëŸ¼=ì°¾ëŠ” ê°’) as success;
 
-// success °ªÀÌ 1(Á¸Àç), 0(¾øÀ½) µÎ°¡Áö ¸ğµå·Î ³ª¿Â´Ù.
+// success ê°’ì´ 1(ì¡´ì¬), 0(ì—†ìŒ) ë‘ê°€ì§€ ëª¨ë“œë¡œ ë‚˜ì˜¨ë‹¤.

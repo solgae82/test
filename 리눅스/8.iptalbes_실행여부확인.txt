@@ -1,7 +1,7 @@
-service status iptables (centos 7 ÀÌÀü¹öÀü)
-¶Ç´Â
+service status iptables (centos 7 ì´ì „ë²„ì „)
+ë˜ëŠ”
 systemctl status iptables
 
-ÄÑÁ® ÀÖ´Ù¸é
+ì¼œì ¸ ìˆë‹¤ë©´
 systemctl stop iptables
-systemctl mask iptables (start ¸í·ÉÀ» ÇØµµ ¾È µÇ°Ô ¼³Á¤(unmask ÇÏ¸é Ç®¸²))
+systemctl mask iptables (start ëª…ë ¹ì„ í•´ë„ ì•ˆ ë˜ê²Œ ì„¤ì •(unmask í•˜ë©´ í’€ë¦¼))

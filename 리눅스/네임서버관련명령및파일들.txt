@@ -1,19 +1,19 @@
-Ã¹Â°, Æ÷Æ®¿­·È´ÂÁö È®ÀÎ : 53¹ø
-µÑÂ°, fowordÆÄÀÏ°ú reserveÆÄÀÏ ÆÛ¹Ì¼Ç È®ÀÎ : (¿¹: naemed)
-¼ÂÂ°, /etc/named.caching-nameserver.conf ÆÄÀÏ¿¡¼­ ·ÎÄÃ·Î¸¸ ¼³Á¤µÈ °æ¿ì È®ÀÎ: ¿ÜºÎ·Îµµ µÇ°Ô º¯°æ½ÃÄÑÁà¾ßÇÑ´Ù
-³İÂ°, forwardÆÄÀÏÀÌ ½ÇÁ¦ À§Ä¡¿¡ Á¤È®ÀÌ ÀÖ´Â°¡
+ì²«ì§¸, í¬íŠ¸ì—´ë ¸ëŠ”ì§€ í™•ì¸ : 53ë²ˆ
+ë‘˜ì§¸, fowordíŒŒì¼ê³¼ reserveíŒŒì¼ í¼ë¯¸ì…˜ í™•ì¸ : (ì˜ˆ: naemed)
+ì…‹ì§¸, /etc/named.caching-nameserver.conf íŒŒì¼ì—ì„œ ë¡œì»¬ë¡œë§Œ ì„¤ì •ëœ ê²½ìš° í™•ì¸: ì™¸ë¶€ë¡œë„ ë˜ê²Œ ë³€ê²½ì‹œì¼œì¤˜ì•¼í•œë‹¤
+ë„·ì§¸, forwardíŒŒì¼ì´ ì‹¤ì œ ìœ„ì¹˜ì— ì •í™•ì´ ìˆëŠ”ê°€
 
-/etc/resolv.conf : ³×ÀÓ¼­¹ö IPÀÔ·Â ¼³Á¤ÇÏ´Â ºÎºĞ
+/etc/resolv.conf : ë„¤ì„ì„œë²„ IPì…ë ¥ ì„¤ì •í•˜ëŠ” ë¶€ë¶„
 
-/etc/named.caching-nameserver.conf: ³×ÀÓ¼­¹ö ¼³Á¤ ¹× ±¸¼ºÆÄÀÏ
-/etc/named.rfc1912.zones: ½ÇÁ¦ ¸ÅÇÎÁ¤º¸ ¼³Á¤ÆÄÀÏ
+/etc/named.caching-nameserver.conf: ë„¤ì„ì„œë²„ ì„¤ì • ë° êµ¬ì„±íŒŒì¼
+/etc/named.rfc1912.zones: ì‹¤ì œ ë§¤í•‘ì •ë³´ ì„¤ì •íŒŒì¼
 
 /etc/rc.d/init.d/named (start|stop|restart)
 
-named-checkconf /etc/named.rfc1912.zones : zone¹®¹ıÀûÀ¸·Î ÀÌ»ó¾ø´ÂÁö °Ë»ç
-named-checkzone /var/named solgae.com.zone : forwardÆÄÀÏ ¹®¹ı°Ë»ç
+named-checkconf /etc/named.rfc1912.zones : zoneë¬¸ë²•ì ìœ¼ë¡œ ì´ìƒì—†ëŠ”ì§€ ê²€ì‚¬
+named-checkzone /var/named solgae.com.zone : forwardíŒŒì¼ ë¬¸ë²•ê²€ì‚¬
 
-//----³×ÀÓ¼­¹ö µ¥¸ó½ÃÀÛ----//
+//----ë„¤ì„ì„œë²„ ë°ëª¬ì‹œì‘----//
 /usr/sbin/named -u named
 /etc/rc.d/init.d/named restart 
 

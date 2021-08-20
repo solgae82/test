@@ -1,10 +1,10 @@
-1. ¿­°ÅÇü Á¤ÀÇ
+1. ì—´ê±°í˜• ì •ì˜
 	enum color {RED,GREEN,BLUE}; //0 ,1, 2
 	enum color {RED,GREEN=100,BLUE}; //0 , 100, 101
 	enum color {RED=1,GREEN=3,BLUE=5}; //1, 3, 5
 
--enum Å°¿öµå¸¦ »ç¿ëÇÑ´Ù
--¿­°ÅÇü Á¤ÀÇ´Â [ÀÚ·áÇü Á¤ÀÇ], [»ç¿ëÇÒ »ó¼ö ¼±¾ð] ÀÇ µÎ°¡Áö ÀÇ¹Ì¸¦ Áö´Ñ´Ù.
+-enum í‚¤ì›Œë“œë¥¼ ì‚¬ìš©í•œë‹¤
+-ì—´ê±°í˜• ì •ì˜ëŠ” [ìžë£Œí˜• ì •ì˜], [ì‚¬ìš©í•  ìƒìˆ˜ ì„ ì–¸] ì˜ ë‘ê°€ì§€ ì˜ë¯¸ë¥¼ ì§€ë‹Œë‹¤.
 
 	enum color {RED,GREEN=100,BLUE};
 	int main(void){
@@ -15,7 +15,7 @@
 		c2 = GREEN;
 		c3 = BLUE;
 		
-		// c3 = 7; //´Ù¸¥ Á¤¼öµµ µé¾î°¥ ¼ö ÀÖ´Ù.±×·¯³ª »ç¿ëÇÏÁö ¸»ÀÚ.
+		// c3 = 7; //ë‹¤ë¥¸ ì •ìˆ˜ë„ ë“¤ì–´ê°ˆ ìˆ˜ ìžˆë‹¤.ê·¸ëŸ¬ë‚˜ ì‚¬ìš©í•˜ì§€ ë§ìž.
 
 		printf("%d %d %d \n", c1,c2,c3); //
 		printf("%d %d %d \n", RED,GREEN,BLUE);

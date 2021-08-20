@@ -2,5 +2,5 @@ mysql> use mysql;
 mysql> update user set password=password('123456') where user='root';
 Query OK, 2 rows affected (0.03 sec)
 Rows matched: 2 Changed: 2 Warnings: 0
-mysql> flush privileges; <--- Àû¿ë
-flush privileges; ¸¦ ÇÏÁö ¾ÊÀ¸¸é mysql¿¡¼­ ºüÁ®³ª¿Í¼­ root ·Î±×ÀÎÀÌ ¾ÈµÈ´Ù.
+mysql> flush privileges; <--- ì ìš©
+flush privileges; ë¥¼ í•˜ì§€ ì•Šìœ¼ë©´ mysqlì—ì„œ ë¹ ì ¸ë‚˜ì™€ì„œ root ë¡œê·¸ì¸ì´ ì•ˆëœë‹¤.

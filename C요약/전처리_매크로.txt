@@ -1,52 +1,52 @@
-1. ��ũ�� ����
-- ���� �����ݷ�(;) ����.
-- ��ũ�� �������� �Ѵ�.
-- ��ó���⿡ ���� ������ �Ǳ� ���� �ڵ尡 ġȯ�ȴ�.
-- ���ڿ��� ���� ��ũ�� ����� ���õȴ�.
-- �̹� ����� ��ũ�θ� �ٸ� ��ũ�ο� ����� �� �ִ�.
+1. 매크로 선언
+- 끝에 세미콜론(;) 없다.
+- 매크로 상수라고도 한다.
+- 전처리기에 의해 컴파일 되기 전에 코드가 치환된다.
+- 문자열에 쓰인 매크로 상수는 무시된다.
+- 이미 선언된 매크로를 다른 매크로에 사용할 수 있다.
 
 	#define PI 3.1415
 
 	-----------
-	#define NUM 5 //<- ��ũ�� ����
+	#define NUM 5 //<- 매크로 선언
 
 	int main(void){
 		
 		int i =0;
-		int arr[NUM] ={1,2,3}; //�迭 5�� ����
+		int arr[NUM] ={1,2,3}; //배열 5개 선언
 		for(i=0; i<NUM; i++){
 			
-			//"NUM ��ũ��" �� �κ�(���ڿ�)�� ġȯ���� �ʴ´�.
-			printf("NUM ��ũ�� : %d \n", arr[i]); //1,2,3,0,0
+			//"NUM 매크로" 이 부분(문자열)은 치환되지 않는다.
+			printf("NUM 매크로 : %d \n", arr[i]); //1,2,3,0,0
 		}
 
 		return 0;
 	}
 	-----------
 	#define ONE 1
-	#define TWO ONE+ONE //<- 1+1�� �ٲ��
-	#define THREE TWO + ONE // 1+1 + 1�� �ٲ��	
+	#define TWO ONE+ONE //<- 1+1로 바뀐다
+	#define THREE TWO + ONE // 1+1 + 1로 바뀐다	
 
-2. ��ũ�� �Լ�
-- ��ũ�� �Լ��� �ڷ����� �������̴�(���ϴ�)
-- ����ӵ��� ���ȴ�.
-- �Լ��� ũ�⸦ �۰� �϶�.
+2. 매크로 함수
+- 매크로 함수는 자료형에 독립적이다(편하다)
+- 실행속도가 향상된다.
+- 함수의 크기를 작게 하라.
 
 	#define SQUARE(x) x*x
-	#define SQUARE2(x) (x)*(x) //<- ��� �� ����
+	#define SQUARE2(x) (x)*(x) //<- 요게 더 좋다
 	int main(void){
 		
 		int a;
 		a = 2;
 
-		printf("%d \n", SQUARE(a)); //a*a �� ġȯ�ȴ�
-		printf("%d \n", SQUARE2(a+2)); //(a+2)*(a+2) �� ġȯ�ȴ�
+		printf("%d \n", SQUARE(a)); //a*a 로 치환된다
+		printf("%d \n", SQUARE2(a+2)); //(a+2)*(a+2) 로 치환된다
 
 		return 0;
 	}
 
 
-3. ���ڿ��� ��ũ�� �ֱ�
+3. 문자열에 매크로 넣기
 	#define SQUARE(x) printf(#x "*" #x "= %d \n", x*x)
 
 	int main(void){
@@ -54,26 +54,26 @@
 		int a;
 		a = 10;
 
-		//printf("a" "*" "a" "=%d \n", x*x);�� ġȯ��
+		//printf("a" "*" "a" "=%d \n", x*x);로 치환됨
 		SQUARE(a);	// a*a=100
-		//printf("3" "*" "3" "=%d \n", x*x);�� ġȯ��
+		//printf("3" "*" "3" "=%d \n", x*x);로 치환됨
 		SQUARE(3);	// 3*3=9
 		
 
-		printf("%d \n", a*a ); //a*a �� ġȯ�ȴ�
+		printf("%d \n", a*a ); //a*a 로 치환된다
 		
 
 		return 0;
 	}
 
-4. ##�� �̿��� ��ū ����
+4. ##을 이용한 토큰 결합
 	#define CONCAT(a, b) a##b
 
 	int main(void){
 		
 		int arr[2]={10,20};
 
-		printf("%d \n",CONCAT(2,4)); // 24 ���
+		printf("%d \n",CONCAT(2,4)); // 24 출력
 
 		return 0;
 	}

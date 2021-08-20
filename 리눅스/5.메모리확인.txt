@@ -1,5 +1,5 @@
-�޸����� Ȯ��
+메모리정보 확인
 cat /proc/meminfo
 
-��뷮Ȯ��
+사용량확인
 free -h

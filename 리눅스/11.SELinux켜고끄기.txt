@@ -1,40 +1,40 @@
-[root@chat1 ~]# sestatus (SELinux ÄÑÁ®ÀÖ³ª È®ÀÎ) 
-SELinux status:                 disabled <- ÇöÀç ²¨Á®ÀÖ´Ù
+[root@chat1 ~]# sestatus (SELinux ì¼œì ¸ìˆë‚˜ í™•ì¸) 
+SELinux status:                 disabled <- í˜„ì¬ êº¼ì ¸ìˆë‹¤
 
-ÄÑ±â
+ì¼œê¸°
 
 vi /etc/sysconfig/selinux
 
-	SELINUX=disabled <-  ²ô±â ÀÎ °ÍÀ»
+	SELINUX=disabled <-  ë„ê¸° ì¸ ê²ƒì„
 	..
-	SELINUX=enforcing <-È°¼ºÈ­·Î ÆíÁı
+	SELINUX=enforcing <-í™œì„±í™”ë¡œ í¸ì§‘
 :wq
 
-½Ã½ºÅÛ ÀçºÎÆÃÇØ¾ß È°¼ºÈ­ µÈ´Ù.(ºñÈ°¼ºÈ­ ¶ÇÇÑ ¸¶Âù°¡Áö)
+ì‹œìŠ¤í…œ ì¬ë¶€íŒ…í•´ì•¼ í™œì„±í™” ëœë‹¤.(ë¹„í™œì„±í™” ë˜í•œ ë§ˆì°¬ê°€ì§€)
 reboot
 
 -----------------------------------------------------
-[root@chat1 ~]# sestatus (SELinux ÄÑÁ®ÀÖ³ª È®ÀÎ) 
-SELinux status:  enforcing <- ÇöÀç ÄÑÁ®ÀÖ´Ù
+[root@chat1 ~]# sestatus (SELinux ì¼œì ¸ìˆë‚˜ í™•ì¸) 
+SELinux status:  enforcing <- í˜„ì¬ ì¼œì ¸ìˆë‹¤
 SELinuxfs mount: /selinux
 Current mode: enforcing
 Mode from config file: enforcing
 Policy version: 24
 Policy from config file: targeted
 
------------------------------------------------------ (ÀÏ½ÃÁ¤Áö)
+----------------------------------------------------- (ì¼ì‹œì •ì§€)
 
-°³¹ß ¼­¹öÀÏ °æ¿ì Æ¯Á¤ daemon ÀÌ³ª ¼­ºñ½º¿¡ ¹®Á¦°¡ ÀÖÀ» °æ¿ì 
+ê°œë°œ ì„œë²„ì¼ ê²½ìš° íŠ¹ì • daemon ì´ë‚˜ ì„œë¹„ìŠ¤ì— ë¬¸ì œê°€ ìˆì„ ê²½ìš° 
 setenforce 0 
-À¸·ÎPermissive mode ·Î ÀüÈ¯ÇÏ¿© ¹®Á¦ ÇØ°áÈÄ enforce mode ·Î ÀüÈ¯ÇÏ´Â°É ÃßÃµÇÑ´Ù.
+ìœ¼ë¡œPermissive mode ë¡œ ì „í™˜í•˜ì—¬ ë¬¸ì œ í•´ê²°í›„ enforce mode ë¡œ ì „í™˜í•˜ëŠ”ê±¸ ì¶”ì²œí•œë‹¤.
 
 
-# setenforce 0 <- Permissive·Î º¯°æ, 1Àº ÄÑ±â
-# sestatus	<- »óÅÂÈ®ÀÎ
+# setenforce 0 <- Permissiveë¡œ ë³€ê²½, 1ì€ ì¼œê¸°
+# sestatus	<- ìƒíƒœí™•ì¸
  
 SELinux status: enabled
 SELinuxfs mount: /selinux
-Current mode: permissive	<- º¯°æµÇ¾ú´Ù
+Current mode: permissive	<- ë³€ê²½ë˜ì—ˆë‹¤
 Mode from config file: enforcing
 Policy version: 24
 Policy from config file: targeted

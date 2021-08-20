@@ -1,10 +1,10 @@
-½Ãµµ±â·Ï : 
+ì‹œë„ê¸°ë¡ : 
 ls /var/log/secure | xargs grep -E "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+" -o | sort | uniq
 
-½ÇÆĞ±â·Ï È®ÀÎ:
+ì‹¤íŒ¨ê¸°ë¡ í™•ì¸:
 last -f /var/log/btmp | more
 
-·Î±×ÀÎ ¼º°ø È®ÀÎ:
+ë¡œê·¸ì¸ ì„±ê³µ í™•ì¸:
 
 last
 

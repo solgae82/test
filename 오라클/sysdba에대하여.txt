@@ -1,40 +1,40 @@
-SYSDBA´Â SYS³ª SYSTEM°°Àº user°¡ ¾Æ´Ï°í, ¿©Å¸ÀÇ ROLE°ú´Â Á¶±İ ´Ù¸¥ Æ¯º°ÇÑ ROLEÀÔ´Ï´Ù. 
-ÀÌ ROLEÀ» ÅëÇØ¼­ Á¢¼ÓÇØ¾ß DBÀÇ startup/shutdownÀÌ °¡´ÉÇÕ´Ï´Ù. 
-ºñ½ÁÇÑ ROLE·Î SYSOPERÀÌ¶ó´Â °Ô ÀÖ´Âµ¥ SYSDBA¿Í °ÅÀÇ °°½À´Ï´Ù. ÀÌ ROLEµµ startup/shutdownÀÌ °¡´ÉÇÕ´Ï´Ù.
+SYSDBAëŠ” SYSë‚˜ SYSTEMê°™ì€ userê°€ ì•„ë‹ˆê³ , ì—¬íƒ€ì˜ ROLEê³¼ëŠ” ì¡°ê¸ˆ ë‹¤ë¥¸ íŠ¹ë³„í•œ ROLEì…ë‹ˆë‹¤. 
+ì´ ROLEì„ í†µí•´ì„œ ì ‘ì†í•´ì•¼ DBì˜ startup/shutdownì´ ê°€ëŠ¥í•©ë‹ˆë‹¤. 
+ë¹„ìŠ·í•œ ROLEë¡œ SYSOPERì´ë¼ëŠ” ê²Œ ìˆëŠ”ë° SYSDBAì™€ ê±°ì˜ ê°™ìŠµë‹ˆë‹¤. ì´ ROLEë„ startup/shutdownì´ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
-Áï, sqlplus ¡°/ as sysoper¡± ·Î Á¢¼ÓÇÑ ÈÄ¿¡, SQL> startup ¸¦ ÇÏ´Â °Íµµ °¡´ÉÇÕ´Ï´Ù.
-
- 
-
-Àúµµ Oracle¿¡¼­ Á¦°øÇÏ´Â Administrator¶ó´Â ¹®¼­¸¦ ºÃ½À´Ï´Ù¸¸ ¸íÈ®ÇÑ ÀÇ¹Ì´Â ¸ğ¸£°Ú°í, ¡®as sysdba¡¯ È¤Àº ¡®as sysoper¡¯ °¡ ºÙÀ¸¸é, ¡®user/password¡¯ ºÎºĞÀÌ ÀÇ¹Ì°¡ ¾ø½À´Ï´Ù. 
-¿¹¸¦ µé¾î sqlplus ¡°scott/tiger as sysdba¡±¸¦ ½ÇÇàÇÏ³ª sqlplus ¡°/ as sysdba¡±¸¦ ½ÇÇàÇÏ³ª °á°ú´Â ¸¶Âù°¡Áö¸ç, Áï SYSÀÇ schema·Î Á¢¼ÓµË´Ï´Ù.
+ì¦‰, sqlplus â€œ/ as sysoperâ€ ë¡œ ì ‘ì†í•œ í›„ì—, SQL> startup ë¥¼ í•˜ëŠ” ê²ƒë„ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
  
 
-sqlplus ¡°abcdefg/hijk as sysdba¡±¸¦ ¼öÇàÇØµµ ¸¶Âù°¡Áö·Î Á¢¼ÓÀÌ µË´Ï´Ù. 
-Áï, slush¾ÕµÚÀÇ user, password´Â ¡®as sysdba¡¯°¡ ºÙÀº »óÈ²¿¡¼­´Â ÀÇ¹Ì¸¦ °¡ÁöÁö ¸øÇÏ´Â °ÅÁÒ. 
-ÇÏÁö¸¸, slush¸¦ Á¦°ÅÇÏ¸é user/password¸¦ ¹°¾î¿À¹Ç·Î »© ¸ÔÁö ¾Êµµ·Ï ÁÖÀÇÇÏ½Ê½Ã¿À.
+ì €ë„ Oracleì—ì„œ ì œê³µí•˜ëŠ” Administratorë¼ëŠ” ë¬¸ì„œë¥¼ ë´¤ìŠµë‹ˆë‹¤ë§Œ ëª…í™•í•œ ì˜ë¯¸ëŠ” ëª¨ë¥´ê² ê³ , â€˜as sysdbaâ€™ í˜¹ì€ â€˜as sysoperâ€™ ê°€ ë¶™ìœ¼ë©´, â€˜user/passwordâ€™ ë¶€ë¶„ì´ ì˜ë¯¸ê°€ ì—†ìŠµë‹ˆë‹¤. 
+ì˜ˆë¥¼ ë“¤ì–´ sqlplus â€œscott/tiger as sysdbaâ€ë¥¼ ì‹¤í–‰í•˜ë‚˜ sqlplus â€œ/ as sysdbaâ€ë¥¼ ì‹¤í–‰í•˜ë‚˜ ê²°ê³¼ëŠ” ë§ˆì°¬ê°€ì§€ë©°, ì¦‰ SYSì˜ schemaë¡œ ì ‘ì†ë©ë‹ˆë‹¤.
 
  
 
-SYS userÀÇ °æ¿ì SYSTEM user¿Í´Â ¸¹ÀÌ ´Ù¸¨´Ï´Ù. Table, tablespace»ı¼º µîÀÇ ¿©Å¸ ±ÇÇÑÀº ºñ½ÁÇÑµ¥, SYS schema¿¡ Á¢¼ÓÇÏ·Á¸é Ç×»ó ¡®as sysdba¡¯¸¦ µÚ¿¡ ºÙ¿© ÁÖ¾î¾ß ÇÕ´Ï´Ù. 
-ÇÏÁö¸¸ SYSTEMÀº ¡®sqlplus system/manager¡¯ ÇüÅÂ·Î °¡´ÉÇÕ´Ï´Ù.
+sqlplus â€œabcdefg/hijk as sysdbaâ€ë¥¼ ìˆ˜í–‰í•´ë„ ë§ˆì°¬ê°€ì§€ë¡œ ì ‘ì†ì´ ë©ë‹ˆë‹¤. 
+ì¦‰, slushì•ë’¤ì˜ user, passwordëŠ” â€˜as sysdbaâ€™ê°€ ë¶™ì€ ìƒí™©ì—ì„œëŠ” ì˜ë¯¸ë¥¼ ê°€ì§€ì§€ ëª»í•˜ëŠ” ê±°ì£ . 
+í•˜ì§€ë§Œ, slushë¥¼ ì œê±°í•˜ë©´ user/passwordë¥¼ ë¬¼ì–´ì˜¤ë¯€ë¡œ ë¹¼ ë¨¹ì§€ ì•Šë„ë¡ ì£¼ì˜í•˜ì‹­ì‹œì˜¤.
 
  
 
-(1) sqlplus ¡°/ as sysdba¡± (O)
-
-(2) sqlplus ¡°abcd/efgh as sysdba¡± (O)
-
-(3) sqlplus ¡°sys/change_on_install¡± (X)
-
-(4) sqlplus ¡°sys/change_on_install as sysdba¡± (O)
-
-(5) sqlplus ¡°system/manager¡± (O)
+SYS userì˜ ê²½ìš° SYSTEM userì™€ëŠ” ë§ì´ ë‹¤ë¦…ë‹ˆë‹¤. Table, tablespaceìƒì„± ë“±ì˜ ì—¬íƒ€ ê¶Œí•œì€ ë¹„ìŠ·í•œë°, SYS schemaì— ì ‘ì†í•˜ë ¤ë©´ í•­ìƒ â€˜as sysdbaâ€™ë¥¼ ë’¤ì— ë¶™ì—¬ ì£¼ì–´ì•¼ í•©ë‹ˆë‹¤. 
+í•˜ì§€ë§Œ SYSTEMì€ â€˜sqlplus system/managerâ€™ í˜•íƒœë¡œ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
  
 
-Á¦°¡ ¾Æ´Â Áö½ÄÀÇ ÇÑ°èµµ ÀÖ°í, ÀÌ·¸°Ô Á¦°¡ ÂªÀº ´äº¯À» ¿Ã¸®±â º¸´Ù´Â Á¤½Ä ¹®¼­¸¦ ¼Ò°³½ÃÄÑ µå¸®´Â °Ô ³ªÀ» °Í °°³×¿ä. 
-¾Æ·¡ »çÀÌÆ®¿¡ °¡¼Å¼­ ¡®Administrator¡¯s Guide¡¯ ¶ó´Â pdf ¹®¼­¸¦ ´Ù¿î¹Ş¾Æ¼­ ÀĞ¾î º¸½Ã¸é Çò°¥·Á ÇÏ½Ã´Â ºÎºĞµéÀÌ ¸¹ÀÌ Á¤¸®µÉ °Ì´Ï´Ù.
+(1) sqlplus â€œ/ as sysdbaâ€ (O)
+
+(2) sqlplus â€œabcd/efgh as sysdbaâ€ (O)
+
+(3) sqlplus â€œsys/change_on_installâ€ (X)
+
+(4) sqlplus â€œsys/change_on_install as sysdbaâ€ (O)
+
+(5) sqlplus â€œsystem/managerâ€ (O)
+
+ 
+
+ì œê°€ ì•„ëŠ” ì§€ì‹ì˜ í•œê³„ë„ ìˆê³ , ì´ë ‡ê²Œ ì œê°€ ì§§ì€ ë‹µë³€ì„ ì˜¬ë¦¬ê¸° ë³´ë‹¤ëŠ” ì •ì‹ ë¬¸ì„œë¥¼ ì†Œê°œì‹œì¼œ ë“œë¦¬ëŠ” ê²Œ ë‚˜ì„ ê²ƒ ê°™ë„¤ìš”. 
+ì•„ë˜ ì‚¬ì´íŠ¸ì— ê°€ì…”ì„œ â€˜Administratorâ€™s Guideâ€™ ë¼ëŠ” pdf ë¬¸ì„œë¥¼ ë‹¤ìš´ë°›ì•„ì„œ ì½ì–´ ë³´ì‹œë©´ í—·ê°ˆë ¤ í•˜ì‹œëŠ” ë¶€ë¶„ë“¤ì´ ë§ì´ ì •ë¦¬ë  ê²ë‹ˆë‹¤.
 
  

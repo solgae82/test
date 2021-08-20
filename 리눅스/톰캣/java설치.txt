@@ -1,11 +1,11 @@
-----centos ����
+----centos 에서
 
 /usr/local/jdk1.7.0_76
-��  tar�� Ǯ�� ���丮 ��ġ��Ų ��
+에  tar로 풀고 디렉토리 위치시킨 후
 
 
 [root@localhost local]# vi /etc/profile
-#�� �Ʒ��� �����߰�  path �߰�
+#맨 아래에 변수추가  path 추가
 .
 .
 export JAVA_HOME=/usr/local/jdk1.7.0_76
@@ -13,10 +13,10 @@ export CLASSPATH="."
 
 PATH="$PATH:$JAVA_HOME/bin"
 
-�ҽ� ���ɾ�� �ٽ� ��
+소스 명령어로 다시 셋
 [root@localhost local]# source /etc/profile 
 
-��ġ�� ..Ȯ��
+설치끝 ..확인
 [root@localhost local]# java -version
 java version "1.7.0_76"
 Java(TM) SE Runtime Environment (build 1.7.0_76-b13)

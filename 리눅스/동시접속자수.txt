@@ -1,8 +1,8 @@
-À¥¼­¹ö Á¢¼Ó ¼ö
+ì›¹ì„œë²„ ì ‘ì† ìˆ˜
 netstat -an | grep :80.*ESTABLISHED | wc -l
 netstat -an | grep :80 | grep ESTABLISHED | wc -l
 
 
-¶Ç´Ù¸¥ ¹æ¹ı(½Ç½Ã°£)
+ë˜ë‹¤ë¥¸ ë°©ë²•(ì‹¤ì‹œê°„)
 watch 'netstat -an | grep EST | wc -l'
 watch 'netstat -an | grep :80.*ESTABLISHED | wc -l'

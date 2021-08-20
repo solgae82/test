@@ -1,10 +1,10 @@
-/*ÀÌÀü±Û*/
+/*ì´ì „ê¸€*/
 select Sid,Reply_Group,Reply_Level,Reply_Step , Reply_Parent ,Subject 
 from de_bbs where
  (Reply_Group = 123 and Reply_Step < 3) or (Reply_Group > 123) and 
 DelFlag='0' order by Reply_Group asc ,Reply_Step desc limit 0, 1
 
-/* ´ÙÀ½±Û */
+/* ë‹¤ìŒê¸€ */
 select Sid,Reply_Group,Reply_Level,Reply_Step , Reply_Parent ,Subject 
 from de_bbs where
  (Reply_Group = 123 and Reply_Step > 2) or (Reply_Group < 123) and 

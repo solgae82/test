@@ -1,4 +1,4 @@
-- ¸î ºñÆ®ÀÎÁö È®ÀÎ
+- ëª‡ ë¹„íŠ¸ì¸ì§€ í™•ì¸
 arch
 	x86_64
 
@@ -9,20 +9,20 @@ uname -m
 	x86_64
 
 
--  cpuÁ¤º¸ È®ÀÎ
+-  cpuì •ë³´ í™•ì¸
 cat /proc/cpuinfo
 
-- cpu ÄÚ¾îÀüÃ¼ °¹¼ö
+- cpu ì½”ì–´ì „ì²´ ê°¯ìˆ˜
 grep -c processor /proc/cpuinfo
 
 
-- cpu(¹°¸®Àû) °¹¼ö
+- cpu(ë¬¼ë¦¬ì ) ê°¯ìˆ˜
 grep ^processor /proc/cpuinfo | wc -l
 
-- cpu ´ç(¹°¸®Àû°¹¼ö) ÄÚ¾î °¹¼ö
+- cpu ë‹¹(ë¬¼ë¦¬ì ê°¯ìˆ˜) ì½”ì–´ ê°¯ìˆ˜
 grep "cpu cores" /proc/cpuinfo | tail -1
 
-- ½Ç½Ã°£ cup »ó¿ë·ü Ã¼Å©
+- ì‹¤ì‹œê°„ cup ìƒìš©ë¥  ì²´í¬
 top
 
 

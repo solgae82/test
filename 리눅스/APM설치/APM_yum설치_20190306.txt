@@ -1,17 +1,17 @@
-1. ÀÇÁ¸¼º ¶óÀÌºê·¯¸® ¼³Ä¡ 
+1. ì˜ì¡´ì„± ë¼ì´ë¸ŒëŸ¬ë¦¬ ì„¤ì¹˜ 
 	yum -y install libjpeg* libpng* freetype* gd-* gcc gcc-c++ gdbm-devel libtermcap-devel
 
-2. Apach¼³Ä¡ 
-	-¼³Ä¡È®ÀÎ 
+2. Apachì„¤ì¹˜ 
+	-ì„¤ì¹˜í™•ì¸ 
 	rpm -qa http* 
-	- ¼³Ä¡
+	- ì„¤ì¹˜
 	yum -y install httpd
 
-3. MariaDB(mysql) ¼³Ä¡
-	- yum ¹Ì·¯ repo »ı¼ºÇÑ´Ù(ÃÖ½Å ¼³Ä¡¸¦ À§ÇØ)
+3. MariaDB(mysql) ì„¤ì¹˜
+	- yum ë¯¸ëŸ¬ repo ìƒì„±í•œë‹¤(ìµœì‹  ì„¤ì¹˜ë¥¼ ìœ„í•´)
 	vi /etc/yum.repos.d/MariaDB.repo
 
-	- ¾Æ·¡³»¿ë ºÙ¿©³Ö±â ÈÄ ÀúÀå
+	- ì•„ë˜ë‚´ìš© ë¶™ì—¬ë„£ê¸° í›„ ì €ì¥
 	# MariaDB 10.1 CentOS repository list 
 	# http://downloads.mariadb.org/mariadb/repositories/
 	[mariadb]
@@ -20,36 +20,36 @@
 	gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 	gpgcheck=1
 
-	- ¼³Ä¡ 
+	- ì„¤ì¹˜ 
 	yum -y install MariaDB-server MariaDB-client
 
-4. PHP 7 ¼³Ä¡
-	- ÃÖ½Å¹öÀüÀ¸·Î ¼³Ä¡ÇÏ±âÀ§ÇØ Webtatic EL ÀúÀå¼Ò¸¦ Ãß°¡ÇÕ´Ï´Ù
+4. PHP 7 ì„¤ì¹˜
+	- ìµœì‹ ë²„ì „ìœ¼ë¡œ ì„¤ì¹˜í•˜ê¸°ìœ„í•´ Webtatic EL ì €ì¥ì†Œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤
 	rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 	rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 
-	- ¼³Ä¡
+	- ì„¤ì¹˜
 	yum -y install php70w
 
-	- PHP7 ÆĞÅ°Áö ¼³Ä¡ (ÀÚÁÖ ¾²ÀÌ´Â°ÍÀ» °ñ¶óºÃ½À´Ï´Ù.)
+	- PHP7 íŒ¨í‚¤ì§€ ì„¤ì¹˜ (ìì£¼ ì“°ì´ëŠ”ê²ƒì„ ê³¨ë¼ë´¤ìŠµë‹ˆë‹¤.)
 	yum -y install php70w-mysqlnd php70w-pdo php70w-pgsql php70w-odbc php70w-mbstring php70w-mcrypt php70w-gd
 	yum -y install php70w-pear php70w-pdo_dblib php70w-pecl-imagick php70w-pecl-imagick-devel php70w-xml php70w-xmlrpc
 
-5. ¼³Ä¡µÈ ¹öÀüÈ®ÀÎ
+5. ì„¤ì¹˜ëœ ë²„ì „í™•ì¸
 httpd -v
 mysql -V
 php -v
 
-6. ¼³Á¤µé
+6. ì„¤ì •ë“¤
 
 -------------------
 # Apache
 -------------------
 
-	/etc/httpd/conf/ <- ¼³Á¤ÆÄÀÏ ÀÖ´Â °÷
-	/usr/sbin/httpd <-½ÇÇàÆÄÀÏ ÀÖ´Â °÷
+	/etc/httpd/conf/ <- ì„¤ì •íŒŒì¼ ìˆëŠ” ê³³
+	/usr/sbin/httpd <-ì‹¤í–‰íŒŒì¼ ìˆëŠ” ê³³
 
-	1. httpd.conf ±¸¼ºÆÄÀÏ ¼³Á¤
+	1. httpd.conf êµ¬ì„±íŒŒì¼ ì„¤ì •
 		vi /etc/httpd/conf/httpd.conf
 
 		User nobody
@@ -61,31 +61,31 @@ php -v
 
 		DocumentRoot /home/ddoddome/www
 
-		#¼­¹ö¿¡ È¨µğ·¹Åä¸® Á¢±Ù ±ÇÇÑÀ» ÁÖ¾î¾ß ÇÑ´Ù.
+		#ì„œë²„ì— í™ˆë””ë ˆí† ë¦¬ ì ‘ê·¼ ê¶Œí•œì„ ì£¼ì–´ì•¼ í•œë‹¤.
 		<Directory "/home/ddoddome/www">
 			AllowOverride All
 			Require all granted
 		</Directory>
 
-	2. ÂªÀº ÁÖ¼Ò¸¦ ÀÌ¿ëÇÏ°í ½Í´Ù¸é Ãß°¡
+	2. ì§§ì€ ì£¼ì†Œë¥¼ ì´ìš©í•˜ê³  ì‹¶ë‹¤ë©´ ì¶”ê°€
 		vi /etc/httpd/conf.modules.d
-		LoadModule rewrite_module modules/mod_rewrite.so <-ÁÖ¼®Ã³¸® È®ÀÎ
+		LoadModule rewrite_module modules/mod_rewrite.so <-ì£¼ì„ì²˜ë¦¬ í™•ì¸
 
 
-	3. °¡»óÈ£½ºÆ® »ç¿ë
-		#¸ğµç µğ·ºÅä¸®¿¡ ¸Â´Â ¼³Á¤ ÇÊ¿ä
+	3. ê°€ìƒí˜¸ìŠ¤íŠ¸ ì‚¬ìš©
+		#ëª¨ë“  ë””ë ‰í† ë¦¬ì— ë§ëŠ” ì„¤ì • í•„ìš”
 		/etc/httpd/conf/conf.d/userdir.conf
 
 		<Directory "/home/*/www">
 		    AllowOverride FileInfo AuthConfig Limit Index
 		    /*Options MultiViews SymLinksIfOwnerMatch IncludesNoExec*/
-		    /*FollowSymlinks ½Éº¼¸¯¸µÅ© Çã¿ë(´Ù¸¥ °èÁ¤¿¡¼­µµ /dataµğ·ºÅä¸® Á¢±ÙÇÒ ¼ö ÀÖ°Ô)*/
+		    /*FollowSymlinks ì‹¬ë³¼ë¦­ë§í¬ í—ˆìš©(ë‹¤ë¥¸ ê³„ì •ì—ì„œë„ /dataë””ë ‰í† ë¦¬ ì ‘ê·¼í•  ìˆ˜ ìˆê²Œ)*/
 		    Options MultiViews FollowSymlinks IncludesNoExec 
 		    Require all granted
 		</Directory>
 
 
-		#°¡»óÈ£½ºÆ® ¼³Á¤
+		#ê°€ìƒí˜¸ìŠ¤íŠ¸ ì„¤ì •
 		/etc/httpd/conf/httpd-vhosts.conf
 
 		<VirtualHost *:80>
@@ -93,29 +93,29 @@ php -v
 		DocumentRoot /home/ddoddome/www
 		ServerName ddoddo.me
 			<Directory "/home/ddoddome/www">
-				µğ·ºÅä¸® ¼³Á¤..Ãß°¡°¡´É
+				ë””ë ‰í† ë¦¬ ì„¤ì •..ì¶”ê°€ê°€ëŠ¥
 			</Directory>
 		</VirtualHost>
 
-	4. ¼­¹ö½ÃÀÛ
-		# systemctl start|stop|restart httpd <- ¾ÆÆÄÄ¡ ½ÃÀÛ,Á¤Áö,Àç½ÃÀÛ
-		# systemctl enable httpd <-¼­¹ö ºÎÆÃ½Ã ÀÚµ¿½ÃÀÛ µî·Ï
+	4. ì„œë²„ì‹œì‘
+		# systemctl start|stop|restart httpd <- ì•„íŒŒì¹˜ ì‹œì‘,ì •ì§€,ì¬ì‹œì‘
+		# systemctl enable httpd <-ì„œë²„ ë¶€íŒ…ì‹œ ìë™ì‹œì‘ ë“±ë¡
 
 -------------------
-# PHP¼³Á¤
+# PHPì„¤ì •
 -------------------
 
-	1.¼¼¼Ç°ü·Ã µğ·ºÅä¸® ±ÇÇÑ ÁÖ±â
+	1.ì„¸ì…˜ê´€ë ¨ ë””ë ‰í† ë¦¬ ê¶Œí•œ ì£¼ê¸°
 
-		/var/lib/php <- php°ü·Ã Ä³½ÃÆÄÀÏÀÌ ¸ğ¿©ÀÖ´Â Àå¼Ò °°´Ù. ¸ğµÎ ¾µ ¼ö ÀÖ´Â ±ÇÇÑÀ» ÁÖÀÚ
+		/var/lib/php <- phpê´€ë ¨ ìºì‹œíŒŒì¼ì´ ëª¨ì—¬ìˆëŠ” ì¥ì†Œ ê°™ë‹¤. ëª¨ë‘ ì“¸ ìˆ˜ ìˆëŠ” ê¶Œí•œì„ ì£¼ì
 
-		chmod 777 /var/lib/php/session/ <-¼¼¼ÇÆÄÀÏ ¾²±â ±ÇÇÑÁÖ±â
-		chown -R root.nobody /var/lib/php/session/ <-±ÇÇÑ ¹Ù²Ù±â(¾ÆÆÄÄ¡¿¡¼­ nobody·Î ¹Ù²å±â¶§¹®¿¡)
+		chmod 777 /var/lib/php/session/ <-ì„¸ì…˜íŒŒì¼ ì“°ê¸° ê¶Œí•œì£¼ê¸°
+		chown -R root.nobody /var/lib/php/session/ <-ê¶Œí•œ ë°”ê¾¸ê¸°(ì•„íŒŒì¹˜ì—ì„œ nobodyë¡œ ë°”ê¿¨ê¸°ë•Œë¬¸ì—)
 
-	2. PHP¼³Á¤ÆÄÀÏ ¼³Á¤
+	2. PHPì„¤ì •íŒŒì¼ ì„¤ì •
 		vi /etc/php.ini 
 
-		(¾Æ·¡ ³»¿ëÀ» Ã£¾Æ¼­ º¯°æÇØÁØ´Ù)
+		(ì•„ë˜ ë‚´ìš©ì„ ì°¾ì•„ì„œ ë³€ê²½í•´ì¤€ë‹¤)
 		max_execution_time = 60
 		memory_limit = 512M
 		display_errors = On 
@@ -126,51 +126,51 @@ php -v
 		max_file_uploads = 20
 		date.timezone ="Asia/Seoul"
 
-	3. ¼³Á¤ÈÄ Apache Àç½ÃÀÛ
+	3. ì„¤ì •í›„ Apache ì¬ì‹œì‘
 		# systemctl restart httpd 
 	
 
 -------------------
-# MariaDB(mysql)¼³Á¤
+# MariaDB(mysql)ì„¤ì •
 -------------------
-1. MariaDB(mysql) ÃÊ±â ¼³Á¤(º¸¾È,rootºñ¹Ğ¹øÈ£µî)
-	1. MariaDB(mysql) ½ÇÇàÇÏ±â
-		-¸¶¸®¾ÆDB ½ÇÇà ÈÄ ÇØ¾ßÇÑ´Ù.
+1. MariaDB(mysql) ì´ˆê¸° ì„¤ì •(ë³´ì•ˆ,rootë¹„ë°€ë²ˆí˜¸ë“±)
+	1. MariaDB(mysql) ì‹¤í–‰í•˜ê¸°
+		-ë§ˆë¦¬ì•„DB ì‹¤í–‰ í›„ í•´ì•¼í•œë‹¤.
 		# systemctl start mysql
-		¶Ç´Â
+		ë˜ëŠ”
 		# systemctl start mariadb
-		Çò°¥¸®´Ï ¸í·É¾î¸¦ mysql·Î ÅëÀÏÇÏÀÚ
+		í—·ê°ˆë¦¬ë‹ˆ ëª…ë ¹ì–´ë¥¼ mysqlë¡œ í†µì¼í•˜ì
 
-		#½ÇÇà È®ÀÎ
-		ps -ef | grep mysql <-mariadb ÇÏ¸é ¾ø´Ù. 
-		mysql    12266     1  1 02:46 ?        00:00:00 /usr/sbin/mysqld <- ½ÇÇàµÈ °Í
+		#ì‹¤í–‰ í™•ì¸
+		ps -ef | grep mysql <-mariadb í•˜ë©´ ì—†ë‹¤. 
+		mysql    12266     1  1 02:46 ?        00:00:00 /usr/sbin/mysqld <- ì‹¤í–‰ëœ ê²ƒ
 
-	2. ÃÊ±â ¼³Á¤ ÇÁ·Î±×·¥ ½ÇÇà(ÃÊ±â& º¸¾È & rootºñ¹Ğ¹øÈ£µî ¼³Á¤)
-		# mysql_secure_installation <- MariaDB(mysql) ½ÇÇà ÈÄ ÇØ¾ßÇÑ´Ù.
-		Enter current password for root (enter for none): ÆĞ½º¿öµå°¡ ¾ø±â¶§¹®¿¡ ¿£ÅÍ
+	2. ì´ˆê¸° ì„¤ì • í”„ë¡œê·¸ë¨ ì‹¤í–‰(ì´ˆê¸°& ë³´ì•ˆ & rootë¹„ë°€ë²ˆí˜¸ë“± ì„¤ì •)
+		# mysql_secure_installation <- MariaDB(mysql) ì‹¤í–‰ í›„ í•´ì•¼í•œë‹¤.
+		Enter current password for root (enter for none): íŒ¨ìŠ¤ì›Œë“œê°€ ì—†ê¸°ë•Œë¬¸ì— ì—”í„°
 
-		Set root password? [Y/n] Y   (DB ROOT ÆĞ½º¿öµå ¼³Á¤)
-		New password: ÆĞ½º¿öµåÀÔ·Â
-		Re-enter new password: ÀçÈ®ÀÎ ÆĞ½º¿öµåÀÔ·Â
-		Remove anonymous users? [Y/n] Y  (ÀÍ¸íÀÇ Á¢±ÙÀ» ¸·À»°ÍÀÎÁö? º¸¾ÈÀ» À§ÇØ Y ¿£ÅÍ)
-		Disallow root login remotely? [Y/n] Y (DB ROOT ¿ø°İÀ» ¸·À»°ÍÀÎÁö? º¸¾ÈÀ» À§ÇØ Y ¿£ÅÍ)
-		Remove test database and access to it? [Y/n] Y (Test ¿ëÀ¸·Î »ı¼ºµÈ µ¥ÀÌÅÍº£ÀÌ½º¸¦ »èÁ¦ÇÒ°ÍÀÎ°¡? Y ¿£ÅÍ)
-		Reload privilege tables now? [Y/n] Y (ÇöÀç ¼³Á¤ÇÑ °ªÀ» Àû¿ëÇÒ°ÍÀÎÁö? ´ç¿¬È÷ Y ¿£ÅÍ)
-		Thanks for using MariaDB! # ³¡
+		Set root password? [Y/n] Y   (DB ROOT íŒ¨ìŠ¤ì›Œë“œ ì„¤ì •)
+		New password: íŒ¨ìŠ¤ì›Œë“œì…ë ¥
+		Re-enter new password: ì¬í™•ì¸ íŒ¨ìŠ¤ì›Œë“œì…ë ¥
+		Remove anonymous users? [Y/n] Y  (ìµëª…ì˜ ì ‘ê·¼ì„ ë§‰ì„ê²ƒì¸ì§€? ë³´ì•ˆì„ ìœ„í•´ Y ì—”í„°)
+		Disallow root login remotely? [Y/n] Y (DB ROOT ì›ê²©ì„ ë§‰ì„ê²ƒì¸ì§€? ë³´ì•ˆì„ ìœ„í•´ Y ì—”í„°)
+		Remove test database and access to it? [Y/n] Y (Test ìš©ìœ¼ë¡œ ìƒì„±ëœ ë°ì´í„°ë² ì´ìŠ¤ë¥¼ ì‚­ì œí• ê²ƒì¸ê°€? Y ì—”í„°)
+		Reload privilege tables now? [Y/n] Y (í˜„ì¬ ì„¤ì •í•œ ê°’ì„ ì ìš©í• ê²ƒì¸ì§€? ë‹¹ì—°íˆ Y ì—”í„°)
+		Thanks for using MariaDB! # ë
 	
-	3. Àç¼³Á¤ÇÑ root·Î ·Î±×ÀÎ ÇÏ±â
+	3. ì¬ì„¤ì •í•œ rootë¡œ ë¡œê·¸ì¸ í•˜ê¸°
 		mysql -uroot -p
-		..ÆĞ½º¿öµå ÀÎÁõ ÈÄ ÄÜ¼Ö Á¢¼Ó
-		MariaDB [(none)]> : quit <- ³ª°¡±â
+		..íŒ¨ìŠ¤ì›Œë“œ ì¸ì¦ í›„ ì½˜ì†” ì ‘ì†
+		MariaDB [(none)]> : quit <- ë‚˜ê°€ê¸°
 
 	
-	4. Ä³¸¯ÅÍ¼Â ¼³Á¤ÇÏ±â
-		/etc/my.cnf <- mysql ¼³Á¤ ÆÄÀÏ 
-		/etc/my.cnf.d <- ¼³Á¤ ÆÄÀÏ includeÆÄÀÏ ¸ğÀ½ µğ·ºÅä¸®
-		/var/lib/mysql/ <- µ¥ÀÌÅÍº£ÀÌ½º ÆÄÀÏ ÀúÀå °æ·Î
+	4. ìºë¦­í„°ì…‹ ì„¤ì •í•˜ê¸°
+		/etc/my.cnf <- mysql ì„¤ì • íŒŒì¼ 
+		/etc/my.cnf.d <- ì„¤ì • íŒŒì¼ includeíŒŒì¼ ëª¨ìŒ ë””ë ‰í† ë¦¬
+		/var/lib/mysql/ <- ë°ì´í„°ë² ì´ìŠ¤ íŒŒì¼ ì €ì¥ ê²½ë¡œ
 
-		#Ä³¸¯ÅÍ¼Â º¯°æÇÏ±â
-		- °¢ ±¸¼ºÆÄÀÏ¿¡ ¾Æ·¡³»¿ë Ãß°¡
+		#ìºë¦­í„°ì…‹ ë³€ê²½í•˜ê¸°
+		- ê° êµ¬ì„±íŒŒì¼ì— ì•„ë˜ë‚´ìš© ì¶”ê°€
 		vi /etc/my.cnf.d/server.cnf
 			[mysqld]
 			collation-server=utf8mb4_unicode_ci
@@ -193,8 +193,8 @@ php -v
 			[mysqldump]
 			default-character-set=utf8mb4
 
-		# Ä³¸¯ÅÍ¼Â º¯°æ µÇ¾ú´ÂÁö È®ÀÎÇØº¸ÀÚ
-			systemctl restart mysql <-Àç½ÃÀÛ
+		# ìºë¦­í„°ì…‹ ë³€ê²½ ë˜ì—ˆëŠ”ì§€ í™•ì¸í•´ë³´ì
+			systemctl restart mysql <-ì¬ì‹œì‘
 			mysql -uroot -p
-			show variables like 'c%';  <- Å×ÀÌºí¿¡ Ä³¸¯ÅÍ ¼Â º¯°æ È®ÀÎ
+			show variables like 'c%';  <- í…Œì´ë¸”ì— ìºë¦­í„° ì…‹ ë³€ê²½ í™•ì¸
 			quit;

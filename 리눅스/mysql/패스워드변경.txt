@@ -1,4 +1,4 @@
---rootÆÐ½º¿öµå º¯°æ
+--rootíŒ¨ìŠ¤ì›Œë“œ ë³€ê²½
 
 mysqladmin -u root -p password
 Enter password:

@@ -1,57 +1,57 @@
-1. ½Ãµ¿
-	±âº»ÀûÀ¸·Î ¿À¶óÅ¬ ½ÇÇà°ú, ¸®½º³Ê ½ÇÇà¸¸ ÇÏ¸é µÈ´Ù.
-	¿À¶óÅ¬Àº ½ÇÇàÀº sqlplus ¸¦ ½ÇÇàÀ¸·Î ½ÃÀÛÇÑ´Ù.
-	----------------------------- ¾Æ·¡´Â ¿À¶óÅ¬ 10 ¼³Ä¡ÈÄ Ã¥¿¡ ÀÖ´Â ´ë·Î ¾´ °ÍÀÓ.
+1. ì‹œë™
+	ê¸°ë³¸ì ìœ¼ë¡œ ì˜¤ë¼í´ ì‹¤í–‰ê³¼, ë¦¬ìŠ¤ë„ˆ ì‹¤í–‰ë§Œ í•˜ë©´ ëœë‹¤.
+	ì˜¤ë¼í´ì€ ì‹¤í–‰ì€ sqlplus ë¥¼ ì‹¤í–‰ìœ¼ë¡œ ì‹œìž‘í•œë‹¤.
+	----------------------------- ì•„ëž˜ëŠ” ì˜¤ë¼í´ 10 ì„¤ì¹˜í›„ ì±…ì— ìžˆëŠ” ëŒ€ë¡œ ì“´ ê²ƒìž„.
 
-	su - oracle  #»ç¿ëÀÚ º¯°æ
+	su - oracle  #ì‚¬ìš©ìž ë³€ê²½
 
-	emctl start dbconsole # ¿£ÅÍÇÁ¶óÀÌÁî ¸Å´ÏÀú ½ÇÇà(¾ÈÇØµµ µÈ´Ù)
-	isqlplusctl start	#iSQl*PLUS   ½ÇÇà(¾ÈÇØµµ µÈ´Ù)
+	emctl start dbconsole # ì—”í„°í”„ë¼ì´ì¦ˆ ë§¤ë‹ˆì € ì‹¤í–‰(ì•ˆí•´ë„ ëœë‹¤)
+	isqlplusctl start	#iSQl*PLUS   ì‹¤í–‰(ì•ˆí•´ë„ ëœë‹¤)
 	
-	lsnrctl start	#¸®½º³Ê ½ÇÇà
+	lsnrctl start	#ë¦¬ìŠ¤ë„ˆ ì‹¤í–‰
 
-	# ±âº» ÇÁ·Î¼¼½º ¿Ã¸° ÈÄ sqlplus ½ÇÇà
+	# ê¸°ë³¸ í”„ë¡œì„¸ìŠ¤ ì˜¬ë¦° í›„ sqlplus ì‹¤í–‰
 
 	sqlplus "/as sysdba"
 
-	¶Ç´Â 
+	ë˜ëŠ” 
 
 	sqlplus /nolog
 	SQL>connect sys/password as sysdba
 	
 	
-	Á¢¼Ó ÈÄ ±âµ¿
-	SQL>startup # ¿À¶óÅ¬ ÀÎ½ºÅÏ½º ±âµ¿
+	ì ‘ì† í›„ ê¸°ë™
+	SQL>startup # ì˜¤ë¼í´ ì¸ìŠ¤í„´ìŠ¤ ê¸°ë™
 
-	#±âµ¿ÈÄ sqlplus Á¾·á
+	#ê¸°ë™í›„ sqlplus ì¢…ë£Œ
 	SQL>quit
 
 
-2.²ô±â (½Ãµ¿½Ã ¿ª¼øÀ¸·Î ÇÁ·Î¼¼¼­ Á¤Áö)
+2.ë„ê¸° (ì‹œë™ì‹œ ì—­ìˆœìœ¼ë¡œ í”„ë¡œì„¸ì„œ ì •ì§€)
 
 	sqlplus "/as sysdba"
 
-	¶Ç´Â 
+	ë˜ëŠ” 
 
 	
 	sqlplus /nolog
 	SQL>connect sys/password as sysdba
 	
 
-	Á¢¼Ó ÈÄ ¼Ë´Ù¿î
-	SQL>shutdown immediate # ¿À¶óÅ¬ ÀÎ½ºÅÏ½º  Á¤Áö
+	ì ‘ì† í›„ ì…§ë‹¤ìš´
+	SQL>shutdown immediate # ì˜¤ë¼í´ ì¸ìŠ¤í„´ìŠ¤  ì •ì§€
 	..
 
-	SQL>quit #sqlplus Á¾·á
+	SQL>quit #sqlplus ì¢…ë£Œ
 
 
-	----¸®½º³Ê ÁßÁö
+	----ë¦¬ìŠ¤ë„ˆ ì¤‘ì§€
 	lsnrctl stop
 
-	----isqlplus ÁßÁö
+	----isqlplus ì¤‘ì§€
 	isqlplusctl stop
 
-	---- oracle Enterprise Manager Database Console / DB Console Á¤Áö
+	---- oracle Enterprise Manager Database Console / DB Console ì •ì§€
 	emctl stop dbconsole
 
 

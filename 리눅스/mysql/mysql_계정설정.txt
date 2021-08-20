@@ -1,14 +1,14 @@
-- °ü¸®ÀÚ ·Î±×ÀÎ
-$ mysql -uroot -pºñ¹Ð¹øÈ£ mysql
+- ê´€ë¦¬ìž ë¡œê·¸ì¸
+$ mysql -uroot -pë¹„ë°€ë²ˆí˜¸ mysql
 
-- °èÁ¤ »ý¼º
-mysql> insert into user ( host, user, password ) values ( 'localhost', '»ç¿ëÀÚ¸í', password('ÆÐ½º¿öµå') );
+- ê³„ì • ìƒì„±
+mysql> insert into user ( host, user, password ) values ( 'localhost', 'ì‚¬ìš©ìžëª…', password('íŒ¨ìŠ¤ì›Œë“œ') );
 
-- µ¥ÀÌÅÍº£ÀÌ½º »ý¼º
-mysql> create database µðºñ¸í;
+- ë°ì´í„°ë² ì´ìŠ¤ ìƒì„±
+mysql> create database ë””ë¹„ëª…;
 
-- µ¥ÀÌÅÍº£ÀÌ½º ±ÇÇÑ ÁÖ±â
-mysql> insert into db ( host, db, user, select_priv, insert_priv, update_priv, delete_priv, create_priv, drop_priv) values ( 'localhost', 'µðºñ¸í', '»ç¿ëÀÚ¸í', 'y', 'y', 'y', 'y', 'y', 'y' );
+- ë°ì´í„°ë² ì´ìŠ¤ ê¶Œí•œ ì£¼ê¸°
+mysql> insert into db ( host, db, user, select_priv, insert_priv, update_priv, delete_priv, create_priv, drop_priv) values ( 'localhost', 'ë””ë¹„ëª…', 'ì‚¬ìš©ìžëª…', 'y', 'y', 'y', 'y', 'y', 'y' );
 
-- »õ·Î Àû¿ë
+- ìƒˆë¡œ ì ìš©
 mysql> flush privileges;

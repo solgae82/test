@@ -1,2 +1,2 @@
-chown »ç¿ëÀÚ.±×·ì <ÆÄÀÏ or directory>
+chown ì‚¬ìš©ìž.ê·¸ë£¹ <íŒŒì¼ or directory>
 chown root.solgae aaa.txt

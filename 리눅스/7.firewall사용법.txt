@@ -1,42 +1,42 @@
-* firewalld ½ÇÇà¿©ºÎ È®ÀÎÇÏ±â
+* firewalld ì‹¤í–‰ì—¬ë¶€ í™•ì¸í•˜ê¸°
 firewall-cmd --state
 
-¶Ç´Â
-systemctl status firewalld.service #systemd·Î °ü¸®µÇ°í ÀÖ³ª È®ÀÎ
+ë˜ëŠ”
+systemctl status firewalld.service #systemdë¡œ ê´€ë¦¬ë˜ê³  ìžˆë‚˜ í™•ì¸
 
 
-firewall-cmd --reload # Àç½ÃÀÛ
+firewall-cmd --reload # ìž¬ì‹œìž‘
 
-±âº» ¼³Á¤Àº (°ÇµéÁö ¸»ÀÚ)
-/usr/lib/firewalld/ ¿¡ À§Ä¡ÇÏ°í ÀÖÀ¸¸ç 
-¹Ì¸® ¼³Á¤µÈ zone°ú zone º° Çã¿ëÇÏ´Â ¼­ºñ½ºµîÀº ÀÌ Æú´õ¸¦ º¸¸é È®ÀÎÇÒ ¼ö ÀÖ½À´Ï´Ù.
+ê¸°ë³¸ ì„¤ì •ì€ (ê±´ë“¤ì§€ ë§ìž)
+/usr/lib/firewalld/ ì— ìœ„ì¹˜í•˜ê³  ìžˆìœ¼ë©° 
+ë¯¸ë¦¬ ì„¤ì •ëœ zoneê³¼ zone ë³„ í—ˆìš©í•˜ëŠ” ì„œë¹„ìŠ¤ë“±ì€ ì´ í´ë”ë¥¼ ë³´ë©´ í™•ì¸í•  ìˆ˜ ìžˆìŠµë‹ˆë‹¤.
 
 -------------------------------------------------
 
-»ç¿ëÀÚ ¼³Á¤Àº ÀÌ°÷ ½Ã½ºÅÛ °³º° ¼³Á¤¿¡¼­...
+ì‚¬ìš©ìž ì„¤ì •ì€ ì´ê³³ ì‹œìŠ¤í…œ ê°œë³„ ì„¤ì •ì—ì„œ...
 
 firewalld.conf
-	½Ã½ºÅÛ °³º° ¼³Á¤Àº /etc/firewalld/ ¿¡ À§Ä¡ÇÏ¸ç 
-	default zone µî firewall ÀÇ µ¿ÀÛÀº /etc/firewalld/firewalld.conf ¿¡¼­ ÁöÁ¤ÇÒ ¼ö ÀÖÀ¸¸ç 
-	¿¹·Î default zone À» public·Î º¯°æÇÏ·Á¸é ¾Æ·¡¿Í °°ÀÌ ¼³Á¤ÇÏ°í firewalld-cmd --reload (Àç½ÃÀÛ) 
+	ì‹œìŠ¤í…œ ê°œë³„ ì„¤ì •ì€ /etc/firewalld/ ì— ìœ„ì¹˜í•˜ë©° 
+	default zone ë“± firewall ì˜ ë™ìž‘ì€ /etc/firewalld/firewalld.conf ì—ì„œ ì§€ì •í•  ìˆ˜ ìžˆìœ¼ë©° 
+	ì˜ˆë¡œ default zone ì„ publicë¡œ ë³€ê²½í•˜ë ¤ë©´ ì•„ëž˜ì™€ ê°™ì´ ì„¤ì •í•˜ê³  firewalld-cmd --reload (ìž¬ì‹œìž‘) 
 
 	vi /etc/firewalld/firewalld.conf
 
 		DefaultZone=public
 
 zone
-	/etc/firewalld/firewalld.conf ÀÇ DefaultZone ¼³Á¤À» ±âÁØÀ¸·Î zone ¿µ¿ªÀ» ¼³Á¤ÇÑ´Ù.
-	firewalld.conf µðÆúÆ® zoneÀ» public Á¸À» ¼³Á¤ÇßÀ¸¹Ç·Î, 
-	public.xml ÀÌ¸§ÀÇ ÆÄÀÏ¿¡ Çã¿ëÇÒ ¼­ºñ½ºÀÌ¸§À» ¼³Á¤ÇÑ´Ù.
-	public.xml ¼³Á¤ÇÒ ¼­ºñ½º ÀÌ¸§À» ¼³Á¤ÇÏ´Âµ¥
-	¿¹¸¦ µé¾î
-	/etc/firewalld/services/oracle.xml ¼­ºñ½º ÆÄÀÏÀ» ºÒ·¯¿À°í ½ÍÀ¸¸é,
-	.xmlÀ» »« ÆÄÀÏÀÌ¸§À» ¼³Á¤ÇÑ´Ù.
+	/etc/firewalld/firewalld.conf ì˜ DefaultZone ì„¤ì •ì„ ê¸°ì¤€ìœ¼ë¡œ zone ì˜ì—­ì„ ì„¤ì •í•œë‹¤.
+	firewalld.conf ë””í´íŠ¸ zoneì„ public ì¡´ì„ ì„¤ì •í–ˆìœ¼ë¯€ë¡œ, 
+	public.xml ì´ë¦„ì˜ íŒŒì¼ì— í—ˆìš©í•  ì„œë¹„ìŠ¤ì´ë¦„ì„ ì„¤ì •í•œë‹¤.
+	public.xml ì„¤ì •í•  ì„œë¹„ìŠ¤ ì´ë¦„ì„ ì„¤ì •í•˜ëŠ”ë°
+	ì˜ˆë¥¼ ë“¤ì–´
+	/etc/firewalld/services/oracle.xml ì„œë¹„ìŠ¤ íŒŒì¼ì„ ë¶ˆëŸ¬ì˜¤ê³  ì‹¶ìœ¼ë©´,
+	.xmlì„ ëº€ íŒŒì¼ì´ë¦„ì„ ì„¤ì •í•œë‹¤.
 
-	¾Æ·¡Ã³·³
-		<service name="oracle"/> <- ÀÌ·¸°Ô ¼³Á¤ÇØ ÁØ´Ù
+	ì•„ëž˜ì²˜ëŸ¼
+		<service name="oracle"/> <- ì´ë ‡ê²Œ ì„¤ì •í•´ ì¤€ë‹¤
 
-	¿¹Á¦)
+	ì˜ˆì œ)
 	cd /etc/firewalld/zone
 	vi public.xml
 
@@ -45,16 +45,16 @@ zone
 		  <short>Public</short>
 		  <description>..</description>
 		  <service name="ssh"/>
-		  <service name="oracle"/> #/etc/firewalld/services/oracle.xmlÀ» »ç¿ëÇÏ°Ú´Ù´Â ¶æ.
+		  <service name="oracle"/> #/etc/firewalld/services/oracle.xmlì„ ì‚¬ìš©í•˜ê² ë‹¤ëŠ” ëœ».
 		</zone>
 
-	zone Á¾·ù
-		drop, block, public, external, dmz, work, home, internal, trusted  µî
+	zone ì¢…ë¥˜
+		drop, block, public, external, dmz, work, home, internal, trusted  ë“±
 
 service
-	zone¿¡¼­ ¼³Á¤ÇÑ ¼­ºñ½º ¼³Á¤À» À§ÇÑ xmlÀÌ À§Ä¡ÇÑ °÷.
-	'¼­ºñ½ºÀÌ¸§'.xml ·Î ¼³Á¤ÇÑ´Ù.
-	À§¿¡ ¿¹¸¦ µç´Ù¸é  <service name="oracle"/> => oracle.xml ÀÌ µÇ°Ú´Ù.
+	zoneì—ì„œ ì„¤ì •í•œ ì„œë¹„ìŠ¤ ì„¤ì •ì„ ìœ„í•œ xmlì´ ìœ„ì¹˜í•œ ê³³.
+	'ì„œë¹„ìŠ¤ì´ë¦„'.xml ë¡œ ì„¤ì •í•œë‹¤.
+	ìœ„ì— ì˜ˆë¥¼ ë“ ë‹¤ë©´  <service name="oracle"/> => oracle.xml ì´ ë˜ê² ë‹¤.
 
 	cd /etc/firewalld/services
 	vi oracle.xml
@@ -63,36 +63,36 @@ service
 		<service>
 		  <short>Oracle</short>
 		  <description>Oracle ports</description>
-		  <port protocol="tcp" port="1521"/> # Çã¿ëÇÒ Æ÷Æ®¸¦ Àû¾îÁØ´Ù.
+		  <port protocol="tcp" port="1521"/> # í—ˆìš©í•  í¬íŠ¸ë¥¼ ì ì–´ì¤€ë‹¤.
 		</service>
 
 
-zone + servie  ¼³Á¤ ÈÄ ¹æÈ­º® Àç½ÃÀÛ
+zone + servie  ì„¤ì • í›„ ë°©í™”ë²½ ìž¬ì‹œìž‘
 	firewall-cmd --reload
 
 
-¼³Á¤»çÇ× È®ÀÎ
-	¾Æ·¡ ¸í·É¾î·Î ¿©·¯ ÇüÅÂÀÇ ¼³Á¤ »çÇ×(oracle) À» È®ÀÎÇÒ ¼ö ÀÖ´Ù.
+ì„¤ì •ì‚¬í•­ í™•ì¸
+	ì•„ëž˜ ëª…ë ¹ì–´ë¡œ ì—¬ëŸ¬ í˜•íƒœì˜ ì„¤ì • ì‚¬í•­(oracle) ì„ í™•ì¸í•  ìˆ˜ ìžˆë‹¤.
 
-	¸ðµç zone ÀÌ¸§ÀÇ ¼³Á¤µÈ Á¤º¸ Ãâ·Â
+	ëª¨ë“  zone ì´ë¦„ì˜ ì„¤ì •ëœ ì •ë³´ ì¶œë ¥
 		# firewall-cmd --list-all-zones
 
-	ÇöÀç È°¼ºÈ­µÈ zone ¼³Á¤Á¤º¸µé Ãâ·Â
+	í˜„ìž¬ í™œì„±í™”ëœ zone ì„¤ì •ì •ë³´ë“¤ ì¶œë ¥
 		# firewall-cmd --list-all   
 
-	zone Á¾·ù ÀÌ¸§ ¸ðµÎ °¡Á®¿À±â
+	zone ì¢…ë¥˜ ì´ë¦„ ëª¨ë‘ ê°€ì ¸ì˜¤ê¸°
 		# firewall-cmd --get-zones 
 		
-	ÇöÀç È°¼ºÈ­µÈ zone ÀÌ¸§ + ³×Æ®Ÿp interface Ãâ·Â
+	í˜„ìž¬ í™œì„±í™”ëœ zone ì´ë¦„ + ë„¤íŠ¸ì›¤ interface ì¶œë ¥
 		# firewall-cmd --get-active-zones 
 		
-	ÇöÀç È°¼ºÈ­µÈ µðÆúÆ® zone ÀÌ¸§ Ãâ·Â
+	í˜„ìž¬ í™œì„±í™”ëœ ë””í´íŠ¸ zone ì´ë¦„ ì¶œë ¥
 		# firewall-cmd --get-default-zone 
 		
-	»ç¿ë°¡´ÉÇÑ ¸ðµç ¼­ºñ½º ÀÌ¸§ Ãâ·Â
+	ì‚¬ìš©ê°€ëŠ¥í•œ ëª¨ë“  ì„œë¹„ìŠ¤ ì´ë¦„ ì¶œë ¥
 		# firewall-cmd --get-services  
 		
-	ÇöÀç È°¼ºÈ­µÈ zoneÀÇ ¼³Á¤µÈ ¼­ºñ½º ÀÌ¸§ ¸ñ·Ï Ãâ·Â
+	í˜„ìž¬ í™œì„±í™”ëœ zoneì˜ ì„¤ì •ëœ ì„œë¹„ìŠ¤ ì´ë¦„ ëª©ë¡ ì¶œë ¥
 		# firewall-cmd --list-services 
 
 

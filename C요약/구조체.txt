@@ -1,6 +1,6 @@
-1. ±¸Á¶Ã¼ Á¤ÀÇ
+1. êµ¬ì¡°ì²´ ì •ì˜
 
-	//---------±âº» ±¸Á¶Ã¼ Á¤ÀÇ
+	//---------ê¸°ë³¸ êµ¬ì¡°ì²´ ì •ì˜
 	struct point{
 		int x;
 		int y;
@@ -15,7 +15,7 @@
 		printf("%d \n",p1.x); //1
 	}
 	
-	//---------±¸Á¶Ã¼Á¤ÀÇ¿Í µ¿½Ã¿¡ º¯¼ö ¼±¾ğ
+	//---------êµ¬ì¡°ì²´ì •ì˜ì™€ ë™ì‹œì— ë³€ìˆ˜ ì„ ì–¸
 	struct point{
 		int x;
 		int y;
@@ -31,7 +31,7 @@
 		printf("%d \n",p1.x); //1
 	}
 
-	//--------- ±¸Á¶Ã¼ º¯¼ö ÃÊ±âÈ­
+	//--------- êµ¬ì¡°ì²´ ë³€ìˆ˜ ì´ˆê¸°í™”
 	struct point{
 		int x;
 		int y;
@@ -44,9 +44,9 @@
 		struct point p2 ={.x=10, .y=20, .name="Navi"};
 	}
 
-2. ±¸Á¶Ã¼¿Í ¹è¿­
+2. êµ¬ì¡°ì²´ì™€ ë°°ì—´
 
-	//--------- ±¸Á¶Ã¼ ¹è¿­ ±âº»
+	//--------- êµ¬ì¡°ì²´ ë°°ì—´ ê¸°ë³¸
 	struct point{
 		int x;
 		int y;
@@ -63,11 +63,11 @@
 		return 0;
 	}
 
-3. ±¸Á¶Ã¼¿Í Æ÷ÀÎÅÍ
-- (*p).name == p->name °°´Ù
-- ±¸Á¶Ã¼º¯¼ö ÁÖ¼Ò¿Í, ±¸Á¶Ã¼ Ã¹ ¸â¹ö ÁÖ¼Ò´Â °°´Ù.
+3. êµ¬ì¡°ì²´ì™€ í¬ì¸í„°
+- (*p).name == p->name ê°™ë‹¤
+- êµ¬ì¡°ì²´ë³€ìˆ˜ ì£¼ì†Œì™€, êµ¬ì¡°ì²´ ì²« ë©¤ë²„ ì£¼ì†ŒëŠ” ê°™ë‹¤.
 
-	//--------- ±¸Á¶Ã¼º¯¼ö¸¦ Æ÷ÀÎÅÍº¯¼ö·Î ´ëÀÔÇØ¼­ Á¢±Ù
+	//--------- êµ¬ì¡°ì²´ë³€ìˆ˜ë¥¼ í¬ì¸í„°ë³€ìˆ˜ë¡œ ëŒ€ì…í•´ì„œ ì ‘ê·¼
 	
 	struct point{
 		int x;
@@ -77,7 +77,7 @@
 
 	int main(void){
 		struct point p1={10,20,"dong"};
-		struct point *sPtr = &p1; // <-´ëÀÔ
+		struct point *sPtr = &p1; // <-ëŒ€ì…
 		
 		printf("%s \n",(*sPtr).name); //dong
 		printf("%d \n",sPtr->x); //10
@@ -85,13 +85,13 @@
 		return 0;
 	}
 
-	//--------- ±¸Á¶Ã¼º¯¼ö ¾È¿¡ ´Ù¸¥ ±¸Á¶Ã¼ Æ÷ÀÎÅÍº¯¼ö »ç¿ëÇÏ±â
+	//--------- êµ¬ì¡°ì²´ë³€ìˆ˜ ì•ˆì— ë‹¤ë¥¸ êµ¬ì¡°ì²´ í¬ì¸í„°ë³€ìˆ˜ ì‚¬ìš©í•˜ê¸°
 
 	struct point{
 		int x;
 		int y;
 		char name[20];
-		struct person *man; //´Ù¸¥ ±¸Á¶Ã¼ Æ÷ÀÎÅÍ º¯¼ö
+		struct person *man; //ë‹¤ë¥¸ êµ¬ì¡°ì²´ í¬ì¸í„° ë³€ìˆ˜
 	};
 
 	struct person{
@@ -103,7 +103,7 @@
 		struct point p1={10,20,"dong"};
 		struct person ps={"pointer_dong",38};
 		
-		p1.man = &ps; // <- person ±¸Á¶Ã¼ point ³»ºÎ ¸â¹öÀÎ  person Æ÷ÀÎÅÍ¿¡ ÁÖ¼Ò´ëÀÔ
+		p1.man = &ps; // <- person êµ¬ì¡°ì²´ point ë‚´ë¶€ ë©¤ë²„ì¸  person í¬ì¸í„°ì— ì£¼ì†ŒëŒ€ì…
 		
 		printf("%s \n",p1.man->name); //pointer_dong
 		printf("%d \n",p1.man->age); //38
@@ -111,19 +111,19 @@
 		return 0;
 	}
 
-	//--------- ±¸Á¶Ã¼º¯¼ö ¾È¿¡ ÀÚ±âÀÚ½Å ±¸Á¶Ã¼ Æ÷ÀÎÅÍº¯¼ö »ç¿ëÇÏ±â
+	//--------- êµ¬ì¡°ì²´ë³€ìˆ˜ ì•ˆì— ìê¸°ìì‹  êµ¬ì¡°ì²´ í¬ì¸í„°ë³€ìˆ˜ ì‚¬ìš©í•˜ê¸°
 	struct point{
 		int x;
 		int y;
 		char name[20];
-		struct point *ptr; // <- ÀÚ±âÀÚ½Å ±¸Á¶Ã¼ ¼±¾ğ
+		struct point *ptr; // <- ìê¸°ìì‹  êµ¬ì¡°ì²´ ì„ ì–¸
 	};
 
 	int main(void){
 		struct point p1={10,20,"dong"};
 		struct point p2={30,40,"pointer_dong"};
 		
-		p1.ptr = &p2; //±¸Á¶Ã¼ º¯¼ö ´ëÀÔ
+		p1.ptr = &p2; //êµ¬ì¡°ì²´ ë³€ìˆ˜ ëŒ€ì…
 		
 		printf("%s \n",p1.ptr->name); //pointer_dong
 		printf("%d \n",p1.ptr->x); //30
@@ -131,7 +131,7 @@
 		return 0;
 	}
 
-4. ±¸Á¶Ã¼¿Í ÇÔ¼ö
+4. êµ¬ì¡°ì²´ì™€ í•¨ìˆ˜
 	struct person{
 		char name[20];
 		int age;
@@ -139,10 +139,10 @@
 
 	void show1(struct person s){ 
 		s.age++;
-		printf("%s \n",s.age); // <-º¹»çµÈ °ª Á¢±Ù
+		printf("%s \n",s.age); // <-ë³µì‚¬ëœ ê°’ ì ‘ê·¼
 	}
 	void show2(struct person* ps){ 
-		printf("%s \n",ps->age); // <-Æ÷ÀÎÅÍ Á¢±Ù
+		printf("%s \n",ps->age); // <-í¬ì¸í„° ì ‘ê·¼
 	}
 	struct person get_person(){ //person
 		struct person p1 ={"dong2",30};
@@ -162,12 +162,12 @@
 		show2(&p1);		//21
 		printf("%d \n",p1.age);	//21
 
-		//±¸Á¶Ã¼ ¸®ÅÏ
+		//êµ¬ì¡°ì²´ ë¦¬í„´
 		r = get_person();
-		printf("%s , %d¼¼ \n",r.name,r.age);
+		printf("%s , %dì„¸ \n",r.name,r.age);
 	}
 
-5. ±¸Á¶Ã¼¿Í ´ëÀÔ
+5. êµ¬ì¡°ì²´ì™€ ëŒ€ì…
 	struct person{
 		char name[20];
 		int age;
@@ -177,17 +177,17 @@
 		struct person p1 ={"dong",20};
 		struct person p2;
 
-		p2 = p1; //°ª º¹»ç°¡ ÀÌ·ïÁø´Ù.
+		p2 = p1; //ê°’ ë³µì‚¬ê°€ ì´ë¤„ì§„ë‹¤.
 	}
 
-6. ÁßÃ¸ ±¸Á¶Ã¼
-- Æ÷ÇÔµÉ ±¸Á¶Ã¼¸¦ ¸ÕÀú Á¤ÀÇÇÑ ÈÄ Æ÷ÇÔÇÒ ±¸Á¶Ã¼¸¦ Á¤ÀÇ ÇÑ´Ù
-	struct point{	// ¸ÕÀú Á¤ÀÇ ÇØ¾ßÇÑ´Ù
+6. ì¤‘ì²© êµ¬ì¡°ì²´
+- í¬í•¨ë  êµ¬ì¡°ì²´ë¥¼ ë¨¼ì € ì •ì˜í•œ í›„ í¬í•¨í•  êµ¬ì¡°ì²´ë¥¼ ì •ì˜ í•œë‹¤
+	struct point{	// ë¨¼ì € ì •ì˜ í•´ì•¼í•œë‹¤
 		int x;
 		int y;
 	};
 	struct circle{
-		struct point p; //´Ù¸¥ ±¸Á¶Ã¼ Á¤ÀÇ
+		struct point p; //ë‹¤ë¥¸ êµ¬ì¡°ì²´ ì •ì˜
 		int radius;
 	};
 
@@ -206,9 +206,9 @@
 		*/
 	}
 
-7. typedef ·Î ±¸Á¶Ã¼ Á¤ÀÇÇÏ±â
+7. typedef ë¡œ êµ¬ì¡°ì²´ ì •ì˜í•˜ê¸°
 	
-	//--------- ±âº» Á¤ÀÇ
+	//--------- ê¸°ë³¸ ì •ì˜
 	struct person{
 		char name[20];
 		int age;
@@ -222,14 +222,14 @@
 		PERSON person = {"dong",28};
 	}
 
-	//---------- Á¤ÀÇ¿Í µ¿½Ã¿¡ typedef »ç¿ëÇÏ±â
-	//±¸Á¶Ã¼ º¯¼öÀÌ¸§ÀÌ ÀÖ´Â Çü½Ä
+	//---------- ì •ì˜ì™€ ë™ì‹œì— typedef ì‚¬ìš©í•˜ê¸°
+	//êµ¬ì¡°ì²´ ë³€ìˆ˜ì´ë¦„ì´ ìˆëŠ” í˜•ì‹
 	typedef struct person{
 		char name[20];
 		int age;
 	} PERSON;
 
-	//¶Ç´Â ±¸Á¶Ã¼ ÀÌ¸§ ¾øÀÌµµ °¡´É
+	//ë˜ëŠ” êµ¬ì¡°ì²´ ì´ë¦„ ì—†ì´ë„ ê°€ëŠ¥
 	
 	typedef struct{
 		char name[20];
@@ -239,10 +239,10 @@
 	void main(){
 		
 		PERSON person = {"dong",28};
-		struct person p2; //¼±¾ğ °¡´É
+		struct person p2; //ì„ ì–¸ ê°€ëŠ¥
 
-		//±¸Á¶Ã¼ ÀÌ¸§ ¾øÀÌ Á¤ÀÇÇßÀ»¶§
+		//êµ¬ì¡°ì²´ ì´ë¦„ ì—†ì´ ì •ì˜í–ˆì„ë•Œ
 		PERSON2 person2 = {"dong2",38};
-		//struct PERSON2 p2; //ºÒ°¡´É
+		//struct PERSON2 p2; //ë¶ˆê°€ëŠ¥
 
 	}

@@ -1,4 +1,4 @@
-﻿-------------------// yum  저장소 추가
+-------------------// yum  저장소 추가
 # yum install epel-release
 # rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
 # rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm

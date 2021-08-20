@@ -1,17 +1,17 @@
-½ÇÇà¿É¼Ç¿¡
-CATALINA_OPTS È¯°æº¯¼ö¿¡ ¾Æ·¡°ª ¼ÂÆÃ 
+ì‹¤í–‰ì˜µì…˜ì—
+CATALINA_OPTS í™˜ê²½ë³€ìˆ˜ì— ì•„ë˜ê°’ ì…‹íŒ… 
 
 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true
 
 
-À©µµ¿ìÁî¿¡´Â bin/catalina.bat ¾È¿¡
+ìœˆë„ìš°ì¦ˆì—ëŠ” bin/catalina.bat ì•ˆì—
 set CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
 
-¸®´ª½º¿¡´Â
-È¯°æº¯¼ö µî·Ï
+ë¦¬ëˆ…ìŠ¤ì—ëŠ”
+í™˜ê²½ë³€ìˆ˜ ë“±ë¡
 export CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
 
-¶Ç´Â
+ë˜ëŠ”
 
-bin/catalina.sh ¾È¿¡
+bin/catalina.sh ì•ˆì—
 CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"

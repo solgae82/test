@@ -1,5 +1,5 @@
 rpm -qa php
 rpm -qa | grep php
-¶Ç´Â
+ë˜ëŠ”
 yum list installed php
 yum list installed | grep php

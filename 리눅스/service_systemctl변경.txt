@@ -1,68 +1,68 @@
-CentOS 7ÀÌ»óºÎÅÍ service¿Í chkconfig°¡ <systemctlf>·Î ÅëÇÕ
-¸ÕÀú  /etc/rc.d/init.d ¿¡ ÇØ´ç ½ºÅ©¸³Æ®¸¦ »ı¼º ÇÏ¿© µÎ¾î¾ß ÇÑ´Ù.
+CentOS 7ì´ìƒë¶€í„° serviceì™€ chkconfigê°€ <systemctlf>ë¡œ í†µí•©
+ë¨¼ì €  /etc/rc.d/init.d ì— í•´ë‹¹ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ìƒì„± í•˜ì—¬ ë‘ì–´ì•¼ í•œë‹¤.
 
---¼­ºñ½º½ÇÇà
-service ¼­ºñ½º¸í start    => systemctl start ¼­ºñ½º¸í
+--ì„œë¹„ìŠ¤ì‹¤í–‰
+service ì„œë¹„ìŠ¤ëª… start    => systemctl start ì„œë¹„ìŠ¤ëª…
 
-service ¼­ºñ½º¸í restart    => systemctl restart ¼­ºñ½º¸í
+service ì„œë¹„ìŠ¤ëª… restart    => systemctl restart ì„œë¹„ìŠ¤ëª…
 
-service ¼­ºñ½º¸í stop    => systemctl stop   ¼­ºñ½º¸í
+service ì„œë¹„ìŠ¤ëª… stop    => systemctl stop   ì„œë¹„ìŠ¤ëª…
 
-À¸·Î °£´Ü »ç¿ë °¡´É
+ìœ¼ë¡œ ê°„ë‹¨ ì‚¬ìš© ê°€ëŠ¥
 
---ÀÚµ¿½ÇÇà µî·Ï
+--ìë™ì‹¤í–‰ ë“±ë¡
 
-chkconfig ¼­ºñ½º¸í   on   => systemctl enable ¼­ºñ½º¸í 
-chkconfig ¼­ºñ½º¸í    off  => systemctl disable ¼­ºñ½º¸í 
+chkconfig ì„œë¹„ìŠ¤ëª…   on   => systemctl enable ì„œë¹„ìŠ¤ëª… 
+chkconfig ì„œë¹„ìŠ¤ëª…    off  => systemctl disable ì„œë¹„ìŠ¤ëª… 
 
-Ãß°¡·Î ½ÇÁ¦ ¼­ºñ½º°¡ ÀÚµ¿½ÇÇàÀ¸·Î Àû¿ë µÆ´ÂÁö È®ÀÎÀº
-systemctl is-enable ¼­ºñ½º¸í À¸·Î ÇÏ¸é µÈ´Ù.
+ì¶”ê°€ë¡œ ì‹¤ì œ ì„œë¹„ìŠ¤ê°€ ìë™ì‹¤í–‰ìœ¼ë¡œ ì ìš© ëëŠ”ì§€ í™•ì¸ì€
+systemctl is-enable ì„œë¹„ìŠ¤ëª… ìœ¼ë¡œ í•˜ë©´ ëœë‹¤.
 
-ÀÚµ¿½ÇÇà ¼­ºñ½º ¸ñ·ÏÀ» º¸°í ½ÍÀ»¶§ »ç¿ë ÇÏ´Â ¸í·ÉÀÎ  chkconfig --list
+ìë™ì‹¤í–‰ ì„œë¹„ìŠ¤ ëª©ë¡ì„ ë³´ê³  ì‹¶ì„ë•Œ ì‚¬ìš© í•˜ëŠ” ëª…ë ¹ì¸  chkconfig --list
 
-Àº systemctl list-unit-files --type=service  ·Î ´Ù¼Ò º¹Àâ ÇÏ°Ô ¹Ù²î¾ú´Ù. 
+ì€ systemctl list-unit-files --type=service  ë¡œ ë‹¤ì†Œ ë³µì¡ í•˜ê²Œ ë°”ë€Œì—ˆë‹¤. 
 
 
-httpd ¿¹Á¦
-----------------------service => systemctl º¯°æ 
-1.¼­ºñ½º ½ÃÀÛ
+httpd ì˜ˆì œ
+----------------------service => systemctl ë³€ê²½ 
+1.ì„œë¹„ìŠ¤ ì‹œì‘
 service httpd start => systemctl start httpd.service
 
-2.¼­ºñ½º ÁßÁö
+2.ì„œë¹„ìŠ¤ ì¤‘ì§€
 service httpd stop => systemctl stop httpd.service
 
-3.¼­ºñ½º Àç½ÃÀÛ
+3.ì„œë¹„ìŠ¤ ì¬ì‹œì‘
 service httpd restart => systemctl restart httpd.service
 
-4.¼­ºñ½º°¡ ±¸µ¿ÁßÀÌ¾úÀ» °æ¿ì¿¡¸¸ Àç½ÃÀÛ
+4.ì„œë¹„ìŠ¤ê°€ êµ¬ë™ì¤‘ì´ì—ˆì„ ê²½ìš°ì—ë§Œ ì¬ì‹œì‘
 service httpd condrestart => systemctl try-restart httpd.service
 
-5.¼³Á¤ Àç±¸µ¿
+5.ì„¤ì • ì¬êµ¬ë™
 service httpd reload => systemctl reload httpd.service
 
-6.¼­ºñ½º ±¸µ¿ ¿©ºÎ È®ÀÎ
+6.ì„œë¹„ìŠ¤ êµ¬ë™ ì—¬ë¶€ í™•ì¸
 service httpd status => systemctl status httpd.service
 systemctl is-active httpd.service
 
-7.¸ğµç ¼­ºñ½ºÀÇ »óÅÂ Ç¥½Ã
+7.ëª¨ë“  ì„œë¹„ìŠ¤ì˜ ìƒíƒœ í‘œì‹œ
 service --status-all => systemctl list-units --type service --all
 
-----------------------chkconfig => systemctl º¯°æ
-1.¼­ºñ½º È°¼ºÈ­(ºÎÆÃ½Ã ÀÚµ¿ ±¸µ¿)
+----------------------chkconfig => systemctl ë³€ê²½
+1.ì„œë¹„ìŠ¤ í™œì„±í™”(ë¶€íŒ…ì‹œ ìë™ êµ¬ë™)
 chkconfig httpd on => systemctl enable httpd.service
 
-2.¼­ºñ½º ºñÈ°¼ºÈ­
+2.ì„œë¹„ìŠ¤ ë¹„í™œì„±í™”
 chkconfig httpd off => systemctl disable httpd.service
 
-3.¼­ºñ½ºÀÇ È°¼ºÈ­ ¿©ºÎ Ç¥½Ã
+3.ì„œë¹„ìŠ¤ì˜ í™œì„±í™” ì—¬ë¶€ í‘œì‹œ
 chkconfig --list httpd => systemctl status httpd.service
 			 systemctl is-enabled httpd.service
 
-4.¸ğµç ¼­ºñ½ºÀÇ ÇöÀç È°¼ºÈ­ ¿©ºÎ Ç¥½Ã
+4.ëª¨ë“  ì„œë¹„ìŠ¤ì˜ í˜„ì¬ í™œì„±í™” ì—¬ë¶€ í‘œì‹œ
 chkconfig --list => systemctl list-unit-files --type service
 
-5.ÁöÁ¤ÇÑ target ÀÌÈÄ¿¡ ½ÃÀÛÇÏ´Â ¼­ºñ½º¸¦ Ç¥½Ã
+5.ì§€ì •í•œ target ì´í›„ì— ì‹œì‘í•˜ëŠ” ì„œë¹„ìŠ¤ë¥¼ í‘œì‹œ
 chkconfig --list => systemctl list-dependencies --after
 
-6.ÁöÁ¤ÇÑ target ÀÌÀü¿¡ ½ÃÀÛÇÏ´Â ¼­ºñ½º¸¦ Ç¥½Ã
+6.ì§€ì •í•œ target ì´ì „ì— ì‹œì‘í•˜ëŠ” ì„œë¹„ìŠ¤ë¥¼ í‘œì‹œ
 chkconfig --list => systemctl list-dependencies --before

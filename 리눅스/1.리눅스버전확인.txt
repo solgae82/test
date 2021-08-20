@@ -1,5 +1,5 @@
-1. cat /etc/issue (º¸¾È ¹®Á¦·Î ¸·ÇôÀÖÀ» ¼ö ÀÖ´Ù)
-2. cat /etc/*-release (È®½Ç)
-2. rpm -qa *-release (·¹µåÇò °è¿­)
+1. cat /etc/issue (ë³´ì•ˆ ë¬¸ì œë¡œ ë§‰í˜€ìˆì„ ìˆ˜ ìˆë‹¤)
+2. cat /etc/*-release (í™•ì‹¤)
+2. rpm -qa *-release (ë ˆë“œí—· ê³„ì—´)
 
 

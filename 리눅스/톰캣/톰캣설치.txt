@@ -1,39 +1,39 @@
-java ¼³Ä¡ ÈÄ ¼³Ä¡
+java ì„¤ì¹˜ í›„ ì„¤ì¹˜
 
-1. /usr/local/server/tomcat <= ÅèÄ¹  µð·ºÅä¸®(tar ¾ÐÃàÇØÁ¦ÇÑ) À§Ä¡½ÃÅ² ÈÄ
+1. /usr/local/server/tomcat <= í†°ìº£  ë””ë ‰í† ë¦¬(tar ì••ì¶•í•´ì œí•œ) ìœ„ì¹˜ì‹œí‚¨ í›„
 
-2. ÇÁ·ÎÆÄÀÏ¿¡ ÀÚ¹Ù¼³Á¤°ú, ÅèÄ¹ µð·ºÅä¸® ¼³Á¤
+2. í”„ë¡œíŒŒì¼ì— ìžë°”ì„¤ì •ê³¼, í†°ìº£ ë””ë ‰í† ë¦¬ ì„¤ì •
 [root@localhost server]# vi /etc/profile
 .
 .
-export JAVA_HOME=/usr/local/jdk1.7.0_76 <= java ¼³Ä¡ µð·ºÅä¸®
+export JAVA_HOME=/usr/local/jdk1.7.0_76 <= java ì„¤ì¹˜ ë””ë ‰í† ë¦¬
 export CATALINA_HOME=/usr/local/server/tomcat 
 export CLASSPATH="."
 PATH="$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin"
 
 
-3. ½Ã½ºÅÛ Àû¿ë
+3. ì‹œìŠ¤í…œ ì ìš©
 [root@localhost server]# source /etc/profile
 
 
-4. iptables ¿¡ Æ÷Æ® ¿­±â(¿É¼Ç...Àû¿ëµÇ¾î ÀÖÀ»¶§..)
+4. iptables ì— í¬íŠ¸ ì—´ê¸°(ì˜µì…˜...ì ìš©ë˜ì–´ ìžˆì„ë•Œ..)
 [root@localhost server]# /etc/init.d/iptables stop
 [root@localhost server]# vi /etc/sysconfig/iptables
 .
 .
-»ç¿ë  port Àû¿ë
+ì‚¬ìš©  port ì ìš©
 -A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
 -A INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT
 -A INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
 
 
 
-ÀúÀå ÈÄ Àç½ÃÀÛ
+ì €ìž¥ í›„ ìž¬ì‹œìž‘
 [root@localhost server]# /etc/init.d/iptables start
 
-Æ÷Æ®È®ÀÎ
-[root@localhost server]# netstat -ntl <=  ¿­¸° Æ÷Æ® È®ÀÎ
+í¬íŠ¸í™•ì¸
+[root@localhost server]# netstat -ntl <=  ì—´ë¦° í¬íŠ¸ í™•ì¸
 
-5.ÅèÄ¹ ½ÃÀÛ
+5.í†°ìº£ ì‹œìž‘
 /usr/local/server/tomcat/catalina.sh start
 

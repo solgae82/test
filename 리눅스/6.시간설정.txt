@@ -1,28 +1,28 @@
-ÇöÀç½Ã°£ º¸±â
+í˜„ìž¬ì‹œê°„ ë³´ê¸°
 [root@zetawiki ~]# date
-Sun Nov 17 08:49:12 PST 2013 <-ÅÂÆò¾ç Ç¥ÁØ½Ã(PST)·Î µÇ¾î ÀÖÀ½
+Sun Nov 17 08:49:12 PST 2013 <-íƒœí‰ì–‘ í‘œì¤€ì‹œ(PST)ë¡œ ë˜ì–´ ìžˆìŒ
 
-ÇÑ±¹Ç¥ÁØ½Ã·Î º¯°æ (/etc/localtime À» Seoul·Î ¸µÅ©ÇØÁØ´Ù)
+í•œêµ­í‘œì¤€ì‹œë¡œ ë³€ê²½ (/etc/localtime ì„ Seoulë¡œ ë§í¬í•´ì¤€ë‹¤)
 [root@zetawiki ~]# ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 [root@zetawiki ~]# date
-Mon Nov 18 01:49:20 KST 2013 <-ÇÑ±¹ Ç¥ÁØ½Ã(KST)·Î º¯°æµÊ
+Mon Nov 18 01:49:20 KST 2013 <-í•œêµ­ í‘œì¤€ì‹œ(KST)ë¡œ ë³€ê²½ë¨
 
-¼öµ¿½Ã°£¼³Á¤
+ìˆ˜ë™ì‹œê°„ì„¤ì •
 [root@zetawiki ~]# date -s "2013-12-01 00:00:00" 
 Sun Dec  1 00:00:00 PST 2013
 
-ÄÚ³Ý½Ã°£¼­¹ö¿Í µ¿±âÈ­
+ì½”ë„·ì‹œê°„ì„œë²„ì™€ ë™ê¸°í™”
 rdate -s time.bora.net
 
-ÇÏµå¿þ¾î½Ã°£µµ µ¿±âÈ­
+í•˜ë“œì›¨ì–´ì‹œê°„ë„ ë™ê¸°í™”
 hwclock --systohc
 
-ÃÖÁ¾È®ÀÎ
+ìµœì¢…í™•ì¸
 date
 hwclock
 
-------------------------------------------------//ÇÑ¹æ¿¡ ¼³Á¤
-½Ã°£´ë KST·Î, ½Ã½ºÅÛ ½Ã°£ ¸ÂÃß°í, hwclock±îÁö ¸ÂÃã
+------------------------------------------------//í•œë°©ì— ì„¤ì •
+ì‹œê°„ëŒ€ KSTë¡œ, ì‹œìŠ¤í…œ ì‹œê°„ ë§žì¶”ê³ , hwclockê¹Œì§€ ë§žì¶¤
 ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 rdate -s time.bora.net
 hwclock --systohc

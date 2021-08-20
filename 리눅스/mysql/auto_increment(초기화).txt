@@ -1,9 +1,9 @@
-Table¿¡ ÀÚ·á°¡ ÀÖÀ»°æ¿ì(auto_increment¸¸ ÃÊ±âÈ­)
+Tableì— ìë£Œê°€ ìˆì„ê²½ìš°(auto_incrementë§Œ ì´ˆê¸°í™”)
 
-     alter table<Å×ÀÌºí ÀÌ¸§> auto_increment=<ÁöÁ¤¹øÈ£>;
+     alter table<í…Œì´ë¸” ì´ë¦„> auto_increment=<ì§€ì •ë²ˆí˜¸>;
 ex) alter table MEMBER auto_increment = 1 
 
 
-Table¿¡ ÀÚ·á°¡ ¾øÀ»°æ¿ì(Å×ÀÌºí ÀüÃ¼ ÃÊ±âÈ­)
+Tableì— ìë£Œê°€ ì—†ì„ê²½ìš°(í…Œì´ë¸” ì „ì²´ ì´ˆê¸°í™”)
 
-    truncate table <Å×ÀÌºí ÀÌ¸§>; 
+    truncate table <í…Œì´ë¸” ì´ë¦„>; 

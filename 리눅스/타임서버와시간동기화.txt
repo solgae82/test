@@ -2,7 +2,7 @@ yum -y install rdate
 
 rdate -s bora.net
 
-À§¿¡°ÍÀ¸·Î Àß ¾ÈµÇ¸é ¾Æ·¡ °ÍµéÁß ÇÏ³ª °ñ¶ó¼­ ÇÑ´Ù
+ìœ„ì—ê²ƒìœ¼ë¡œ ì˜ ì•ˆë˜ë©´ ì•„ë˜ ê²ƒë“¤ì¤‘ í•˜ë‚˜ ê³¨ë¼ì„œ í•œë‹¤
 zero.bora.net
  time2.kriss.re.kr
  time.bora.net
@@ -10,5 +10,5 @@ zero.bora.net
  ntp.postech.ac.kr
 
 
-date && clock -r && clock -w (¹Ù²ï °Í È®ÀÎ)
+date && clock -r && clock -w (ë°”ë€ ê²ƒ í™•ì¸)
 

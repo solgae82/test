@@ -1,2 +1,2 @@
-AddType application/x-httpd-php .php .php3 .php4 .html .htm .inc(¿øÇÏ´Â È®Àå¸é Ãß°¡ÇÏ¸é ÀÚµ¿À¸·Î phpÆÄ¼­°¡ ÇØ¼®ÇÔ)
+AddType application/x-httpd-php .php .php3 .php4 .html .htm .inc(ì›í•˜ëŠ” í™•ì¥ë©´ ì¶”ê°€í•˜ë©´ ìë™ìœ¼ë¡œ phpíŒŒì„œê°€ í•´ì„í•¨)
 AddType application/x-httpd-php-source .phps

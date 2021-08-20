@@ -1,7 +1,7 @@
-/etc/hosts : ³×ÀÓ¼­¹ö ÀÌÀü¿¡ ¸ÕÀú µé¸®´Â ÆÄÀÏ(ÇöÀç ·ÎÄÃÀÇ IP¿Í µµ¸ÞÀÎÀÌ¸§µîÀÌ ±âº»¸ÅÇÎ)
-/etc/host.conf : µµ¸ÞÀÎ °Ë»ö½Ã hostÆÄÀÏ°ú ³×ÀÓ¼­¹ö Áß¿¡¼­ °Ë»ö¼ø¼­¸¦ Á¤ÇÏ´Â ÆÄÀÏ
-/etc/resolv.conf : Çö ½Ã½ºÅÛ¿¡¼­ »ç¿ëµÉ ³×ÀÓ¼­¹ö IPÁÖ¼Ò ¼³Á¤ÇÏ´Â°÷
-/etc/sysconfig/network : ±âº»³×Æ®Ÿp ¼³Á¤ ÆÄÀÏ(ÇöÀç È£½ºÆ®ÀÌ¸§¼³Á¤ µÈ°÷,³×Æ®Ÿp»ç¿ë¿©ºÎ,ipv6»ç¿ë¿©ºÎµî)
-/etc/syconfig/network-scripts/ifcfg-eth0 : NIC 0¹øÂ° °ÔÀÌÆ®¿þÀÌ,¾ÆÀÌÇÇÁÖ¼Ò,³Ý¸¶½ºÅ©µî ¼³Á¤µÈ °÷.
+/etc/hosts : ë„¤ìž„ì„œë²„ ì´ì „ì— ë¨¼ì € ë“¤ë¦¬ëŠ” íŒŒì¼(í˜„ìž¬ ë¡œì»¬ì˜ IPì™€ ë„ë©”ì¸ì´ë¦„ë“±ì´ ê¸°ë³¸ë§¤í•‘)
+/etc/host.conf : ë„ë©”ì¸ ê²€ìƒ‰ì‹œ hostíŒŒì¼ê³¼ ë„¤ìž„ì„œë²„ ì¤‘ì—ì„œ ê²€ìƒ‰ìˆœì„œë¥¼ ì •í•˜ëŠ” íŒŒì¼
+/etc/resolv.conf : í˜„ ì‹œìŠ¤í…œì—ì„œ ì‚¬ìš©ë  ë„¤ìž„ì„œë²„ IPì£¼ì†Œ ì„¤ì •í•˜ëŠ”ê³³
+/etc/sysconfig/network : ê¸°ë³¸ë„¤íŠ¸ì›¤ ì„¤ì • íŒŒì¼(í˜„ìž¬ í˜¸ìŠ¤íŠ¸ì´ë¦„ì„¤ì • ëœê³³,ë„¤íŠ¸ì›¤ì‚¬ìš©ì—¬ë¶€,ipv6ì‚¬ìš©ì—¬ë¶€ë“±)
+/etc/syconfig/network-scripts/ifcfg-eth0 : NIC 0ë²ˆì§¸ ê²Œì´íŠ¸ì›¨ì´,ì•„ì´í”¼ì£¼ì†Œ,ë„·ë§ˆìŠ¤í¬ë“± ì„¤ì •ëœ ê³³.
 
-/etc/init.d/network restart : NIC ¼³Á¤ÈÄ Àç ±âµ¿
+/etc/init.d/network restart : NIC ì„¤ì •í›„ ìž¬ ê¸°ë™
