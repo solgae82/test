@@ -1,0 +1,71 @@
+형식 : mount -t <파일시스템type> <장치이름> <마운트 포인트>
+
+마운트할 디렉토리(마운트 포인트)를 확인 및 만들어 놓고 진행한다
+	mkdir /mnt/usb 
+	mkdir /mnt/cdrom
+
+usb 사용하기
+
+	usb 삽입
+	
+	fdisk -l로 장치명 확인하기 
+		제일 아래쪽에 보면 방금 삽입한 usb 장치 정보가 보일 것이다.
+		(대략 /dev/sdb1 형식이다)
+		
+	mount /dev/sdb1 /mnt/usb
+
+	cd /mnt/usb 
+	ls -al
+	..
+	사용 후 언마운트 하기
+		# 해당 디렉토리를 나와서 해야 한다
+		cd ../
+
+		umount /dev/sdb1
+
+usb (ntfs) 사용(centos 에서)
+	ntfs 인식 드라이버를 설치해야 한다.
+
+	yum install epel-release -y
+	yum install ntfs-3g -y
+
+	설치 후 
+		mount /dev/sdb1 /mnt/usb
+		cd /mnt/usb
+		ls -al
+		cd ../
+		umount /dev/sdb1
+
+cdrom 사용하기
+	장치명이 대개 /dev/cdrom 이다.(이것도 알아보는 방법이 있다)
+		
+	cdrom 삽입
+
+		mount -t iso9660 /dev/cdrom /mnt/cdrom
+		cd /mnt/cdrom
+		ls -al
+		cd ../
+		umount /dev/cdrom
+
+
+-------------
+mount 만 실행하면 현재 시스템에 마운트 된 정보가 나온다.
+마운트 후 마운트 되었는지 확인할때 실행하며 아래와 같은 정보가 나온다..
+	
+	mount /dev/sdb1 /mnt/usb
+	mount
+	..#제일 아래에 최근 마운트한 장치 정보가 나올 것이다.
+	/dev/sdb1 on /mnt/usb type ....
+
+	cdrom은 장치명이 /dev/cdrom == /dev/sr0 처럼 다르게 나오지만, 의미는 같다
+		/dev/sr0 on /mnt/cdrom type iso9660 ...
+	
+-------------
+디스크 장치는 fdisk -l 로 연결한 장치 정보로 장치명을 볼 수 있는데,
+cdrom 같은 경우는 장치명 확인법이 다르다
+
+centos 라면 lsblk 라는 명령이 간단 명료하게 이름을 알려준다(디스크,cd롬 다 나온다)
+
+/dev/(검색한 장치명) == 연결한 장치명이다.
+
+이름 검색시 활용할 수 있는 명령어로는 fdisk, lsblk, df, dmesg 등이 있다.
