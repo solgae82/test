@@ -1,35 +1,42 @@
-CentOS 7이상부터 service와 chkconfig가 <systemctlf>로 통합
+CentOS 7이상부터 service와 chkconfig가 <systemctl>로 통합되었음.
+
 먼저  /etc/rc.d/init.d 에 해당 스크립트를 생성 하여 두어야 한다.
+<service name>은 init.d에 있는 스크립트의 파일명이 된다.
+
+service  httpd start|stop|restart <- /etc/init.d/httpd start|stop|restart 와 같다
+
+service httpd status <- 서비스 구동여부 확인
+service --status-all <-모든 서비스 상태 출력
 
 --서비스실행
-service 서비스명 start    => systemctl start 서비스명
+	service 서비스명 start    => systemctl start 서비스명
 
-service 서비스명 restart    => systemctl restart 서비스명
+	service 서비스명 restart    => systemctl restart 서비스명
 
-service 서비스명 stop    => systemctl stop   서비스명
-
-으로 간단 사용 가능
+	service 서비스명 stop    => systemctl stop   서비스명
 
 --자동실행 등록
 
-chkconfig 서비스명   on   => systemctl enable 서비스명 
-chkconfig 서비스명    off  => systemctl disable 서비스명 
+	chkconfig 서비스명   on   => systemctl enable 서비스명 
+	chkconfig 서비스명   off  => systemctl disable 서비스명 
 
-추가로 실제 서비스가 자동실행으로 적용 됐는지 확인은
-systemctl is-enable 서비스명 으로 하면 된다.
+	추가로 실제 서비스가 자동실행으로 적용됐는지 확인은
+	systemctl is-enable 서비스명 으로 하면 된다.
 
-자동실행 서비스 목록을 보고 싶을때 사용 하는 명령인  chkconfig --list
+	자동실행 서비스 목록을 보고 싶을때 사용 하는 명령인  chkconfig --list
 
-은 systemctl list-unit-files --type=service  로 다소 복잡 하게 바뀌었다. 
+	은 systemctl list-unit-files --type=service  로 다소 복잡 하게 바뀌었다. 
 
 
 httpd 예제
 ----------------------service => systemctl 변경 
 1.서비스 시작
-service httpd start => systemctl start httpd.service
+	service httpd start
+	systemctl start httpd.service
 
 2.서비스 중지
-service httpd stop => systemctl stop httpd.service
+	service httpd stop
+	systemctl stop httpd.service
 
 3.서비스 재시작
 service httpd restart => systemctl restart httpd.service
