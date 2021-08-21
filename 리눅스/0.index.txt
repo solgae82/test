@@ -20,6 +20,8 @@ cpu,메모리체크
 
 로그관리
 
+네트워크 
+	ping, ifconig, ip
 
 네트웍설정
 	
@@ -51,7 +53,7 @@ cpu,메모리체크
 방화벽
 
 	iptables : firewalld (centos7)
-
+	TCPWappers
 
 파일묶고 풀기
 	tar

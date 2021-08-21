@@ -100,58 +100,58 @@ p  #복사 붙여넣기(현재 커서 이후)
 
 ---------// 마운트
 
-mount -t <파일시스템type> <장치파일> <마운트 포인트>
+마운트 포인트 디렉토리를 먼저 확인해야한다(없으면 디렉토리를 만들어준다)
+예제는 cd롬으로 한다. cdrom은 /dev/cdrom 으로 정해져 있다.
 
-mount -t iso9660 /dev/cdrom /media/cdrom
-또는 
-mount  /dev/cdrom /media/cdrom
+형식 : mount -t <파일시스템type> <장치이름> <마운트 포인트>
 
-mount #모든 마운트 보기
-..
-/dev/sr0 on /media type iso9660 (ro) # <- /dev/sr0 에 cd가 마운트 되었다(/dev/cdrom 과 같다)
+	mkdir /media/cdrom #마운트 될 디렉토리 미리 만들기
+
+	mount -t iso9660 /dev/cdrom /media/cdrom
+	또는 
+	mount  /dev/cdrom /media/cdrom
+
+	mount #모든 마운트 보기
+		..
+		/dev/sr0 on /media/cdrom type iso9660 (ro,realtime) 
+		# /dev/sr0(/dev/cdrom 과 같다)의 CD가 /media/cdrom 에 마운트 되었다
+
+	마운트 디렉토리 확인
+		cd /media/cdrom
+		ls #CD 내용이 보인다
 
 
-cd /media/cdrom
-ls #CD 내용이 보인다
+언마운트 (마운트 해제)
+- 해당 디렉토리에서 나와야한다
+	
+	pwd
+	/media/cdrom
+	cd ../ #마운트 해제하기 위해 마운트 디렉토리 탈출
 
-
-언마운트
-해당 디렉토리에서 나와야한다
-pwd
-/mdia/cdrom
-cd ../ #마운트 해제하기 위해 마운트 디렉토리 탈출
-
-마운트 해제
-umount /dev/cdrom 
-또는
-umount /dev/sr0
-또는
-umount /media
+	# 마운트 해제
+		umount /dev/cdrom 
+		또는
+		umount /dev/sr0
+		또는
+		umount /media/cdrom
 
 
 ---------//디렉토리 용량체크
-du		# 현재 디렉토리 + 하부디렉토리별 + 최종 현재 디렉토리 용량 출력
+du		# 현재 디렉토리 + 하부디렉토리별 
 12	./abc/ddd
 24	./abc
-48	.	# 현재 디렉토리 총 용량
+48	.	# 현재 디렉토리(숨김디렉토리 포함) 총 용량
 
 du -h		# ++ 사람이 알아보기 편리한 용량 기호 표시 K,M,G등
 12K	./abc/ddd
 24K	./abc
 48K	.
 
-du -s		#현재 디렉토리 총용량만 표시하기
+du -s		#현재 디렉토리(숨김디렉토리 포함) 총용량만 표시하기
 48	.
 
-du -sh		#현재 디렉토리 총용량 + 용량기호 표시
+du -sh		#현재 디렉토리(숨김디렉토리 포함) 총용량 + 용량기호 표시
 48K	.
-
-
-du -h *		#현재디렉토리에 있는 파일별 용량표시 + 하부디렉토리는 용량만 표시
-12K	abc/ddd
-24K	abc
-20K	httpd.txt #현재 디렉토리에 있는 파일
-
 
 ---------// 파일시스템 용량 체크
 df -h #파일시스템 사용용량을 K,M,G로 표시
@@ -186,9 +186,10 @@ ls -alh
 	-rwxrwxrw-.  2 root root 4.0K Mar 22  2014 aa.txt
 
 또는
-chmod u+rwx aa.txt
-chmod g+rw-x aa.txt
-chmod o+r-wx aa.txt
+chomd 777 aa.txt	: -rwxrwxrwx
+chmod u-rwx aa.txt	: ----rwxrwx
+chmod g+rw-x aa.txt	: ----rw-rwx
+chmod o+r-wx aa.txt	: ----rw-r--
 
 ---------// 파일 소유권
 
@@ -326,7 +327,6 @@ unzip httpd.txt.zip	# .zip 파일을 푼다
 #abc 디렉토리와 aa.txt를 abc.tar.gz 이란 이름으로 gzip을 이용해 압축해서 묶음.
 tar cvfz abc.tar.gz abc aa.txt  
 tar xvfz abc.tar.gz	#현재 디렉토리에 gzip 압축풀고, 묶은 파일들 풀기
-
 
 #abc 디렉토리와 aa.txt를 abc.tar.bz2 이란 이름으로 bzip2를 이용해 압축해서 묶음.
 tar cvfj abc.tar.bz2 abc aa.txt
