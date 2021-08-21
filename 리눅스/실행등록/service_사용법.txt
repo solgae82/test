@@ -58,3 +58,21 @@ httpd 예제
 
 4.모든 서비스의 현재 활성화 여부 표시
 	chkconfig --list
+
+----------------------
+리눅스 서버가 부팅이 될 때, 자동 실행될 프로그램을 설정하는 명령어이다.
+서버 부팅 시, 프로그램 리스트와 Run level 실행 여부 등을 확인하거나 설정할 수 있다.
+chkconfig는 /etc/rc.d/init.d/ 에 명시 되지 않은 서비스는 설정이 안된다.
+
+먼저  /etc/rc.d/init.d 에 해당 스크립트를 생성 하여 두어야 한다.
+<service name>은 init.d에 있는 스크립트의 파일명이 된다.
+
+사용법
+#chkconfig --list                   // 모든 부팅 레벨에서 모든 서비스의 on, off 상태 확인
+#chkconfig <service name> --list        // 모든 부팅 레벨에서 해당 서비스의 on, off 상태 확인
+#chkconfig <service name> on                // 2, 3, 4, 5 레벨에서 해당 서비스를 on 시킴
+#chkconfig <service name> off               // 2, 3, 4, 5 레벨에서 해당 서비스를 off 시킴
+#chkconfig --level 2 <service name> on      // 2번 실행 레벨에서 해당 서비스를 on 시킴
+#chkconfig --level 235 <service name> on      // 2번,3번,5번 실행 레벨에서 해당 서비스를 on 시킴
+#chkconfig  --add  <service name>           // 해당 서비스를 chkconfig 관리항목에 추가
+#chkconfig  --del  <service name>           // 해당 서비스를 chkconfig 관리항목에서 삭제
