@@ -79,7 +79,7 @@
 3번과 4번은 적용되었다
 	securerandom.source=file:/dev/urandom
 	securerandom.source=file:/dev/./urandom (버그 때문에 이렇게 수정해야 한다고라고 함)
-처럼 ./을 넣엇 수정하면 되더라..
+처럼 ./을 넣어서 수정하면 되더라..
 
 3번과 4번은 적용 후  
 	ps -ef | grep tomcat 
