@@ -10,8 +10,7 @@
 .
 export JAVA_HOME=/usr/local/jdk1.7.0_76
 export CLASSPATH="."
-
-PATH="$PATH:$JAVA_HOME/bin"
+export PATH="$PATH:$JAVA_HOME/bin"
 
 소스 명령어로 다시 셋
 [root@localhost local]# source /etc/profile 

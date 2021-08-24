@@ -1,5 +1,10 @@
 java 설치 후 설치
 
+.zip .tar.gz 등을 받으면 리눅스용 또는 윈도우용 모두 해당된다.
+왜냐면 톰캣은 자바프로그램이므로..(jvm에서 돌아가는 프로그램)
+widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 설치되는 형식인 것이다.
+
+
 1. /usr/local/server/tomcat <= 톰캣  디렉토리(tar 압축해제한) 위치시킨 후
 
 2. 프로파일에 자바설정과, 톰캣 디렉토리 설정
@@ -9,8 +14,9 @@ java 설치 후 설치
 export JAVA_HOME=/usr/local/jdk1.7.0_76 <= java 설치 디렉토리
 export CATALINA_HOME=/usr/local/server/tomcat 
 export CLASSPATH="."
-PATH="$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin"
+export PATH="$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin"
 
+ 
 
 3. 시스템 적용
 [root@localhost server]# source /etc/profile

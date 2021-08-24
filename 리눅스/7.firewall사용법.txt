@@ -96,3 +96,40 @@ zone + servie  설정 후 방화벽 재시작
 		# firewall-cmd --list-services 
 
 
+-------------실전 예제
+
+디폴트 존이 public(.xml)으로 되어 있다고 가정하고
+	/etc/firewalld/firewalld.conf
+		..
+		DefaultZone=public
+
+아래 처럼 한방에 포트를 추가할 수있다
+
+		firewall-cmd --permanent --add-port=8080/tcp
+	
+public.xml 파일에 <zone> 태그안에..
+	
+	<port protocol="tcp" port="8080"/>
+
+이 추가된다
+
+--permanent 옵션을 빼면 일시적으로 현재 구동상태에서만 적용되고, 
+재부팅이나 다시 reload를 하면 설정이 사라진다.
+
+서비스를 추가할 수도 있다
+
+	firewall-cmd --permanent --add-service=http
+
+public.xml 파일에 <zone> 태그안에
+	
+	<service name="http"/>
+
+가 추가된다.
+물론 /etc/firewalld/services 안에 http.xml이 추가 되어 있어야 적용될 것이다..
+
+마지막으로 firewall 리로드를 해야 적용된다.
+
+	firewall-cmd --reload
+	
+
+
