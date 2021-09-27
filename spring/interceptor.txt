@@ -1,0 +1,81 @@
+
+servlet-context.xml 인터셉터 추가
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans:beans ..>
+		<!-- Interceptor -->
+		<beans:bean id="loginInterceptor" class="com.solgae.interceptor.LoginInterceptor"></beans:bean>
+		
+		<interceptors>
+			<interceptor>
+				<mapping path="/user/loginPost"/>
+				<beans:ref bean="loginInterceptor" />
+			</interceptor>
+			
+		</interceptors>
+	</beans:beans>
+
+인터셉터 클래스 제작
+	:LoginInterceptor.java 
+
+	package com.solgae.interceptor;
+
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	import javax.servlet.http.HttpSession;
+
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+	import org.springframework.ui.ModelMap;
+	import org.springframework.web.servlet.ModelAndView;
+	import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+	public class LoginInterceptor extends HandlerInterceptorAdapter {
+
+			private static final String LOGIN="login";
+			private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
+			
+			//컨트롤러 메소드 호출전 실행될 인터셉터 메소드
+			public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+					throws Exception {
+				
+				HttpSession session = request.getSession();
+				
+				if(session.getAttribute(LOGIN) != null) {
+					logger.info("clear login data before");
+					session.removeAttribute(LOGIN);
+					
+				}
+				return true;
+			}
+			
+			//컨트롤러 메소드가 실행이 끝나면 실행될 인터셉터 메소드
+			public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+					ModelAndView modelAndView) throws Exception {
+				
+				HttpSession session = request.getSession();
+				ModelMap modelMap = modelAndView.getModelMap();
+				
+				Object userVO = modelMap.get("userVO");
+				
+				if(userVO != null) {
+					logger.info("new login success");
+					session.setAttribute(LOGIN, userVO);
+					response.sendRedirect("/");
+				}
+			}
+			
+
+	}
+
+호출
+
+	http://localhost/user/loginPost 호출을 하게 되면 인터셉터가 실행되는데 
+	호출 컨트롤러 메소드가 시작하기전에 인터셉터의
+
+		LoginInterceptor.preHandle() 
+	
+	메소드가 실행되고,그 다음 호출된 컨트롤러 메소드가 시작된다.
+	컨트롤러 메소드가 끝나고 나면 마지막으로 
+	
+		LoginInterceptor.postHandle() 메소드가 시작된다.

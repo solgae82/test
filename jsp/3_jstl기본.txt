@@ -56,6 +56,41 @@ email : ${pageScope.email}
 	 항상  출력 안된다
 	</c:if>
 
+	-- 속성 : var
+		url : ?page=1
+		<c:if test="${paramValues['page'][0] eq '1'}" var="page">
+			 page=1이다
+		</c:if>
+		<br />
+		<c:if test="${page}" >${page} 있당게</c:if>
+			결과 : 
+			page=1이다
+			true 있당게
+	-- 속성 : scope
+		var 속성에 정의된 변수명을 page,request,session,application 스코프에 저장한다 
+		scope를 설정하지 않으면 기본 page
+
+		url : ?page=1
+
+		<h1>${page}</h1>
+		<c:if test="${paramValues['page'][0] eq '1'}" var="page" scope="session">
+			 page=1이다
+		</c:if>
+		<br />
+		<c:if test="${page}" >${page} 있당게</c:if>
+			
+			결과 :
+				처음 실행시: 
+					<h1></h1>
+					page=1이다
+					true 있당게
+				두번째 실행시:(세션스코프에 저장했기때문에 'page'변수 값이 출력됨)
+					<h1>true</h1>
+					page=1이다
+					true 있당게
+
+	
+	
 -----c:choose 실행-----
 	<c:set var="num" value="200" />
 	<c:choose>

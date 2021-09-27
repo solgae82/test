@@ -1,0 +1,1 @@
+${pageContext.request.contextPath} : 웹컨텍스트 출력
