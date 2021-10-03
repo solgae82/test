@@ -62,9 +62,9 @@
 	
 	- fmt:formatNumber
 
-		<fmt:formmatNumber value="1000000" groupingUsed="true" />	//1,000,000 [디폴트]
-		<fmt:formmatNumber value="1000000"  />				//1,000,000	
-		<fmt:formmatNumber value="1000000" groupingUsed="" />		//1000000
+		<fmt:formatNumber value="1000000" groupingUsed="true" />	//1,000,000 [디폴트]
+		<fmt:formatNumber value="1000000"  />				//1,000,000	
+		<fmt:formatNumber value="1000000" groupingUsed="" />		//1000000
 
 		<fmt:formatNumber value="3.141592" pattern="#.##" /> // 3.14
 		<fmt:formatNumber value="3.145592" pattern="#.##" /> // 3.15 [기본 반올림]
@@ -151,7 +151,7 @@
 				<h2>${title}</h2> <!--번들에서 서렁한 var="title" 출력, '회사소개' 출력 -->
 				<p><fmt:message key="TITLE" /></p> <!-- 에러문자 출력, 태그 벗어났으므로 -->
 
-		- profix 속성
+		- prefix 속성
 			.properties 파일 내용 ('ko_'를 주목하자)
 				ko_TITLE=about us  
 
@@ -162,7 +162,7 @@
 
 			또는 
 
-			<fmt:bundle basename="Intro" prifix="ko_">
+			<fmt:bundle basename="Intro" prefix="ko_">
 				<fmt:message key="TITLE" /> //about us 출력
 			</fmt:bundle>
 

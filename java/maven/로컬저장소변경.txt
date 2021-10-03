@@ -34,3 +34,37 @@
 	-s , --settings : default가 아닌 settings.xml 파일을 지정 , user 옵션
 
 	user가 global 보다 우선 할 것이다
+
+이클립스에서 설정
+	전자정부 프레임워크나 sts등 이미 maven이 설치되어서 나오는 이클립스는 자동으로 저장소 위치가
+	${user.home}/.m2/repository 로 되어 있을 것이고. settings.xml 파일은 없다.
+
+	일단 settings.xml 파일을 만들어야 한다.(googling 하면 기본 xml 형식이 검색 될 것이다)
+
+		<?xml version="1.0" encoding="UTF-8"?>
+		<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+		
+			<!-- 여기에 여러 설정을 할 수 있다-->
+
+		</settings>
+
+	그리고 settings 태그안에 localRepository 태그를 생성하고 그 안에 변경할 Repository 경로를 절대경로로 넣는다.
+		<?xml version="1.0" encoding="UTF-8"?>
+		<settings ..>
+			<localRepository>D:\eclipse\repository</localRepository>
+		</settings>
+
+	다음은 이클립스 메이븐 설정하는 곳에 가서 수동으로 만든 settings.xml 경로를 설정해 준다
+		
+		이클립스 : window > preference > Maven > User Settings > User Settings 
+		
+		Browse 버튼으로 수동 생성한 settings.xml 경로 설정 하면 바로 아래
+
+		Local Repository 텍스트 박스 정보가 settings.xml의 localRepository 값이 나오는 지 확인(맞다면 설정 된 것임)
+
+		Apply 버튼으로 적용 완료.
+
+	이제 D:\eclipse\repository 에 maven이 관리하는 라이브러리들이 다운로드 될 것이다.
