@@ -16,11 +16,18 @@ public class JsonController {
 		
 		return productVO;
 	}
+
+
+	@RequestMapping("stringJSON")
+	public @ResponseBody String stringJSON() {
+				
+		return "12";
+	}
 }
 
 
 
-응답헤더
+/doJSON 응답헤더
 
 HTTP/1.1 200
 Content-Type: application/json;charset=UTF-8
@@ -31,3 +38,16 @@ Connection: keep-alive
 
 출력결과
 {"name":"ddy","price":30000.0}
+
+----------------------------------------------------------
+/stringJSON 응답헤더
+
+HTTP/1.1 200
+Content-Type: text/html
+Content-Length: 2
+Date: Wed, 06 Oct 2021 14:19:21 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+
+출력결과
+12
