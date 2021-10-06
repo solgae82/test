@@ -1,0 +1,349 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
+ <style>
+ 	body{padding: 0; margin: 0;}
+ </style>
+ <script
+  src="https://code.jquery.com/jquery-2.1.4.min.js"
+  integrity="sha256-8WqyJLuWKRBVhxXIL1jBDD7SDxU936oZkCnxQbWwJVw="
+  crossorigin="anonymous"></script>
+ <!-- script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script -->
+ <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+ <script src="/resources/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"/></script>
+<title>보드</title>
+</head>
+<body>
+<h1>board Test</h1>
+<div>
+	<div id="left" style="width: 10%;float: left;min-height: 500px;background-color: #dbdbdb;">
+		<a href="/board/listPage">listPage</a><br />
+		<a href="/user/login">Login</a>
+	</div>
+	<div id="content"  style="width: 90%;float: left;min-height: 500px;">
+<h2>글보기</h2>
+<form role="form" method="post">
+	<input type="hidden" name="bno" value="1" />
+	<input type="hidden" name="page" value="1" />
+	<input type="hidden" name="perPageNum" value="10" />
+	<input type="hidden" name="searchType" value="" />
+	<input type="hidden" name="keyword" value="" />
+</form>
+	<div class="box-body">
+		<div class="form-group">
+			<label  for="t1">Title</label>
+			<input type="text" name="title" class="form-control" value="첫벗째글이여" readonly />
+		</</div>
+		<div class="form-group">
+			<label  for="t1">Content</label>
+			<textarea name="content" rows="10" style="width: 100%" readonly>나여
+나여
+나여</textarea>
+		</</div>
+		<div class="form-group">
+			<label  for="t1">Writer</label>
+			<input type="text" name="writer" class="form-control" value="하이" readonly />
+		</</div>
+	</div>
+	<div class="box-footer">
+		<button type="button" id="w-btn-warning" class="btn btn-warning">수정</button> 
+		<button type="button" id="w-btn-danger" class="btn btn-danger">삭제</button> 
+		<button type="button" id="w-btn-primary" class="btn btn-primary">목록</button>
+		
+	</div>
+	
+	
+	
+	<!-- 댓글 모달창 -->
+	<div id="modifyModal" class="modal modal-primary fade" role="dialog">
+		
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					
+					<h4 class="modal-title"></h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body" data-rno>
+					<p><input type="text" id="replytext" class="form-control" /></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info" id="replyModBtn">Modifiy</button>
+					<button type="button" class="btn btn-danger" id="replyDelBtn">DELETE</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>	
+			</div>
+		</div>
+		
+		
+	</div>
+	
+	<!--  댓글 쓰기 폼 -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box-box-success">
+				<div class="box-header">
+						<h3 class="box-title">ADD NEW REPLY</h3>
+				</div>
+				<div class="box-body">
+					<label for="newReplyWriter">Writer</label>
+					<input type="text" class="form-control" id="newReplyWriter" />
+					<label for="newReplyText">Reply Text</label>
+					<input type="text" class="form-control" id="newReplyText" />
+					
+				</div>
+				<div class="box-footer">
+					<button type="button" class="btn btn-info" id="replyAddBtn" >ADD REPLY</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 댓글 리스트 및 paging -->
+	<ul class="timeline">
+		<li class="time-label" id="repliesDiv">
+			<span class="bg-green">Replies List <small>[0]</small></span>
+		</li>
+	</ul>
+	<div class="text-center">
+		<ul id="pagination" class="pagination pagination-sm no-margin">
+		
+		</ul>
+	</div>
+	<script type="text/x-handlebars-template" id="template">
+		{{#each .}}
+		<li class="replyLi" data-rno={{rno}} >
+			<i class="fa fa-comments bg-blue"></i>
+			<div class="timeline-item">
+				<span class="time">
+					<i class="fa fa-clock-o"></i>{{prettifyDate regdate}} <a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#modifyModal">Modify</a>
+				</span>
+				<h3 class="timeline-header"><strong>{{rno}}</strong> -{{replyer}}</h3>
+				<div class="timeline-body">{{replytext}}</div>
+				<div class="timeline-footer">
+					<!-- a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modifyModal">Modify</a -->				
+				</div>
+			</div>
+
+		</li>
+		{{/each}}
+
+	</script>
+	
+	<script>
+		/*핸들바 */
+		Handlebars.registerHelper("prettifyDate",function(timeValue){
+			var dateObj = new Date(timeValue);
+			var year = dateObj.getFullYear();
+			var month = dateObj.getMonth() + 1;
+			var date= dateObj.getDate();
+			return year + "/" + month + "/" + date;
+		});
+
+		var printData = function(replyArr, target, templateObject){
+			var template = Handlebars.compile(templateObject.html());
+			var html = template(replyArr);
+			$('.replyLi').remove();
+			target.after(html);
+		};
+	</script>
+	<script>
+		/* 댓글 페이지 처리*/
+		var bno = 1;
+		var replyPage = 1;
+		function getPage(pageInfo){
+			$.getJSON(pageInfo, function(data){
+				printData(data.list, $('#repliesDiv'), $('#template'));
+				printPaging(data.pageMaker, $('#pagination'));
+			});
+		}
+
+		var printPaging = function(pageMaker, target){
+
+			var str = "";
+
+			if(pageMaker.prev){
+				str +="";
+			}
+
+			for(var i=pageMaker.startPage, len = pageMaker.endPage; i<=len; i++){
+				var strClass = pageMaker.criteria.page ==i ? ' class="active"':'';
+				str += '<li'+strClass+'><a href="'+i+'">'+i+'</a></li>';
+			}
+			
+			if(pageMaker.next){
+				str +="";
+			}
+
+			target.html(str);
+		};
+
+	</script>
+	<script>
+		/*클릭하면 댓글을 불러온다*/
+		$('#repliesDiv').on('click',function(){
+			if($('.timeline li').size() > 1){return ;}
+			getPage('/replies/' +bno + '/1');
+		});
+
+		/*댓글 페이지를 클릭하면 댓글페이지에 맞는 리스트를 불러온다*/
+		$('#pagination').on('click', function(event){
+			event.preventDefault();
+
+			replyPage = $(this).attr('href');
+			getPage('/replies/'+bno+'/'+replyPage);
+		});
+		/*댓글을 등록한다*/
+		
+		$('#replyAddBtn').on('click',function(event){
+			var replyer = $('#newReplyWriter').val();
+			var replytext = $('#newReplyText').val();
+
+			if(replyer==''){alert('작성자명을 입력해주세요');$('#newReplyWriter').focus(); return;}
+			if(replytext==''){alert('내용을 입력해주세요');$('#newReplyText').focus(); return;}
+			
+			$.ajax({
+				type : 'post',
+				url : '/replies',
+				headers : {
+					"Content-Type" : "application/json",
+					"X-HTTP-Method-Override" : "POST"
+				},
+				dataType : 'text',
+				data : JSON.stringify({
+					bno : bno,
+					replyer : replyer,
+					replytext : replytext
+				}),
+				success : function(result){
+					if(result=='SUCCESS'){alert('등록되었습니다.');}	
+					replyPage = 1;
+					getPage('/replies/'+bno+'/'+replyPage);
+					$('#newReplyWriter').val('');
+					$('#newReplyText').val('');
+				}
+				
+			});
+			
+		});
+
+		/*댓글 modify  버튼 클릭시 댓글 내용 팝업창에 넣기*/
+		$('.timeline').on('click','.replyLi',function(event){
+			var reply = $(this);
+			
+			$('#replytext').val(reply.find('.timeline-body').text());
+			$('.modal-title').html(reply.attr('data-rno'));
+			
+		});
+
+		/*댓글 수정*/
+		$('#replyModBtn').on('click',function(){
+			var rno =$('.modal-title').html();
+			var replytext = $('#replytext').val();
+
+
+			$.ajax({
+				type : 'put',
+				url : '/replies/'+rno,
+				headers : {
+					"Content-Type" : "application/json",
+					"X-HTTP-Method-Override" : "PUT"
+				},
+				dataType : 'text',
+				data : JSON.stringify({
+					replytext : replytext
+				}),
+				success : function(result){
+					if(result=='SUCCESS'){
+						$('#modifyModal').modal('hide');
+						alert('수정되었습니다.');
+						getPage('/replies/'+bno+'/'+replyPage); //현재 댓글 페이지 다시 리로드
+						
+					}	
+					
+				}
+				
+			});
+
+		});
+
+		/*댓글 삭제*/
+		$('#replyDelBtn').on('click',function(event){
+			var rno =$('.modal-title').html();
+			
+			$.ajax({
+				type : 'delete',
+				url : '/replies/'+rno,
+				headers : {
+					"Content-Type" : "application/json",
+					"X-HTTP-Method-Override" : "DELETE"
+				},
+				dataType : 'text',
+				
+				success : function(result){
+					if(result=='SUCCESS'){
+						$('#modifyModal').modal('hide');
+						alert('삭제되었습니다.');
+						getPage('/replies/'+bno+'/'+replyPage); //현재 댓글 페이지 다시 리로드
+					}	
+					
+				}
+				
+			});
+		});
+	</script>
+	
+	
+	
+	<script>
+		/* 초기화 관련 */
+		$(function(){
+			var form = $('form[role="form"]');
+	
+			//수정
+			$('#w-btn-warning').on('click', function(){
+				form.attr('action' , '/board/modify')
+				form.attr('method', 'get');
+				form.submit();
+			});
+	
+			//삭제
+			$('#w-btn-danger').on('click', function(){
+	
+				if(confirm('글을 삭제하시겠습니까?')){
+					form.attr('action', '/board/remove');
+					form.submit();
+				}
+			});
+			//목록
+			$('#w-btn-primary').on('click', function(){
+				form.attr('method','get');
+				form.attr('action', '/board/listPage');
+				form.submit();
+				
+			});
+		});
+	</script>
+	
+
+
+</div>
+	<div style="clear: both;"></div>
+</div>
+<div id="footer" style="text-align: center; min-height: 200px; background-color: #999; color: #fff">
+	copyright@solgae.com All rights reserved.
+</div>
+</body>
+</html>
+
+
