@@ -6,7 +6,7 @@
 	svnserve
 	service svnserve status (서비스로 자동 등록 확인)
 
-3.service  시작/정지 스크립트 만들기
+3.service  시작/정지 스크립트 만들기 (이거 안하면 실행 안됨)
 	echo 'OPTIONS="--threads --root /svn"' > /etc/sysconfig/svnserve
 	cat /etc/sysconfig/svnserve
 
