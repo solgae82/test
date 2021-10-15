@@ -1,40 +1,46 @@
+--------- RestVO.java
+	public class RestVO {
+
+		private String name;
+		private double price;
+		.. getter, setter 생략
+	
+	}
+--------- JsonController.java
 package com.solgae.test;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.solgae.domain.ProductVO;
+import com.solgae.domain.RestVO;
 
 @Controller
 public class JsonController {
 
 	@RequestMapping("doJSON")
-	public @ResponseBody ProductVO doJSON() {
+	public @ResponseBody RestVO doJSON() {
 				
-		ProductVO productVO = new ProductVO("ddy", 30000);
-		
-		return productVO;
+		RestVO restVO = new RestVO();
+		restVO.setName("ddy");
+		restVO.setPrice(30000);
+		return restVO;
 	}
 
 
 	@RequestMapping("stringJSON")
 	public @ResponseBody String stringJSON() {
-				
 		return "12";
 	}
 }
 
-
+------------------ 응답 결과
 
 /doJSON 응답헤더
 
 HTTP/1.1 200
 Content-Type: application/json;charset=UTF-8
 Transfer-Encoding: chunked
-Date: Wed, 06 Oct 2021 13:52:28 GMT
-Keep-Alive: timeout=20
-Connection: keep-alive
 
 출력결과
 {"name":"ddy","price":30000.0}
@@ -45,9 +51,6 @@ Connection: keep-alive
 HTTP/1.1 200
 Content-Type: text/html
 Content-Length: 2
-Date: Wed, 06 Oct 2021 14:19:21 GMT
-Keep-Alive: timeout=20
-Connection: keep-alive
 
 출력결과
 12
