@@ -32,8 +32,7 @@
 	
 	}
 	
-
----------// 기본 string 출력
+1. String 응답 출력
 
 	function send(){
 		var params = $('#f').serialize();
@@ -44,7 +43,7 @@
 	}
 	
 	@RequestMapping("/string")
-	public String test(@RequestParam Map<String, String> map) {
+	public String testString(@RequestParam Map<String, String> map) {
 		System.out.println(map); //{nm=솔개, age=47}
 		return "Hello World";
 	}
@@ -57,7 +56,7 @@
 	response:
 		Content-Type: text/plain;charset=ISO-8859-1
 
----------// VO 출력 
+2. RestVO 응답 출력 
 
 	function send(){
 		var params = $('#f').serialize();
@@ -68,7 +67,7 @@
 	}
 	
 	@RequestMapping("/vo")
-	public RestVO test(@RequestParam Map<String, String> map) {
+	public RestVO testVO(@RequestParam Map<String, String> map) {
 		System.out.println(map); //{nm=솔개, age=47}
 		RestVO restVO = new RestVO();
 		restVO.setFirstName("길동");
@@ -85,7 +84,7 @@
 	response:
 		Content-Type: application/json;charset=UTF-8
 
----------// list<VO> 출력 
+3. List<RestVO> 응답 출력 
 
 	function send(){
 		var params = $('#f').serialize();
@@ -104,7 +103,7 @@
 	}
 	
 	@RequestMapping("/listvo")
-	public List<RestVO> test(@RequestParam Map<String, String> map){
+	public List<RestVO> testlistVO(@RequestParam Map<String, String> map){
 		System.out.println(map); //{nm=솔개, age=47}
 		List<RestVO> list = new ArrayList<RestVO>();
 		for(int i= 0; i< 10;i++) {
@@ -126,7 +125,7 @@
 	response:
 		Content-Type: application/json;charset=UTF-8
 
----------// Map 출력 
+4. Map<Integer, RestVO> 응답 출력 
 
 	function send(){
 		var params = $('#f').serialize();
@@ -145,7 +144,7 @@
 	}
 	
 	@RequestMapping("/map")
-	public Map<Integer, RestVO> test(@RequestParam Map<String, String> map){
+	public Map<Integer, RestVO> testMap(@RequestParam Map<String, String> map){
 		System.out.println(map); //{nm=솔개, age=47}
 		Map<Integer, RestVO> rMap = new HashMap<Integer, RestVO>();
 				
@@ -168,7 +167,7 @@
 	response:
 		Content-Type: application/json;charset=UTF-8
 
----------// ResponseEntity<String> 출력 
+5. ResponseEntity<String> 응답 출력 
 
 	function send(){
 		var params = $('#f').serialize();
@@ -179,7 +178,7 @@
 	}
 	
 	@RequestMapping("/responseEntityString")
-	public ResponseEntity<String> test(@RequestParam Map<String, String> map){
+	public ResponseEntity<String> testResponseEntityString(@RequestParam Map<String, String> map){
 		System.out.println(map); //{nm=솔개, age=47}
 		return new ResponseEntity<>("hello",HttpStatus.OK	);
 	}
@@ -192,7 +191,7 @@
 	response:
 		Content-Type: text/plain;charset=ISO-8859-1
 
----------// ResponseEntity<List<RestVO>> 출력 
+6. ResponseEntity<List<RestVO>> 응답 출력 
 
 	function send(){
 		var params = $('#f').serialize();
@@ -212,7 +211,7 @@
 	}
 	
 	@RequestMapping("/responseEntityListVO")
-	public ResponseEntity<List<RestVO>> test(@RequestParam Map<String, String> map){
+	public ResponseEntity<List<RestVO>> testResponseEntityList(@RequestParam Map<String, String> map){
 		System.out.println(map); //{nm=솔개, age=47}
 		List<RestVO> list = new ArrayList<RestVO>();
 		for(int i = 0; i<10; i++) {

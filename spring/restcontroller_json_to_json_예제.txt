@@ -1,0 +1,759 @@
+기본 틀
+	----------- Controller.java
+	@RestController
+	@RequestMapping("/rest")
+	public class TestController {
+		
+		@RequestMapping("/form")
+		public ModelAndView form(ModelAndView mav) {
+			
+			mav.setViewName("test");
+			return mav;
+			
+		}
+		.. 여기에 추가
+	}
+	
+	----------- RestVO.java
+	public class RestVO {
+
+		private Integer mno;
+		private String firstName;
+		private String lastName;
+		.. getter, setter 생략
+	
+	}
+	----------- test.jsp
+	<form id="f">
+	<input type="hidden" name="nm" value="솔개" />
+	<input type="hidden" name="age" value="47" />
+	</form>
+	<button onclick="send()">전송</button>
+	<script>
+		function send(){
+			.. 여기에 추가
+		}
+
+		// nm=솔개&age=47 -> {nm:"솔개", age:"47"}
+		$.fn.serializeObject = function() {
+		  "use strict"
+		  var result = {}
+		  var extend = function(i, element) {
+		    var node = result[element.name]
+		    if ("undefined" !== typeof node && node !== null) {
+		      if ($.isArray(node)) {
+		        node.push(element.value)
+		      } else {
+		        result[element.name] = [node, element.value]
+		      }
+		    } else {
+		      result[element.name] = element.value
+		    }
+		  }
+
+		  $.each(this.serializeArray(), extend)
+		  return result;
+		}
+
+	</script>
+
+	
+
+1. String 응답 출력
+	
+	---------------------(요청: dataType : 'text'일때) 응답출력
+
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/basic',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); // SUCCESS				
+			}
+			
+		});
+	}
+
+
+	@RequestMapping("/basic")
+	public String test(@RequestBody Map<String, String> map) {
+		
+		System.out.println(map); //{nm=솔개, age=47}
+		
+		return "SUCCESS";
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: text/plain;charset=ISO-8859-1
+
+	---------------------(요청: dataType : 'json'일때) json형식 문자열 응답 출력
+
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); // {nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/basicJSON',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); //{nm: 'SUCCESS'}
+				console.log(result.nm); // SUCCESS
+						
+			}
+			
+		});
+	}
+
+
+	@RequestMapping("/basicJSON")
+	public String testJSON(@RequestBody Map<String, String> map) {
+		
+		System.out.println(map); // {nm=솔개, age=47}
+		
+		return "{\"nm\":\"SUCCESS\"}";
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+
+	---------------------(요청: dataType : 'json'일때) 일반 텍스트 응답 출력
+	: 전송은 잘 되었으나 JSON형식의 문자열이 아니면 파싱 에러이므로,
+	success 에서 출력 하지 못하고 error에서 확인 가능
+
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); // {nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/basic',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); // 출력 안함						
+			},
+			error : function(jqXHR,textStatus,errorThrown){
+				console.log(jqXHR);
+				/*
+				{readyState: 4, 
+				responseText: "SUCCESS",
+				statusText: "parsererror",
+				..
+				}
+				*/
+				console.log(textStatus); //parsererror
+				console.log(errorThrown);
+				/*
+				SyntaxError: Unexpected token S in JSON at position 0
+				at JSON.parse (<anonymous>) ..
+
+				*/
+			}
+			
+		});
+	}
+
+
+	@RequestMapping("/basic")
+	public String test(@RequestBody Map<String, String> map) {
+		
+		System.out.println(map);
+		
+		return "SUCCESS";
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+2. RestVO 응답 출력
+
+	---------------------(요청: dataType : 'text'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/vo',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); //{"mno":123,"firstName":"길동","lastName":"홍"}
+				console.log(result.mno); // undefined
+						
+			}
+			
+		});
+	}
+
+
+	@RequestMapping("/vo")
+	public RestVO testVO(@RequestBody Map<String, String> map) {
+		System.out.println(map); //{nm=솔개, age=47}
+		RestVO restVO = new RestVO();
+		restVO.setFirstName("길동");
+		restVO.setLastName("홍");
+		restVO.setMno(123);
+		return restVO;
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+	--------------------- (요청: dataType : 'json'일때) 응답 출력
+
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/vo',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); //{"mno":123,"firstName":"길동","lastName":"홍"}
+				console.log(result.mno); // 123
+						
+			}
+			
+		});
+	}
+
+
+	@RequestMapping("/vo")
+	public RestVO testVO(@RequestBody Map<String, String> map) {
+		System.out.println(map); //{nm=솔개, age=47}
+		RestVO restVO = new RestVO();
+		restVO.setFirstName("길동");
+		restVO.setLastName("홍");
+		restVO.setMno(123);
+		return restVO;
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+
+3. List<RestVO> 응답 출력
+	--------------------- (요청: dataType : 'text'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/listvo',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				[{"mno":0,"firstName":"길동","lastName":"Hong"},
+				{"mno":1,"firstName":"길동","lastName":"Hong"},
+				..
+				{"mno":9,"firstName":"길동","lastName":"Hong"}
+				]
+				*/
+				console.log(result[0].firstName); //undefined
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/listvo")
+	public List<RestVO> testlistVO(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		List<RestVO> list = new ArrayList<RestVO>();
+		for(int i= 0; i< 10;i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("Hong");
+			vo.setMno(i);
+			list.add(vo);
+		}
+		
+		return list;
+	}
+
+	
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+	--------------------- (요청: dataType : 'json'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/listvo',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				[{"mno":0,"firstName":"길동","lastName":"Hong"},
+				{"mno":1,"firstName":"길동","lastName":"Hong"},
+				..
+				{"mno":9,"firstName":"길동","lastName":"Hong"}
+				]
+				*/
+				console.log(result[0].firstName); //길동
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/listvo")
+	public List<RestVO> testlistVO(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		List<RestVO> list = new ArrayList<RestVO>();
+		for(int i= 0; i< 10;i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("Hong");
+			vo.setMno(i);
+			list.add(vo);
+		}
+		
+		return list;
+	}
+
+	
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+4. Map<Integer, RestVO> 응답 출력
+	--------------------- (요청: dataType : 'text'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/map',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				{"0":{"mno":0,"firstName":"길동","lastName":"Hong"},
+				"1":{"mno":1,"firstName":"길동","lastName":"Hong"},
+				..
+				"9":{"mno":1,"firstName":"길동","lastName":"Hong"}
+				}
+				*/
+				console.log(result["0"].firstName);//undefined
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/map")
+	public Map<Integer, RestVO> testMap(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		Map<Integer, RestVO> rMap = new HashMap<Integer, RestVO>();
+				
+		for(int i=0; i<10; i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("Hong");
+			vo.setMno(i);
+			rMap.put(i, vo);
+		}
+		
+		return rMap;
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+	--------------------- (요청: dataType : 'json'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/map',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				{"0":{"mno":0,"firstName":"길동","lastName":"Hong"},
+				"1":{"mno":1,"firstName":"길동","lastName":"Hong"},
+				..
+				"9":{"mno":1,"firstName":"길동","lastName":"Hong"}
+				}
+				*/
+				console.log(result["0"].firstName); //길동
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/map")
+	public Map<Integer, RestVO> testMap(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		Map<Integer, RestVO> rMap = new HashMap<Integer, RestVO>();
+				
+		for(int i=0; i<10; i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("Hong");
+			vo.setMno(i);
+			rMap.put(i, vo);
+		}
+		
+		return rMap;
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+5. ResponseEntity<String> 응답 출력
+	--------------------- (요청: dataType : 'text'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/responseEntityString',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); //{"msg":"success"}
+				console.log(result.msg); //undefined
+			}
+			
+		});
+	}
+
+	@RequestMapping("/responseEntityString")
+	public ResponseEntity<String> testResponseEntityString(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		return new ResponseEntity<>("{\"msg\":\"success\"}",HttpStatus.OK);
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: text/plain;charset=ISO-8859-1
+
+	--------------------- (요청: dataType : 'json'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/responseEntityJSON',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); //{"msg":"success"}
+				console.log(result.msg); //success
+				
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/responseEntityJSON")
+	public ResponseEntity<String> testResponseEntityJSON(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		return new ResponseEntity<>("{\"msg\":\"success\"}",HttpStatus.OK);
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+	--------------------- (요청: dataType : 'json'일때) 일반 텍스트 응답 출력
+	
+	: 전송은 잘 되었으나 JSON형식의 문자열이 아니면 파싱 에러이므로,
+	success 에서 출력 하지 못하고 error에서 확인 가능
+	
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/responseEntityString',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result); // 출력 안함
+							
+			},
+			error : function(jqXHR,textStatus,errorThrown){ //여기에서 출력함
+				console.log(jqXHR);
+				/*
+				{readyState: 4,
+				responseText: "success",
+				setRequestHeader: ƒ (a,b),
+				state: ƒ (),
+				status: 200,
+				statusCode: ƒ (a),
+				statusText: "parsererror",
+				
+				..
+				}
+
+				console.log(textStatus); //parsererror
+				console.log(errorThrown);
+				/*
+					SyntaxError: Unexpected token s in JSON at position 0
+					    ..
+				*/
+			}
+			
+		});
+	}
+
+	@RequestMapping("/responseEntityString")
+	public ResponseEntity<String> testResponseEntityString(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		return new ResponseEntity<>("success",HttpStatus.OK);
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+6. ResponseEntity<List<RestVO>>  응답 출력 
+
+	--------------------- (요청: dataType : 'text'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/responseEntityListVO',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				[
+				0: {mno: 2, firstName: '길동', lastName: 'park'},
+				1: {mno: 2, firstName: '길동', lastName: 'park'}
+				..
+				9: {mno: 2, firstName: '길동', lastName: 'park'}
+				]
+				*/
+				console.log(result[1].mno, result[1].firstName);
+				//undefined undefined 
+				
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/responseEntityListVO")
+	public ResponseEntity<List<RestVO>> testResponseEntityList(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		List<RestVO> list = new ArrayList<RestVO>();
+		for(int i = 0; i<10; i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("park");
+			vo.setMno(i);
+			list.add(vo);
+		}
+		
+		return new ResponseEntity<List<RestVO>>(list, HttpStatus.OK);
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: text/plain, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+	--------------------- (요청: dataType : 'json'일때) 응답 출력
+	function send(){
+		var params = $('#f').serializeObject();
+		console.log(params); //{nm: '솔개', age: '47'}
+		$.ajax({
+			type : 'post',
+			url : '/rest/responseEntityListVO',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'json',
+			data : JSON.stringify(params),
+			success : function(result){
+				console.log(result);
+				/*
+				[
+				0: {mno: 2, firstName: '길동', lastName: 'park'},
+				1: {mno: 2, firstName: '길동', lastName: 'park'}
+				..
+				9: {mno: 2, firstName: '길동', lastName: 'park'}
+				]
+				*/
+				console.log(result[1].mno, result[1].firstName);
+				//1 길동 
+				
+						
+			}
+			
+		});
+	}
+
+	@RequestMapping("/responseEntityListVO")
+	public ResponseEntity<List<RestVO>> testResponseEntityList(@RequestBody Map<String, String> map){
+		System.out.println(map); //{nm=솔개, age=47}
+		List<RestVO> list = new ArrayList<RestVO>();
+		for(int i = 0; i<10; i++) {
+			RestVO vo = new RestVO();
+			vo.setFirstName("길동");
+			vo.setLastName("park");
+			vo.setMno(i);
+			list.add(vo);
+		}
+		
+		return new ResponseEntity<List<RestVO>>(list, HttpStatus.OK);
+	}
+
+	헤더 값 : 
+	request:
+		Request Method: POST
+		Accept: application/json, text/javascript, */*; q=0.01
+		Content-Type: application/json
+	
+	response:
+		Content-Type: application/json;charset=UTF-8
+
+
