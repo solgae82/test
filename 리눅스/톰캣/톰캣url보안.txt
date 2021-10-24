@@ -8,10 +8,18 @@ CATALINA_OPTS 환경변수에 아래값 셋팅
 set CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
 
 리눅스에는
+	1.OS 환경변수 등록, 
+	2.bin/catalina.sh , 
+	3.bin/setenv.sh (파일을 생성해줘야 한다)
+	안에 등록하는 법이 있는데
+
+이왕이면 3번으로 하자
+
 환경변수 등록
 export CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
 
-또는
-
 bin/catalina.sh 안에
+CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+
+bin/setenv.sh 안에(파일이 처음에는 없다,생성해야 함)
 CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"

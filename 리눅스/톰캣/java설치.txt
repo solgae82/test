@@ -1,6 +1,6 @@
 ----centos 에서
 
-/usr/local/jdk1.7.0_76
+/usr/local/jdk1.8.0_241
 에  tar로 풀고 디렉토리 위치시킨 후
 
 
@@ -8,7 +8,7 @@
 #맨 아래에 변수추가  path 추가
 .
 .
-export JAVA_HOME=/usr/local/jdk1.7.0_76
+export JAVA_HOME=/usr/local/jdk1.8.0_241
 export CLASSPATH="."
 export PATH="$PATH:$JAVA_HOME/bin"
 
