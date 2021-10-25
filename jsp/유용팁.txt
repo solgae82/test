@@ -1,1 +1,13 @@
-${pageContext.request.contextPath} : 웹컨텍스트 출력
+컨텍스트 출력
+
+[JSP]
+	<%=request.getContextPath() %>
+	=> /root
+
+[EL]
+	${pageContext.request.contextPath}
+	=> /root
+
+[JSTL]
+	<c:url value='/' />
+	=> /root/
