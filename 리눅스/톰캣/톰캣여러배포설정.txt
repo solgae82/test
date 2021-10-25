@@ -1,0 +1,188 @@
+
+톰캣 8.0에서 실험
+
+
+
+-----------.war로 배포시
+
+	1. /home/web 에 ex01.war 업로드 배포시
+	---------------------
+	vi 톰캣홈/conf/server.xml
+	
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+
+		<Context path="/" docBase="." reloadable="true" />
+		:was 재기동하면 ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근해야 함.
+
+		<Context path="/" docBase="ex01" reloadable="true" />
+		:was 재기동하면 ex01 디렉토리와 ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
+
+		<Context path="" docBase="ex01" reloadable="true" />
+		:was 재기동하면 ex01 디렉토리와 ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
+
+
+	
+
+	2. /home/web 에  ROOT.war 업로드 배포시
+	ROOT 디렉토리는 예약된 디렉토리이다 '/' 로 접근 가능.
+	---------------------
+	vi 톰캣홈/conf/server.xml
+
+	<Host name="localhost"  appBase="/home/web"
+            unpackWARs="true" autoDeploy="true">
+
+		<Context path="" docBase="ROOT" reloadable="true" />
+		:was 재기동하면 ROOT 디렉토리에 배포되고 이 ROOT 컨텍스트는 기본적으로 '/'로 예약되어 있다.
+
+		
+	이렇게 하면 context를 사용하지 않은 / 로 바로 접근 가능해진다..
+
+
+--------- 옛날 방식으로 특정 디렉토리에 수동 배치시..
+
+/home/web/ex01 디렉토리에 웹앱 배포 후 기동 가정한다
+Context > crossContext="true" 속성이 특별한 역활을 한다.(꼭 넣어야 한다는, '/' 변경을 위해)
+
+	1. 톰캣홈/conf/server.xml에 모두 몰아 넣는 방법(비추천).	
+
+		방법1. 
+			Host > appBase에 절대경로를 넣고, Context > docBase ="."  를 넣는 방법
+			------------------------
+			vi 톰캣홈/conf/server.xml
+			
+			<Host name="localhost"  appBase="/home/web/ex01"
+				    unpackWARs="true" autoDeploy="true">
+
+				   <Context path="" 
+					docBase="." 
+					reloadable="true" 
+					debug="0" 
+					crossContext="true"
+					privileged="true" />
+
+			:was 재기동하면 컨텍스트 없이 /로 바로 접근
+		방법2. 
+			Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
+			------------------------
+			vi 톰캣홈/conf/server.xml
+			
+			<Host name="localhost"  appBase=""
+				    unpackWARs="true" autoDeploy="true">
+
+				   <Context path="" 
+					docBase="/home/web/ex01" 
+					reloadable="true" 
+					debug="0" 
+					crossContext="true"
+					privileged="true" />
+
+			 :was 재기동하면 컨텍스트 없이 /로 바로 접근
+
+			 
+	2. 톰캣홈/conf/Catalina/localhost/ROOT.xml 에 컨텍스트 지정을 분리할 경우
+
+		방법 1. 
+			Host > appBase에 절대경로를 넣고, Context > docBase ="."  를 넣는 방법
+			------------------------
+			vi 톰캣홈/conf/server.xml
+			
+			<Host name="localhost"  appBase="/home/web/ex01" 
+				    unpackWARs="true" autoDeploy="true">
+
+			vi 톰캣홈/conf/Catalina/localhost/ROOT.xml 
+			(이 ROOT.xml , '/'로 접근 가능한 컨텍스트임을 뜻하는 예약어, 
+			파일명.xml의 파일명은 컨텍스트명을 뜻함 , man.xml -> /man )
+
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Context path="" 
+						docBase="." 
+						reloadable="true" 
+						debug="0" 
+						crossContext="true"
+						privileged="true">
+
+			</Context>
+
+			:was 재기동하면 컨텍스트 없이 /로 바로 접근
+
+		방법 2.
+			Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
+			------------------------
+			vi 톰캣홈/conf/server.xml
+			
+			<Host name="localhost"  appBase=""
+				    unpackWARs="true" autoDeploy="true">
+
+			vi 톰캣홈/conf/Catalina/localhost/ROOT.xml 
+			(이 ROOT.xml , '/'로 접근 가능한 컨텍스트임을 뜻하는 예약어, 
+			파일명.xml의 파일명은 컨텍스트명을 뜻함 , man.xml -> /man )
+
+			<?xml version="1.0" encoding="UTF-8"?>
+			<Context path="" 
+						docBase="/home/web/ex01" 
+						reloadable="true" 
+						debug="0" 
+						crossContext="true"
+						privileged="true">
+
+			</Context>
+
+			:was 재기동하면 컨텍스트 없이 /로 바로 접근
+
+-----------내가 원하는 컨텍스트명(ROOT가 아닌)으로 war 배포도 되고 '/' 자동 설정이 한번에 되게 하려면?
+
+ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같다. 
+배포와 동시에 '/' 설정도 손댈 필요 없으니..
+
+내가 못 찾은 것인지는 모르지만,
+죽어도 ROOT디렉토리가 아닌 앱명 예를 들어 ex01.war를 업로드 해서 톰캣 기동 후 '/'설정도 되길 원한다면, 
+일단 war 업로드 톰캣기동으로 배포 후 , 톰캣 중지하고 ,  수동배치 설정을 바꾸고, 다시 톰캣 재기동 해야 하드라..
+(위에 war 배포와  특정 디렉토리 수동 배치를 혼합하는 방법)
+
+이해하게 편하게 server.xml에 모든 설정을 다 때려 넣는 방법으로 해보자..
+
+	/home/web 에 ex01.war 업로드
+
+	server.xml 열고
+		※ Context  > crossContext="true" 꼭 넣어라
+
+		<Host name="localhost"  appBase="/home/web"
+			    unpackWARs="true" autoDeploy="true">
+					
+			<Context path="/" docBase="." reloadable="true" crossContext="true" />
+		</Host>
+
+	톰캣 올려서 배포 시키고
+		./startup.sh
+
+	브라우저 /ex01 로 접근 가능 확인.(현재는  /ex01 컨텍스트로만 접근 가능, '/'접근 불가)
+
+
+	톰캣 내리고 
+		./shutdown.sh
+
+	ex01.war 파일 삭제하고, (톰캣 내리고 삭제해야지 기동 중 삭제하면 배포 디렉토리도 동시에 삭제된다)
+		
+
+	수동 배치 설정 다시 server.xml 열고 	'/' 로 인식하게 설정을 바꿔준다
+
+		※ Context > crossContext="true" 가 중요하다
+
+		방법 1 : Host > appBase에 절대경로를 넣고, Context > docBase ="."  를 넣는 방법
+		------------------------
+		<Host name="localhost"  appBase="/home/web/ex01" unpackWARs="true" autoDeploy="true">
+				
+			<Context path="/" docBase="." reloadable="true"  crossContext="true" />
+
+		</Host>
+
+		방법 2 : Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
+		(이게 논리적으로 맞는 듯)
+		------------------------
+		<Host name="localhost"  appBase=""  unpackWARs="true" autoDeploy="true">
+			<Context path="/" docBase="/home/web/ex01" reloadable="true"  crossContext="true" />
+		</Host>
+
+	다시 톰캣 재기동
+
+	브라우저로 '/' 로 접속 되는 지 확인.
