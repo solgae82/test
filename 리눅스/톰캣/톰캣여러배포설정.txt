@@ -1,29 +1,85 @@
-
 톰캣 8.0에서 실험
 
+테스트 하며 알아낸 결과,
+여러 배포형식과, 가장 중요한 document root 등의 설정이 어떻게 돌아가는지 짐작하게 되었다
 
+기본지식 몇가지 습득하고 테스트 해보자
+
+배포형식(3가지)
+	1. 옛날 방식 특정 디렉토리에 소스를 올리고, 이 위치를 document root로 설정하는 방법
+	2. 특정 디렉토리에 war 파일을 올려놓고 톰캣 기동으로 자동 압축해제 시켜 배포하는 방법
+	3. 톰캣에서 지원하는 웹프로그램에서 배포하는 방법.
+
+배포시 필요한 설정 파일들 과 속성들
+	톰캣홈/conf/server.xml 
+
+	3가지 속성의 조합으로 컨텍스트가 변화무쌍하게 설정된다
+	
+	1.Host 태그 appBase="/home/web" (줄여서 appBase 부르겠다)
+		
+		.war 파일 압축해제 위치 지정 
+		이 속성의 디렉토리에   /home/web 에 ex01.war 를 올려놓고 톰캣 기동하면 ,
+		ex01 디렉토리가 생기며 압축해제 되게 된다
+		
+	2.Context 태그의 docBase="ex01" (줄여서 docBase라고 부르겠다)
+
+		원래는 컨텍스트 이름이었던 거 같은데, 실제 /home/web/ex01 로 압축해제 될 것이므로, 그 이름과 같아야 한다 
+	
+	3.Context 태그의 path="/ex" (줄여서 path 부르겠다)
+		
+		이 녀석의 의미는 실제 브라우저 url 접근시 /ex 로 접근하라는 것인줄 알았더니, 
+		실제로는 쓰이지 않거나 /ex 접근이 가능하다면 /home/web/ex 로 배포 되었을때 가능.
+		예를 들어 <Context path="/ex" docBase="ex01" reloadable="true" /> 하고 .war를 톰캣기동 압축해제를 하니,
+		ex,ex01,ROOT 가 생김(같은 웹앱인데 3개가 생김)
+
+		
+appBase 의 모든 디렉토리는 컨텍스트 대상이다
+appBase 위치에 app 디렉토리가 있고 그 안에 웹앱 소스가 배포되었다면, 
+app 컨텍스트가 배치되고 '/app'로 접근 가능하다
+
+appBase + docBase 가 논리적으로 맞아야 설정이 되는 듯 하다.
+appBase="/home/web" docBase="ex01" 이라면 
+/home/web/ex01 에 웹앱이 배포되어야 설정이 맞는 형식인 거같다
+
+톰캣에만  특별한 예약어 디렉토리인 ROOT 디렉토리가 있는데 대문자로 ROOT 디렉토리에 배포하면 
+ROOT 컨텍스트가 되고, 이 녀석만 특별하게 브라우저 접속시 '/'으로 접속 가능하다.
+'/' 로 만들고 싶은 욕구가 있으니 여러 잔꾀가 나온다.
+
+기타
+<Context path=""> 와 <Context path="/"> 동일하고, "" 가 공식 설정법이다
 
 -----------.war로 배포시
 
-	1. /home/web 에 ex01.war 업로드 배포시
+	1. /home/web 에 ex01.war 업로드 배포 후 톰캣 기동
+
+		기본적으로 ex01.war 를 톰캣이 인식하는 appBase="/home/web" 에 업로드하고(여기 아니면 압축해제 안함),
+		톰캣 재기동 하면, 
+		war파일명인 ex01 디렉토리가 생기고 거기에 ex01.war 압축내용이 해제되게 된다.
+
 	---------------------
 	vi 톰캣홈/conf/server.xml
 	
 	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
 
-		<Context path="/" docBase="." reloadable="true" />
-		<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
-		:was 재기동하면 ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근해야 함.
+		<Context path="" docBase="" reloadable="true" />
+		:톰캣 재기동하면 ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근 가능.
 
-		<Context path="/" docBase="ex01" reloadable="true" />
-		<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
-		:was 재기동하면 ex01 디렉토리와 ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
+		<Context path="/ex" docBase="." reloadable="true" />
+		또는
+		<Context path="/ex" docBase="" reloadable="true" />
+		:톰캣 재기동하면 ex01 디렉토리 생김 , /ex01 컨텍스트로 접근 , /ex 접근 불가(path="/ex" 무시)
 
-		<Context path="" docBase="ex01" reloadable="true" />
-		:was 재기동하면 ex01 디렉토리와 ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
-
-
+		<Context path="" docBase="ex01" reloadable="true" /> 
+		:톰캣 재기동하면 ex01,ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
+		:/ex01, / 컨텍스트로 접근 가능.
+		
+		<Context path="/ex" docBase="ex01" reloadable="true" />
+		:톰캣 재기동하면 ex01, ROOT, ex  디렉토리 생성. 3개의 컨텍스트가 있는 셈.
+		: /ex01, / , /ex 가 생김
 	
+		<Context path="" docBase="ex04" reloadable="true" />
+		: 톰캣 기동 에러 , 디렉토리도 생기지 않는다./home/web/ex04 이 없을테고 ex01.war
+	</Host>
 
 	2. /home/web 에  ROOT.war 업로드 배포시 
 	ROOT 디렉토리는 예약된 디렉토리이다 '/' 로 접근 가능.
