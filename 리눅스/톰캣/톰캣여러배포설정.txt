@@ -12,9 +12,11 @@
 	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
 
 		<Context path="/" docBase="." reloadable="true" />
+		<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
 		:was 재기동하면 ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근해야 함.
 
 		<Context path="/" docBase="ex01" reloadable="true" />
+		<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
 		:was 재기동하면 ex01 디렉토리와 ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
 
 		<Context path="" docBase="ex01" reloadable="true" />
@@ -23,7 +25,7 @@
 
 	
 
-	2. /home/web 에  ROOT.war 업로드 배포시
+	2. /home/web 에  ROOT.war 업로드 배포시 
 	ROOT 디렉토리는 예약된 디렉토리이다 '/' 로 접근 가능.
 	---------------------
 	vi 톰캣홈/conf/server.xml
@@ -32,6 +34,7 @@
             unpackWARs="true" autoDeploy="true">
 
 		<Context path="" docBase="ROOT" reloadable="true" />
+		<!--context  태그 자체가 없어도 기본 이렇게 설정된 형식으로 배포되더라 -->
 		:was 재기동하면 ROOT 디렉토리에 배포되고 이 ROOT 컨텍스트는 기본적으로 '/'로 예약되어 있다.
 
 		
@@ -148,7 +151,7 @@ ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같
 
 		<Host name="localhost"  appBase="/home/web"
 			    unpackWARs="true" autoDeploy="true">
-					
+			<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
 			<Context path="/" docBase="." reloadable="true" crossContext="true" />
 		</Host>
 
@@ -172,6 +175,7 @@ ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같
 		------------------------
 		<Host name="localhost"  appBase="/home/web/ex01" unpackWARs="true" autoDeploy="true">
 				
+			<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
 			<Context path="/" docBase="." reloadable="true"  crossContext="true" />
 
 		</Host>
@@ -180,9 +184,170 @@ ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같
 		(이게 논리적으로 맞는 듯)
 		------------------------
 		<Host name="localhost"  appBase=""  unpackWARs="true" autoDeploy="true">
+			<!-- path="" 가 정석임. "/"로 하면 ""으로 인식 -->
 			<Context path="/" docBase="/home/web/ex01" reloadable="true"  crossContext="true" />
 		</Host>
 
 	다시 톰캣 재기동
 
 	브라우저로 '/' 로 접속 되는 지 확인.
+
+
+----------- context.xml을 웹애플리케이션에 포함해서 배포하기
+
+위에서 톰캣홈/conf/Catalina/localhost/ROOT.xml 을 만들어서 설정 하던 방식을 
+아예 웹애플리케이션에 .xml을 넣어서 배포하게끔 향상된 방식이다
+공식 문서에서는 이 방법을 추천.
+
+웹앱 MEAT-INF 디렉토리에 context.xml(꼭 이 이름으로 해야함,약속된 이름)에 
+톰캣 context 설정값을 넣어서 배포하는 방식
+
+이클립스 프로젝트로 한다면
+웹 자원이 있는 root 디렉토리에 META-INF 디렉토리를 만든다(이 곳은 메이븐이 빌드시 만들어 주는 디렉토리 이기도 하다)
+그 안에 설정된 context.xml을 넣고 .war를 만든다
+그럼 구조가 대충 이렇게 될 것이다
+.war 
+	-웹자원들 및 디렉토리
+	-MEAT-INF 디렉토리(context.xml 이 있음)
+	-WEB-INF 디렉토리
+
+자세한 설정 방식은..
+테스트로...
+
+	먼저, 톰캣홈/conf/server.xml은  HOST 이렇게 되어 있다
+		
+		<Host name="localhost"  appBase="/home/web"
+		unpackWARs="true" autoDeploy="true">
+
+	/home/web 에 .war 파일을 배포하게끔 되어 있다.
+
+	1. 웹앱 root에 /META-INF 디렉토리 만들고 context.xml을 만든다
+		: copyXML="true" 속성을 꼭 넣어줘야 이 파일을  톰캣 설정 디렉토리로 복사해준다
+		
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Context path="" 
+			docBase="." 
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+			>
+
+		</Context>
+
+	2. 웹앱을 ROOT.war 를 만든다('/'로 배포하기 위해서 ROOT로 이름 지었다)
+
+	3. /home/web 에 ROOT.war 업로드
+
+	4. 톰캣 기동 자동 배포됨(ROOT 디렉토리가 생김)
+		/home/web/ROOT
+
+
+	5. META-INF/context.xml 을 복사해서 톰캣홈/conf/Catalina/localhost/에 ROOT.xml 이름으로 바뀌어서 복사됨
+		
+		/conf/Catalina/localhost/ROOT.xml  #복사된 context.xml
+
+		:수동으로 만들던 그 방식과 같다
+
+	6. 배치 완료
+
+	7. 브라우저에서 '/' 으로 접속 테스트
+
+--------- etc
+테스트 해보니 
+context.xml 로 분리해서 하는 방식은
+
+톰캣홈/conf/server.xml > Host appBase="/home/web" 으로 되었을 경우
+
+	1.예제
+		ex.01.xml
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Context path="/ex" 
+			docBase="ex01" 
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+			>
+
+		</Context>
+		: ex.01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 디렉토리를 검색하니 있음.
+		ex01 컨텍스트를 배치하고 예약어가 아니므로 브라우저에서 /ex01 로 접속 가능하다.
+		path="/ex" 는 개무시된다.
+
+	2.예제
+		ex01 디렉토리를 ex02로 변경하고 docBase="ex02" 변경
+
+		ex01.xml
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Context path="/ex" 
+			docBase="ex02" 
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+			>
+
+		</Context>
+		: ex01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 웹 디렉토리를 검색해보니 없음. 그래서 기동시 1차 에러 뿜는다.
+		ex01 컨텍스트를 배치를 하긴 하지만, 디렉토리가 없다. 브라우저에서 /ex01 해봐야 404 에러를 뿜을 뿐..
+		내부적으로 docBase="ex02"를 다시 한번 돌려서 /home/web/ex02 를 검색해 보니 있다.
+		그럼 컨텍스트는 ex02가 되고 톰캣 기동을 완료한다.
+		예약어가 아니므로 브라우저에서 /ex02 로 접속 가능하다
+		path="/ex" 는 개무시된다.
+
+
+
+톰캣홈/conf/server.xml > Host appBase="" 으로 비우고(war 배포가 안 되게 하고) 
+수동으로 context를 설정하면 어떻게 될까
+
+	1.예제
+		ROOT.xml
+		<Context path="/ex" 
+			docBase="/home/web/ex01" 
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+			>
+
+		</Context>
+
+		: /home/web/ex01 의 디렉토리가 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+		이 컨텍스트 이름은 ROOT(.xml파일명) 가 되며, ROOT 컨텍스트는 '/'로 접근 가능하다.
+
+	2.예제
+		ex01.xml
+		<Context path="/ex" 
+			docBase="/home/web/ex01" 
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+					>
+
+		</Context>
+
+		: /home/web/ex01 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+		이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
+
+	3.예제
+		ex01.xml
+		<Context path="/ex" 
+			docBase="/home/web/ex02" #디렉토리를 변경했다
+			reloadable="true" 
+			debug="0" 
+			crossContext="true"
+			privileged="true"
+			copyXML="true"
+					>
+
+		</Context>
+
+		: /home/web/ex02 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+		이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
