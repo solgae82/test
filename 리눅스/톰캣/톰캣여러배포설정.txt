@@ -1,7 +1,10 @@
-톰캣 8.0에서 실험
+톰캣 8.5.51 에서 실험
 
-수십번의 테스트 후 알아낸 결과,
+수백번의 테스트 후 알아낸 결과,
 여러 배포형식과, 가장 중요한 document root 등의 설정이 어떻게 돌아가는지 짐작하게 되었다
+논리적으로 이해 안가는 부분이 너무 많다..
+잘 되는 부분만 사용하고 말자... 머리가 너무 아프다
+
 
 기본지식 몇가지 습득하고 테스트 해보자
 
@@ -77,7 +80,8 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 
 
 기타
-<Context path=""> 와 <Context path="/"> 동일하고, "" 가 공식 설정법이다
+<Context path=""> 와 <Context path="/"> 동일하고, root 표현은 ""로 해야하고, 
+컨텍스트명으로 설정시 '/context' 처럼 해야한다
 
 -----------.war로 배포시
 	
@@ -98,53 +102,124 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 
 	테스트 해보자
 
-	1. /home/web 에 ex01.war 업로드 배포 후 톰캣 기동
+	1. /home/web 에 ex01.war 업로드 후 톰캣 기동 배포
 
 		
 		vi 톰캣홈/conf/server.xml
 		
 		<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
-
-			<!--디퐅트 Context가 없는 것과 아래와 동일 -->
+			<!--Context가 없는 것과 아래와 동일 -->
 			<Context path="" docBase="" reloadable="true" />
 			<!-- Context path="" docBase="." reloadable="true" /-->
-			:톰캣 재기동하면 ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근 가능.
-
-			<Context path="/ex" docBase="." reloadable="true" />
-			또는
-			<Context path="/ex" docBase="" reloadable="true" />
-			:톰캣 재기동하면 ex01 디렉토리 생김 , /ex01 컨텍스트로 접근 , /ex 접근 불가(path="/ex" 무시)
-
-			<Context path="" docBase="ex01" reloadable="true" /> 
-			:톰캣 재기동하면 ex01,ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
-			:/ex01, / 컨텍스트로 접근 가능.
-			
-			<Context path="/ex" docBase="ex01" reloadable="true" />
-			:톰캣 재기동하면 ex01, ROOT, ex  디렉토리 생성. 3개의 컨텍스트가 있는 셈.
-			: /ex01, / , /ex 가 생김
-		
-			<Context path="" docBase="ex04" reloadable="true" />
-			: 톰캣 기동 에러 , 디렉토리도 생기지 않는다(압축해제도 안함) 
-			이 조합은 /home/web/ex04 가 되는데,  ex01.war 압축해제 했다면 실제 /home/web/ex01 이므로 매칭불가
-	
 		</Host>
+		
+		톰캣 기동 후 로그 : 
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]을(를) 배치합니다.
+			[/home/web/ex01.war]의 배치가 [57] 밀리초에 완료되었습니다.
+
+		확인 : ex01 디렉토리만 생김 , /ex01 컨텍스트로 접근 가능.
+		'/' 가  /home/web 영역으로 url 매핑 됨.
+		
+		-----------------------
+
+		<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+			<Context path="/ex" docBase="." reloadable="true" />
+			<!-- Context path="/ex" docBase="" reloadable="true" /-->
+		</Host>
+		
+		톰캣 기동 후 로그 : 
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]을(를) 배치합니다.
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]의 배치가 [59] 밀리초에 완료되었습니다.
+
+		확인 : ex01 디렉토리 생김
+			/ex01 컨텍스트로 접근 가능 , /ex 를 하면 /home/web/영역에  접근(웃기다 대체 뭐냐) 
+
+		-----------------------
+		<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+			<Context path="" docBase="ex01" reloadable="true" /> 
+			
+		</Host>	
+		
+		톰캣 기동 후 로그 : 
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]을(를) 배치합니다.
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]의 배치가 [49] 밀리초에 완료되었습니다.
+		
+		확인 : ex01,ROOT 디렉토리가 생겨서 배포된다. 2개의 컨텍스트가 있는 셈.
+			/ex01, '/' 컨텍스트로 접근 가능.
+			웃긴 점:
+				처음 배포시에는 생성된 2개의 디렉토리가 각각
+					/ex01 접근 => ex01 디렉토리
+					'/' 접근 => ROOT 디렉토리
+				이런 식으로 url 매핑 되다가
+				배포 하고 난 후 다시 톰캣 재기동하면,
+					/ex01 접근 => ex01 디렉토리
+					'/' 접근 => ex01 디렉토리
+				이렇게 매핑이 변한다...
+
+		대체 톰캣은 왜 그럴까?
+		진짜 끝도 없이 좆 같다
+					
+		-----------------------
+		<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+			<Context path="/ex" docBase="ex01" reloadable="true" />
+		</Host>
+		톰캣 기동 후 로그 : 
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]을(를) 배치합니다.
+			웹 애플리케이션 아카이브 [/home/web/ex01.war]의 배치가 [31] 밀리초에 완료되었습니다.
+		
+		확인 : ex01,  ex  디렉토리 생성. 2개의 컨텍스트가 있는 셈.
+			/ex01, , /ex 컨테스트로 접근 가능.
+
+			웃긴 점:
+				처음 배포시에는 생성된 2개의 디렉토리가 각각
+					/ex01 접근 => ex01 디렉토리
+					'/ex' 접근 => ex 디렉토리
+				이런 식으로 url 매핑 되다가
+				배포 하고 난 후 다시 톰캣 재기동하면,
+					/ex01 접근 => ex01 디렉토리
+					'/ex' 접근 => ex01 디렉토리
+				이렇게 매핑이 변한다...
+
+		정말 족 같다
+		-----------------------
+		<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+			<Context path="" docBase="ex04" reloadable="true" />
+		</Host>
+		톰캣 기동 후 로그 : java 에러 잔뜩....
+
+		확인 : 톰캣 기동 에러 , 디렉토리도 생기지 않는다(압축해제도 안함) 
+			아마도 유효성 체크를 하나 보다.
+			이 설정 조합은 /home/web/ex04 가 되는데,  
+			ex01.war 압축해제 했다면 실제 /home/web/ex01 이므로 매칭불가 
+
 
 	2. /home/web 에  ROOT.war 업로드 배포시 
 
 		ROOT 디렉토리는 예약된 디렉토리이다 '/' 로 접근 가능.
+		'/' 컨텍스트로 만들기 위해 이런 방식을 쓴다.
 		---------------------
 		vi 톰캣홈/conf/server.xml
 
 		<Host name="localhost"  appBase="/home/web" unpackWARs="true" autoDeploy="true">
 			
-			<!--디퐅트 Context가 없는 것과 아래와 동일 -->
-			<Context path="" docBase="" reloadable="true" />
-			<!-- Context path="" docBase="ROOT" reloadable="true" / -->
-				
+			<!-- Context가 없거나  -->
+			<Context path="" docBase="ROOT" reloadable="true" />
+			
+			<!-- ROOT.war로 하면 아래처럼 하면 ROOT로 배포할 거 같지만, 다른명.war는만 가능 -->
+			<!-- Context path="" docBase="" reloadable="true" /-->
 		</Host>
-
-		:was 재기동하면 ROOT 디렉토리에 배포되고 이 ROOT 컨텍스트는 기본적으로 '/ROOT' 가 아닌 '/'로 예약되어 있다.
-		이렇게 하면 ROOT 컨텍스트로 '/' 로 바로 접근 가능해진다..
+		
+		톰캣 기동 후 로그 :
+			Context 없이 기동 했을때 :  
+				웹 애플리케이션 아카이브 [/home/web/ROOT.war]을(를) 배치합니다.
+				웹 애플리케이션 아카이브 [/home/web/ROOT.war]의 배치가 [601] 밀리초에 완료되었습니다.
+			
+			docBase="ROOT" 기동 했을때 :
+				# 컨텍스트 배포 로그가 없이 그냥 기동된다. 
+				# 그래도 ROOT 디렉토리 배포하고 '/' 로 접근 가능하더라
+			
+		확인 : ROOT 디렉토리 생성, ROOT 컨텍스트는 기본적으로 '/ROOT' 가 아닌 '/'로 예약되어 있다.
+		'/' 로 바로 접근 가능해진다..
 
 
 --------- 옛날 방식으로 특정 디렉토리에 수동 배치시..
@@ -152,10 +227,10 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 	/home/web/ex01 디렉토리에 웹앱 배포 후 기동하는 것으로 가정한다
 	Context > crossContext="true" 속성이 특별한 역활을 한다.(꼭 넣어야 한다는, '/' 변경을 위해)
 
-	1. 톰캣홈/conf/server.xml에 모두 몰아 넣는 방법(비추천).	
+	1. 톰캣홈/conf/server.xml에 모두 몰아 넣는 방법(옛날 방식, 비추천).	
 
 		방법1. 
-			Host > appBase에 절대경로를 넣고, Context > docBase ="."  를 넣는 방법
+			Host > appBase에 절대경로를 넣고, Context > docBase =""  를 넣는 방법
 			------------------------
 			vi 톰캣홈/conf/server.xml
 			
@@ -163,15 +238,18 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 				    unpackWARs="true" autoDeploy="true">
 
 				   <Context path="" 
-					docBase="." 
+					docBase="" 
 					reloadable="true" 
 					debug="0" 
 					crossContext="true"
 					privileged="true" />
 			</Host>
 			:was 재기동하면 컨텍스트 없이 /로 바로 접근
-		방법2. 
+
+
+		방법2. (이렇게 하면 보안에 위험함 절대 하지 말것!)
 			Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
+			(!!!이거 하지마!!!)
 			------------------------
 			vi 톰캣홈/conf/server.xml
 			
@@ -185,7 +263,31 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 					crossContext="true"
 					privileged="true" />
 			</Host>
-			 :was 재기동하면 컨텍스트 없이 /로 바로 접근
+
+			톰캣 기동 후 로그
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]에 대한 배치가 [23] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]에 대한 배치가 [43] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]에 대한 배치가 [37] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]에 대한 배치가 [23] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]에 대한 배치가 [18] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]에 대한 배치가 [31] 밀리초에 완료되었습니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]을(를) 배치합니다.
+				웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]에 대한 배치가 [30] 밀리초에 완료되었습니다.
+			 
+			 확인 : was 재기동하면 컨텍스트 없이 /로 바로 접근,(처음엔 잘 되는 것인줄 알았다가 로그 보고 놀랬다)
+				
+				그러나!! 로그를 보자 
+				톰캣 홈의 모든 디렉토리가 모든 컨텍스트로 등록된다.
+				이건 중대한 오류 아닐까?
+				구글링 하면 이렇게 설정해서 '/' 컨텍스트로 사용하는 글들이 있는데, 절대 따라 하지 말자..
+				(글 주인들이 제대로 확인 안 한 듯)
+
 
 			 
 	2. 톰캣홈/conf/Catalina/localhost/ROOT.xml 에 컨텍스트 지정을 분리할 경우
@@ -215,6 +317,7 @@ Context  태그를 외부파일로 빼서 설정하게 되어 있는데 이것�
 
 		방법 2.
 			Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
+			(!!!이거 하지마!!!)
 			------------------------
 			vi 톰캣홈/conf/server.xml
 			
@@ -255,7 +358,7 @@ ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같
 
 		<Host name="localhost"  appBase="/home/web" unpackWARs="true" autoDeploy="true">
 			<!-- ※ Context  > crossContext="true" 꼭 넣어라 -->
-			<Context path="/" docBase="." reloadable="true" crossContext="true" />
+			<Context path="" docBase="" reloadable="true" crossContext="true" />
 		</Host>
 
 	톰캣 올려서 배포 시키고
@@ -286,7 +389,7 @@ ROOT 디렉토리로 배포시키는 ROOT.war 방법이 가장 속편한 거 같
 		</Host>
 
 		방법 2 : Host > appBase="" 비우고 , Context > docBase ="절대경로"  를 넣는 방법
-		(이게 논리적으로 맞는 듯)
+		(!!!이거 하지마!!!)
 		------------------------
 		<Host name="localhost"  appBase=""  unpackWARs="true" autoDeploy="true">
 			<!-- ※ Context  > crossContext="true" 꼭 넣어라 -->
@@ -384,12 +487,20 @@ context.xml 로 분리해서 하는 방식으로 동적 테스트
 
 			</Context>
 		
-		appBase + ex01.xml(파일명) = /home/web/ex01
-		appBase + docBase = /home/web/ex01
+		톰캣 기동 후 로그
 
-		: ex01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 디렉토리를 검색하니 있음.
-		ex01 컨텍스트를 배치하고 ROOT 예약어 디렉토리가 아니므로 브라우저에서 /ex01 로 접속 가능하다.
-		path="/ex" 는 개무시된다.
+
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]을(를) 배치합니다.
+			호스트 appBase 내의 docBase [/home/web/ex01]이(가) 지정되었으나, 이는 무시될 것입니다.
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]의 배치가 [635] 밀리초 내에 완료되었습니다
+
+		개인해석 :
+			appBase + ex01.xml(파일명) = /home/web/ex01
+			appBase + docBase = /home/web/ex01
+
+			: ex01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 디렉토리를 검색하니 있음(유효성 통과).
+			ex01 컨텍스트를 배치하고 ROOT 예약어 디렉토리가 아니므로 브라우저에서 /ex01 로 접속 가능하다.
+			path="/ex" 는 개무시된다.
 
 	2.예제
 		배포 디렉토리 : /home/web/ex02
@@ -410,19 +521,32 @@ context.xml 로 분리해서 하는 방식으로 동적 테스트
 
 			</Context>
 
-		appBase + ex01.xml(파일명) = /home/web/ex01
-		appBase + docBase = /home/web/ex02
+		톰캣 기동 후 로그
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]을(를) 배치합니다.
+			호스트 appBase 내의 docBase [/home/web/ex02]이(가) 지정되었으나, 이는 무시될 것입니다.
+			지정된 주요 리소스셋 [/home/web/ex01]은(는) 유효하지 않습니다.
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]을(를) 배치하는 중 오류 발생
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]의 배치가 [81] 밀리초 내에 완료되었습니다.
 
-		: ex01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 웹 디렉토리를 검색해보니 없음. 그래서 기동시 1차 에러 뿜는다.
-		ex01 컨텍스트를 배치를 하긴 하지만, 디렉토리가 없다. 브라우저에서 /ex01 해봐야 404 에러를 뿜는다..
-		내부적으로 docBase="ex02"를 다시 한번 조합해서 /home/web/ex02 를 검색해 보니 있다.
-		그럼 컨텍스트는 ex02를 배치하고 톰캣 기동을 완료한다.
-		ROOT 예약어 디렉토리가 가 아니므로 브라우저에서 /ex02 로 접속 가능하다
-		path="/ex" 는 개무시된다.
+			웹 애플리케이션 디렉토리 [/home/web/ex02]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/home/web/ex02]에 대한 배치가 [504] 밀리초에 완료되었습니다.
+
+		
+		개인해석 : 
+			appBase + ex01.xml(파일명) = /home/web/ex01
+			appBase + docBase = /home/web/ex02
+
+			: ex01.xml의 파일명으로 컨텍스트명을 정하고 /home/web/ex01 웹 디렉토리를 검색해보니 없음(유효성 불통과). 그래서 기동시 java 에러 뿜는다.
+			ex01 컨텍스트를 배치를 하긴 하지만, 웹디렉토리가 없다. 브라우저에서 /ex01 해봐야 404 에러를 낼뿐..
+			내부적으로 docBase="ex02"를 다시 한번 조합해서 /home/web/ex02 를 검색해 보니 있다(유효성 통과).
+			그럼 컨텍스트는 ex02를 배치하고 톰캣 기동을 완료한다.
+			ROOT 예약어 디렉토리가 아니므로 브라우저에서 /ex02 로 접속 가능하다
+			path="/ex" 는 개무시된다.
 
 
 
-	4.예제
+	3.예제(매우 위험한 상태로 배포된 예제)
+
 		배포 디렉토리 : /home/web/ex01
 		
 		server.xml
@@ -440,13 +564,69 @@ context.xml 로 분리해서 하는 방식으로 동적 테스트
 
 			</Context>
 
-		appBase + ROOT.xml(파일명) = ROOT
-		appBase + docBase = /home/web/ex01
+		톰캣 기동 후 로그
 
-		: /home/web/ex01 의 디렉토리가 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
-		이 컨텍스트 이름은 ROOT(.xml파일명) 가 되며, ROOT 컨텍스트는 '/'로 접근 가능하다.
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ROOT.xml]을(를) 배치합니다.
+			배치 descriptor [/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ROOT.xml]의 배치가 [594] 밀리초 내에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]에 대한 배치가 [20] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]에 대한 배치가 [20] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]에 대한 배치가 [20] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]에 대한 배치가 [19] 밀리초에 완료되었습니다.
 
-	5.예제
+		개인해석 :
+			appBase + ROOT.xml(파일명) = ROOT
+			appBase + docBase = /home/web/ex01
+
+			: /home/web/ex01 의 디렉토리가 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+			이 컨텍스트 이름은 ROOT(.xml파일명) 가 되며, ROOT 컨텍스트는 '/'로 접근 가능하다.
+
+			!!! 근데 
+			무려 톰캣홈의 모든 디렉토리를 컨텍스트로 잡아 버린다...이게 뭐야
+			conf, bin, lib, logs, temp, webapps , work 
+
+			머리가 쥐가 난다.. 이게 뭐지
+
+			배포 디렉토리 : /home/web/ROOT 디렉토리로 바꾸고 재기동해도 똑같음.
+
+			appBase="" 를 비우면 톰캣 홈의 모든 디렉토리를 컨텍스트로 모두 설정한다... 왜그럴까?
+
+	4. 예제 
+		배포 디렉토리 : /home/web/ROOT
+
+		server.xml
+			<Host name="localhost"  appBase="/home/web/ROOT" unpackWARs="true" autoDeploy="true">
+
+		컨텍스트.xml: ROOT.xml
+		<?xml version="1.0" encoding="UTF-8"?>
+			<Context path="/ex" 
+				docBase="" 
+				reloadable="true" 
+				debug="0" 
+				crossContext="true"
+				privileged="true"
+				copyXML="true">
+
+			</Context>
+
+		톰캣 기동 후 로그
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ROOT.xml]을(를) 배치합니다.
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ROOT.xml]의 배치가 [449] 밀리초 내에 완료되었습니다.
+
+		개인해석 :
+			: ROOT 컨텍스트로 설정되고 , '/' 로 접근가능.
+			path="/ex" 는 개무시된다.
+
+	5.예제(매우 위험한 상태로 배포된 예제)
 		배포 디렉토리 : /home/web/ex01
 		
 		server.xml
@@ -462,14 +642,37 @@ context.xml 로 분리해서 하는 방식으로 동적 테스트
 				copyXML="true">
 
 			</Context>
+		톰캣 기동 후 로그 
+			배치 descriptor [/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]을(를) 배치합니다.
+			배치 descriptor [/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]의 배치가 [555] 밀리초 내에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]에 대한 배치가 [21] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]에 대한 배치가 [20] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]을(를) 배치합니다.
+			웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]에 대한 배치가 [18] 밀리초에 완료되었습니다.
 
-		appBase + ROOT.xml(파일명) = ex01
-		appBase + docBase = /home/web/ex01
 
-		: /home/web/ex01 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
-		이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
+		개인해석 :
+			appBase + ex01.xml(파일명) = ex01
+			appBase + docBase = /home/web/ex01
 
-	6.예제
+			: /home/web/ex01 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+			이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
+	
+
+			appBase="" 를 비우면 톰캣 홈의 모든 디렉토리를 컨텍스트로 모두 설정한다... 왜그럴까?
+			conf, bin, lib, logs, temp, webapps , work 컨텍스트 생성해서 서버 정보 모두 출력 가능해짐
+
+	6.예제(매우 위험한 상태로 배포된 예제)
 		배포 디렉토리 : /home/web/ex02
 		
 		server.xml
@@ -486,8 +689,106 @@ context.xml 로 분리해서 하는 방식으로 동적 테스트
 
 			</Context>
 
-		appBase + ROOT.xml(파일명) = ex01
-		appBase + docBase = /home/web/ex02
+		톰캣 기동 후 로그
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]을(를) 배치합니다.
+			[/opt/tomcat/apache-tomcat-8.5.51/conf/Catalina/localhost/ex01.xml]의 배치가 [506] 밀리초 내에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/conf]에 대한 배치가 [51] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/bin]에 대한 배치가 [29] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/lib]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/logs]에 대한 배치가 [19] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/temp]에 대한 배치가 [22] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/webapps]에 대한 배치가 [28] 밀리초에 완료되었습니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]을(를) 배치합니다.
+			 웹 애플리케이션 디렉토리 [/opt/tomcat/apache-tomcat-8.5.51/work]에 대한 배치가 [18] 밀리초에 완료되었습니다.
 
-		: /home/web/ex02 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
-		이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
+		개인해석 :
+			appBase + ex01.xml(파일명) = ex01
+			appBase + docBase = /home/web/ex02
+
+			: /home/web/ex02 의 디렉토리가 웹 root 디렉토리가 될 것이고, path="/ex" 는 무시되고, 
+			이 컨텍스트 이름은 ex01(.xml파일명) 가 되며, '/ex01'로 접근 가능하다.
+			/ex02 접근 못한다
+
+
+			appBase="" 를 비우면 톰캣 홈의 모든 디렉토리를 컨텍스트로 모두 설정한다... 왜그럴까?
+			conf, bin, lib, logs, temp, webapps , work 컨텍스트 생성해서 서버 정보 모두 출력 가능해짐
+
+server.xml 에 모두 몰아넣어서 수동 테스트
+	
+	웹앱디렉토리: /home/web/ex01
+		
+	테스트 시작..
+
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+		<!--디퐅트 Context가 없는 것과 아래와 동일 -->
+		<Context path="" docBase="" reloadable="true" />
+		<!-- Context path="" docBase="." reloadable="true" /-->
+	</Host>
+	로그 :
+		웹 애플리케이션 디렉토리 [/home/web/ex01]을(를) 배치합니다.
+		웹 애플리케이션 디렉토리 [/home/web/ex01]에 대한 배치가 [559] 밀리초에 완료되었습니다.
+		
+	확인 : /ex01 컨텍스트로 접근 가능.
+	-------------------------------
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+		<Context path="/ex" docBase="" 
+				reloadable="true" 
+				debug="0" 
+				crossContext="true"
+				privileged="true"/>
+	</Host>
+	로그:
+		컨텍스트 경로는 반드시 빈 문자열이거나, 또는 '/'로 시작하고 '/'로 끝나지 않는 문자열이어야 합니다. 
+		해당 경로 [ex]은(는) 이 조건을 충족시키지 않아 [/ex](으)로 변경되었습니다.
+		웹 애플리케이션 디렉토리 [/home/web/ex01]을(를) 배치합니다.
+		웹 애플리케이션 디렉토리 [/home/web/ex01]에 대한 배치가 [136] 밀리초에 완료되었습니다.
+	확인 : /ex01 컨텍스트로 접근 가능 , /ex 는 /home/web 영역 접근
+
+	-------------------------------
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+		<Context path="" docBase="ex01" 
+			reloadable="true"
+			debug="0" 
+			crossContext="true"
+			privileged="true"/> 
+	</Host>	
+	로그 : 
+		웹 애플리케이션 디렉토리 [/home/web/ex01]을(를) 배치합니다.
+		웹 애플리케이션 디렉토리 [/home/web/ex01]에 대한 배치가 [184] 밀리초에 완료되었습니다.
+	확인 : /ex01, / 컨텍스트로 접근 가능.
+
+	-------------------------------
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+		
+		<Context path="/ex" docBase="ex01" 
+				reloadable="true" 
+				debug="0" 
+				crossContext="true"
+				privileged="true" />
+
+	</Host>
+	로그 : 
+		웹 애플리케이션 디렉토리 [/home/web/ex01]을(를) 배치합니다.
+		웹 애플리케이션 디렉토리 [/home/web/ex01]에 대한 배치가 [43] 밀리초에 완료되었습니다.
+
+	확인 : /ex01, , /ex  컨텍스트로 접근 가능.
+	
+
+	-------------------------------
+	<Host name="localhost"  appBase="/home/web"   unpackWARs="true" autoDeploy="true">
+		<Context path="" docBase="ex04" 
+				reloadable="true" 
+				debug="0" 
+				crossContext="true"
+				privileged="true" />		
+	</Host>
+	로그 : 자바 에러 주르륵 떨어짐
+
+	확인 : 톰캣 기동 실패
+	이 조합은 /home/web/ex04 가 되는데,  ex01.war 압축해제 했다면 실제 /home/web/ex01 이므로 매칭불가
