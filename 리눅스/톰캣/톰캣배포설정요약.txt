@@ -1,0 +1,292 @@
+테스트 : 톰캣 8.5.51
+-------------- 기본 url 매핑 이야기
+	컨텍스트 설정은
+
+		"Context 태그의 docBase 값과 웹앱 디렉토리(컨텍스트)명이 맞으면 
+		그 컨텍스트를 설정하는 Context 태그가 된다"
+	
+	톰캣홈/conf/server.xml
+
+		<Host name="localhost"  appBase="/home/web">
+			<-- 현재 없음 -->
+		</Host>
+
+	아무런 Context 설정이 없고
+
+	/home/web 디렉토리 안에
+		app1
+		app2
+
+	웹애플리케이션(웹앱) 디렉토리가 있다면
+
+		app1 컨텍스트 => /app1 접근가능
+		app2 컨텍스트 => /app2 접근가능
+
+	자동으로 컨텍스트가 만들어진다.
+	아래의 명시적 설정과도 같다
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex01" docBase="ex01" />
+			<Context path="/ex02" docBase="ex02" />
+		</Host>
+
+	특별히 ex01 컨텍스트만  path="/ex" 로 하고 싶어 명시적으로 아래처럼 설정했다.
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex" docBase="ex01" />
+		</Host>
+	그럼 ex01 컨텍스트 접근법은 두개가 된다. (기본:/ex01 , /ex)
+	ex02는 기본 defualt 컨텍스트 설정이 된다 (기본:/ex02)
+
+-------------- 수동 설정들
+
+	웹앱위치 : /home/web/ex01
+	Context 설정위치 : 톰캣홈/conf/server.xml 
+
+		-------------설정1
+
+		<Host name="localhost"  appBase="/home/web">
+			<-- 현재 없음 -->
+		</Host>
+
+		url 매핑 : /ex01
+
+		-------------설정2
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex01" docBase="ex01" />
+		</Host>
+
+		url 매핑 : /ex01
+
+		-------------설정3
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex" docBase="ex01" />
+		</Host>
+
+		url 매핑 : /ex01 , /ex
+
+		-------------설정4
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="" docBase="ex01" />
+			<!-- path="/" 과 같다 -->
+		</Host>
+
+		url 매핑 : /ex01 , '/'
+		
+
+-------------- .war 배포
+	
+	배포 디렉토리 : /home/web/ex01.war
+	Context 설정위치 : 톰캣홈/conf/server.xml 
+
+		-------------설정1
+
+		<Host name="localhost"  appBase="/home/web">
+			
+		</Host>
+
+		톰캣기동 후 배포 디렉토리:
+			ex01
+			
+		url 매핑 : /ex01
+
+		-------------설정2
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex01" docBase="ex01" />
+		</Host>
+
+		톰캣기동 후 배포 디렉토리:
+			ex01
+			
+		url 매핑 : /ex01
+
+		-------------설정3
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="" docBase="ex01" />
+		</Host>
+
+		톰캣기동 후 배포 디렉토리:
+			ex01 , ROOT
+			
+		url 매핑 : 
+			처음 기동시 :
+				/ex01 => /home/web/ex01
+				'/' => /home/web/ROOT
+			재기동 후 :
+				/ex01 => /home/web/ex01
+				'/' => /home/web/ex01
+		
+		※ 둘 중의 하나를 골라서 다시 설정하라는 듯.
+
+		-------------설정4
+
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex" docBase="ex01" />
+		</Host>
+
+		톰캣기동 후 배포 디렉토리:
+			ex01 , ex
+			
+		url 매핑 : 
+			처음 기동시 :
+				/ex01 => /home/web/ex01
+				'/ex' => /home/web/ex
+			재기동 후 :
+				/ex01 => /home/web/ex01
+				'/ex' => /home/web/ex01
+		
+		※ 둘 중의 하나를 골라서 다시 설정하라는 듯.
+
+--------------'/' 로 설정하기
+
+	수동으로 
+		웹앱위치 : /home/web/ex01
+		Context 설정위치 : 톰캣홈/conf/server.xml 
+			<Host name="localhost"  appBase="/home/web/ex01">
+				<Context path="" docBase="" />
+				<!-- path="/" 과 같다 -->
+			</Host>
+
+		url 매핑 : '/'
+
+	ROOT 웹앱 설정
+
+		ROOT웹앱(디렉토리)는 특별히 '/'로 매핑된다
+
+		웹앱위치 : /home/web/ROOT
+		Context 설정위치 : 톰캣홈/conf/server.xml 
+			<Host name="localhost"  appBase="/home/web">
+				<!-- 아무 설정이 없거나 -->
+				<Context path="" docBase="ROOT" />
+			</Host>
+		
+		url 매핑 : '/'
+
+		※ 이렇게 설정하고 ROOT.war 로 배포하면 편하다.
+
+	ex01.war 배포 + '/' 자동 설정?
+		
+		ex01.war만 배포하면 그냥 '/' 연결이 자동으로 되는 방법을 말하는데,
+		그런 방법은 없다(논리적으로 안된다)
+
+		그래서 자동으로 하려면 ROOT.war 로 해야한다.(ROOT 디렉토리로 생성)
+
+		*************************
+		그래도 죽어도!!
+		ROOT명이 싫어서 ex01.war로 배포 => ex01 로 만들고 '/'를 할테야?
+	
+		그렇다면,
+		ex01.war 배포 => ex01 로 하고
+		
+		톰캣(배포) 기동 중지 시키고
+
+		server.xml을 수정하고 
+			
+		<Host name="localhost"  appBase="/home/web/ex01">
+			<Context path="" docBase="" />
+		</Host>
+
+		다시 톰캣 재기동 한다..
+
+		다음 수정건이 반영된 ex01.war 다시 적용하려면..
+
+		톰캣 내리고 server.xml을 수정하고
+		(왜냐면 배포시킬 /home/web으로 바꿔야 하니까)  
+			
+			<Host name="localhost"  appBase="/home/web">
+				<Context path="" docBase="" />
+			</Host>
+
+		톰캣기동 배포 후 다시 내리고 , server.xml 다시 편집
+			<Host name="localhost"  appBase="/home/web/ex01">
+				<Context path="" docBase="" />
+			</Host>
+		
+		다시 톰캣 기동해야 한다.
+
+		ㅈ같지? 그래서 ROOT로 하는거여
+
+		*************************
+	
+--------------[컨텍스트명].xml 분리하기
+
+	Context 태그를 외부파일로 분리해서 하는 방법이 최신이다
+	자세히 들어가면 복잡하지만, 
+		형식: 톰캣홈/cont/[엔진명]/[hostname]/컨텍스트명.xml
+
+	설정 경로는 일단 이것이라고 생각하고 한다
+		
+		설정경로: 톰캣홈/conf/Catalina/localhost
+
+	server.xml 의 Host > Context가 아래와 같다면
+		<Host name="localhost"  appBase="/home/web">
+			<Context path="/ex01" docBase="ex01" />
+		</Host>
+
+	docBase 값이름으로 설정경로에 ex01.xml로 만들고
+
+		톰캣홈/conf/Catalina/localhost/ex01.xml
+		
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Context path="/ex01" docBase="ex01">
+		</Context>
+
+	형식으로 만드는 것이다
+	그리고 server.xml 의 해당 Context 태그는 삭제
+		<Host name="localhost"  appBase="/home/web">
+				<!-- 삭제 -->
+		</Host>
+
+	이 [컨텍스트명].xml 설정의 좋은 점 중 하나가 톰캣 기동 중에 설정해도 반영된다
+	(재기동 안해도 새로운 설정 가능)
+
+	ex01.xml 의 파일명이 docBase 값 역할을 한다
+	그럼 기존 docBasen 는 충돌 아닌가?
+
+	무수히 테스트 한 내 나름의 결론은 이렇다
+
+	[컨텍스트명].xml 형식은 
+
+		1. path : 무조건 개무시
+		2. docBase : "" 빼고 무조건 개무시 
+		3. ex01.xml 존재 <> 매치되는 웹앱(컨텍스트)디렉토리 없어도 톰캣기동에 영향 없음.
+			: 이 말은
+			server.xml에서 모두 한번에 설정할때는
+			appBase 위치에 Context 태그에 매치되는 디렉토리(웹앱)이 없다면 
+			톰캣기동도 되질 않았었다.
+			
+			그런데,
+			[컨텍스트명].xml 방식에서는 에러가 나도 톰캣기동은 된다.
+
+
+--------------[컨텍스트명].xml 웹앱에 포함해서 배포하기
+	
+	[컨텍스트명].xml을 수동으로 톰캣 영역에 배포해도 되지만,
+	.war 배포시 war에 포함시켜 배포하는 방식도 있다는 것이다..
+
+
+	[컨텍스트명.xml] : context.xml(이름으로 해야된다,톰캣이 읽기 위해 약속된 이름)
+
+	copyXML="true" : Context 태그 속성에 저 속성값 "true" 꼭 줘야 복사가 됨.
+
+	(예제) ROOT.war로 배포하기
+
+		1. 웹앱/META-INF/context.xml 작성 
+			<?xml version="1.0" encoding="UTF-8"?>
+				<Context path="" docBase="" copyXML="true"></Context>
+			</xml>
+
+		2. ROOT.war 패키징 
+
+		3. 웹애플리케이션 디플로이(배포) 디렉토리에 업로드
+
+		4. 톰캣 기동
+			
+			웹앱/META-INF/context.xml을 복사해서
+			톰캣홈/conf/Catalina/localhost/ROOT.xml 변경 복사  
+			# ROOT.war 파일명으로 변경 복사(context.xml -> ROOT.xml).
+		
+		5. 설정 적용 후 테스트

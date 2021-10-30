@@ -525,12 +525,16 @@ ROOT 컨텍스트가 되고, 이 녀석만 특별하게 브라우저 접속시 '
 				<Context path="" docBase="" reloadable="true" copyXML="true"></Context>
 			</xml>
 		2. ROOT.war 패키징 
-		3. 웹애플리케이션 디플로이 디렉토리에 업로드
+		3. 웹애플리케이션 디플로이(배포) 디렉토리에 업로드
 		4. 톰캣 기동
-			톰캣이 기동프로세서가 
+			톰캣의 기동프로세서가 
+				
 				웹앱/META-INF/context.xml을 복사해서
-				톰캣홈/conf/Catalina/localhost/ROOT.xml  # ROOT.war 파일명으로 변경 복사(context.xml -> ROOT.xml).
-		5. 설정 적용 후 기동
+				톰캣홈/conf/Catalina/localhost/ROOT.xml  변경 복사
+
+				# ROOT.war 파일명으로 변경 복사(context.xml -> ROOT.xml).
+
+		5. 설정 적용 후 테스트
 
 	(
 	!!! 문제점이 있다!!!
