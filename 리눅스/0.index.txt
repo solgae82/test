@@ -17,7 +17,6 @@ cpu,메모리체크
 사용자관리
 	adduser, userdel,  passwd
 
-
 로그관리
 
 네트워크 
@@ -31,9 +30,6 @@ cpu,메모리체크
 	/etc/sysconfig/network
 	/etc/syconfig/network-scripts/ifcfg-eth0 
 
-
-
-
 프로그램 설치법
 	소스설치 
 	rpm 
@@ -42,17 +38,20 @@ cpu,메모리체크
 시스템 자동실행 등록
 	/etc/init.d/<서비스명> <옵션>
 	/etc/xinetd.d/ : 수퍼데몬
-	chkconifg : systemctl (centos7)
+	chkconifg : (centos6)	
+	systemctl : (centos7)
 
 
 프로그램 실행
 
 	직접 경로에 가서 실행
-	service 로 실행 : systemctl (centos7)
+	service 로 실행 : (centos6)
+	systemctl 로 실행 :  (centos7)
 
 방화벽
 
-	iptables : firewalld (centos7)
+	iptables :(centOS6) 
+	firewalld:(centos7)
 	TCPWappers
 
 파일묶고 풀기
