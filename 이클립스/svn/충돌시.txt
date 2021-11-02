@@ -1,0 +1,90 @@
+## 방법1:   Pakage Explorer 
+
+- 이 방법은 간단히 해결할때 사용한다
+- 이 방법은  update,  revert  만 가능한 방법이라고 생각하자.
+
+	1. 해당 파일 commit 실패 (local 보다 repository  리비전이 더 높을때)
+		- local 소스를 무시하고 걍 서버버전으로 덮어쓰고 싶을땐,  team > revert !
+
+	2. 해당 파일 우측 팝업메뉴 > compare with > Lastest from repository 
+		- 혹시 충돌이나 변경 사항등 비교해본다 (업데이트 받아서 병합 받기 전 확인하기)
+
+	3. 확인 후  team > update 받는다
+		- 충돌이 나지 않았다면 서버  revision과 자동병합(merge) 상태일 것이다
+		그렇다면 그 상태로 편집 등 작업 후 다시  team > commit !
+
+	4. 그러나  update 후 충돌이 났다면 수정 편집 후  team > mark as merged 를 눌러서 병합이 완료(해결)되었다고  SVN 시스템에게 알려줘야 한다.
+		(이렇게 해야 다시 commit 할 수 있는 모드가 된다)
+
+	5.  다시 team > commit ! (잘 올라간다)
+
+
+## 방법2: Synchronize With Repository 
+
+- 일단  파일 동기화(서버측 소스와   local   소스를 모두 가지고 있는 상태)  후 여러 결정 옵션으로 해결하는 모드다
+- 좀 더 상세결정 모드로 옵션도 더 많다
+
+	1. 해당파일  commit 실패 (local 보다 repository  리비전이 더 높을때)
+
+	2. 해당파일 선택 > team >  Synchronize With Repository  하면 퍼스펙티브가 바뀐다. 
+	(이 순간 이미 서버와 동기화가 되어서 업데이트 할 필요가 없다)
+
+	3. 좌측 Synchronize 탭 아래 SVN 디렉토리에 보면 현재 동기화가 된 파일이 보인다. 그 파일을 더블클릭 하면..
+
+	4. 우측 창에 현재 로컬  최신 리비전 파일(좌측) , SVN의 최신파일(우측) 이 비교 모드로 나오게 된다.
+		- 동기화된 현재 파일이 보여 줄 수 있는 로컬과 서버측 양면을 다 가지고 있는 상태라고 생각하자.(양면성이 있는 상태라고나 할까?)
+		- 좌측 최신 현재 local 파일을  우측(SVN 최신버전)과 비교, 병합, 수정등 작업을 하던가 , 그냥 확인만 하던가 한다.
+
+	5. 이제 이 양면성을 지닌 파일 상태를 한가지 상태로 정해야 한다. 그 파일을 우측 팝업메뉴   team > 
+
+		- update  :  SVN  측 소스와  local  소스를  merge(병합) 할때..(충돌이 있을 수도 있다)
+			- 자동 병합 상태라 봐도 무방한다, 깨끗이 합해지면 다행이지만, 충돌이 있다면 충돌 표시가 나고, 편집수정 저장 후
+				해당 파일 선택 후 우측 마우스 메뉴팝업  > team >  mark as merged 를 선택해서  SVN 시스템에게 해결(resolved)되었다고 알려줘야 한다.
+
+		- Override and Commit : SVN 서버 소스를 무시하고 local 소스로 commit 하기
+
+		- Override and Update : local 소스 무시하고  SVN 서버 소스로 현재  local  소스 덮어쓰기
+
+		- mark as merged :  local소스와  SVN 서버 소스를 잘 비교 후 충돌도 해결하고 난 후 병합 완료했다고  SVN 시스템에게 알려주기.
+			특히 충돌이 났을때  mark as merged 를 해 줘서 SVN  시스템에게 알려줘야, 아! 인간이 수동으로 합의 후 잘 병합했구나 하고 시스템이 인지하게 하는 모드이다.
+
+		- revert :  local 소스를 버리고  SVN 최신소스로 덮어쓰기
+
+	6.  우측 상단 퍼스펙티브(Synchronize With Repository ) close  해서 닫은 후 
+		Pakage Explorer 에서 해당 파일 선택 후  commit 해보라(될 것이다!)
+
+
+
+#####    충돌시 자주 나오는 메시지들 모음
+
+	If there are no incoming changes in Synchronize view then try updating from any navigator view.
+	(동기화보기에 수신 변경 사항이없는 경우 네비게이터 보기에서 업데이트를 시도하십시오)
+
+	One or more of selected resources have unresolved conflicts. Go to the Synchronize View and do maunal merge to resolve them.
+	(선택한 리소스 중 하나 이상이 해결되지 않은 충돌이 있습니다.동기화보기로 이동하여 자연스런 병합을 수행하여 문제를 해결하십시오.)
+
+	There are no differences between the selected inputs.
+	(선택한 입력간에 차이가 없습니다.)
+
+	Selected resource will be reverted to the unmodified state.
+	(선택된 리소스는 수정되지 않은 상태로 되돌아갑니다.)
+
+	Please note, that all local changes for the selected resources will be lost while this operation.
+	(이 작업을 수행하는 동안 선택한 리소스에 대한 모든 로컬 변경 사항이 손실됩니다.)
+
+	The Revert operation will be applied only to the resources which are selected in the list represented below.
+	(되돌리기 작업은 아래에 표시된 목록에서 선택한 리소스에만 적용됩니다.)
+
+	---------------------------------------------------------------------------------------------------// Synchronize with Repository 선택시
+	[Confirm Open Perspective]
+	The Synchronize View is associated with the Team Synchronizing perspective.
+	(동기화보기는 팀 동기화 퍼스펙티브와 연관됩니다.)
+
+	This perspective is designed to support the sychronization of resources in the local workspace with their counterparts shared in a repository. 
+	(이 Perspective는 저장소에서 공유되는 상대방과 로컬 작업 공간의 자원 동기화를 지원하도록 설계되었습니다.)
+	
+	It incorporates views for synchronizing,  browsing history and comparing resource content.
+	(여기에는 동기화, 기록 탐색 및 리소스 내용 비교를 위한 보기가 포함됩니다.)
+
+	Do you want to open this perspective now?
+	(지금이 관점을 열어 보시겠습니까?)

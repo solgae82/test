@@ -1,0 +1,23 @@
+pom.xml에 compliler  플러그인 설정값을 명시적으로 해줘야 한다.
+
+3.x.x 이전 방식(이후도 반영된다)
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.8.1</version>
+			<configuration>
+				<source>1.8</source>
+				<target>1.8</target>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+3.x.x 이후 방식(최신방식)
+<properties>
+	<maven.compiler.source>1.8</maven.compiler.source>
+	<maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+
+프로젝트 > 우클릭 > Maven > Update Project

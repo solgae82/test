@@ -1,0 +1,64 @@
+--------- RestVO.java
+	public class RestVO {
+
+		private String name;
+		private double price;
+		.. getter, setter 생략
+	
+	}
+--------- JsonController.java
+package com.solgae.test;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.solgae.domain.RestVO;
+
+@Controller
+public class JsonController {
+
+	@RequestMapping("doJSON")
+	public @ResponseBody RestVO doJSON() {
+				
+		RestVO restVO = new RestVO();
+		restVO.setFirstName("dong");
+		restVO.setLastName("Bak");
+		restVO.setMno(12);
+		return restVO;
+	}
+
+
+	@RequestMapping("stringJSON")
+	public @ResponseBody String stringJSON() {
+		return "12";
+	}
+}
+
+------------------ 브라우저 GET 요청 응답 결과
+
+	---------/doJSON 응답헤더
+
+	requst 헤더 :
+		Request Method: GET
+		Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+
+	response 헤더 : 
+
+		Content-Type: application/json;charset=UTF-8
+		Transfer-Encoding: chunked
+
+	출력결과
+	{"mno":12,"firstName":"dong","lastName":"Bak"}
+
+	---------/stringJSON 응답헤더
+	requst 헤더 :
+		Request Method: GET
+		Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+
+	response 헤더 : 
+		Content-Type: text/html
+		
+
+	출력결과
+	12

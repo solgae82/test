@@ -1,0 +1,19 @@
+프로젝트->우클릭->Project Facets > Dynamic Web Module 
+
+요게 web.xml 버전과도 맞아야하는데 강제로 맞추려해도 자꾸 되돌아가서 변경 안 될때가 있다.
+
+그럴때는, 
+탐색기로 프로젝트 접근
+워크스페이스 > 해당프로젝트 > .settings >
+org.eclipse.wst.project.facet.core.xml
+
+일반 편집기로 위 파일을 열고 
+<installed facet="jst.web" version="2.5"/>
+요렇게 바꾸고
+<installed facet="jst.web" version="3.1"/>
+
+저장.
+
+이클립스 > 프로젝트 > Maven > Update Project 
+
+하면 에러가 사라진다.

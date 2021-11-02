@@ -1,0 +1,7 @@
+웹 프로젝트인데, 
+Run As > Run on the server  메뉴가 안 보일때가 있다
+
+프로젝트>우클릭>properties>Project Facets > Configuration :
+Dynamic web Module 체크 와 web.xml 버전에 맞는 버전으로 맞춰준다
+
+Apply and close

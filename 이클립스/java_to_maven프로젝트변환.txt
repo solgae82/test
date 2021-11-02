@@ -1,0 +1,7 @@
+메이븐에서 만든 java 프로젝트를 Maven 프로젝트로 만들기
+
+
+프로젝트 우클릭 > configure > convert to Maven Project 
+
+이렇게 해야 pom.xml 생기고 변경시 변경사항이 적용되고,
+프로젝트 우클릭 > Maven 메뉴도 생긴다
