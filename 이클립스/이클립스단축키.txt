@@ -1,12 +1,31 @@
-ctrl + / : 블록 지정한 열 한줄 주석 '//' on/off
-ctrl + shift + / : 블록 지정한 열 여러줄 주석 '/*.. */' 생성.
-ctrl + shift + \ : 여러줄 주석 '/*.. */'된 곳 블록 지정 후 삭제.
+한줄 주석 on/off 하기 => 
+	블록지정 + ctrl + /
+여러줄 주석 생성 => 
+	블록지정 + ctrl + shift + /
+여러줄 주석 해제 => 
+	블록지정 + ctrl + shift + \
 
-ctrl + shift + o : 클래스 자동 import 
-ctrl + shift + f : 코드 자동 정렬
-ctrl + spacebar : 코드 어시스턴스
-alt + shift + r : 단어 블록 선택 후 단축키 누르면 한 파일내 같은 단어 동시에 변경가능.
-ctrl + shift + r : 전체 프로젝트내 파일 리소스 찾기
+패키지 자동 import => ctrl + shift + o  
+코드 자동 정렬 => ctrl + shift + f => 
+코드 어시스턴스 => ctrl + spacebar
 
-ctrl + m : 에디터 전체 모드 on/off
-alt + shift + s : source 단축메뉴 열기 
+한 파일내 같은 단어 동시에 변경하기 => 단어 블록 선택 후 alt + shift + r
+
+전체 프로젝트내 단어 찾기 => ctrl + h
+전체 프로젝트내 파일 리소스 찾기 => ctrl + shift + r
+전체 프로젝트내 java 파일에 리소스 찾기 => ctrl + shift + t
+interface 구현체 찾기 => f4 , ctrl + t
+파일내 단어 검색 => ctrl + f
+
+코드 중 (클래스,interface , 메소드) 이동 => 
+	코드명 더블클릭선택 + f3  
+	ctrl + 코드명 롤오버 + Open implementation 
+
+ctrl + m => 에디터 전체 모드 on/off
+alt + shift + s => source 단축메뉴 열기 
+
+영단어선택 +  ctrl + shift + x => 대문자 변경
+영단어선택 +  ctrl + shift + y => 소문자 변경
+
+ctrl + shift + (+) => 에디터 글자 크기 증가
+ctrl + shift + (-) => 에디터 글자 크기 감소
