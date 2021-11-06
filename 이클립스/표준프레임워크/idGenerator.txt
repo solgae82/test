@@ -1,0 +1,51 @@
+표준프레임워크에 사용되는 id 제너레이션 방법
+아이디 생성을 위한 룰을 등록하고 룰에 맞는 아이디를 생성할 수 있도록 지원하는 서비스로 
+Basic Service + Strategy정보 설정을 추가하여 사용 할 수 있다. 
+
+단, 이 서비스는 String 타입의 ID만을 제공한다.
+-------------------
+CREATE TABLE ids ( table_name varchar(16) NOT NULL, 
+		   next_id DECIMAL(30) NOT NULL,
+		   PRIMARY KEY (table_name));
+INSERT INTO ids VALUES('BBS_ID','0');
+
+-------------------
+    <!-- 게시판마스터 ID Generation  Config-->
+    <bean name="egovBBSMstrIdGnrService"
+        class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl"
+        destroy-method="destroy">
+        <property name="dataSource" ref="dataSource" />
+        <property name="strategy" ref="bbsMstrStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="IDS"/>
+        <property name="tableName"  value="BBS_ID"/>
+    </bean>
+    <!-- 게시판마스터 ID Generation  Strategy Config -->
+    <bean name="bbsMstrStrategy"
+        class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix" value="BBSMSTR_" />
+        <property name="cipers" value="12" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+-------------------
+blockSize: Id Generation 내부적으로 사용하는 정보로 ID 요청시마다 DB접속을 하지 않기 위한 정보(지정한 횟수 마다 DB 접속 처리)
+table: 생성하는 테이블 정보로 사용처에서 테이블명 변경 가능
+tableName: 사용하고자 하는 아이디 개별 인식을 위한 키 값(대개의 경우는 테이블 별로 아이디가 필요하기에 tableName이라고 지정함)
+
+strategy: 아래에 정의된 MixPrefix 의 bean name 설정
+prefix: 아이디의 앞에 고정적으로 붙이고자 하는 설정값 지정
+cipers: prefix를 제외한 아이디의 길이 지정
+fillChar: 0을 대신하여 표현되는 문자
+-------------------
+
+@Resource(name="egovBBSMstrIdGnrService")
+private EgovIdGnrService idgenService;
+ 
+@Test
+public void testBasicService() throws Exception {
+
+   //String
+   assertNotNull(idgenService.getNextStringId()); // BBSMSTR_000000000075
+}
+
