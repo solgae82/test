@@ -1,0 +1,26 @@
+test.jsp
+	<%@ taglib prefix="c"         uri="http://java.sun.com/jsp/jstl/core" %>
+	<%@ taglib prefix="form"      uri="http://www.springframework.org/tags/form" %>
+	<%@ taglib prefix="spring"    uri="http://www.springframework.org/tags"%>
+
+
+spring:message
+	
+	message_ko.properties
+
+		greeting=hi {0} {1}
+
+	test.jsp
+	
+	<spring:message code="greeting" /> 
+	출력: hi {0} {1}
+	
+	<spring:message code="greeting" arguments="하늘"/>
+	출력: hi 하늘 {1}
+
+	<spring:message code="greeting" arguments="하늘,땅"/>
+	출력: hi 하늘 땅
+
+	<spring:message code="greeting2" arguments="하늘,땅" text="설정없음"/>
+	출력: 설정없음
+
