@@ -1,0 +1,168 @@
+요약 : 
+	<form:select>
+	<form:options>
+	<form:option>
+-------------------//
+User.java
+	public class User {
+		
+		private String loginType = "data2";
+		
+		..getter, setter
+	}
+
+Code.java
+	public calss Code{
+		private String code;
+		private String label;
+		
+		..getter, setter
+	}
+
+TestController.java
+	public class TestController {
+		
+		@ModelAttribute("loginTypes")
+		protected List<String> basicData() throws Exception{
+			List<String> loginTypes = new ArrayList<String>();
+			
+			loginTypes.add("일반회원");
+			loginTypes.add("기업회원");
+			loginTypes.add("헤드헌터");
+			
+			return loginTypes;
+		}
+		
+		@RequestMapping(value = "/login.do")
+		public String loginView(@ModelAttribute User user,  ModelMap model) throws Exception{
+			return "test/loginForm";
+		}
+
+		@ModelAttribute("codeTypes")
+		protected List<Code> selectCodeData() throws Exception{
+			List<Code> codeList = new ArrayList<Code>();
+			
+			Code c = new Code();
+			c.setCode("data1");
+			c.setLabel("일반회원");
+			codeList.add(c);
+			
+			Code c1= new Code();
+			c1.setCode("data2");
+			c1.setLabel("기업회원");
+			codeList.add(c1);
+			
+			Code c2 = new Code();
+			c2.setCode("data3");
+			c2.setLabel("헤드헌터");
+			codeList.add(c2);
+			
+			
+			return codeList;
+			
+		}
+	}
+
+
+-----------loginForm.jsp
+	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+1. form:select 
+	-----------// 
+	: items 속성에 collection을 넣고 자동 출력한다
+	: path="" 일때는 기본 출력만 한다 (<select> 인 상태)
+
+	<form:form commandName="user" action="" method="POST">
+		<form:select path="" items="${loginTypes}" />
+	</form:form>
+		
+		출력: 
+		<select>
+			<option value="일반회원">일반회원</option>
+			<option value="기업회원">기업회원</option>
+			<option value="헤드헌터">헤드헌터</option>
+		</select>
+
+	-----------// 
+	:path="loginType" => select 태그에 id="loginType" name="loginType" 출력.
+	
+
+	<form:form commandName="user" action="" method="POST">
+		<form:select path="loginType" items="${loginTypes}" />
+	</form:form>
+		
+		출력: 
+
+		<select id="loginType" name="loginType">
+			<option value="일반회원">일반회원</option>
+			<option value="기업회원">기업회원</option>
+			<option value="헤드헌터">헤드헌터</option>
+		</select>
+
+	-----------// 
+	:itemValue="code" itemLabel="label" 속성을 써서 ${codeTypes }의 필드 값들을 출력
+
+	<form:form commandName="user" action="" method="POST">
+		<form:select path="loginType" items="${codeTypes }" itemValue="code" itemLabel="label" />
+	</form:form>
+
+		출력:
+		<select id="loginType" name="loginType">
+			<option value="data1">일반회원</option>
+			<option value="data2" selected="selected">기업회원</option>
+			<option value="data3">헤드헌터</option>
+		</select>
+		
+2. form:options
+	
+	<form:form commandName="user" action="" method="POST">
+		<form:select path="loginType">
+			<option value="">---선택---</option>
+			<form:options items="${loginTypes}" />		
+		</form:select>
+	</form:form>
+
+		출력:
+		<select id="loginType" name="loginType">
+			<option value="">---선택---</option>
+			<option value="일반회원">일반회원</option>
+			<option value="기업회원">기업회원</option>
+			<option value="헤드헌터">헤드헌터</option>		
+		</select>
+
+	-----------//
+
+	<form:form commandName="user" action="" method="POST">
+		<form:select path="loginType">
+			<option value="">---선택---</option>
+			<form:options items="${codeTypes}"  itemValue="code" itemLabel="label"  />		
+		</form:select>
+	</form:form>
+
+	출력 : 
+		<select id="loginType" name="loginType">
+			<option value="">---선택---</option>
+			<option value="data1">일반회원</option>
+			<option value="data2" selected="selected">기업회원</option>
+			<option value="data3">헤드헌터</option>		
+		</select>
+
+3. form:option
+
+	<form:form commandName="user" action="" method="POST">
+		
+		<form:select path="loginType">
+			<option value="">---선택---</option>
+			<form:option value="일반회원" />
+			<form:option value="data2" >기업회원</form:option>
+			<form:option value="data3" label="헤드헌터" />		
+		</form:select>
+	</form:form>
+
+	
+	출력: 
+		<select id="loginType" name="loginType">
+			<option value="">---선택---</option>
+			<option value="일반회원">일반회원</option>
+			<option value="data2" selected="selected">기업회원</option>
+			<option value="data3">헤드헌터</option>		
+		</select>
