@@ -83,7 +83,7 @@
 		}
 		# 결과
 		WALKING
-		UNNING
+		RUNNING
 		TRACKING
 		HIKING
 
@@ -122,20 +122,22 @@
 		    public static void main(String[] args) {
 			Type tp1 = Type.WALKING;
 			Type tp2 = Type.valueOf("RUNNING");
-			Type tp3 == Enum.valueOf(Type.class, "TRACKING");
+			Type tp3 = Enum.valueOf(Type.class, "TRACKING");
 
 			System.out.println(tp1); //WALKING
 			System.out.println(tp2); //RUNNING
-			System.out.println(tp3); //WALKING
+			System.out.println(tp3); //TRACKING
 		    }
 		}
 
 		-------------------//
 		<값 가져오는 방법>
-		* enum 형 객체를 만들어서 값 가져오기
-		ex) Type.WALKING
+		* enum 형 으로 값 가져오기
+			ex) Type.WALKING
 		* valueOf() 메소드를 이용해서 가져오기
-		ex) Type.valueOf("WALKING");
+			ex) Type.valueOf("WALKING");
+		* Enum.valueOf() 로 가져오기
+			ex) Enum.valueOf(Type.class, "WALKING");
 		-------------------//
 
 	4) name() : 호출된 값의 이름을 String으로 리턴. 
@@ -147,10 +149,8 @@
 		    public static void main(String[] args) {
 			 
 			for(Type t : Type.values()){
-				System.out.printlf("이름은? %s", d.name());		
-			}
-			
-			
+				System.out.println("이름은? " +  t.name());		
+			}			
 		    }
 		}
 		 # 결과
@@ -160,14 +160,14 @@
 		이름은? HIKING
 
 	5) compareTo() : 작으면 음수 , 같으면 0 , 크면 양수
-		enum Type {EAST, WEST, SOUTH, NORTH}
+		enum Direction {EAST, WEST, SOUTH, NORTH}
 
 		public class Shoes {
 			public static void main(String[] args) {
-				Type d1 = Type.EAST;
-				Type d2 = Type.valueOf("WEST");
-				Type d3 = Enum.valueOf(Type.class, "EAST");
-				Type d4 = Enum.valueOf(Type.class, "NORTH");
+				Direction d1 = Direction.EAST;
+				Direction d2 = Direction.valueOf("WEST");
+				Direction d3 = Enum.valueOf(Direction.class, "EAST");
+				Direction d4 = Enum.valueOf(Direction.class, "NORTH");
 
 				System.out.println(d1.compareTo(d3)); //  0
 				System.out.println(d1.compareTo(d2)); //  -1
@@ -177,13 +177,13 @@
 		}
 
 	6) equals() : 같은지 비교
-		enum Type {EAST, WEST, SOUTH, NORTH}
+		enum Direction {EAST, WEST, SOUTH, NORTH}
 
 		public class Shoes {
 			public static void main(String[] args) {
-				Type d1 = Type.EAST;
-				Type d2 = Type.valueOf("WEST");
-				Type d3 = Enum.valueOf(Type.class, "EAST");
+				Direction d1 = Direction.EAST;
+				Direction d2 = Direction.valueOf("WEST");
+				Direction d3 = Enum.valueOf(Direction.class, "EAST");
 
 				System.out.println("값:"+ (d1==d2));		// 값:false
 				System.out.println("값:"+ (d1==d3));		// 값:true
@@ -197,7 +197,7 @@
 
 		private final String name;
 		
-		Type1(String string) {
+		Type(String string) {
 			this.name = string;
 		}
 		
@@ -226,9 +226,7 @@
 	-------------------//
 
 5. 상수객체 메서드 사용
-	enum Type3 {
-
-		
+	enum Type {
 		
 		BUS(100){
 			int fare(int distance) {return distance * BASIC_FARE;}
@@ -243,11 +241,11 @@
 			int fare(int distance) {return distance * BASIC_FARE;}
 		};
 		
-		abstract int fare(int distance); #abstract  선언
-		protected final int BASIC_FARE;	# protected 선언
+		abstract int fare(int distance); //abstract  선언
+		protected final int BASIC_FARE;	//protected 선언
 		
-		private Type3(int bASIC_FARE) {
-			BASIC_FARE = bASIC_FARE;
+		private Type(int m) {
+			BASIC_FARE = m;
 		}
 		
 		public int getBasicFare() {return BASIC_FARE;}
@@ -256,10 +254,10 @@
 	public class Shoes {
 		public static void main(String[] args) {
 			
-			System.out.println(""+Type3.BUS.fare(100));	//10000
-			System.out.println(""+Type3.TRAIN.fare(100));	//15000
-			System.out.println(""+Type3.SHIP.fare(100));	//10000
-			System.out.println(""+Type3.AIRPLAN.fare(100));	//30000
+			System.out.println(""+Type.BUS.fare(100));	//10000
+			System.out.println(""+Type.TRAIN.fare(100));	//15000
+			System.out.println(""+Type.SHIP.fare(100));	//10000
+			System.out.println(""+Type.AIRPLAN.fare(100));	//30000
 				
 		}
 	}
