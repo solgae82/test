@@ -1,0 +1,26 @@
+<form:form commandName="user"></form>
+	html출력: 
+	<form id="user" action="/test/login.do" method="post">
+	
+	:기본 메소드는  post 다
+	:기본 액션은 현재 호출 페이지다(컨텍스트 포함)
+
+<form:form commandName="user" action=""></form>
+	html출력: 
+	<form id="user" action="/test/login.do" method="post">
+	
+
+<form:form commandName="user" action="/chk.do"></form>
+	html출력: 
+	<form id="user" action="/chk.do" method="post">
+	: /test 컨텍스트가 붙지 않는다 주의!!
+
+<form:form commandName="user" action="/test/chk.do" method="delete"></form>
+	html출력: 
+	<form id="user" action="/test/chk.do" method="delete">
+		<input type="hidden" name="_method" value="delete"/>
+	</form>
+
+	:GET,POST 이외의 메소드는 자동으로 hidden 변수가 만들어진다(spring내부에서 쓸)
+
+
