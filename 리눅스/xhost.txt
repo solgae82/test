@@ -1,0 +1,134 @@
+X-window 시스템은 서버/클라이언트 시스템
+	window 프로그램을 다른 시스템의 화면에 띄울 수 있다.
+
+설정시 필요한 용어들
+	DISPLAY
+	XAUTHORITY 
+	xhost
+	xming
+
+---------------- 기본 테스트 시스템 
+
+	A 리눅스(centOS7) : X-window 설치되어야함 (192.168.0.1)
+	B 리눅스(centOS7) : X-window 설치되어야함 (192.168.0.2)
+
+---------------- 기본 조건
+	
+	A,B 리눅스 모두 똑같이 설정한다 
+
+X-window 시스템이 깔려 있어야 한다
+	
+	# yum -y groups install "GNOME Desktop"
+	# yum install -y xorg-x11-apps
+
+/etc/ssh/sshd_config 편집
+	AddressFamily any -> AddressFamily inet 로 수정
+	X11Forwarding yes
+	X11DisplayOffset 10
+	X11UseLocalhost no
+	UseLogin no
+ 
+ 	systemctl reload sshd # 재시작
+
+X11 세션 인증 기록파일 생성 및 권한 조정
+	# touch /root/.Xauthority;chmod 600 /root/.Xauthority
+
+/etc/hosts 파일에 - xauth display session 정보를 찾아가기 위한 default 정보 추가
+	127.0.0.1 호스트명 
+	(예) 127.0.0.1 gpu-test-01
+
+----------------
+	
+1. A 리눅스에 그래픽환경(x-window)띄우고 CUI 콘솔(ctrl + alt + f2) 열어서 테스트
+
+	그래픽환경(x-window), (ctrl + alt + f1)
+
+		Application>System Tools>Terminal 
+		# xhost +
+
+	CUI 콘솔 (ctrl + alt + f2)
+		# xclock -display 192.168.0.1:0.0 #현재 컴 1번 화면에 띄움
+
+	
+	: 그래픽환경(x-window) 에 xclock 프로그램이 뜬다.
+	: CUI 콘솔 ctrl+c 눌러서 xclock 종료하면 그래픽환경(x-window) 의 xclock이 종료한다.
+
+
+2. A 리눅스 와 B 리눅스 로 테스트 하기
+
+	B 리눅스 : (그래픽 환경)
+		방화벽 TCP 6000-6010 허용, UDP 177 허용.
+		#xhost + 192.168.0.2 # 이 IP를 허용
+		
+	A 리눅스 : (콘솔환경)
+		# export DISPLAY=192.168.0.2:0.0 # 2번 아이피의 첫번째 모니터에 출력(임시 설정)
+		# xclock
+
+	: B 리눅스에 xclock 프로그램이 뜬다
+
+3. ssh 로 접속해서 실행 시키기
+
+	B 리눅스 : (그래픽 환경)
+		방화벽 TCP 6000-6010 허용, UDP 177 허용.
+		#xhost + 192.168.0.2 # 이 IP를 허용
+
+		ssh root@192.168.0.1 (또는 -X옵션 붙여서 접속)
+		root@192.168.0.1 password: 입력 후 enter
+
+		---현재 1번 환경
+
+		# export DISPLAY=192.168.0.2:0.0 # 2번 아이피의 첫번째 모니터에 출력(임시 설정)
+		# xclock
+
+	: B 리눅스에 xclock 프로그램이 뜬다 
+
+4. PC에서 원격으로 띄우기
+	
+	Window 10 PC (IP) : 192.168.0.3 
+
+	Window 10 PC에 xming 프로그램을 깐다
+		https://xming.softonic.kr/
+
+		c:\Programs File(x86)\Xming\x0.hosts 열기
+			localhost
+			192.168.0.1 <= 접속할 리눅스 A: IP 입력 저장
+
+		xming 실행.
+
+	putty 로 리눅스 A 접속
+		Connection > SSH > X11 > X11 forwarding > Enable X11 forwarding 체크해야함.
+		그리고 접속 : 192.168.0.1:22
+
+		# export DISPLAY=192.168.0.3:0.0 # 3번 아이피의 첫번째 모니터에 출력(임시 설정)
+		# xclock
+	
+	: PC의 화면에 xming 서버가 실행한 리눅스 A의 프로그램이 뜬다.
+
+--------- xhost 사용법
+그래픽 환경(X-window) 띄웠을때 하는 것
+(일반 콘솔에서 백날 해봐야 Can't not open display 에러만 볼뿐이다)
+Application>System Tools>Terminal 로 그래픽 환경에서 콘솔을 써야한다
+
+	xhost 
+		현재 설정된 xhost 설정상태를 보여준다
+
+	xhost + 
+		모든 호스트이  X-window 출력을 허용하겠다(All IP open)
+
+	xhost -  
+		모든 호스트의 X-window 출력을 막겠다(로컬 다른 콘솔은 된다)
+
+	xhost + 192.168.0.1
+		192.168.0.1 호스트만 X-window 출력을 허용하겠다
+
+	xhost - 192.168.0.1
+		192.168.0.1 호스트만 X-window 출력을 막겠다 
+
+
+
+
+
+	
+		
+		
+
