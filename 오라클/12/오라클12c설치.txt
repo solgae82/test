@@ -1,0 +1,241 @@
+오라클 12c는 설치시 GUI 환경이 필요하다
+설치해야하는 서버환경은 centOS 7 (IP: 192.168.0.7)
+클라이언트 Window 10	(IP: 192.168.0.11)
+접속 툴 putty
+
+1. X-window 설정 
+
+	X-window 용 패키지 설치		
+		# yum -y groups install "GNOME Desktop" (이거 시간 엄청 오래 걸림)
+		# yum install -y xorg-x11-apps
+
+	xming 설치
+		원격설치시 Window 10 PC에 설치할 X-window용 서버(xming) 설치
+		: (걍 다음> 다음만 누르고 설치함)
+
+		설치 후 C:\Program Files (x86)\Xming\X0.hosts 파일 속성을 바꿔서 열어야 한다
+			속성 > 보안 > 편집 >  Users 선택 > 모든 권한 주기
+
+			그리고 x0.hosts 파일에 원격 centOS 7 IP를 적어준다
+			localhost
+			192.168.0.7 <= 요렇게 추가(리눅스 서버)
+
+			저장 후 xming 재실행
+
+	putty 접속
+		Connection > SSH > Auth > X11 > Enalbe X11 forwarding 체크 후 
+		centOS 7(192.168.0.7) 접속
+	
+	sshd_config  설정
+		vi /etc/ssh/ssh_config 
+			ForwardX11 yes 
+
+		vi /etc/ssh/sshd_config 
+			 X11Forwarding yes 
+
+		systemctl reload sshd # 재시작
+
+		
+	DISPLAY 변수 임시 셋팅
+		export DISPLAY=192.168.0.11:0 #(클라이언트 window 10 주소, 여기에 출력하겠다는 뜻)
+		echo $DISPLAY #확인
+		192.168.0.11:0
+
+		
+
+
+	X-window 프로그램 실행해 봄(테스트)
+
+		xclock # 프로그램 실행
+
+		# 시계 프로그램이 클라이언트인 window 10 에서 실행되는 것을 볼 수 있다
+
+		Warning: Missing charsets in String to FontSet conversion
+		# 이 오류가 나면  
+		export LC_ALL=C 를 하고 다시 xclock 하면 메시지가 안 나온다
+
+2. 패키지 업데이트 
+	yum update -y
+
+3. 의존성 라이브러리 설치
+	yum install -y binutils compat-libcap1 gcc gcc-c++ glibc glibc glibc-devel glibc-devel ksh compat-libstdc++-33 libaio libaio libaio-devel libaio-devel libgcc libgcc libstdc++ libstdc++ libstdc++-devel libstdc++-devel libXi libXi libXtst libXtst make sysstat xorg-x11-apps
+	
+4. Group / user 생성
+	
+	# groupadd oinstall
+	# groupadd dba
+	# useradd -g oinstall -G dba oracle
+	# passwd oracle
+		(임시로 oracle)
+		
+5. /home/oracle 에 linuxx64_12201_database.zip 업로드
+
+	su oracle
+
+	cd /home/oracle
+	unzip linuxx64_12201_database.zip
+	ls
+		database #압축해제된 설치 소스
+
+
+6. 설치될 디렉토리 권한 설정
+	
+	cd ~
+	mkdir db	
+	chmod -R 775 ./db
+	chmod g+s ./db
+
+
+7. oracle 계정 환경변수 셋팅
+
+	
+	vi /home/oracle/.bash_profile
+	
+	export TMP=/tmp
+	export TMPDIR=/tmp
+	export ORACLE_BASE=/home/oracle/db
+	export ORACLE_SID=orcl
+	export ORACLE_HOME=$ORACLE_BASE/product/12.2.0/dbhome_1
+	export ORACLE_HOME_LISTNER=$ORACLE_HOME/bin/lsnrctl
+	export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib
+	PATH=$PATH:$HOME/.local/bin:$HOME/bin
+	export PATH=$ORACLE_HOME/bin:$PATH
+
+8. 커널 설정 수정
+	/etc/sysctl.conf 맨 아래에 기입..
+
+	su -
+
+	vi /etc/sysctl.conf
+	 	 
+	fs.aio-max-nr = 1048576
+	fs.file-max = 6815744
+	kernel.shmall = 2097152
+	kernel.shmmax = 1987162112
+	kernel.shmmni = 4096
+	kernel.sem = 250 32000 100 128
+	net.ipv4.ip_local_port_range = 9000 65500
+	net.core.rmem_default = 262144
+	net.core.rmem_max = 4194304
+	net.core.wmem_default = 262144
+	net.core.wmem_max = 1048586
+
+	저장 후 확인
+		sysctl -p
+
+9. shell limit를 설정
+	Oracle 계정의 Shell limit를 설정 하기 위해 /etc/security/limits.conf 편집합니다.
+
+	vi /etc/security/limits.conf
+	 	 
+	oracle soft nproc 2047
+	oracle hard nproc 16384
+	oracle soft nofile 1024
+	oracle hard nofile 65536
+
+
+10. 오라클 설치
+
+	su oracle
+	cd /home/oracle/database
+	./runinstaller
+
+	GUI 실행
+
+	메일패스
+	설치 옵션 : 데이터베이스 생성 및 구성(Create and confiure a database)
+	시스템클래스 : 서버클래스 체크(Server class)
+	데이터베이스 설치 옵션 : 단일 인스턴스 데이터베이스 설치(Single instance database installation)
+	설치 유형 : 고급설치 체크 (Advanced install)
+	데이터베이스버전 : Enterprise Edition 체크
+	설치위치 : 위에서 설정한 /home/oracle/db 설정 , [Browse] 버튼 활용.
+	인벤토리생성 : /home/oracle/oraInventory (기본설정)
+	구성유형 : 일반용/트랜잭션 처리 (General Purpose / Transaction Processing)
+	데이터베이스 식별자 : 
+		전역 데이터베이스 이름 : orcl (기본설정 그대로)
+		SID : orcl (기본)
+		컨테이너 데이터 베이스로 생성 (체크)
+		플러그인할 수 있는 데이터베이스 이름 : orclpdb (기본)
+	구성옵션 : 
+		메모리 : 걍 기본으로 
+		문자집합 : 유니코드 (AL32UTF8) 사용 체크
+		샘플스키마 : 데이터베이스에 샘플 스키마 설치 (체크)
+	
+	데이터베이스저장영역 : 
+		파일시스템 체크 : /home/oracle/db/oradata (기본설정)
+
+	관리옵션 : EM 체크 안함.
+
+	복구옵션 : 복구사용 체크 해제.
+
+	스키마비밀번호 : 모든계정에 동일한 비밀번호 사용으로 체크 후 비밀번호 입력(oracle)
+
+	운영체체그룹 : 기본으로 놔두고 다음..
+
+	필요조건검사 : 모두 무시 체크 후 패스
+
+		위의 검사에서 "smartmontools" , "net-tools" 등이 없다고 뜨면 
+
+		$ yum install smartmontools
+
+		$ yum install net-tools
+
+		등의 명령어로 설치해준다. 
+
+	요약 : 다음...
+
+	제품 설치 : 설치 진행..........
+		중간에 스크립트 실행하라고 나오면 
+		새로운 콘솔창에 열고 root 사용자로 해당 실행파일을 실행해준다
+		
+		/home/oracle/oraInventory/orainstBoot.sh
+		
+		/home/oracle/db/product/12.2.0/dbhome_1/root.sh
+			
+			bin 디렉토리 어쩌고 저쩌구 [/user/local/bin] :  엔터
+			TFA 설치여부 : y 엔터
+			(한참 기다리면 끝난다)
+
+		다시 GUI로 돌아가서  스크립트 실행 창 확인 눌러주고 계속 설치 진행..
+
+	완료 : Close 버튼 누르고  GUI 종료.
+
+
+
+	
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+	
+				
+			 
+
+
+
+			
