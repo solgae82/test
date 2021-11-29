@@ -256,11 +256,26 @@ email : ${pageScope.email}
 	</c:import>
 
 -----c:url set 변수 셋팅 처럼 자동 url변수 셋팅-----
-	<c:url var="my" value="http://abc.kr" >
-		<c:param name="mode" value="view" />
-		<c:param name="menu" value="2" />
-	</c:url>
-	${my} //http://abc.kr?mode=view&menu=2
+	
+	현재컨텍스트 : gallery
+
+		<c:url value="a.jsp" />
+			a.jsp //기본출력
+
+		<c:url value="/a.jsp" />
+			/gallery/a.jsp //컨텍스트 포함 출력
+
+		<c:url value="http://abc.kr" />
+			http://abc.kr //프로토콜 사용하면 컨텍스트는 작동하지 않는다
+	
+
+	var 속성에 변수명을 사용하면 출력하지 않고 셋팅만 해 놓는다
+		<c:url var="my" value="http://abc.kr" >
+			<c:param name="mode" value="view" />
+			<c:param name="menu" value="2" />
+		</c:url>
+		--------------<br />
+		${my} //http://abc.kr?mode=view&menu=2  //EL로 출력
 
 -----c:out-----
 	- 자동으로  태그나, 엠퍼샌드,홑따옴표,쌍따옴표등을 escape 해준다
@@ -270,7 +285,8 @@ email : ${pageScope.email}
 
 	- default 속성
 		//파라미터가 있으면 value출력, 없으면 default 출력 : get, post 모두 해당
-		// ?test= , ?test=22 => value 출력
+		// ?test= , ?test=22 => test value 출력
 		// 파라미터가 아예 없으면(null) defalut 출력
 
-		<c:out value="${param.id}" default="guest" /> 
+		<c:out value="${param.test}" default="guest" />
+ 
