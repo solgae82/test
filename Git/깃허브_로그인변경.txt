@@ -7,15 +7,17 @@
 Settings > Account settings > Developer settings > Personal access tokens
 
 Generate new token 누르고 토큰 생성하는데, 
-아래에 Expiration(기간) 설정과,
-Select Scopes 중 repo , admin:org , admin:repo_hook등을 체크한다
-(아마도 github 사이트 서비스들 같은데, 자세한 것은 잘 모르니 대충 짐작으로 repo는 체크해야할 것이다)
+	Note : 토큰명 (이 문자로 토큰을 생성한다..'아이디_token' 등으로 생성)
+	expire : 토큰 사용 기간을 설정하는데 'No expiration'은 기간 없음이다.
+	Select Scopes :
+		repo , admin:org , admin:repo_hook등을 체크한다
+		(아마도 github 사이트 서비스들 같은데, 자세한 것은 잘 모르니 대충 짐작으로 repo는 체크해야할 것이다)
 
-마지막 Generate token 버튼으로 생성하면,
-
+마지막 Generate token 버튼으로 생성하는데,	
 다음 페이지에서 처음 한번만 생성된 토큰 문자열이 보인다
 잘 Copy해서 보관해야한다..
 또한 그 계정의 이메일 주소로도 토근을 생성했네 하는 메일도 올 것이다..
+그 메일에서 인증도 해야한다..
 
 깃허브 연결하려는 툴이나 등등에서 연결할때, 연결하려는 아이디 입력 후 기존 비밀번호 입력이 아닌, 
 방금 생성한 토큰 문자열로 대체해서 연결하면 연결될 것이다.
