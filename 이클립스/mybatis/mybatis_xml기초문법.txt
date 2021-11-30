@@ -35,8 +35,9 @@
 	</select>
 
 3. insert
+	: insert 처리 갯수(int) 반환함
 
-	<insert id="create">
+	<insert id="create" parameterType="boardVO">
 		insert into tbl_board (title, content, writer) 
 		values(#{title},#{content},#{writer})
 	</insert>
@@ -53,14 +54,16 @@
 4. select
 	parameterType 속성은 config.xml에 설정 되어 있다면 생략할 수 있다
 
-	<select id="read" parameterType="profileVO" resultType="profileVO">
+	<select id="read" parameterType="boardVO" resultType="boardVO">
 		select bno, title, content, writer, regdate, viewcnt 
 		from tbl_board 
 		where bno = #{bno}
 	</select>
 
 5. update
-	<update id="update">
+	: update 처리 갯수(int) 반환함
+
+	<update id="update" parameterType="boardVO">
 		update tbl_board 
 		set
 			title=#{title},
@@ -72,7 +75,9 @@
 	</update>
 
 6. delete
-	<delete id="delete">
+	: delete 처리 갯수(int) 반환함
+
+	<delete id="delete" parameterType="boardVO">
 		delete from tbl_board where bno = #{bno}
 	</delete>
 
@@ -204,6 +209,7 @@
 
 		<if test="@org.apache.commons.lang.StringUtils@isNotEmpty(userId)">
 			..추가 쿼리 문장
+			${userId} <!-- #{userId} 로 하면 에러가 난다고 함. 버그(확인해야 함)-->
 		</if>
 
 	@클래스명@정적메소드 또는 @클래스명@정적필드
