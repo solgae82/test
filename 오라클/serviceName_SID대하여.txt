@@ -1,0 +1,11 @@
+#ServiceName , SID
+	- SID = DB 하나의 인스턴스
+	- ServiceName =  여러개의 인스턴스를 모아 하나의 서버 혹은 시스템을 구성한 것
+		보통 서버한대라면 sid = servicename 은 같다
+		클러스터(RAC)으로 구성했을경우  sid(ORCL1, ORCL2),   serviceName= ORCL 등으로 구성한다.
+	
+	//오라클 serviceName 확인
+	select name,db_unique_name from v$database;
+	
+	//오라클 sid 확인
+	select instance from v$thread;

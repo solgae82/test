@@ -6,8 +6,10 @@ SYSDBA는 SYS나 SYSTEM같은 user가 아니고, 여타의 ROLE과는 조금 다
 
  
 
-저도 Oracle에서 제공하는 Administrator라는 문서를 봤습니다만 명확한 의미는 모르겠고, ‘as sysdba’ 혹은 ‘as sysoper’ 가 붙으면, ‘user/password’ 부분이 의미가 없습니다. 
-예를 들어 sqlplus “scott/tiger as sysdba”를 실행하나 sqlplus “/ as sysdba”를 실행하나 결과는 마찬가지며, 즉 SYS의 schema로 접속됩니다.
+저도 Oracle에서 제공하는 Administrator라는 문서를 봤습니다만 명확한 의미는 모르겠고, 
+‘as sysdba’ 혹은 ‘as sysoper’ 가 붙으면, ‘user/password’ 부분이 의미가 없습니다. 
+예를 들어 sqlplus “scott/tiger as sysdba”를 실행하나 sqlplus “/ as sysdba”를 실행하나 결과는 마찬가지며, 
+즉 SYS의 schema로 접속됩니다.
 
  
 
@@ -17,7 +19,8 @@ sqlplus “abcdefg/hijk as sysdba”를 수행해도 마찬가지로 접속이 �
 
  
 
-SYS user의 경우 SYSTEM user와는 많이 다릅니다. Table, tablespace생성 등의 여타 권한은 비슷한데, SYS schema에 접속하려면 항상 ‘as sysdba’를 뒤에 붙여 주어야 합니다. 
+SYS user의 경우 SYSTEM user와는 많이 다릅니다. Table, tablespace생성 등의 여타 권한은 비슷한데, 
+SYS schema에 접속하려면 항상 ‘as sysdba’를 뒤에 붙여 주어야 합니다. 
 하지만 SYSTEM은 ‘sqlplus system/manager’ 형태로 가능합니다.
 
  
