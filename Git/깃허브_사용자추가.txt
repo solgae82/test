@@ -1,0 +1,9 @@
+(test)리포지터리 주인이 
+사용자 추가할 프로젝트 리포지터리(test) 선택 후
+settins 메뉴 선택
+
+좌측 Manage access > Manage access > 텍스트 박스에서 주가 사용자 검색 (find a collaborator) 후 선택 
+추가할 깃허브 사용자에게 메일이 전송 된다.
+
+추가된 사용자는 깃허브에 설정한 자신의 메일로 접속 후 verify 를 누르고, 깃허브에 접속해서 accept를 해줘야
+사용자로 추가된 프로젝트 리포지터리(test)를 사용 할 수 있게 된다.
