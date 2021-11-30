@@ -14,10 +14,11 @@
 	html출력: 
 	<form id="user" action="/chk.do" method="post">
 	: /test 컨텍스트가 붙지 않는다 주의!!
+	: ${pageContext.request.contextPath}를 붙이자
 
-<form:form commandName="user" action="/test/chk.do" method="delete"></form>
+<form:form commandName="user" action="${pageContext.request.contextPath}/otherChk.do" method="delete"></form>
 	html출력: 
-	<form id="user" action="/test/chk.do" method="delete">
+	<form id="user" action="/test/otherChk.do" method="delete">
 		<input type="hidden" name="_method" value="delete"/>
 	</form>
 

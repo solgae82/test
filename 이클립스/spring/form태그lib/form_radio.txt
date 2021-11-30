@@ -6,6 +6,7 @@
 	특이사항 : 
 		form:checkbox 와 같은 필드마커가 없다.
 		form:checkbox 와 같은 true, false 타입 출력 방식이 없다
+		위 두개 빼고 checkbox와 사용방식은 같다.
 		
 -------------------//
 User.java
