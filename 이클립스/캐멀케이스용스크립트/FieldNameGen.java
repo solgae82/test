@@ -347,7 +347,7 @@ public class FieldNameGen {
 		sb.append("UPDATE ");sb.append(tableName);
 		sb.append(" SET");
 		sb.append(newLine);
-		sb.append("(");
+		
 		sb.append(newLine);
 		for(String fieldNm : list) {
 			
@@ -374,7 +374,7 @@ public class FieldNameGen {
 		sb.append(temp);
 		
 		sb.append(newLine);
-		sb.append(")");
+		
 		sb.append(newLine);
 		
 		sb.append("WHERE");sb.append(newLine);
@@ -401,7 +401,7 @@ public class FieldNameGen {
 		
 		sb.append("UPDATE ");sb.append(tableName);sb.append(" SET");
 		sb.append(newLine);
-		sb.append("(");
+		
 		sb.append(newLine);
 		fsb.append(tabWord);
 		
@@ -435,7 +435,7 @@ public class FieldNameGen {
 		fsb.setLength(0);		
 		
 		sb.append(newLine);
-		sb.append(")");
+		
 		sb.append(newLine);
 		sb.append("WHERE");
 		sb.append(newLine);

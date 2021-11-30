@@ -11,7 +11,9 @@
 
 1. 블로그등을 보고 일단 설치
 
-2. 계정(스키마) 생성
+2. [오라클문자셋변경.txt] 문서를 보고 문자셋을 변경한다.
+
+3. 계정(스키마) 생성
 
 	계정생성 전 설정
 
@@ -36,9 +38,9 @@
 	insert 권한주기
 		alter user DONG default tablespace users quota unlimited on users;
 
-3. 설치된 리눅스에  1521포트 방화벽 해제
+4. 설치된 리눅스에  1521포트 방화벽 해제
 
-4. 윈도우에서 리눅스 오라클 접속 테스트
+5. 윈도우에서 리눅스 오라클 접속 테스트
 	
 	PC에 오라클 12 클라이언트 설치 후
 	설치 디렉토리에 가서 network/admin 디렉토리 만들고, (sqlnet.ora , tnsnames.ora) 두 파일 생성한다.
@@ -63,7 +65,7 @@
 
 	토드는 설치하면 걍 자동으로 TNS 에 잡히게 된다..
 
-5. 윈도우 cmd 창에서 리눅스 오라클 접속 테스트
+6. 윈도우 cmd 창에서 리눅스 오라클 접속 테스트
 
 	sqlplus DONG/oracle@orcl  (transnames.ora 이용할때)
 
