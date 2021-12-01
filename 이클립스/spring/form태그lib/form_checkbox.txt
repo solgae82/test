@@ -1,12 +1,29 @@
 요약 : 
-	<form:checkboxes>
-	<form:checkbox>
+	<form:checkboxes  path ="checkes" items="${codeTypes}" itemValue="code" itemLabel="label">
+	<form:checkbox path="checkes" value="data1"  label="일반회원">
 
+	<form:checkboxes>
+		path : 필수 속성 , command오브젝트 필드명 설정
+		items : 리스트 도메인 객체
+		itemValue : checkbox 태그의 value 값. 도메인 객체의 값 속성명 지정
+		itemLabel : checkbox 태그의 text 값. 도메인 객체의 text값 속성명 지정
+
+	<form:checkbox>
+		path : 필수 속성 , command오브젝트 필드명 설정
+		value : checkbox 태그의 value 값 지정.
+		lable : checkbox 태그의 text 값 지정.
+
+	------ 기타 공통 속성들(html에 대응하는 속성들이 더 있다)
+
+	cssClass : 바인딩 오류 없을시 출력될 css 속성명
+	cssErrorClass : 바인딩 오류시 출력될 css속성명
+	
 	특이사항 : 
 	1. checkbox는 아래와 같은 필드마커가 생긴다
 		<input type="hidden" name="_checkes" value="on"/> 
 
 	2. true, false 타입 출력 방식이 있다.
+
 -------------------//
 User.java
 	public class User {

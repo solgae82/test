@@ -22,6 +22,6 @@
 		<input type="hidden" name="_method" value="delete"/>
 	</form>
 
-	:GET,POST 이외의 메소드는 자동으로 hidden 변수가 만들어진다(spring내부에서 쓸)
+	:GET,POST 이외의 메소드는 자동으로 hidden 변수가 만들어진다(spring 내부에서 사용되는)
 
 

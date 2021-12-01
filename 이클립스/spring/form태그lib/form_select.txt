@@ -1,8 +1,30 @@
 요약 : 
+	<form:select path="${cate}" items="${codeTypes}" itemValue="code" itemLabel="label" />
+	<form:options items="${codeTypes}" itemValue="code" itemLabel="label">
+	<form:option value="code" lable="label">
+	
 	<form:select>
+		path : form:select 필수 속성 , command오브젝트 필드명 설정
+		items : 리스트 도메인 객체 설정.
+		itemValue : option 태그의 value 값. 도메인 객체의 값 속성명 설정
+		itemLabel : option 태그의 text 값. 도메인 객체의 text값 속성명 설정
+	
 	<form:options>
+		items : 리스트 도메인 객체 설정
+		itemValue : option 태그의 value 값. 도메인 객체의 값 속성명 설정
+		itemLabel : option 태그의 text 값. 도메인 객체의 text값 속성명 설정
+
 	<form:option>
+		value : option 태그의 value 값 설정.
+		lable : option 태그의 text 값 설정.
+
+	------ 기타 공통 속성들(html에 대응하는 속성들이 더 있다) 
+	
+	cssClass : 바인딩 오류 없을시 출력될 css 속성명
+	cssErrorClass : 바인딩 오류시 출력될 css속성명
+
 -------------------//
+
 User.java
 	public class User {
 		

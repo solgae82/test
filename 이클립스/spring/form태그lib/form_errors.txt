@@ -1,11 +1,18 @@
-폼 에러를 출력한다.
-<span></span>안에 메시지 출력.
-일반 필드 에러를 출력하거나,
-폼 전체 에러를 출력할때 사용된다.
+요약 : 
 
-<form:errors />
+	<form:errors />
+	
 	path: 필수 아니다, command 오브젝트 필드명 또는 '*' 등 기입
 	delimeter : 에러가 두개 이상일때 구분자 , 디폴트 <br />
 	cssClass : 에러 메시지 지정 클래스
 
-<form:errors /> 는 <form:errors path="*" /> 와 같다
+	폼 에러를 출력한다.
+	<span></span>안에 메시지 출력.
+	일반 필드 에러를 출력하거나,
+	폼 전체 에러를 출력할때 사용된다.
+	
+	<form:errors /> 는 <form:errors path="*" /> 와 같다
+
+-------------------//
+
+

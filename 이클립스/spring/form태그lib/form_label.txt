@@ -1,3 +1,12 @@
+요약 : 
+	<form:label path="uname" />
+
+	path : 필수 속성 , command오브젝트 필드명 설정
+	cssClass : 바인딩 오류 없을시 출력될 css 속성명
+	cssErrorClass : 바인딩 오류시 출력될 css속성명
+
+-------------------//
+
 User.java
 	public Class User{
 		private String uname="동수";
@@ -15,10 +24,5 @@ test.jsp
 		<input id="uname" name="uname" type="text" value="동수"/>
 	</form>
 
-요약 --------------------------//
 
-	<form:label path="uname" />
-
-		path : 필수 속성 , command오브젝트 필드명 설정
-		cssClass : 바인딩 오류 없을시 출력될 css 속성명
-		cssErrorClass : 바인딩 오류시 출력될 css속성명
+	
