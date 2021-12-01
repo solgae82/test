@@ -5,14 +5,23 @@
 
 	<form:radiobuttons>
 		path : 필수 속성 , command오브젝트 필드명 설정
-		items : 리스트 도메인 객체 (getter,setter가 있는)
-		itemValue : radio 태그의 value 값. 도메인 객체의 값 속성명 지정
-		itemLabel : radio 태그의 text 값. 도메인 객체의 text값 속성명 지정
+		items : 
+			HashMap : 순서지정이 없다
+				키=radio 태그의 value 
+				값=radio 태그의 text(label)
+			
+			LinkedHashMap : 순서지정 가능하다
+				키=radio 태그의 value 
+				값=radio 태그의 text(label)
+				
+			Collection 도메인 객체 :  (getter,setter가 있는) , 순서지정 가능하다			
+				itemValue : radio 태그의 value 값. 도메인 객체에서 매핑할 속성명 지정
+				itemLabel : radio 태그의 text(label) 값. 도메인 객체에서 매핑할 속성명 속성명 지정
 
 	<form:radiobutton>
 		path : 필수 속성 , command오브젝트 필드명 설정
-		value : radio 태그의 value 값 지정.
-		lable : radio 태그의 text 값 지정.
+		value : radio 태그의 value 값 수동 지정.
+		lable : radio 태그의 text 값 수동 지정.
 
 	------ 기타 공통 속성들(html에 대응하는 속성들이 더 있다)
 
@@ -88,10 +97,12 @@ TestController.java
 	}
 
 
------------loginForm.jsp
+-----------test.jsp
 	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 1. form:radiobuttons
+
+	예제(1) ---------------
 
 	<form:form commandName="user" action="" method="POST">
 		<form:radiobuttons path ="radioes" items="${loginTypes}" />
@@ -108,6 +119,8 @@ TestController.java
 		<label for="radioes3">헤드헌터</label></span>
 
 
+	예제 (2) ----------------
+
 	<form:form commandName="user" action="" method="POST">
 		<form:radiobuttons path ="radioes" items="${codeTypes}" itemValue="code" itemLabel="label" />
 	</form:form>
@@ -121,6 +134,61 @@ TestController.java
 
 		<span><input id="radioes3" name="radioes" type="radio" value="data3" checked="checked"/>
 		<label for="radioes3">헤드헌터</label></span>		
+
+	예제 (3) ----------------
+	
+	<%
+		/* HashMap 사용 , 순서대로 출력 되지 않는다 */
+		
+		Map<String,String> code = new HashMap<String,String>();
+		code.put("data1","일반회원");
+		code.put("data2","기업회원");
+		code.put("data3","헤드헌터");
+		
+		request.setAttribute("code", code);
+	%>
+
+	<form:form commandName="user">
+		<form:radiobuttons path="radioes" items="${code}"></form:radiobuttons>
+	</form:form>
+
+	출력 : 
+		<span><input id="radioes1" name="radioes" type="radio" value="data3" checked="checked"/>
+		<label for="radioes1">헤드헌터</label></span>
+
+		<span><input id="radioes2" name="radioes" type="radio" value="data2"/>
+		<label for="radioes2">기업회원</label></span>
+
+		<span><input id="radioes3" name="radioes" type="radio" value="data1" checked="checked"/>
+		<label for="radioes3">일반회원</label></span>
+	
+	예제 (4) ----------------
+	
+	<%
+		/* LinkedHashMap 사용 , 순서대 출력 된다 */
+		
+		Map<String,String> code = new LinkedHashMap<String,String>();
+		code.put("data1","일반회원");
+		code.put("data2","기업회원");
+		code.put("data3","헤드헌터");
+		
+		request.setAttribute("code", code);
+	%>
+
+	<form:form commandName="user">
+		<form:radiobuttons path="radioes" items="${code}"></form:radiobuttons>
+	</form:form>
+
+	출력 : 
+		<span><input id="radioes1" name="radioes" type="radio" value="data1" checked="checked"/>
+		<label for="radioes1">일반회원</label></span>
+		
+		<span><input id="radioes2" name="radioes" type="radio" value="data2"/>
+		<label for="radioes2">기업회원</label></span>
+
+		<span><input id="radioes3" name="radioes" type="radio" value="data3" checked="checked"/>
+		<label for="radioes3">헤드헌터</label></span>
+		
 
 2. form:radiobutton
 
