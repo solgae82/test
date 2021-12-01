@@ -5,12 +5,12 @@
 	
 	<form:select>
 		path : form:select 필수 속성 , command오브젝트 필드명 설정
-		items : 리스트 도메인 객체 설정.
+		items : 리스트 도메인 객체 설정. (getter,setter가 있는)
 		itemValue : option 태그의 value 값. 도메인 객체의 값 속성명 설정
 		itemLabel : option 태그의 text 값. 도메인 객체의 text값 속성명 설정
 	
 	<form:options>
-		items : 리스트 도메인 객체 설정
+		items : 리스트 도메인 객체 설정. (getter,setter가 있는)
 		itemValue : option 태그의 value 값. 도메인 객체의 값 속성명 설정
 		itemLabel : option 태그의 text 값. 도메인 객체의 text값 속성명 설정
 
