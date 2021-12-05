@@ -37,28 +37,29 @@ public class JsonController {
 
 ------------------ 브라우저 GET 요청 응답 결과
 
-	---------/doJSON 응답헤더
+	url : /doJSON 응답헤더
 
-	requst 헤더 :
-		Request Method: GET
-		Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+		requst 헤더 :
+			Request Method: GET
+			Accept: text/html..
 
-	response 헤더 : 
+		response 헤더 : 
 
-		Content-Type: application/json;charset=UTF-8
-		Transfer-Encoding: chunked
+			Content-Type: application/json;charset=UTF-8
+			
 
-	출력결과
-	{"mno":12,"firstName":"dong","lastName":"Bak"}
+		출력결과
+		{"mno":12,"firstName":"dong","lastName":"Bak"}
 
-	---------/stringJSON 응답헤더
-	requst 헤더 :
-		Request Method: GET
-		Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+	url : /stringJSON 응답헤더
 
-	response 헤더 : 
-		Content-Type: text/html
-		
+		requst 헤더 :
+			Request Method: GET
+			Accept: text/html..
 
-	출력결과
-	12
+		response 헤더 : 
+			Content-Type: application/json;charset=UTF-8
+			
+
+		출력결과
+		12
