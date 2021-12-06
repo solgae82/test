@@ -1,0 +1,91 @@
+1.커스텀propertyEditor.txt 문서와 연결되는 문서다
+
+특정타입에 무조건 적욕되는 프로퍼티에디터 등록 방법
+
+---------//
+Level.java
+
+	public enum Level {
+		GOLD(3, null), SILVER(2, GOLD), BASIC(1, SILVER);  
+		
+		private final int value;
+		private final Level next; 
+		
+		Level(int value, Level next) {  
+			this.value = value;
+			this.next = next; 
+		}
+		
+		public int intValue() {
+			return value;
+		}
+		
+		public Level nextLevel() { 
+			return this.next;
+		}
+		
+		public static Level valueOf(int value) {
+			switch(value) {
+			case 1: return BASIC;
+			case 2: return SILVER;
+			case 3: return GOLD;
+			default: throw new AssertionError("Unknown value: " + value);
+			}
+		}
+	}
+---------//
+LevelPropertyEditor.java
+
+	public class LevelPropertyEditor extends PropertyEditorSupport {
+
+		@Override
+		public String getAsText() {
+			Level level = (Level) this.getValue();
+			int num = level.intValue();
+			return String.valueOf(num);
+		}
+
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			String value = text.trim();
+			int num  = Integer.parseInt(value);
+			Level level = Level.valueOf(num);
+			this.setValue(level);
+		}
+
+	}
+
+---------//
+TestController.java
+
+	@Controller
+	public class TestController {
+		
+
+		@RequestMapping(value = "/", method = RequestMethod.GET)
+		public String home(@RequestParam(required = false) Level level) {
+			
+			System.out.println("프로퍼티에디터=>"+level);
+			return "home";
+		}
+		
+		
+		/**
+		 * propertyEditor 바인더 추가
+		 * @param binder
+		 */
+		@InitBinder
+		public void initBinder(WebDataBinder binder) {
+			binder.registerCustomEditor(Level.class, new LevelPropertyEditor());
+		}
+		
+		
+	}
+
+
+---------//
+
+url: /level=2
+
+출력 : 
+프로퍼티에디터=>SILVER
