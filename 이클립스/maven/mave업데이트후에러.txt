@@ -1,0 +1,7 @@
+java.lang.ClassNotFoundException: org.springframework.web.context.ContextLoaderListener
+
+> Maven > Update Project Configuration 실행시 maven 라이브러리 경로가 삭제되는 현상이 발생한다고 한다.
+
+해결:
+프로젝트 우클릭 > Properties >  
+Deployment Assembly > Add 버튼 > Java Build Path Entries > Maven Dependencies 선택 > Apply버튼
