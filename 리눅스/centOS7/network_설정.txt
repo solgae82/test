@@ -84,7 +84,7 @@ ls -al # 살펴보면 ifcfg-enp3s0 같은 설정파일 있을 것이다
 	#####
 
 # 네트웤 기동, 또는 reboot 해서 하시등가..
-	systemctl restart nertwork 
+	systemctl restart network 
 
 ----------------------tip
 수동으로 네트웤 카드 활성화 시키기
