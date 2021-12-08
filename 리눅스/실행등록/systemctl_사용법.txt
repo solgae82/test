@@ -11,7 +11,7 @@ CentOS 7이상부터 service와 chkconfig가 <systemctl>로 통합되었음.
 	systemctl disable 서비스명 
 
 	추가로 실제 서비스가 자동실행으로 적용됐는지 확인은
-		systemctl is-enable 서비스명 
+		systemctl is-enabled 서비스명 
 
 	자동실행 서비스 목록을 보고 싶을때 
 		systemctl list-unit-files --type=service

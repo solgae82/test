@@ -1,0 +1,84 @@
+	
+Editor 창에서 sql문 실행하는 방법이다
+
+크게 보면 두개다
+
+하나는 현재 커서가 있는 sql 한 문장 실행 (F9)
+두번째는 editor에 있는 모든 문장 실행하기 (F5)
+
+▶ 표시 실행 아이콘을 보면 두개가 나온다
+	Excute compile statment  : (F9) #기본
+	Excute snippet/Embeded SQL : ctrl + Enter 또는 shift + f9
+
+▶ 표시는 기본적으로 한개의 문장만 실행할때 쓴다.
+	SQL 한개의 문장 중 더 상세히 발췌한 부분만 실행하고 싶을때 
+	Excute snippet/Embeded SQL 을 실행하면 된다.
+
+	예를 들어, 이런 SQL문장이 있다.
+
+		select * from emp
+		where
+		    empno = (
+			--여기를 띄우고
+			select max(empno) from emp -- 여기에 커서를 놓고
+			--여기를 띄우고
+		    );
+
+
+	F9를 누르면 전체 한 문장만 실행 되지만,	ctrl + Enter를 하면 
+	
+		'select max(empno) from emp'
+
+	커서가 위치한 저 문장만 실행된다(상세 발췌)
+
+	저 한 문장만 실행되는 조건이 있는데, 
+	위 아래에 한칸씩 개행이 되어야 저 부분만 발췌되어서 실행된다.
+
+	아래처럼 위 아래 개행 없는 문장에 커서 놓고 ctrl + Enter하면,
+
+		select * from emp
+		where
+		    empno = (
+			select max(empno) from emp -- 여기에 커서를 놓고
+		    );
+			
+	이렇게 실행하면 부분 발췌되지 않고 전체가 실행된다.
+
+	또 다른 예제로 아래처럼 ctrl + Enter 하면,
+
+		select * from emp
+		where
+		    empno = (
+			select max(empno) from emp -- 여기에 커서를 놓고
+			--여기를 띄우고
+		    );
+
+	'ORA-00921: SQL 명령어가 불완전합니다' 에러가 발생한다..
+	좆같다... ctrl + enter 안 쓰는게 나을 듯..(암 걸림)
+
+	
+
+-----------요약 
+
+자세한 건 이렇지만 저걸 다 외우고 쓰려니 짜증..
+
+한 문장 블록 잡고 F9 가 가장 현실적.
+
+여러개 문장을 실행해야 할때는
+	insert into .. values(..);
+	insert into .. values(..);
+
+저 insert 문장을 다 블록 잡고 ctrl + enter 또는 ▶ 표시 아이콘 누르면 에러 난다.
+왜냐면 두개의 문장이므로...
+
+이럴때는 F5 로 실행한다.
+
+
+
+
+
+		
+
+
+
+	

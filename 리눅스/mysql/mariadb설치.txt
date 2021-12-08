@@ -1,0 +1,103 @@
+1.repo 설정
+	vi /etc/yum.repos.d/MariaDB.repo
+
+	[mariadb]
+	name = MariaDB
+	baseurl = http://yum.mariadb.org/10.4/centos7-amd64
+	gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+	gpgcheck=1
+
+	:wq
+
+2. 설치
+
+	yum install -y MariaDB
+
+3. 설치 확인
+
+	rpm -qa | grep MariaDB
+
+
+4.  기동 및 (프로세스, 포트) 확인
+	
+	#시작/종료/재시작
+		systemctl start mariadb
+		#systemctl stop mariadb (정지)
+		#systemctl restart mariadb (재시작)
+
+	#프로세스 확인
+	ps -ef | grep mysqld 
+
+	#포트 확인
+	netstat -anp | grep 3306
+
+	# 중지
+
+5. root 패스워드 설정
+	1. 방법
+		mysqladmin -u root password '1234'
+	
+	2. 방법
+		mysql -u root -p
+		Enter passwd : (그냥 엔터,아직 설정 안되었므로..)
+			(첨엔 그냥 로그인 된다.
+			mariadb 10.4 이상부터는 root 로그인이면 패스워드 없어도 로그인 된다. 오해 말도록)
+		
+		MariaDB [(none)]> set password=password('1234');
+
+6. 문자셋 설정
+
+	vi /etc/my.cnf.d/server.cnf
+
+		[mysqld] 
+		init_connect="SET collation_connection=utf8mb4_general_ci" 
+		init_connect="SET NAMES utf8mb4" 
+		character-set-server=utf8mb4 
+		collation-server=utf8mb4_general_ci
+
+		:wq
+	vi /etc/my.cnf.d/mysql-clients.cnf
+		
+		[mysql]
+		default-character-set=utf8mb4
+		[mysqladmin]
+		default-character-set=utf8mb4
+		[mysqldump]
+		default-character-set=utf8mb4
+		:wq
+
+	systemctl restart mariadb (재시작)
+
+	mysql -u root -p 접속
+
+	>show variables like 'c%'; #바뀐 문자셋 확인
+
+7. 외부접속 설정
+	1. /etc/my.cnf.d/server.cnf 확인
+		bind-address=127.0.0.1 <= 이렇게 되어있다면
+		#bind-address=127.0.0.1 <= 주석처리 하거나,
+		#bind-address=0.0.0.0 <=모든 접속 허용해주거나
+
+	2. root 에게 모든 외부접속 권한을 주기 
+		mysql -u root -p
+		> GRANT ALL PRIVILEGES on *.* to 'root'@'%' identified by 'PASSWORD' WITH GRANT OPTION;
+		> flush privileges; #반드시 해줘야 한다
+
+	3.방화벽 오픈
+		firewall-cmd --permanent --zone=public --add-port=3306/tcp
+		firewall-cmd --reload 
+
+	4.외부 접속툴로 접속확인
+		
+
+7. 자동 시작 등록
+
+	systemctl enable mariadb (자동 시작 등록)
+	systemctl is-enabled mariadb (확인)
+
+
+
+
+
+		
+

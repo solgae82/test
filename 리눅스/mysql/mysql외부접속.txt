@@ -1,0 +1,28 @@
+db 생성 후,
+
+1. root 계정의 모든 외부접속을 허용..
+	GRANT ALL PRIVILEGES on 데이터베이스명.* to 'root'@'%' identified by 'PASSWORD' WITH GRANT OPTION;
+
+2. dong 계정의 192.168.% 로 시작하는 IP 의 test 데이터베이스의 모든 테이블 접속만 허용...
+	GRANT ALL PRIVILEGES on test.* to 'dong'@'192.168.%' identified by 'PASSWORD' WITH GRANT OPTION;
+
+마지막으로 다시 권한 분출...
+ flush privileges;
+
+---- 추가로
+/etc/my.cnf 또는 /etc/my.cnf.d/server.cnf(yum 설치시) 열고
+
+
+bind-address=0.0.0.0  #이 부분 체크
+
+혹시 IP가 bind-address=127.0.0.1 로 되어 있다면, 로컬접속만 가능하다는 얘기이므로 , 
+아래 처럼
+	bind-address=0.0.0.0 
+으로 모든 아이피 허용해 주던가, 아니면 아래처럼
+
+	# bind-address=127.0.0.1 
+
+주석처리 해주던가 하면 모든 아이피 주소 기본 바인딩이 허용된다.(디폴트 허용)
+
+설정 바꿨으면 재시작
+	systemctl restart mysql
