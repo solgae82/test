@@ -1,16 +1,19 @@
-# rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm →저장소를 설치합니다.
+# rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
 
 # yum install -y fail2ban fail2ban-systemd
 
-redhat 계열에서 접근로그파일은 /var/log/secure 입니다.  cent 7 이전에는 secure 로그파일에 의존하여 동작했으나 cen t7 부터는 systemd에서 통합적으로 관리합니다.
+redhat 계열에서 접근로그파일은 /var/log/secure 입니다.  
+cent 7 이전에는 secure 로그파일에 의존하여 동작했으나 cen t7 부터는 systemd에서 통합적으로 관리합니다.
 
-로그파일이 없으면 fail2ban동작불가하기 때문에 fail2ban-systemd를 같이 설치진행합니다
+로그파일이 없으면 fail2ban동작불가하기 때문에 fail2ban-systemd를 같이 설치 진행합니다
+fail2ban-firewalld 패키지가 필수로 설치됩니다.
 
-# rm -f /etc/fail2ban/jail.d/00-firewalld.conf→ fail2ban-firewalld 패키지가 필수로 설치됩니다, firewalld가 아닌 iptables 사용 할 예정이므로 해당 파일을 삭제합니다
+	※ firewalld가 아닌 iptables 사용할려면 아래 파일을 삭제합니다
+		rm -f /etc/fail2ban/jail.d/00-firewalld.conf
 
-# systemctl enable fail2ban → fail2ban 자동실행되도록 설정합니다.
+# systemctl enable fail2ban // 자동실행되도록 설정합니다.
 
-# systemctl start fail2ban →fail2ban 서비스를 실행합니다.
+# systemctl start fail2ban // 서비스를 실행합니다.
 
 ---설정파일
 # /etc/fail2ban/jail.conf 
