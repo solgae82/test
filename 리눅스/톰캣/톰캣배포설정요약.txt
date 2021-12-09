@@ -1,9 +1,10 @@
 테스트 : 톰캣 8.5.51
 -------------- 기본 url 매핑 이야기
 	컨텍스트 설정은
-
-		"Context 태그의 docBase 값과 웹앱 디렉토리(컨텍스트)명이 맞으면 
-		그 컨텍스트를 설정하는 Context 태그가 된다"
+		Host 태그의 appBase 경로 아래 웹앱 디렉토리가  있고
+		Host 태그에 속한,
+		"Context 태그의 docBase 값과 웹앱 디렉토리명이 맞으면 
+		그 웹앱(컨텍스트)을 설정하는 Context 태그가 된다"
 	
 	톰캣홈/conf/server.xml
 

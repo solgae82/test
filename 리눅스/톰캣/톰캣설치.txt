@@ -58,7 +58,7 @@ widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 
 
 		source /etc/profile	
 
-3. firewall(방화벽에) 에 80포트 허가
+3. firewall(방화벽에) 에 8080포트 허가
 	firewall-cmd --permanent --zone=public --add-port=8080/tcp
 	firewall-cmd --reload #재시작
 
