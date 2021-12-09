@@ -1,3 +1,15 @@
+#오라클 12부터는 사용자계정명 앞에 'c##'을 붙여줘야 한다.
+	안 붙이면 아래처럼 
+
+		ORA-65096: 공통 사용자 또는 롤 이름이 부적합합니다
+	
+	안붙이고 싶으면 옵션 지정 후 사용해야 함.
+
+		alter session set "_ORACLE_SCRIPT"=true;
+
+	이후 사용하면 'c##' 안 붙인 계정명 사용 가능.
+
+	c## 붙여서 dong 계정 생성했다면, 계정명은 (대문자 : C#DONG ) 이 된다
 
 #sqlplus 접속 후 접속계정 확인하기
 	
@@ -18,18 +30,20 @@
 	
 	//사용자 dong으로 만들어도 -> DONG 으로 생성된다,테이블 검색엔 'DONG'으로 해야함.
 	create user dong identified by "1234"; 
-	alter user dong identified by "100you"; //패스워드 변경
+	alter user dong identified by "123456"; //패스워드 변경
 	drop user dong cascade; //사용자 + 사용자객체 삭제
 
-
+	commit;
 # 사용자 권한 생성
 	- [시스템권한] 과 [객체권한] 이 있다.
 
 	grant [시스템권한]  to [사용자 / role / publc] [with admin option]; //권한주기
 	revoke [시스템권한] from [사용자 / role / publc] //권한취소
 
-	grant resource, create session,  create table to dong; //권한주기
-	revoke resource, create session,  create table from dong; //권한 취소
+	grant connect, resource, create session,  create table to dong; //권한주기
+	revoke connect, resource, create session,  create table from dong; //권한 취소
+
+	commit;
 
 # 사용자 시스템권한 조회
 	select grantee , privilege, admin_option from dba_sys_privs where grantee='DONG'; //권한 확인.
@@ -53,3 +67,21 @@
 # 사용자(user) 또는 role에 부여된 role 조회
 	select * from dba_role_privs;
 	select * from user_role_privs;
+
+---------------12c 에서 계정 생성
+	alter session set "_ORACLE_SCRIPT"=true; //계정관련은 무조건 넣어서 실행해야 함.
+
+	계정(스키마)생성
+		create user DONG identified by "1234";
+
+	락풀기
+		alter user DONG account unlock;
+
+	세션생성
+		grant create session to DONG;
+
+	권한주기
+		grant connect,dba, resource to DONG;
+
+	insert 권한주기
+		alter user DONG default tablespace users quota unlimited on users;

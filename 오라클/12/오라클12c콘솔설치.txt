@@ -1,0 +1,232 @@
+CentOS7 에 오라클 12c를 콘솔 모드로 설치한다
+
+0. 오라클 사이트에서 받은 오라클 설치 파일 업로드
+	/opt 에 오라클 설치파일을 업로드 (/opt/linuxx64_12201_database.zip)
+	cd /opt
+	unzip linuxx64_12201_database.zip
+	database 디렉토리가 생성된다.
+
+1. 필요패키지 설치
+	yum update
+
+	yum install -y binutils compat-libcap1 gcc gcc-c++ glibc glibc-devel ksh compat-libstdc++-33 libaio libaio-devel libgcc libstdc++ libstdc++-devel  libXi libXtst make sysstat zip unzip net-tools smartmontools
+
+2. 커널 파라미터 수정
+
+	vi /etc/sysctl.conf
+
+		fs.aio-max-nr = 1048576
+		fs.file-max = 6815744
+		kernel.shmall = 2097152
+		kernel.shmmax = 4056393728
+		kernel.shmmni = 4096
+		kernel.sem = 250 32000 100 128
+		net.ipv4.ip_local_port_range = 9000 65500
+		net.core.rmem_default = 262144
+		net.core.rmem_max = 4194304
+		net.core.wmem_default = 262144
+		net.core.wmem_max = 1048586
+
+	:wq
+
+	----//옵션 설명
+	fs.aio-max-nr :  비동기 파일 최대 열기
+	fs.file-max :  사용 가능한 파일 핸들의 최대 개수를 말하며, 동시에 열 수 있는 파일의 수다. 
+	kernel.shmall :  공유 메모리의 최대 크기
+	kernel.shmmax :  공유 메모리 세그먼트의 최대 크기
+	kernel.shmmni :  공유 메모리 세그먼트의 최대 숫자
+	kernel.sem : 아래 네 개의 값을  차례로 설정한다.
+		- semmsl   : 세마포어 세트당 최대 세마포어 수
+		- semmns  : 시스템에 할당할 수 있는 최대 세마포어 개수
+		- semopm : 시스템 호출당 수행할 수 있는 최대 세마포어 수
+		- semmni : 세마포어 세트의 최대 수
+	net.ipv4.ip_local_port_range : 신규 접속시에 허용할 수 있는 포트의 사용 범위
+	net.core.rmem_default : 소켓이 사용하는 수신 버퍼(Window Size)의 기본값
+	net.core.rmem_max : 소켓이 사용하는 수신 버퍼(Window Size)의 최대값
+	net.core.wmem_default : 소켓이 사용하는 송신 버퍼(Window Size)의 기본값
+	net.core.wmem_max : 소켓이 사용하는 수신 버퍼(Window Size)의 최대값
+	----//
+
+	변경된 커널 파라미터 반영 : 
+		sysctl -p
+
+	커널 파라미터 확인 :
+		sysctl -a
+
+3. 오라클 사용자 생성 및 설치 디렉토리 생성하기
+	그룹 생성 : 
+		groupadd oinstall
+		groupadd dba
+		
+	유저 생성 : 
+		useradd -g oinstall -G dba oracle
+		passwd oracle
+
+
+	oracle 사용자의 권한(/etc/security/limits.conf)을 설정한다.
+	(이 설정은 오라클 서버의 프로세스 및 파일 열기에 대한 최대 개수를 설정한다.)
+
+		vi /etc/security/limits.conf
+
+		oracle soft nproc 2047
+		oracle hard nproc 16384
+		oracle soft nofile 1024
+		oracle hard nofile 65536
+		oracle soft stack 10240
+
+		:wq
+
+4. 오라클 설치할 디렉토리 생성 및 사용자 권한 명시 
+
+	/opt/oracle12 에 설치할 것이다
+	(설치 전 생성될 디렉토리 미리 생성해서 권한을 설정해 놓는다)
+
+	mkdir -p /opt/oracle12/app
+	mkdir -p /opt/oracle12/oraInventory
+
+	chown -R oracle:oinstall /opt/oracle12/app
+	chown -R oracle:oinstall /opt/oracle12/oraInventory
+
+	chmod -R 775 /opt/oracle12/app
+	chmod -R 775 /opt/oracle12/oraInventory
+
+	chmod g+s /opt/oracle12/app
+	chmod g+s /opt/oracle12/oraInventory
+
+5. oracle 사용자 환경 변수 설정하기
+		
+	su - oracle
+
+	vi .bash_profile
+
+		#맨 아래에 설정
+
+		export TMPDIR=/tmp
+		export ORACLE_BASE=/opt/oracle12/app
+		export ORACLE_HOME=$ORACLE_BASE/product/12.2.0/dbhome_1
+		export ORACLE_HOME_LISTNER=$ORACLE_HOME/bin/lsnrctl
+		export ORACLE_SID=orcl
+		export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/lib64
+		export NLS_LANG=KOREAN_KOREA.AL32UTF8
+		export CLASSPATH=$CLASSPATH:$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
+		export PATH=$ORACLE_HOME/bin:$PATH
+
+		:wq
+
+	환경변수 반영
+		source .bash_profile
+	
+6. 오라클 설치하기
+
+	콘솔모드 oracle 계정으로 설치할 것이다
+		
+		아래처럼 하지 말고
+			su - oracle (x) 
+
+		root 로그아웃 하고 다시 oracle로 접속
+
+	
+	1) 오라클 설치 Response 파일 
+
+		오라클 데이터베이스 설치 프로그램의 압축을 해제하면, 아래 3개의 Response 파일을 찾을 수 있다.
+
+			/opt/database/response/netca.rsp
+			/opt/database/response/dbca.rsp
+			/opt/database/response/db_install.rsp (오라클 설치 구성파일)
+		
+		해당 파일을 ~/  로 복사해서 수정해 사용한다.
+			cd /opt/database
+			$ cp ./response/*.rsp ~/
+
+	2) 오라클 설치
+		복사한 구성 파일 중,
+		~/db_install.rsp 설정 후 오라클 설치.
+
+		vi ~/db_install.rsp # 수정 
+
+		oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.2.0 # 이 값은 고정값 
+		oracle.install.option=INSTALL_DB_SWONLY	
+		UNIX_GROUP_NAME=oinstall
+		INVENTORY_LOCATION=/opt/oracle12/oraInventory
+		ORACLE_HOME=/opt/oracle12/app/product/12.2.0/dbhome_1
+		ORACLE_BASE=/opt/oracle12/app
+		oracle.install.db.InstallEdition=EE
+		oracle.install.db.OSDBA_GROUP=dba
+		oracle.install.db.OSOPER_GROUP=dba
+		oracle.install.db.OSBACKUPDBA_GROUP=dba
+		oracle.install.db.OSDGDBA_GROUP=dba
+		oracle.install.db.OSKMDBA_GROUP=dba
+		oracle.install.db.OSRACDBA_GROUP=dba
+		oracle.install.db.config.starterdb.globalDBName=orcl
+		oracle.install.db.config.starterdb.SID=orcl
+		oracle.install.db.config.starterdb.characterSet=AL32UTF8
+		SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+		DECLINE_SECURITY_UPDATES=true
+
+		:wq
+
+		
+		테스트하기
+		./runInstaller -silent -executePrereqs -responseFile ~/db_install.rsp
+		
+		설치하기
+		./runInstaller -waitforcompletion -showProgress -silent -responseFile ~/db_install.rsp
+
+			..
+			루트 사용자로 다음 스크립트를 실행합니다.
+			1. /opt/oracle12/oraInventory/orainstRoot.sh
+			2. /opt/oracle12/app/product/12.2.0/dbhome_1/root.sh
+			..................................................   100% 완료되었습니다.
+
+			설치로그에 나온 1,2번 파일을 하나씩 실행해준다.(루트로 실행해야 함)
+			콘솔 하나 더 열어서 실행하자
+
+	2) 오라클 리스너 생성
+		복사한 구성 파일 중,
+		~/netca.rsp 설정 후 리스너 생성
+
+		vi ~/netca.rsp
+			SHOW_GUI=false
+			:wq
+
+		netca 실행:(/opt/oracle12/app/product/12.2.0/dbhome_1/bin <= PATH에 이미 있다)
+
+			netca -silent -responseFile ~/netca.rsp
+			lsnrctl status # 리스너 상태 확인
+
+	3) 데이터베이스 생성
+		복사한 구성 파일 중,
+		~/dbca.rsp 설정 후 데이터베이스 생성
+		
+		vi ~/dbca.rsp
+			responseFileVersion=/oracle/assistants/rspfmt_dbca_response_schema_v12.2.0 #고정값 건들지 말기
+			gdbName=orcl
+			sid=orcl
+			databaseConfigType=SI
+			createAsContainerDatabase=TRUE
+			numberOfPDBs=1
+			pdbName=ORCLPDB
+			useLocalUndoForPDBs=TRUE
+			pdbAdminPassword=1234
+			templateName=General_Purpose.dbc
+			sysPassword=1234
+			systemPassword=1234
+			emConfiguration=DBEXPRESS
+			emExpressPort=5500
+			storageType=FS
+			characterSet=AL32UTF8
+			nationalCharacterSet=AL16UTF16
+			listeners=LISTENER
+			sampleSchema=TRUE
+			databaseType=MULTIPURPOSE
+			automaticMemoryManagement=FALSE
+			totalMemory=1024
+
+			:wq
+
+		dbca 실행: (/opt/oracle12/app/product/12.2.0/dbhome_1/bin <= PATH에 이미 있다)
+		
+			dbca -silent -createDatabase  -responseFile ~/dbca.rsp
+		
+	
+		

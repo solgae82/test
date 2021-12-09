@@ -18,10 +18,13 @@
 	계정생성 전 설정
 
 		오라클 12부터는  c##를 붙여야 한다고 함..
+		c## 붙여서 dong 계정 생성했다면, 계정명은 (대문자 : C#DONG ) 이 된다
+
 		그걸 없애기 위해선 아래처럼..
-		
+
 		alter session set "_ORACLE_SCRIPT"=true; //계정관련은 무조건 넣어서 실행해야 함.
 
+		
 
 	계정(스키마)생성
 		create user DONG identified by "oracle";
