@@ -244,8 +244,8 @@
 	이 [컨텍스트명].xml 설정의 좋은 점 중 하나가 톰캣 기동 중에 설정해도 반영된다
 	(재기동 안해도 새로운 설정 가능)
 
-	ex01.xml 의 파일명이 docBase 값 역할을 한다
-	그럼 기존 docBasen 는 충돌 아닌가?
+	ex01.xml 의 파일명인 'ex01'이 docBase 값 역할을 한다
+	그럼 Context 태그의 docBase 와는 충돌 아닌가?
 
 	무수히 테스트 한 내 나름의 결론은 이렇다
 
@@ -271,7 +271,8 @@
 
 	[컨텍스트명.xml] : context.xml(이름으로 해야된다,톰캣이 읽기 위해 약속된 이름)
 
-	copyXML="true" : Context 태그 속성에 저 속성값 "true" 꼭 줘야 복사가 됨.
+	copyXML="true" 속성 : 
+		context.xml 의 Context 태그 속성에  copyXML 속성값 "true" 꼭 줘야 복사가 됨.
 
 	(예제) ROOT.war로 배포하기
 
@@ -289,5 +290,5 @@
 			웹앱/META-INF/context.xml을 복사해서
 			톰캣홈/conf/Catalina/localhost/ROOT.xml 변경 복사  
 			# ROOT.war 파일명으로 변경 복사(context.xml -> ROOT.xml).
-		
+					
 		5. 설정 적용 후 테스트
