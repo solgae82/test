@@ -180,7 +180,11 @@
 		ROOT명이 싫어서 ex01.war로 배포 => ex01 로 만들고 '/'를 할테야?
 	
 		그렇다면,
-		ex01.war 배포 => ex01 로 하고
+		<Host name="localhost"  appBase="/home/web">
+			
+		</Host>
+		자동 배포하기 위해 appBase="/home/web" 변경하고,
+		ex01.war 업로드 톰캣기동 (자동배포)..
 		
 		톰캣(배포) 기동 중지 시키고
 
@@ -198,7 +202,7 @@
 		(왜냐면 배포시킬 /home/web으로 바꿔야 하니까)  
 			
 			<Host name="localhost"  appBase="/home/web">
-				<Context path="" docBase="" />
+				<!-- 또 바꾸고 -->
 			</Host>
 
 		톰캣기동 배포 후 다시 내리고 , server.xml 다시 편집
