@@ -10,11 +10,11 @@
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 사용자 테이블
-	CREATE TABLE `tbl_user` (
-	  `UID` varchar(50) NOT NULL,
-	  `UPW` varchar(50) NOT NULL,
-	  `UNAME` varchar(100) NOT NULL,
-	  `UPOINT` int(11) NOT NULL DEFAULT 0,
+	CREATE TABLE `USER` (
+	  `ID` varchar(50) NOT NULL,
+	  `PW` varchar(50) NOT NULL,
+	  `NAME` varchar(100) NOT NULL,
+	  `POINT` int(11) NOT NULL DEFAULT 0,
 	  PRIMARY KEY (`UID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -43,10 +43,10 @@ UserVO.java
 
 	public class UserVO implements Serializable {
 		private static final long serialVersionUID = 1L;
-		private String uid ;
-		private String upw;
-		private String uname;
-		private String upoint;
+		private String id ;
+		private String pw;
+		private String name;
+		private String point;
 
 		..getter, setter 생략
 	}
@@ -72,10 +72,11 @@ mapper.java
 		(연결되는 참조키를 설정하는데, 없을 수도 있다) -->  
 
 		<association column="USER_ID" property="userVO" javaType="egovframework.test.e1.service.UserVO">
-			<id column="UID" jdbcType="VARCHAR" property="uid" />
-			<result column="UPW" jdbcType="VARCHAR" property="upw" />
-			<result column="UNAME" jdbcType="VARCHAR"  property="uname"/>
-			<result column="UPOINT" jdbcType="VARCHAR"  property="upoint"/>
+			/* 컬럼명 충돌 때문에 별칭 사용 (id 태그 컬럼) */
+			<id column="UID" jdbcType="VARCHAR" property="id" />
+			<result column="PW" jdbcType="VARCHAR" property="pw" />
+			<result column="NAME" jdbcType="VARCHAR"  property="name"/>
+			<result column="POINT" jdbcType="VARCHAR"  property="point"/>
 		</association>
 	</resultMap>
 
@@ -90,15 +91,15 @@ mapper.java
 			,B.DESCRIPTION
 			,B.REG_DATE
 			,B.UP_DATE
-			,U.UID
-			,U.UPW
-			,U.UNAME
-			,U.UPOINT
+			,U.ID AS UID /* 컬럼명 충돌 때문에 별칭 사용*/
+			,U.PW
+			,U.NAME
+			,U.POINT
 		
 		FROM
-			BBS B LEFT OUTER JOIN tbl_user U
+			BBS B LEFT OUTER JOIN USER U
 		ON 
-			B.USER_ID = U.uid
+			B.USER_ID = U.ID
 	</select>
 
 ---------2. <assocation> (1:1 설정)
@@ -106,10 +107,11 @@ mapper.java
 	: resultMap 은 resultMap 속성에 재사용 가능하다
 	
 	<resultMap type="egovframework.test.e1.service.UserVO" id="userVO">
-		<id column="UID" jdbcType="VARCHAR" property="uid" />
-		<result column="UPW" jdbcType="VARCHAR" property="upw" />
-		<result column="UNAME" jdbcType="VARCHAR"  property="uname"/>
-		<result column="UPOINT" jdbcType="VARCHAR"  property="upoint"/>
+		/* 컬럼명 충돌 때문에 별칭 사용 (id 태그 컬럼) */
+		<id column="UID" jdbcType="VARCHAR" property="id" />
+		<result column="PW" jdbcType="VARCHAR" property="pw" />
+		<result column="NAME" jdbcType="VARCHAR"  property="name"/>
+		<result column="POINT" jdbcType="VARCHAR"  property="point"/>
 	</resultMap>
 
 	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO">
@@ -135,13 +137,62 @@ mapper.java
 			,B.DESCRIPTION
 			,B.REG_DATE
 			,B.UP_DATE
-			,U.UID
-			,U.UPW
-			,U.UNAME
-			,U.UPOINT
+			,U.ID AS UID /* 컬럼명 충돌 때문에 별칭 사용*/
+			,U.PW
+			,U.NAME
+			,U.POINT
 		
 		FROM
-			BBS B LEFT OUTER JOIN tbl_user U
+			BBS B LEFT OUTER JOIN USER U
 		ON 
-			B.USER_ID = U.uid
+			B.USER_ID = U.ID
+	</select>
+
+---------3. <assocation> (1:1 설정)
+	
+	: columnPrefix 속성을 사용한 컬럼명 중복 제거 일관성 유지 기능
+
+	<resultMap type="egovframework.test.e1.service.UserVO" id="userVO">
+		/* 컬럼명 충돌 때문에 별칭 사용할 필요 없다 */
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="PW" jdbcType="VARCHAR" property="pw" />
+		<result column="NAME" jdbcType="VARCHAR"  property="name"/>
+		<result column="POINT" jdbcType="VARCHAR"  property="point"/>
+	</resultMap>
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		<!-- 
+			columnPrefix 를 사용한 컬럼명 접두어 설정 기능
+			접두어 빼고 나머지 컬럴명으로 매핑해 준다
+		-->
+		<association property="userVO" resultMap="userVO" columnPrefix="U_"  />
+		
+	</resultMap>
+	<!-- resultType 이 아닌 resultMap 속성에 설정한 resultMap 의 id값을 넣는다 -->
+	<select id="selectTestList2" parameterType="map" resultMap="testVO">
+
+		/*리스트 와 사용자 정보 join */
+		SELECT
+			B.ID
+			,B.CATE
+			,B.SB_SCRIPTION
+			,B.DESCRIPTION
+			,B.REG_DATE
+			,B.UP_DATE
+			,U.ID AS U_ID /* 컬럼명 충돌 때문에 일관된 별칭 사용*/
+			,U.PW AS U_PW /* 컬럼명 충돌 때문에 일관된 별칭 사용*/
+			,U.NAME AS U_NAME /* 컬럼명 충돌 때문에 일관된 별칭 사용*/
+			,U.POINT AS U_POINT /* 컬럼명 충돌 때문에 일관된 별칭 사용*/
+		
+		FROM
+			BBS B LEFT OUTER JOIN USER U
+		ON 
+			B.USER_ID = U.ID
 	</select>

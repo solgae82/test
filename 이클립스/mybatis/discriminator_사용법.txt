@@ -1,0 +1,135 @@
+discriminator 사용법
+
+	동적으로 resultType 또는 resultMap을 바꾼다
+	상속관계의 vo에 적용
+	swich 문의 case 같은 분기로 동적으로 바꾼다
+	속성 javaType 은 꼭 필요한 속성이다(내부적으로 java에서 비교를 하므로 )
+	
+	예제를 보며 이해하자
+
+BASE 테이블 :
+
+	ID	COMMON_VALUE	TYPE	A_VALUE		B_VALUE
+	----------------------------------------------------------
+	1	common_value1	1	a 아이디 1	b id is 1
+	2	common_value2	2	a 아이디 2	b id is 2
+	3	common_value3	3	a 아이디 3	b id is 3
+
+BaseVO.java
+	public class BaseVO implements Serializable {
+
+		private int id;
+		private String commonValue;
+		..setter, getter..
+	}
+A.java
+	public class A extends BaseVO {
+		
+		private String aValue;
+		..setter, getter..
+	}
+B.java
+	public class B extends BaseVO {
+		
+		private String bValue;
+		..setter, getter..
+	}
+
+mapper.java
+	List<BaseVO> selectBaseList(Map<String, Object> map) throws Exception;
+
+
+mapper.xml
+	<select id="selectBaseList" parameterType="map" resultMap="base">
+		/* Base 테이블 가져오기 */
+		SELECT 
+			ID
+			,COMMON_VALUE
+			,TYPE
+			,A_VALUE
+			,B_VALUE
+		 FROM BASE
+	</select>
+	
+	<resultMap type="egovframework.test.e1.service.BaseVO" id="base">
+		<id column="ID" property="id" jdbcType="VARCHAR"/>
+		<result column="COMMON_VALUE" property="commonValue" jdbcType="VARCHAR"/>
+		<discriminator javaType="int" column="TYPE">
+			<case value="1" resultType="egovframework.test.e1.service.A">
+				<result column="A_VALUE" property="aValue" jdbcType="VARCHAR" />
+			</case>
+			<case value="2" resultType="egovframework.test.e1.service.B">
+				<result column="B_VALUE" property="bValue" jdbcType="VARCHAR" />
+			</case>
+		</discriminator>
+	</resultMap>
+
+
+Contrller.java
+	@RequestMapping(value = "/btnJson.do")
+	@ResponseBody
+	public  List<BaseVO> testJson2(@RequestParam Map<String, Object> map) throws Exception{
+		
+		List<BaseVO> cVo =mapper.selectBaseList(map);
+		//BaseVO 형이지만 실제 오브젝트의 형으로 json 객체를 만든다
+		return cVo;
+	}
+
+
+test.jsp
+	$.post('<c:url value="/btnJson.do" />',function(data){
+		console.log(data);
+				
+	});
+
+	출력 : 
+		[
+			{id: 1, commonValue: 'common_value1', aValue: 'a id is 1'} //A 타입
+			{id: 2, commonValue: 'common_value2', bValue: 'a id is 2'} //B 타입
+			{id: 3, commonValue: 'common_value3'} //Base 타입
+		]
+
+
+각각 다른 오브젝트로 리턴되었음을 알 수 있다.
+
+----------------2. 다른 설정 방식
+
+	위 예제에서 mapper.xml 에서 
+	내부 resultType 방식이 아닌, resultMap 설정 방식
+
+	extends 속성으로 꼭 부모 resultMap을 연결해줘야 제대로 설정된다.
+
+	
+	<resultMap type="egovframework.test.e1.service.BaseVO" id="base">
+		<id column="ID" property="id" jdbcType="VARCHAR"/>
+		<result column="COMMON_VALUE" property="commonValue" jdbcType="VARCHAR"/>
+		<discriminator javaType="int" column="TYPE">
+			<case value="1" resultMap="A" />
+			<case value="2" resultMap="B" />
+		</discriminator>
+	</resultMap>
+
+	<!-- A타입 extends 속성!! -->
+	<resultMap type="egovframework.test.e1.service.A" id="A" extends="base">
+		<result column="A_VALUE" property="aValue" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- B타입 extends 속성!! -->
+	<resultMap type="egovframework.test.e1.service.B" id="B" extends="base">
+		<result column="A_VALUE" property="bValue" jdbcType="VARCHAR" />
+	</resultMap>
+
+test.jsp
+	$.post('<c:url value="/btnJson.do" />',function(data){
+		console.log(data);
+				
+	});
+
+	출력 : 
+		[
+			{id: 1, commonValue: 'common_value1', aValue: 'a id is 1'} //A 타입
+			{id: 2, commonValue: 'common_value2', bValue: 'a id is 2'} //B 타입
+			{id: 3, commonValue: 'common_value3'} //Base 타입
+		]
+
+
+위 결과와 같다
