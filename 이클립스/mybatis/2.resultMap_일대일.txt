@@ -1,0 +1,147 @@
+게시판 테이블
+	CREATE TABLE `BBS` (
+	  `ID` varchar(20) NOT NULL,
+	  `USER_ID` varchar(20) DEFAULT '',
+	  `CATE` tinyint(2) DEFAULT 0,
+	  `SB_SCRIPTION` varchar(120) DEFAULT '',
+	  `DESCRIPTION` text DEFAULT NULL,
+	  `REG_DATE` varchar(15) DEFAULT '',
+	  `UP_DATE` varchar(15) DEFAULT '',
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+사용자 테이블
+	CREATE TABLE `tbl_user` (
+	  `UID` varchar(50) NOT NULL,
+	  `UPW` varchar(50) NOT NULL,
+	  `UNAME` varchar(100) NOT NULL,
+	  `UPOINT` int(11) NOT NULL DEFAULT 0,
+	  PRIMARY KEY (`UID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+TestVO.java
+
+	public class TestVO implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
+		private String id = "";
+		private String userId = "";
+		private String cate = "";
+		private String sbScription = "";
+		private String description = "";
+		private String regDate = "";
+		private String upDate = "";
+		
+		private UserVO userVO; // 1:1 매핑
+		
+
+		..getter, setter 생략
+
+	}
+
+UserVO.java
+
+	public class UserVO implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private String uid ;
+		private String upw;
+		private String uname;
+		private String upoint;
+
+		..getter, setter 생략
+	}
+
+mapper.java
+	
+	List<TestVO> selectTestList2(Map<String, Object> map) throws Exception;
+
+---------1. <assocation> (1:1 설정)
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+
+		<!-- 1:1 설정에는 association 태그를 사용.
+		column 속성은 설정 안해도 잘 작동한다
+		심지어 실제 없는 컬럼명으로 설정해도 작동한다.
+		(연결되는 참조키를 설정하는데, 없을 수도 있다) -->  
+
+		<association column="USER_ID" property="userVO" javaType="egovframework.test.e1.service.UserVO">
+			<id column="UID" jdbcType="VARCHAR" property="uid" />
+			<result column="UPW" jdbcType="VARCHAR" property="upw" />
+			<result column="UNAME" jdbcType="VARCHAR"  property="uname"/>
+			<result column="UPOINT" jdbcType="VARCHAR"  property="upoint"/>
+		</association>
+	</resultMap>
+
+	<!-- resultType 이 아닌 resultMap 속성에 설정한 resultMap 의 id값을 넣는다 -->
+	<select id="selectTestList2" parameterType="map" resultMap="testVO">
+
+		/*리스트 와 사용자 정보 join */
+		SELECT
+			B.ID
+			,B.CATE
+			,B.SB_SCRIPTION
+			,B.DESCRIPTION
+			,B.REG_DATE
+			,B.UP_DATE
+			,U.UID
+			,U.UPW
+			,U.UNAME
+			,U.UPOINT
+		
+		FROM
+			BBS B LEFT OUTER JOIN tbl_user U
+		ON 
+			B.USER_ID = U.uid
+	</select>
+
+---------2. <assocation> (1:1 설정)
+
+	: resultMap 은 resultMap 속성에 재사용 가능하다
+	
+	<resultMap type="egovframework.test.e1.service.UserVO" id="userVO">
+		<id column="UID" jdbcType="VARCHAR" property="uid" />
+		<result column="UPW" jdbcType="VARCHAR" property="upw" />
+		<result column="UNAME" jdbcType="VARCHAR"  property="uname"/>
+		<result column="UPOINT" jdbcType="VARCHAR"  property="upoint"/>
+	</resultMap>
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		<!-- 아래처럼 위에서 설정한 resultMap 을 재사용 할 수 있다 -->
+		<association property="userVO" resultMap="userVO" />
+		
+	</resultMap>
+	<!-- resultType 이 아닌 resultMap 속성에 설정한 resultMap 의 id값을 넣는다 -->
+	<select id="selectTestList2" parameterType="map" resultMap="testVO">
+
+		/*리스트 와 사용자 정보 join */
+		SELECT
+			B.ID
+			,B.CATE
+			,B.SB_SCRIPTION
+			,B.DESCRIPTION
+			,B.REG_DATE
+			,B.UP_DATE
+			,U.UID
+			,U.UPW
+			,U.UNAME
+			,U.UPOINT
+		
+		FROM
+			BBS B LEFT OUTER JOIN tbl_user U
+		ON 
+			B.USER_ID = U.uid
+	</select>

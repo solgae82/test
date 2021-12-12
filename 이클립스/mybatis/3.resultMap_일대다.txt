@@ -1,0 +1,352 @@
+
+게시판 테이블
+	CREATE TABLE `BBS` (
+	  `ID` varchar(20) NOT NULL,
+	  `USER_ID` varchar(20) DEFAULT '',
+	  `CATE` tinyint(2) DEFAULT 0,
+	  `SB_SCRIPTION` varchar(120) DEFAULT '',
+	  `DESCRIPTION` text DEFAULT NULL,
+	  `REG_DATE` varchar(15) DEFAULT '',
+	  `UP_DATE` varchar(15) DEFAULT '',
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+댓글 테이블
+	CREATE TABLE `COMMENT` (
+	  `ID` int(11) NOT NULL,
+	  `BBS_ID` varchar(20) NOT NULL,
+	  `CONTENT` varchar(100) DEFAULT NULL,
+	  `USER_ID` varchar(20) DEFAULT NULL,
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+TestVO.java
+	public class TestVO implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
+		
+		private String id = "";
+		private String userId = "";
+		private String cate = "";
+		private String sbScription = "";
+		private String description = "";
+		private String regDate = "";
+		private String upDate = "";
+		
+		private List<CommentVO> commentVOList; // 1:N 매핑
+		
+
+		..getter, setter 생략
+
+	}
+
+CommentVO.java 
+
+	public class CommentVO implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+		private String id;
+		private String bbsId;
+		private String content;
+
+		..getter, setter 생략
+	}
+
+mapper.java
+	
+	TestVO selectComentList(Map<String, Object> map) throws Exception;
+
+---------1. <collection> (1:N 설정)
+
+	collection 태그는 리스트 반환을 의미한다.
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO2">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		
+		<!-- ID 컬럼 중복으로 아래에서는 CID  별칭으로 바꿨다 
+		ofType 속성에 매핑할 타입 설정.
+		(TestVO 의 private List<CommentVO> commentVOList; // 1:N 매핑 )
+		-->
+		<collection property="commentVOList" ofType="egovframework.test.e1.service.CommentVO">
+			<id column="CID" jdbcType="VARCHAR" property="id" />
+			<result column="BBS_ID" jdbcType="VARCHAR" property="bbsId" />
+			<result column="CONTENT" jdbcType="VARCHAR"  property="content"/>
+		</collection>
+		
+	</resultMap>
+
+	<select id="selectComentList" parameterType="map" resultMap="testVO2">
+
+		/*리스트 한개(1) + 댓글(N) 가져오기*/
+		SELECT
+		B.ID
+		,B.CATE
+		,B.SB_SCRIPTION
+		,B.DESCRIPTION
+		,B.REG_DATE
+		,B.UP_DATE
+		,C.ID as CID /* 중복 피하기 별칭*/
+		,C.BBS_ID
+		,C.CONTENT
+		
+		FROM
+			BBS B INNER JOIN COMMENT C
+		ON 
+			B.ID = C.BBS_ID
+			
+		WHERE 
+			
+			B.ID = #{id}
+	</select>
+
+---------2. <collection> (1:N 설정)
+
+	collection 태그는 리스트 반환을 의미한다.
+	ofType 이 아닌 resultMap 설정도 가능하다 (하지만 사용하지 말자)
+	(resultMap 은 resultMap 속성에 재사용 가능하다)
+
+	<resultMap type="egovframework.test.e1.service.CommentVO" id="commentVO">
+		<!-- ID 컬럼 중복으로 컬러명을 CID  별칭으로 바꿨다 
+		TestVO 의 private List<CommentVO> commentVOList; // 1:N 매핑 
+		-->
+		<id column="CID" jdbcType="VARCHAR" property="id" />
+		<result column="BBS_ID" jdbcType="VARCHAR" property="bbsId" />
+		<result column="CONTENT" jdbcType="VARCHAR"  property="content"/>
+	</resultMap>
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO2">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		
+		<!--ofType 속성이 아닌 resultMap 속성 설정 가능-->
+		<collection property="commentVOList" resultMap="commentVO" />
+		
+	</resultMap>
+
+	<select id="selectComentList" parameterType="map" resultMap="testVO2">
+
+		/*리스트 한개(1) + 댓글(N) 가져오기*/
+		SELECT
+		B.ID
+		,B.CATE
+		,B.SB_SCRIPTION
+		,B.DESCRIPTION
+		,B.REG_DATE
+		,B.UP_DATE
+		,C.ID as CID /* 중복 피하기 별칭*/
+		,C.BBS_ID
+		,C.CONTENT
+		
+		FROM
+			BBS B INNER JOIN COMMENT C
+		ON 
+			B.ID = C.BBS_ID
+			
+		WHERE 
+			
+			B.ID = #{id}
+	</select>
+
+---------3. <collection> (1:N 설정)
+
+	collection 태그는 리스트 반환을 의미한다.
+	collection 의 columnPrefix 속성은 중복컬럼의 접두어를 미리 설정하는 기능
+		sql 문장 중 COMMETNT 필드의 모든 별칭은 아래처럼 붙인다
+			
+			C.BBS_ID AS C_BBS_ID --별칭
+			..
+
+		collection 태그
+			columnPrefix="C_" 
+		result 태그
+			<result column="USER_ID" />
+		(collection 안의 column 명을 원본 그대로 사용 가능하다)
+
+	resultMap 은 resultMap 속성에 재사용 가능하다
+	
+		
+	<resultMap type="egovframework.test.e1.service.CommentVO" id="commentVO">
+		<!-- 
+		TestVO 의 private List<CommentVO> commentVOList; // 1:N 매핑 
+		-->
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="BBS_ID" jdbcType="VARCHAR" property="bbsId" />
+		<result column="CONTENT" jdbcType="VARCHAR"  property="content"/>
+	</resultMap>
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO2">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		
+		<!-- columnPrefix 속성 추가 -->
+		<collection property="commentVOList" resultMap="commentVO" columnPrefix="C_" />
+		
+	</resultMap>
+
+	<select id="selectComentList" parameterType="map" resultMap="testVO2">
+
+		/*리스트 한개(1) + 댓글(N) 가져오기*/
+		SELECT
+		B.ID
+		,B.CATE
+		,B.SB_SCRIPTION
+		,B.DESCRIPTION
+		,B.REG_DATE
+		,B.UP_DATE
+		,C.ID as C_ID		/* 'C_'접두어 */
+		,C.BBS_ID as C_BBS_ID	/* 'C_'접두어 */
+		,C.CONTENT as C_CONTENT /* 'C_'접두어 */
+		
+		FROM
+			BBS B INNER JOIN COMMENT C
+		ON 
+			B.ID = C.BBS_ID
+			
+		WHERE 
+			
+			B.ID = #{id}
+	</select>
+
+---------4. <collection> (1:N 설정)
+
+	위 3개 예제의 문장의 쿼리는 성능 문제가 있는 쿼리다	
+	BBS 테이블은 1개만 가져오고 COMMENT는 여러개를 가져와서 매핑하려면,
+	두개의 쿼리가 필요하다
+
+	그럴때 쓰기 위해 collection 태그에는 
+		select="" , column=""
+	속성이 있다
+
+	이 속성을 쓸때는 ofType 만 가능하다.(resultMap 속성으로 설정하면 에러가 뜬다)
+		
+		!!에러코드 
+		'Cannot define both nestedQueryId and nestedResultMapId in property')
+
+	예제를 보면 이해가 간다.
+
+mapper.java
+	
+	TestVO selectBbsOne(Map<String, Object> map) throws Exception;
+
+
+	<resultMap type="egovframework.test.e1.service.TestVO"	id="testVO2">
+		<id column="ID" jdbcType="VARCHAR" property="id" />
+		<result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+		<result column="CATE" jdbcType="VARCHAR" property="cate" />
+		<result column="SB_SCRIPTION" jdbcType="VARCHAR" property="sbScription" />
+		<result column="DESCRIPTION" jdbcType="VARCHAR"	property="description" />
+		<result column="REG_DATE" jdbcType="VARCHAR" property="regDate" />
+		<result column="UP_DATE" jdbcType="VARCHAR" property="upDate" />
+		
+		<!--  
+		세부 매핑 설정 안 하고 기본으로 설정해도 된다.
+		<collection property="commentVOList" ofType="egovframework.test.e1.service.CommentVO" column="ID" select="selectComentList" />
+		-->
+		  
+		<!--
+		collection 태그의 속성
+			column="ID" :  resultMap column 중 참조키값의 값을 넣는다
+			select="selectComentList" : select 쿼리 태그의 id 값을 넣는다, 그 결과가 이곳과 매핑된다. 
+		
+		-->
+		<collection property="commentVOList" ofType="egovframework.test.e1.service.CommentVO" column="ID" select="selectComentList">
+			<id column="ID" jdbcType="VARCHAR" property="id" />
+			<result column="BBS_ID" jdbcType="VARCHAR" property="bbsId" />
+			<result column="CONTENT" jdbcType="VARCHAR"  property="content"/>
+		</collection>
+		 
+	</resultMap>
+		
+	<select id="selectBbsOne" parameterType="map" resultMap="testVO2">
+
+		/* BBS 한개 가져오기 */
+		SELECT
+			ID
+			,CATE
+			,SB_SCRIPTION
+			,DESCRIPTION
+			,REG_DATE
+			,UP_DATE
+				
+		FROM
+			BBS 
+		WHERE 
+			
+			ID = #{id}
+	</select>
+	
+방법 1 : 기본
+	parameterType 속성은 없어도 알아서 작동한다, string 등을 넣어도 된다
+	그러나 통일하자 ( parameterType="map" )
+	resultType , resultMap 도 작동한다, 그러나 통일하자 (resultType 으로)
+
+	<select 
+	id="selectComentList" parameterType="map" 
+	resultType="egovframework.test.e1.service.CommentVO">
+
+		/* 댓글 리스트가져오기 */
+		SELECT
+			ID
+			,BBS_ID
+			,CONTENT
+			,USE_ID
+		FROM
+			COMMENT 
+		WHERE 
+			
+			BBS_ID = #{id}
+	</select>
+
+방법 2 : 참조키 매핑이 둘 이상일때
+	
+	참조키가 둘 이상일때는 column 속성 값을 배열 형식으로 넘긴다
+	 column="{id=ID,userId=USER_ID}" <= {'파라미터명'=부모컬럼명}
+
+	parameterType 은 무조건 java.util.Map 형식이어야 한다.(아니면 ReflectionException 에러난다)
+	
+	그래서 무조건 고정으로 저렇게 외우는게 낫다
+
+	<collection 
+		property="commentVOList" 
+		ofType="egovframework.test.e1.service.CommentVO" 
+		column="{id=ID,userId=USER_ID}" 
+		select="selectComentList"	 
+	>
+	..
+	</collection>
+
+	<select 
+	id="selectComentList" parameterType="map" 
+	resultType="egovframework.test.e1.service.CommentVO">
+
+		/* 댓글 리스트가져오기 */
+		SELECT
+			ID
+			,BBS_ID
+			,CONTENT
+			,USER_ID
+		FROM
+			COMMENT 
+		WHERE 
+			
+			BBS_ID = #{id} AND USER_ID = #{userId}
+	</select>
