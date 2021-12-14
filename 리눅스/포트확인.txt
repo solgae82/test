@@ -1,0 +1,27 @@
+echo > /dev/tcp/192.168.0.201/22
+	: 아무메시지 없이 끝나면 포트가 열려있는 것
+
+telnet 192.168.0.201 3306
+
+curl -v telnet://192.168.0.201:3306
+
+nc [-l,-v] 192.168.0.201 1521
+
+nmap 192.168.0.201
+	:열려 있는 포트를 모두 보여준다
+	..
+	PORT     STATE SERVICE
+	22/tcp   open  ssh
+	1521/tcp open  oracle
+	3306/tcp open  mysql
+	3690/tcp open  svn
+	5500/tcp open  hotline
+	..
+
+
+	
+
+
+
+
+
