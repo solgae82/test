@@ -1,6 +1,11 @@
-ldconfig는 runtime때 여러 위치에 존재하는 shared object, 쉽게말해 동적 라이브러리를 연결해주는 dynamic linker를 설정하는 command이다. 
-여기서 runtime dynamic linker는 /lib/ld.so 이고, 어떤 shared object가 필요한지는 실행파일이 알려준다.
-ldd /bin/ls 을 실행해보면 ls가 동작하기위해 필요한 so들 목록이 나오고, 해당 so파일을 어느 경로에 있는걸 가져올껀지도 보여준다. 
+ldconfig는 runtime때 여러 위치에 존재하는 shared object, 
+쉽게말해 동적 라이브러리를 연결해주는 dynamic linker를 설정하는 command이다. 
+
+여기서 runtime dynamic linker는 /lib/ld.so 이고, 
+어떤 shared object가 필요한지는 실행파일이 알려준다.
+
+ldd /bin/ls 을 실행해보면 ls가 동작하기위해 필요한 so들 목록이 나오고, 
+해당 so파일을 어느 경로에 있는걸 가져올껀지도 보여준다. 
 
 /etc/ld.so.conf는 이 경로를 지정해주는 설정파일.
 
