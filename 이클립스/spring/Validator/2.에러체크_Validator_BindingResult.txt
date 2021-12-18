@@ -14,7 +14,7 @@
 1. 필드명 메시지 등록시
 	erros.rejectValue("required","uid") //필드명 메시지로 등록했을 때..
 
-		※ error.properties 적용 우선순위
+		※ error.properties 필드 메시지 적용 우선순위
 		
 		1순위 => required."커맨트객체이름"."필드명"
 		2순위 => required."필드명"
@@ -35,27 +35,30 @@
 		}
 	test.jsp
 		
-		<spring:hasBindErrors name="memberInfo" />
-		<form>
-			<form:errors path="memberInfo.uid" />
-		</form>
+		1. spring:hasBindErrors 설정 방식
+			<spring:hasBindErrors name="memberInfo" />
+			<form>
+				<form:errors path="memberInfo.uid" />
+			</form>
+			
 			출력 : <span id="uid.errors">아이디는 필수입니다</span> 
 
-		또는
-		<form:form commandName="memberInfo">
-			<form:errors path="uid" /> 
-		</form:form>
+		2. 커맨드 폼 방식일 때
+			<form:form commandName="memberInfo">
+				<form:errors path="uid" /> 
+			</form:form>
+				
 			출력 : <span id="uid.errors">아이디는 필수입니다</span> 
 
 2. 글로벌 메시지 등록시
 	
-	글로벌 메시지 2개 등록 
+	글로벌 메시지 1개 와 필드 메시지 1개 등록 
 
 	errors.reject("invalid"); //글로벌 메시지 등록 
-	errors.reject("invalid"); //글로벌 메시지 등록 
+	errors.rejectValue("invalid","uid"); //필드 메시지 등록 
 	
 		
-		※ error.properties 적용 우선순위
+		※ error.properties  글로벌 메시지 적용 우선순위
 		
 		1순위 => invalid."커맨트객체이름"
 		2순위 => invalid
@@ -64,6 +67,7 @@
 		
 		invalid.memberInfo= 옳지 않은 값! # <= 요게 순위가 높으므로 이 메시지 선택
 		invalid= 잘못된 값입니다
+		invalid.uid=아이디 옳지 않아요!
 
 	TestController.java
 		public String testLoginProc(
@@ -76,17 +80,36 @@
 	
 	test.jsp
 		
-		<spring:hasBindErrors name="memberInfo" />
-		<form>
-			<form:errors path="memberInfo.*" element="div" /> 
-		</form>
-			출력 :
-			<div id="null.errors">옳지 않은 값!<br/>옳지 않은 값!	</div>
+		1. spring:hasBindErrors 설정 방식
+		
+			<spring:hasBindErrors name="memberInfo" />
+			<form>
+				..여기에 <form:errors />태그 위치
+			</form>
 
-		또는
+			1. <form:errors path="memberInfo.*" element="div" /> 
 
-		<form:form commandName="memberInfo">
-			<form:errors path="*"  element="div" />
-		</form:form>
-			출력 :
-			<div id="null.errors">옳지 않은 값!<br/>옳지 않은 값!	</div>
+				출력 : 글로벌 에러 와 필드 에러등 모든 에러 출력
+				<div id="null.errors">옳지 않은 값!<br/>아이디 옳지 않아요!</div>
+
+			2. <form:errors path="memberInfo" element="div" /> 
+				
+				출력 : 글로벌 에러만 출력
+				<div id="null.errors">옳지 않은 값!</div>
+		
+		2. 커맨드 폼 방식일 때
+
+			<form:form commandName="memberInfo">
+				..여기에 <form:errors />태그 위치
+			</form:form>
+
+			1. <form:errors path="*"  element="div" />
+
+				출력 : path="*" 모든 글로벌 에러와 필드에러 출력
+				<div id="memberInfo.errors">옳지 않은 값!<br/>아이디 옳지 않아요!</div>
+				
+			2. <form:errors  element="div" />
+				
+				출력 : path 없으면 모든 글로벌 에러만 출력
+				<div id="memberInfo.errors">옳지 않은 값!</div>
+
