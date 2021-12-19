@@ -21,6 +21,11 @@ spring:message
 	<spring:message code="greeting" arguments="하늘,땅"/>
 	출력: hi 하늘 땅
 
-	<spring:message code="greeting2" arguments="하늘,땅" text="설정없음"/>
+	<spring:message code="greeting_none" arguments="하늘,땅" text="설정없음"/>
 	출력: 설정없음
 
+	<spring:message code="greeting" arguments="하늘,땅" var="insa" scope="request"/>
+
+		${insa} : 출력: hi 하늘 땅
+
+	
