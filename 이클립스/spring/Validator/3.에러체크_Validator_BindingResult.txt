@@ -1,0 +1,94 @@
+	문서 
+		1.에러체크_Validator_BindingResult.txt 
+		2.에러체크_Validator_BindingResult.txt 
+	
+	에 연결된 문서 입니다.
+
+	컨트롤 메소드에서 코드로 직접 validator를 생성 제어가 아닌, 
+	모델에 @Valid 를 이용한 유효성 검증 방식이다
+
+	@Valid를 사용하기 위해선, JSR 303 API를 설치해야 한다.
+
+---------
+
+pom.xml
+	<!-- JSR 303 API -->
+	<dependency>
+		<groupId>javax.validation</groupId>
+		<artifactId>validation-api</artifactId>
+		<version>1.0.0.GA</version>
+	</dependency>
+
+error.properties
+		
+		required.uid=아이디는 필수입니다. # <= 요게 순위가 높으므로 이 메시지 선택
+		required=필수입니다.
+
+MemberRegistValidator.java
+
+	public void validate(Object target, Errors errors) {
+		ValidationUtils.rejectIfEmpty(errors, "uid", "required","아이디 없시유");
+	}
+
+TestController.java
+	: UserVO 모델에 @Valid 어노테이션을 붙여 준다
+
+	@RequestMapping("/testLoginProc.do")
+	public String testLoginProc(@Valid @ModelAttribute UserVO user ,
+			BindingResult bindResult , Model model ,Locale locale) throws Exception{
+		
+		//아무런 유효성 검증 코드도 없다.. UserVO 앞에 @Valid 뿐..
+		
+		return "loginForm";
+	}
+
+	@InitBinder
+	protected void initBainder(WebDataBinder binder) {
+		binder.setValidator(new MemberRegistValidator()); //여기서 직접 validator를 등록해준다
+	}
+
+loginForm.jsp
+	<spring:hasBindErrors name="userVO" />
+	<form  id="f" name="f" action="<c:url value="/testLoginProc.do"/>" method="get">
+
+		<!-- 에러 출력 포인트-->
+		<input type="text" id="uid" name="uid" value=" /> <br />
+		<form:errors path="userVO.uid" /><br />
+		<!-- 에러 출력 포인트 -->		
+		....
+		
+		<button type="submit" >전송</button>
+	</form>
+
+
+	입력 없이 전송 누르면  아래처럼 출력될 것이다
+
+	출력 : 
+		<input type="text" id="uid" name="uid" value=" /> <br />
+		<span id="uid.errors">아이디는 필수입니다</span><br />
+
+---------기타
+
+	Validator를 컨트롤 설정이 아닌 글로벌로 설정해 사용가능(별로 사용 가치는 없지만..)
+
+		<annotation-driven validator="validator" />
+		<bean id="validator" class="com.solgae.test.MemberRegistValidator" />
+
+	이렇게 글로벌로 등록해 두면 @Valid 가 붙은 모델이 있을 경우 글로벌로 설정한 MemberRegistValidator
+	가 작동한다.
+	하지만 MemberRegistValidator.supports() 에서 검증 지원 객체가 아니면 (false)  
+	검증 하지 않는다(그래서 쓸모가 없다는 거)
+
+	글로벌 Validator가 아닌, 직접 설정하고 싶으면, 위의 예제처럼 컨트롤러에서 직접 
+		@InitBinder
+		protected void initBainder(WebDataBinder binder) {
+			binder.setValidator(new MemberRegistValidator());
+		}
+	설정 해주면 설정된 validator가 작동한다.
+
+	글로벌 validator + 추가 validator를 사용하고 싶으면 addValidator() 메소드를 사용하면 된다.
+		
+		binder.addValidator(new MemberRegistValidator());
+
+	글로벌 validator를 지정하지 않았다면 
+	JSR 303 애노테이션을 지원하는 Validator 클래스가 글로벌 validator로 등록된다.

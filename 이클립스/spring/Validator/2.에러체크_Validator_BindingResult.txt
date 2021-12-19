@@ -25,12 +25,19 @@
 		
 		required.uid=아이디는 필수입니다. # <= 요게 순위가 높으므로 이 메시지 선택
 		required=필수입니다.
+	MemberRegistValidator.java
 
+		public void validate(Object target, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "uid", "required","아이디 없시유");
+		}
+	
 	TestController.java
+		@RequestMapping("/testLoginProc.do")
 		public String testLoginProc(
 		@ModelAttribute("memberInfo") UserVO user ,
 			BindingResult bindResult , Model model ,Locale locale) throws Exception{
 			
+			new MemberRegistValidator().validate(user, bindResult); // 유효성 검증
 			..
 		}
 	test.jsp
@@ -69,11 +76,19 @@
 		invalid= 잘못된 값입니다
 		invalid.uid=아이디 옳지 않아요!
 
+	MemberRegistValidator.java
+
+		public void validate(Object target, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "uid", "required","아이디 없시유");
+		}
+
 	TestController.java
+		@RequestMapping("/testLoginProc.do")
 		public String testLoginProc(
 		@ModelAttribute("memberInfo") UserVO user ,
 			BindingResult bindResult , Model model ,Locale locale) throws Exception{
 			
+			new MemberRegistValidator().validate(user, bindResult); // 유효성 검증
 			..
 		}
 
