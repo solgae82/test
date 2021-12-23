@@ -61,7 +61,7 @@
 					"Content-Type" : "application/json",
 					"X-HTTP-Method-Override" : "POST"
 				},
-				dataType : 'text', /* 여기 주목 (text 또는 json) */
+				dataType : '', /* 여기 주목 (text 또는 json) */
 				data : JSON.stringify(params),
 				success : function(result){
 					console.log(result); 
@@ -90,17 +90,15 @@
 		
 		return "SUCCESS";
 	}
-
-	function send(){
+	
+	$.ajax({
+		..
+		url : '/rest/basic',
+		dataType : '', /* 여기 주목 (text 또는 json) */
+		..			
 		
-		$.ajax({
-			..
-			url : '/rest/basic',
-			dataType : 'text', /* 여기 주목 (text 또는 json) */
-			..			
-			
-		});
-	}
+	});
+
 	
 	요청 url : /rest/basic
 	---------------------(요청: dataType : 'text'일때) 응답출력
@@ -167,16 +165,14 @@
 		
 		return "{\"nm\":\"SUCCESS\"}";
 	}
+	
+	$.ajax({
+		..
+		url : '/rest/basicJSON',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..			
+	});
 
-	function send(){
-
-		$.ajax({
-			..
-			url : '/rest/basicJSON',
-			dataType : 'json',/* 여기 주목 (text 또는 json) */
-			..			
-		});
-	}
 	
 	요청 url : /rest/basicJSON
 
@@ -227,16 +223,13 @@
 		restVO.setMno(123);
 		return restVO;
 	}
-
-	function send(){
-		$.ajax({
-			..
-			url : '/rest/basicJSON',
-			dataType : 'json',/* 여기 주목 (text 또는 json) */
-			..	
-		});
-		
-	}
+	
+	$.ajax({
+		..
+		url : '/rest/vo',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..	
+	});	
 
 	요청 url : /rest/vo
 	---------------------(요청: dataType : 'text'일때) 응답 출력
@@ -292,16 +285,13 @@
 		
 		return list;
 	}
-	function send(){
-		
-		$.ajax({
-			..
-			url : '/rest/listvo',
-			dataType : 'text',/* 여기 주목 (text 또는 json) */
-			..			
-		});
-	}
 
+	$.ajax({
+		..
+		url : '/rest/listvo',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..			
+	});
 	
 	요청 url : /rest/listvo
 	--------------------- (요청: dataType : 'text'일때) 응답 출력
@@ -370,15 +360,12 @@
 		return rMap;
 	}
 
-	function send(){
-
-		$.ajax({
-			..
-			url : '/rest/map',
-			dataType : 'text',/* 여기 주목 (text 또는 json) */
-			..
-		});
-	}
+	$.ajax({
+		..
+		url : '/rest/map',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..
+	});	
 
 	요청 url : /rest/map
 	--------------------- (요청: dataType : 'text'일때) 응답 출력
@@ -439,16 +426,13 @@
 		System.out.println(map); //{nm=솔개, age=47}
 		return new ResponseEntity<>("success",HttpStatus.OK);
 	}
-
-	function send(){
 		
-		$.ajax({
-			..
-			url : '/rest/responseEntityString',
-			dataType : 'json',/* 여기 주목 (text 또는 json) */
-			..
-		});
-	}
+	$.ajax({
+		..
+		url : '/rest/responseEntityString',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..
+	});	
 	
 	요청 url : /rest/responseEntityString
 	--------------------- (요청: dataType : 'text'일때)
@@ -518,16 +502,14 @@
 		return new ResponseEntity<>("{\"msg\":\"success\"}",HttpStatus.OK);
 	}
 
-	function send(){
-
-		$.ajax({
-			..
-			url : '/rest/responseEntityJSON',
-			dataType : 'text',/* 여기 주목 (text 또는 json) */
-			..
-			
-		});
-	}
+	$.ajax({
+		..
+		url : '/rest/responseEntityJSON',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..
+		
+	});
+	
 	
 	요청 url : /rest/responseEntityJSON
 	--------------------- (요청: dataType : 'text'일때) 응답 출력
@@ -582,15 +564,13 @@
 		
 		return new ResponseEntity<List<RestVO>>(list, HttpStatus.OK);
 	}
-
-	function send(){
-		$.ajax({
-			..
-			url : '/rest/responseEntityListVO',
-			dataType : 'text',/* 여기 주목 (text 또는 json) */
-			..			
-		});
-	}
+	
+	$.ajax({
+		..
+		url : '/rest/responseEntityListVO',
+		dataType : '',/* 여기 주목 (text 또는 json) */
+		..			
+	});	
 
 	요청 url : /rest/responseEntityListVO
 	--------------------- (요청: dataType : 'text'일때) 응답 출력
