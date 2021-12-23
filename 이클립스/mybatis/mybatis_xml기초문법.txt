@@ -43,17 +43,42 @@
 	</insert>
 
 	자동키 생성해서 넣기
-	<insert id="create">
+	<insert id="create" parameterType="boardVO">
 		<selectKey keyProperty="id" resultType="int" order="BEFORE">
-			SELECT SAMPLE_SEQ.NEXTVAL AS ID FROUM DUAL
+			SELECT SAMPLE_SEQ.NEXTVAL AS ID FROUM DUAL <!--오라클-->
+			<!-- 또는 -->
+			SELECT max(id) + 1 FROM tbl_board 
 		</selectKey>
+
+		<!-- insert 실행 전(BEFORE) boardVO.id = id 로 들어가게 된다 -->
+
 		insert into tbl_board (id, title, content, writer) 
 		values(#{id},#{title},#{content},#{writer})
 	</insert>
 	
-4. select
-	parameterType 속성은 config.xml에 설정 되어 있다면 생략할 수 있다
+	삽입한 레코드 id값 반환 셋팅
+	<insert id="create" parameterType="boardVO">
+		<selectKey keyProperty="id" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 
+		<!-- insert 실행 후 (AFTER) boardVO.id = id 로 들어가게 된다 -->
+
+		insert into tbl_board (id, title, content, writer) 
+		values(#{id},#{title},#{content},#{writer})
+	</insert>
+	
+	ServiceImpl.java 코드
+		public Integer create(BoardVO boardVO) throws Exception {
+			
+			Integer cnt = mapper.create(boardVO);
+			
+			return boardVO.getId(); //담겨진 삽입 ID 반환
+					
+		}
+
+4. select
+	
 	<select id="read" parameterType="boardVO" resultType="boardVO">
 		select bno, title, content, writer, regdate, viewcnt 
 		from tbl_board 
@@ -82,11 +107,11 @@
 	</delete>
 
 
-7. include
+7. sql, include
 	<sql id="search">
 		ane title= #{title}
 	</>
-	<select id="countPaging"  resultType="int">
+	<select id="countPaging" parameterType="boardVO"  resultType="int">
 		<![CDATA[
 			select count(bno) 
 			from tbl_board
