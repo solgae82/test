@@ -1,0 +1,37 @@
+문서
+	1.테이블스페이스생성.txt
+	2.계정생성.txt
+	3.계정권한부여.txt
+
+와 연결된 문서입니다.
+
+---------
+
+	sys, system 계정으로 접속 해야 한다.
+	계정은 모두 대문자로 조회 해야 한다
+
+# 접속계정 확인
+	show user;  #현재 연결계정보기
+
+# 계정관련 테이블들
+	select * from ALL_USERS; //모든계정에 대한 정보 확인
+	select * from DBA_USERS;  //모든 계정에 대한 정보 확인
+
+	select * from ALL_USERS where username='DONG2' 
+	select * from DBA_USERS where username='DONG2'
+	select * from DBA_OBJECTS where owner='DONG2'
+
+# 사용자 시스템권한 조회
+
+	select grantee , privilege, admin_option from dba_sys_privs where grantee='DONG2'; //권한 확인.
+	select username, privilege, admin_option from user_sys_privs where grantee='DONG2'; 
+
+# 사용자 객체권한 조회
+
+	select * from dba_tab_privs where owner='DONG2';
+	select * from user_tab_privs where owner='DONG2';
+
+# 사용자(user) 또는 role에 부여된 role 조회
+
+	select * from dba_role_privs;
+	select * from user_role_privs;

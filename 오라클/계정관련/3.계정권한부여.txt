@@ -1,0 +1,46 @@
+문서
+	1.테이블스페이스생성.txt
+	2.계정생성.txt
+
+와 연결된 문서입니다.
+
+---------
+
+사용자권한부여
+	- [시스템권한] 과 [(사용자)객체권한] 이 있다.
+
+시스템권한
+	권한설정
+		형식)
+		grant [시스템권한]  to [사용자 / role / publc] [with admin option];
+	
+		예제)
+		grant connect, resource, create session,  create table to DONG2;
+	
+	권한 취소
+		형식)
+		revoke [시스템권한] from [사용자 / role / publc] //권한취소
+	
+		예제)
+		revoke connect, resource, create session,  create table from DONG2;
+
+(사용자) 객체권한 
+
+	-  특정 사용자가 생성한 객체에 대한 권한을 뜻한다.
+	
+	객체권한설정
+		형식)
+		Grant [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [with grant option];
+		
+		예제)
+		grant select on scott.TEMP to DONG2; 
+
+		/* DONG2사용자에게 scott계정의 TEMP 테이블 조회권한을 준다. */
+
+	객체권한 취소
+		
+		형식)
+		revoke [객체권한 / ALL_PRIVILEGE] ON [스키마.객체이름] TO [사용자이름/role/public] [cascade constrains/force];
+		
+		예제)
+		revoke select on scott.TEMP from DONG2 cascade;

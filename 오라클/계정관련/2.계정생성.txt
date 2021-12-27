@@ -1,0 +1,39 @@
+문서
+	1.테이블스페이스생성.txt
+
+와 연결된 문서입니다.
+
+---------
+- 사용자 계정은 모두 대문자로 생성된다고 생각하라(소문자로 생성해도 대문자로 들어간다)
+- 조회시에는 대문자로 해야한다
+
+계정생성
+	형식)
+		[필수] CREATE USER 사용자 이름     
+		[필수] IDENTIFIED BY "패스워드"     
+		[선택] DEFAULT TABLESPACE 테이블 스페이스 이름     
+		[선택] TEMPORARY TABLESPACE 임시 테이블 스페이스 이름
+		[선택]	- ACCOUNT LOCK -- 저장 후 그 계정을 LOCK(잠금)  상태가 되도록 함.     
+			- ACCOUNT UNLOCK -- 저장 후 계정을 UNLOCK(해제) 상태가 되도록 함.
+
+
+	실전)
+		alter session set "_ORACLE_SCRIPT"=true; /* 오라클 12c 에서는 이거 붙이고 해야함 */
+
+		SQL> CREATE USER DONG2 IDENTIFIED BY "1234"
+		  2  DEFAULT TABLESPACE test
+		  3  TEMPORARY TABLESPACE testtemp
+		  4  ACCOUNT UNLOCK;
+계정 수정
+	alter user DONG2 identified by "123456"; //패스워드 변경
+계정 삭제
+	drop user DONG2 cascade; //사용자 + 사용자객체 삭제
+
+---------etc
+
+	아래처럼 생성하면
+
+		CREATE USER DONG2 IDENTIFIED BY "1234" 
+
+	디폴트 테이블스페이스(USERS) , 디폴트 임시테이블스페이스(TEMP) 
+	가 설정된다.

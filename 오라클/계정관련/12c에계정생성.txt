@@ -1,0 +1,21 @@
+---------------12c 에서 계정 생성
+	users 테이블스페이스와 temp 테이블스페이스를 디폴트로 설정한다고 하고 설정
+
+	
+	시작)
+	alter session set "_ORACLE_SCRIPT"=true; //12c에서 계정관련은 무조건 넣어서 실행해야 함.
+
+	계정(스키마)생성
+		create user DONG2 identified by "1234";
+
+	락풀기
+		alter user DONG2 account unlock;
+
+	세션생성
+		grant create session to DONG2;
+
+	권한주기
+		grant connect,dba, resource to DONG2;
+
+	insert 권한주기
+		alter user DONG2 default tablespace users quota unlimited on users;
