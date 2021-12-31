@@ -174,8 +174,8 @@ span.error {font-size: 0.8em; color: #ff7744;}
 			<select id="cate" name="cate">
 				<option value="none">선택해주세요</option>
 				<c:if test="${!empty cateList}">
-					<c:forEach items="${cateList}" var="list" varStatus="status">
-				<option value="${list.id}"<c:if test="${test.cate != null && list.id.equals(test.cate) }"> selected</c:if>>${list.name}</option>	
+					<c:forEach items="${cateList}" var="cate" varStatus="status">
+				<option value="${cate.id}"<c:if test="${test.cate != null && cate.id.equals(test.cate) }"> selected</c:if>>${cate.name}</option>	
 					</c:forEach>
 				
 				</c:if>
@@ -190,14 +190,13 @@ span.error {font-size: 0.8em; color: #ff7744;}
 		<br />
 		<c:if test="${!empty param.id }">
 			<fmt:parseDate var="regDateString" value="${test.regDate}" pattern="yyyyMMddHHmmss" />
-			
 		등록일: <fmt:formatDate  value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss" /> 
-		<input type="hidden" name="regDate" value="<c:out value="${test.regDate }" escapeXml="false" />" />
+		
 		<br />
 			<c:if test="${!empty test.upDate }">
 				<fmt:parseDate var="upDateString" value="${test.upDate}" pattern="yyyyMMddHHmmss"/>
 		최근수정일: <fmt:formatDate  value="${upDateString}" pattern="yyyy-MM-dd HH:mm:ss"/>
-		<input type="hidden" name="upDate" value="<c:out value="${test.upDate }" escapeXml="false" />" />
+		
 		<br />
 			</c:if> 
 		</c:if>
@@ -223,6 +222,9 @@ span.error {font-size: 0.8em; color: #ff7744;}
 		<input type="hidden" name="searchText" value="${param.searchText}"/>
 		<input type="hidden" name="beginDate" value="${param.beginDate}" />
 		<input type="hidden" name="endDate" value="${param.endDate}"  />
+		<!-- 재입력요청시 필요 파라미터 -->
+		<input type="hidden" name="regDate" value="${test.regDate}"  />
+		<input type="hidden" name="upDate" value="${test.upDate}"  />
 		</c:if>
 	</form>
 </div>

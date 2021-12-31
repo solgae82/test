@@ -1,0 +1,14 @@
+/**
+ * 현재 페이지 첫 레코드 번호 반환
+ * @param pageInfo
+ * @return
+ * @throws Exception
+ */
+public int getCurrentPageFirstIdx(PaginationInfo paginationInfo) throws Exception {
+	
+	int total = paginationInfo.getTotalRecordCount();
+	int currPage = paginationInfo.getCurrentPageNo();
+	int pageSize = paginationInfo.getPageSize();
+	
+	return (total + 1) - ((currPage - 1) * pageSize + 1);
+}
