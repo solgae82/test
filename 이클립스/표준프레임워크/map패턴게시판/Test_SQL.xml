@@ -97,7 +97,7 @@
 		<where>
 			<if test="cates != null">
 				CATE IN
-				<foreach collection="cates" item="num" open="(" close=")" separator=",">#{num}</foreach>
+				<foreach collection="checkCatesList" item="cateNum" open="(" close=")" separator=",">#{cateNum}</foreach>
 			</if>
 			<if
 				test="(searchCate !=null and !searchCate.equals('')) and (searchText != null and !searchText.equals(''))">

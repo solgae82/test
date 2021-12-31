@@ -123,7 +123,7 @@ public class TestController {
 		
 				
 		//파라미터 체크박스 카테고리값 리스트로 만들기  ,  일반/공지사항/갤러리=>[0,1,2] , sql에 쓸 리스트 
-		paramMap.put("cates", testService.convertStringToList((String)paramMap.get("cates"), "/")); 		
+		paramMap.put("checkCatesList", testService.convertStringToList((String)paramMap.get("cates"), "/")); 		
 
 		//체크박스 카테고리 리스트
 		model.addAttribute("cateList", testService.selectCateList());/*일반/공지사항/갤러리*/
