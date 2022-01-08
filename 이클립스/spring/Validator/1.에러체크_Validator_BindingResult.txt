@@ -39,7 +39,7 @@ public class MemberRegistValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		// TODO Auto-generated method stub
+		
 		return UserVO.class.isAssignableFrom(clazz);
 	}
 
