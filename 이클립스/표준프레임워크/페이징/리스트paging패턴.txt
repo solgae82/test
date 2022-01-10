@@ -29,6 +29,11 @@ SampleVO.java
 	}
 
 Controller.java
+	
+	@Resource(name = "propertiesService")
+	protected EgovPropertyService propertiesService;
+	..
+
 	@RequestMapping(value = "/egovSampleList.do")
 	public String selectSampleList(@ModelAttribute("searchVO") SampleDefaultVO searchVO, ModelMap model) throws Exception {
 
