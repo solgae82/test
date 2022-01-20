@@ -5,23 +5,33 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     </head>
 <body>
-<!-- 이벤트 사용 -->
+<!-- 이벤트 사용 
+    v-on:이벤트명 == @:이벤트명
+    v-on:이벤트명.수식어 
+        .stop
+        .prevent
+        .capture
+        .self
+        .once
+        .passive
+-->
     <div id="app">
+
        {{year}}<br />
        <button type="button" v-on:click="plus">증가</button>
-       <button type="button" v-on:click="minus">감소</button>
+       <button type="button" @click="minus">감소</button>
        
-       <!-- vue 에러 -->
-       <!-- button type="button" v-on:click="minus(event)">감소</button -->
-       <!-- vue 에러-->
-
-       
-
+        <br />
+        <hr />
+        <!-- -->
        <form v-on:submit.prevent="send()">
            <input type="text" />
            <button  type="submit">전송</button>
-       </form><br />
+       </form>
+       
+       <br />
        <hr />
+       <!-- 이벤트 테스트-->
        <input type="text" onkeyup="minus(event)" />키이벤트(javascrpt event)<br />
        <input type="text" id="m" />키이벤트(jquery event)<br />
        <input type="text" v-on:keyup="keyTest">키이벤트(vue)<br />
@@ -40,6 +50,7 @@
             });
         });
 
+   
         var app = new Vue({
             el: '#app',
             data: {
@@ -49,6 +60,19 @@
 
                 keyTest(event){
                     console.log(event);//자바스크립트 이벤트 객체
+                }
+                ,
+
+                plus(){
+                    this.year++;
+                },
+
+                minus(){
+                    this.year--;
+                },
+
+                send(){
+                    console.log('전송완료');
                 }
                 
             }

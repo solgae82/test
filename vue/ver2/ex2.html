@@ -8,7 +8,7 @@
     <div id="app">
         이름: {{person.name}}<br />
         나이: {{person.age}}<br />
-        소개 : {{ nextYear() }}<br />
+        소개 : {{ getAge() }}<br />
         인사 : {{ greeting('하이')}}<br />
         other : {{ otherMethod() }}<br />
     </div>
@@ -23,7 +23,7 @@
                 
             },
             methods:{
-                nextYear: function(){
+                getAge: function(){
                     return this.person.name + '의 나이는 ' +   this.person.age +'살 입니다.';
                 },
                 greeting: function(msg){

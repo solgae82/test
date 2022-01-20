@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+<body>
+<!-- watch : 
+   변수 값을 지켜보고 있다가 , 
+   변경 이벤트가 일어나면 실행되는 함수 같은 것..
+   wath: 영역에 '변수명'.() 형식으로 작성하고 인수로 변수의 변경값을 넣어준다
+   (새로운 값, 예전 값) 
+-->
+    <div id="app">
+      
+       {{messages}} <br />
+       <button @click="change">변경</button><br />
+       {{result}}
+
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                messages : '테스트',
+                result : '바뀌기 전'
+            },
+            methods:{
+                
+                change(){
+                    this.messages = '하하';
+                }        
+                
+            },
+
+            computed:{
+
+                
+            },
+
+            watch:{
+                messages(newVal , oldVal){
+                    console.log(newVal , oldVal);
+                    this.result = '바뀜';
+                }
+            }
+        })
+    </script>
+</body>
+</html>
