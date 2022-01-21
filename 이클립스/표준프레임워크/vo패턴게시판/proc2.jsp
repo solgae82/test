@@ -10,34 +10,56 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>BBS 등록/수정완료</title>
+<title>BBS 
+	<c:choose>
+		<c:when test="${testVO.procMode eq 'write'}">등록 완료</c:when>
+		<c:when test="${testVO.procMode eq 'update'}">수정 완료</c:when>
+		<c:when test="${testVO.procMode eq 'delete'}">삭제 완료</c:when>
+	</c:choose>
+
+</title>
 
 <script  src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  
 <script>
 	
+	var procMode = '${testVO.procMode}';
 	
 	//등록 후 이동
 	function moveNewList(){
 		location.href='<c:url value="/testList2.do" />';
 	}
-	//수정 , 삭제 후 이동
-	function moveSearchList(){
+	//수정  후 이동
+	function moveView(){
+		var f = $('#searchForm');
+		$(f).attr('action','<c:url value="/testView2.do" />');	
+		f.submit();
+	}
+	
+	//삭제 후 이동
+	function moveList(){
 		var f = $('#searchForm');
 		$(f).attr('action','<c:url value="/testList2.do" />');	
-		
 		f.submit();
 	}
 	
 		
 	$(function(){
-		var procId = document.searchForm.id;
-		
-		if(procId==''){ //등록 이동
-			moveNewList();
-		}else{ //수정,삭제 이동
-			moveSearchList();
+				
+		switch(procMode){
+			
+			case 'write':
+				moveNewList();	break;
+			case 'update':
+				moveView();	break;
+			case 'delete':
+				moveList();	break;
+			default:
+				moveList();	break;
+				
 		}
+		
+		
 	});
 </script>
 </head>

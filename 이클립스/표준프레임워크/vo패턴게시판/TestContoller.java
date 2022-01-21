@@ -123,8 +123,9 @@ public class TestContoller {
 		}
 		
 		testVO.setUserId(USER_ID); // 강제 userID 셋팅	
-		
+		testVO.setProcMode("write");// 처리 모드
 		testService.insertBbs(testVO);	
+		
 		
 		session.setComplete();		
 		
@@ -163,7 +164,8 @@ public class TestContoller {
 		}
 		
 		testVO.setUserId(USER_ID); // 강제 userID 셋팅
-				
+		testVO.setProcMode("update");// 처리 모드
+		
 		//testService.updateBbs(testVO); //부분 필드 업데이트
 		testService.updateBbs2(testVO);//세션을 이용하면 모든 필드 업데이트 가능함.
 				
@@ -243,6 +245,9 @@ public class TestContoller {
 			SessionStatus session) throws Exception{
 		
 		testService.deleteBbs(testVO);
+		
+		testVO.setProcMode("delete");// 처리 모드
+		
 		session.setComplete();
 		
 		return "/test2/proc2";

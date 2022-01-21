@@ -89,10 +89,22 @@
 		<a href="<c:url value="/testList2.do" />">BBS</a>
 		<h1>BBS</h1>
 		
-			제목:${testVO.sbScription}<br />
-			카테고리: ${testVO.cate}<br />			
-			내용 :<br />
-			<p>${testVO.description}</p>
+			제목:<c:out  value="${testVO.sbScription}" /><br />
+			
+			카테고리: 
+			<c:forEach items="${cateList}" var="cate" varStatus="status">
+				<c:if test="${cate.id eq testVO.cate }"><c:out value="${cate.name}" /></c:if>
+			</c:forEach>
+			<br />	
+					
+			내용 :
+			<p>
+				<% pageContext.setAttribute("newLine", "\n");%>
+				<c:set var="content" value="${fn:replace(testVO.description,'<','&lt;') }" />
+				<c:set var="content" value="${fn:replace(content,'>','&gt;') }" />
+				<c:set var="content" value="${fn:replace(content,newLine,'<br />') }" />
+				<c:out value="${content}" escapeXml="false" />						
+			</p>
 	
 			<div>
 				<button type="button" id="moveListBtn">목록</button>

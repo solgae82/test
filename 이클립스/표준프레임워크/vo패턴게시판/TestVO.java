@@ -48,6 +48,9 @@ public class TestVO extends Test implements Serializable{
 	/* 등록일 기간 종료일 */
 	private String endDt = "";
 	
+	/* view , update, list, write */
+	private String procMode = "";
+	
 	public String getSearchCondition() {
 		return searchCondition;
 	}
@@ -156,6 +159,14 @@ public class TestVO extends Test implements Serializable{
 		this.endDt = endDt;
 	}
 
+	public String getProcMode() {
+		return procMode;
+	}
 
+	public void setProcMode(String procMode) {
+		this.procMode = procMode;
+	}
+
+	
 	
 }
