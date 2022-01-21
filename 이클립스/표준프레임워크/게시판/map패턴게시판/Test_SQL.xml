@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.test.e1.service.impl.TestMapper">
+
+
+	<insert id="insert" parameterType="map">
+		/* 글 저장*/
+		INSERT INTO BBS
+		(
+		<trim prefixOverrides=",">
+			<if test="id != null and !id.equals('')">,ID</if>
+			<if test="userId != null and !userId.equals('')">,USER_ID</if>
+			<if test="cate != null and !cate.equals('')">,CATE</if>
+			<if test="sbScription != null and !sbScription.equals('')">,SB_SCRIPTION</if>
+			<if test="description != null and !description.equals('')">,DESCRIPTION</if>
+			,REG_DATE
+			<if test="upDate != null and !upDate.equals('')">,UP_DATE</if>
+		</trim>
+		)VALUES(
+		<trim prefixOverrides=",">
+			<if test="id != null and !id.equals('')">,#{id}</if>
+			<if test="userId != null and !userId.equals('')">,#{userId}</if>
+			<if test="cate != null and !cate.equals('')">,#{cate}</if>
+			<if test="sbScription != null and !sbScription.equals('')">,#{sbScription}</if>
+			<if test="description != null and !description.equals('')">,#{description}</if>
+			, DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+			<if test="upDate != null and !upDate.equals('')">,#{upDate}</if>
+		</trim>
+		)
+	</insert>
+
+
+	<update id="update" parameterType="map">
+		/* 글 수정*/
+		UPDATE BBS SET
+
+		<trim prefixOverrides=",">
+
+			<if test="userId != null and !userId.equals('')">,USER_ID=#{userId}</if>
+			<if test="cate != null and !cate.equals('')">,CATE=#{cate}</if>
+			<if test="sbScription != null and !sbScription.equals('')">,SB_SCRIPTION=#{sbScription}</if>
+			<if test="description != null and !description.equals('')">,DESCRIPTION=#{description}</if>
+			,UP_DATE=DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		</trim>
+
+		WHERE
+			ID=#{id}
+	</update>
+
+	<select id="selectTest" parameterType="map" resultType="egovMap">
+		/*글 한개	가져오기*/
+		SELECT
+			ID
+			,(select uname from tbl_user where uid = USER_ID ) AS USER_NAME
+			,CATE
+			,SB_SCRIPTION
+			,DESCRIPTION
+			,REG_DATE
+			,UP_DATE
+
+		FROM
+			BBS
+		WHERE
+			ID=#{id}
+	</select>
+
+	<select id="selectTestList" parameterType="map"	resultType="egovMap">
+
+		/*리스트 가져오기 */
+		SELECT
+			ID
+			,(select uname from tbl_user where uid = USER_ID ) AS uname
+			,CATE
+			,SB_SCRIPTION
+			,DESCRIPTION
+			,REG_DATE
+			,UP_DATE
+
+		FROM
+			BBS
+		<include refid="listWhere" />
+		ORDER BY ID DESC
+		LIMIT #{firstIndex} , #{pageUnit}
+
+	</select>
+	<select id="selectTestCount" parameterType="map"	resultType="int">
+		/*리스트 전체 갯수 가져오기 */
+		SELECT
+			COUNT(*) AS CNT
+		FROM
+			BBS
+		<include refid="listWhere" />
+	</select>
+	
+	<!-- 리스트 조건 절 -->
+	<sql id="listWhere" >
+		<where>
+			<if test="cates != null">
+				CATE IN
+				<foreach collection="checkCatesList" item="cateNum" open="(" close=")" separator=",">#{cateNum}</foreach>
+			</if>
+			<if
+				test="(searchCate !=null and !searchCate.equals('')) and (searchText != null and !searchText.equals(''))">
+				<choose>
+					<when test="searchCate == 'sbScription'"> AND SB_SCRIPTION LIKE CONCAT('%',#{searchText},'%')</when>
+					<when test="searchCate == 'description'"> AND DESCRIPTION LIKE CONCAT('%',#{searchText},'%')
+					</when>
+				</choose>
+			</if>
+
+			<if test="beginDate !=null and endDate !=null">
+
+				<choose>
+					<when test="!beginDate.equals('') and endDate.equals('')">
+						<![CDATA[
+						AND REG_DATE >= CONCAT(REPLACE(#{beginDate},'-',''),'000000')
+						]]>
+					</when>
+					<when test="beginDate.equals('') and !endDate.equals('')">
+						<![CDATA[
+						AND REG_DATE <= CONCAT(REPLACE(#{endDate},'-',''),'235959')
+						]]>
+					</when>
+					<when test="!beginDate.equals('') and !endDate.equals('')">
+						<![CDATA[
+						AND ( REG_DATE >= CONCAT(REPLACE(#{beginDate},'-',''),'000000') AND REG_DATE <= CONCAT(REPLACE(#{endDate},'-',''),'235959') )
+						]]>
+					</when>
+
+				</choose>
+
+
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectCateList" parameterType="map" resultType="egovMap">
+		/*카테고리 가져오기*/
+		SELECT
+		ID
+		,CODE_NAME
+		,NAME
+
+		FROM
+			CODE
+		WHERE
+			CODE_NAME = #{codeName}
+		ORDER BY ID ASC
+	</select>
+
+	<delete id="delete" parameterType="map">
+		/* delete 쿼리 */
+		DELETE FROM BBS
+		WHERE ID=#{id}
+	</delete>
+
+
+	<delete id="deleteMulti" parameterType="list">
+		/* Multi delete 쿼리 */
+		DELETE FROM BBS WHERE ID IN
+
+		<foreach collection="list" item="id" index="idx" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>
