@@ -1,0 +1,46 @@
+# 공통
+	document.forms['form1'];
+	document.form1.nm.disabled = true/false; //비활성화
+
+# 텍스트,pass,히든
+	document.form1.nm.value  //nm 값 반환
+	document.form1.nm.value.length //글자수
+
+# 체크박스, 라디오
+	document.form1.ch[0].checked = true/false;
+	document.form1.ch.length # 체크박스 전체갯수 반환
+
+# 선택박스
+	if(document.form1.sel.selectedIndex ==0) alert('선택해주세요');
+	f.sel.options[f.sel.selectedIndex].value // 선택된 value값 반환
+	f.sel.options[f.sel.selectedIndex].text // 선택된 텍스트값 반환
+	f.sel[0] == f.sel.options[0] // 같은 표현
+	f.sel.length //선택박스 갯수 반환
+
+-----------------------------jquery
+# 공통
+	var f = $('#form1');
+	$('input[name=nm]',f).prop('disabled',true); // 비활성화
+
+# 텍스트,pass,히든
+	$('input[name=nm]',f).val();	// value값 반환
+	$('input[name=nm]',f).val('동이'); //value="동이" 셋
+# 체크박스, 라디오
+	$('input:radio[name=이름]'); //radio 선택자
+	$('input:checkbox[name=이름]'); //checkbox 선택자
+	$('input[name=ids]').eq(1).val(); //2번째 value값 반환
+	$('input[name=ids]').eq(1).val('동이'); //2번째 value="동이" 셋
+	$('input[name=ids]').eq(1).is(':checked'); // true/false
+	$('input[name=ids]').prop('checked' , true); //모두 체크[true]/해제[false]
+	$('input[name=ids]').length //전체갯수
+	$('input[name=ids]:checked').length; //체크갯수
+	$('input[name=ids]',f).prop('disabled',true); //모든 체크 비활성화
+	$('input[name=ids]',f).eq(1).prop('disabled',true); //2번째 체크비활성화
+
+# 선택박스
+	$('[name=sel] option:selected',f).val(); //선택된 option 의 value값 반환
+	$('[name=sel] option:selected',f).val('ss1'); //선택된 option 의 value="ss1" 값 셋
+	$('[name=sel] option:selected',f).text(); //선택된 option의 text 값 반환
+	$('[name=sel] option:selected',f).text('선택3');//선택된 option의 <option>선택3</option> 값 셋
+	$('[name=sel]',f).val('s3').prop('selected',true); //값이 's3' 인 option 선택
+	$('[name=sel] option',f).eq(0).prop('selected',true); // 첫번째 option 선택
