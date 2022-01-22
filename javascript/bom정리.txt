@@ -38,6 +38,7 @@
 	$('input[name=ids]',f).eq(1).prop('disabled',true); //2번째 체크비활성화
 
 # 선택박스
+	var index = $('[name=sel] option:selected',f).index(); //선택된 option index 반환(0부터시작)
 	$('[name=sel] option:selected',f).val(); //선택된 option 의 value값 반환
 	$('[name=sel] option:selected',f).val('ss1'); //선택된 option 의 value="ss1" 값 셋
 	$('[name=sel] option:selected',f).text(); //선택된 option의 text 값 반환
