@@ -1,0 +1,14 @@
+li 2개가 동적 추가되어도 해당 버튼엔 이벤트가 걸린다.
+<ul id="test">
+	<li>사과</li> #물론 이곳도 이벤트가 걸린다
+	<li>귤</li> <--동적생성--> #동적 생성되었지만 클릭하면 alert('귤'); 출력
+	<li>배</li> <--동적생성-->
+
+</ul>
+<script>
+
+$(document).on('click','ul#test li',function(){
+	var t = $(this).text();
+	alert(t);
+});
+</script>

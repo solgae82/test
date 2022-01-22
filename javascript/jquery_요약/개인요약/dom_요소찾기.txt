@@ -1,0 +1,37 @@
+<div>
+하루종일
+	<ul>
+		<li><p>1</p></li>
+		<li><p>2</p></li>
+		<li>3</li>
+		<li>4</li>
+		<li>5</li>
+	</ul>
+</div>
+------------------------------// 
+// find(), first(), last(), next(), prev(), parent(), children(), eq(n), index()
+$('ul').parent().text(); //div이동 , '하루종일 12345'
+$('ul').children().first().html(); //<p>1</p>
+$('ul').children().last().html(); //5
+$('ul').children().eq(0).html(); //<p>1</p>
+$('ul').children().eq(0).next().html(); //<p>2</p>
+$('ul').children().eq(0).next().prev().html(); //<p>1</p>
+$('ul').children().first().next().index(); // 1 (배열 인덱스번호 반환)
+$("div").find('ul'); // div의 자식노드에서 ul 요소를 찾는다.
+------------------------------// siblings
+var f = $('ul').children().eq(2).siblings(); // 3번째 li 형제들 집합(본인제외) 반환, 총 4개
+console.log(f.size() + '개'); // 4개
+f.each(function(index){
+	console.log($(this).html());
+	/*
+		<p>1</p>
+		<p>2</p>
+		4
+		5
+
+	*/
+});
+
+console.log(f.html()); //<p>1</p>
+console.log(f.next().html()); //<p>2</p>
+console.log(f.eq(2).html()); //4

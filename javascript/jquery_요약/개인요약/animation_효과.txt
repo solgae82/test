@@ -1,0 +1,54 @@
+1. 효과 기본 사용법
+$(선택자).method명();
+$(선택자).method명(speed);
+$(선택자).method명(speed, callback);
+$(선택자).method명(speed, easing, callback);
+---------------------------------------// 예제
+$('h2').toggle(function(event){
+	$('menu').show();
+	$('menu').slideDown(1000);
+	$('menu').fadeIn(1000,function(){..});
+},function(event){
+	$('menu').hide();
+	$('menu').slideUp(1000);
+	$('menu').fadeOut(1000,function(){..});
+});
+---------------------------------------// toggle
+h2 클릭할때마다 toggle 메소드  호출하기
+$('h2').click(function(event){
+	$('#menu').toggle(); //기본 show(),hide() 기능으로 toggle
+	//$('#menu').slideToggle(); //기본 slideDown(),slideUp() 기능으로 toggle
+	//$('#menu').fadeToggle(); //기본 fadeIn(),fadeDown() 기능으로 toggle
+});
+
+---------------------------------------//
+---------------------------------------//
+
+2. animate 기본사용법
+$(선택자).animate(object);
+$(선택자).animate(object, speed);
+$(선택자).animate(object, speed, callback);
+$(선택자).animate(object, speed, easing, callback);
+
+object{
+	opacity:
+	top:
+	bottom:
+	left:
+	right:
+	height:
+	width:
+	margin:
+	padding:
+}
+
+ex)--------------------//
+<div style="position: relative; width: 200px;padding: 0;bakground: red;">
+ Hello!
+</div>
+
+$('div').toggle(function(event){
+	$(this).animate({left: 400,padding: 40},'slow');
+},function(event){
+	$(this).animate({left: 0,padding: 0}, 500);
+});

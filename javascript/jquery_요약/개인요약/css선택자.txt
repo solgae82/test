@@ -1,0 +1,59 @@
+//기본선택자
+$('div').css('color','red');
+$('div.class').css('color','red');
+$('div#id').css('color','red');
+$('p , li').css('color','red'); //p 와 li 태그에 모두 적용
+$('.a.b').css('color','green'); // class="a b" 인 것을 선택 적용
+$('h1', this) //현재 선택자 자식에 h1
+
+//자식 선택자
+$('div p').css('color','red'); //div 안에 있는 모든 p태그(어디에 있건)에 적용
+$('div > p').css('color','red'); //div 바로 자식레벨 모든 p태그에 적용
+$('div + p').css('color','red'); //div와 같은 레벨이고, 바로 옆(</div><p>..</p>) p태그 적용
+
+//속성선택자
+$('h1[title]').css('color','red'); //h1태그이면서 title 속성이 적용되었으면 적용.
+$('h1[title=red]').css('color','red'); //title="red"  적용
+$('h1[title~=red]').css('color','red'); //title="black red green", red 단어(공백구분)포함,적용
+$('h1[title^=red]').css('color','red'); //title="red black green" , red 철자로 시작하면 적용,공백인식X(" red..")
+$('h1[title$=red]').css('color','red'); //title="black green red" , red 철자로 끝나면 적용,공백인식X("..red ")
+$('h1[title*=reen]').css('color','red'); //title="black green red" , reen 철자 포함하면 적용
+
+//입력양식 필터 선택자, input태그
+input:[속성] : button, checkbox,file,image,text,password,radio,reset,submit
+예 => $('input:button') //input 태그 중 type속성이 버튼인 태그 선택
+
+//입력양식 필터 선택자
+요소:[속성] : 
+input:checked // 체크된 입력양식(radio, checkbox)
+input:disabled[enabled] // 입력양식 중 비활성, 활성 양식 선택 
+input:focus // 현재 초점이 맞춰줘 있는 입력양식 선택.
+:input // 모든 입력양식 선택
+form *:input // $(:input) , form다음에 공백 있어야 함
+select > option:selected //(select) 선택박스 중에 선택된 option 태그 선택
+
+//집합요소 필터 선택자
+tr:odd //tr집합 중 홀수번째 선택.(0,1,2 순..인덱스 기준 홀수 1)
+tr:even //tr집합 중 짝수번째 선택.(0,1,2 순..인덱스 기준 짝수 0,2)
+tr:first //tr집합 중 첫번째 선택.
+tr:last //tr집합 중 마지막번째 선택.
+tr:eq(1) //tr집합 중 2번째(0부터시작) 선택
+td:gt(1) //td집합 중 2번째(0부터시작) td를 초과하는 모든 td선택, (td > 1)
+td:lt(1) //td집합 중 2번째(0부터시작) td를 미만하는 모든 td선택, (td < 1)
+td:contains('하루종일') //td집합 내용중 '하루종일'이 포함된 태그 선택.
+td:has('span') //td집합 내용중 span태그가 있는 td 선택
+td:has('span , p') //td집합 내용 중 span 또는 p 태그가 있는 td 선택
+td:not(선택자) //td집합중 선택자를 제외한 모든 td선택
+- td:not(#sel) //td집합 중 id="sel" 인 것 제외한 모든 td 선택
+- td:not(.sel) //td집합 중 class="sel" 인 것 제외한 모든 td 선택
+- td:not(:eq(1)) //td집합 중 2번째(0부터시작) 인 것 제외한 모든 td 선택
+등등
+
+$('tr:nth-child(1)') //tr집합중 1번째(1번부터시작) 선택.
+$('tr:nth-child(3n+2)') //[(3*0)+2,(3*1)+2,(3*2)+2...] = 2,5,8..번째 
+
+--------------------------//
+$("p").add("div")  // p 요소와 div 요소를 선택한다.
+
+--------------------------//find()
+$("ul").find("li span") // ul 요소의 모든  li안의 span요소 선택

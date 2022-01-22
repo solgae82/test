@@ -1,0 +1,1302 @@
+1. let , const
+	let a = 'abc';	//새 변수 선언 키워드
+	const CON = 'EFG'; // 상수 선언 키워드
+
+2. 이터레이션 프로토콜(이터러블 프로토콜 + 이터레이터 프로토콜)
+	
+	프로토콜(규약) : 이렇게 구현해야 한다는 추상적 규약
+		이터러블 규약, 이터레이터 규약이라고도 표현함.
+		이터러블의 형식을 규약하면 그게 이터러블 규약.
+
+	이터러블 : 이터레이터를 리턴하는, [Symbol.iterator] 메소드를 구현한 객체.
+		for of 문, spread 문법 등과 한께 동작하도록 만든 객체.
+		[Symbol.iterator] 메소드는 이터레이터 객체를 반환한다.
+		이터러블 규약을 구현한 대표적 내장객체중에는 
+		Array, String, Map, Set, arguments 등이 있다.(믈론 더 많이 있다)
+
+
+	이터레이터:  next() 메소드가 있는 객체이고 , next() 메소드 호출시
+		{value:[자료] done:[true,false]} 형식의 result 객체를 리턴함.
+	
+
+	--------------------- 이터러블 이해하기 
+
+	예) String 객체를 이용한  for(..of..) 문 출력.
+
+		let str = '가나다';
+		for(let value of str){
+			console.log(value); // '가','나','다' 한글자 씩 출력된다
+		}
+	
+	# String 객체는 이터러블 규약을 구현한 객체이므로 그 안에 이터레이터 메서드가 이미 구현 되어있다.
+	# 그러므로 for(..of..) 문을 사용할 수 있는 것이다.
+	# 일반객체도 내부에 이터레이터 메서드를 구현하면 for(..of..) 문으로 출력 가능하다.
+
+		//아래처럼 구현하면 된다
+		let it ={
+			[Symbol.iterator]:function{
+				여기까지 구현 한것을 이터러블
+				return 
+				{// 여기부터는 이터레이터 영역
+					next : function(){
+						return {value:값, done:[boolean]};
+					}
+				};
+			
+			}
+		};
+
+	
+
+	--------------------- 이터레이터 이해하기 
+
+	# 다음과 같이 이터러블 객체에서 직접 내장 이터레이터 메서드를 이용해 
+	,이터레이터객체를 리턴 받아서 수동으로 사용할 수도 있다.
+
+		let str = '가나다';
+		let it = str[Symbol.iterator]();
+
+	# 이터러블 객체에서 이터레이터를 수동으로 출력해 보자
+
+		let str = '가나다';
+		let it = str[Symbol.iterator](); //내장된 이터레이터 객체를 빼낸다
+		//직접 하나씩 출력
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next());	//{value:undefined ,done: true}
+
+	# 이터러블 객체를 for(..of..) 문으로 출력할 수 있는 이유는, 
+	위 수동출력의 값들에서 볼 수 있는 것처럼,
+	내부적으로 이터레이터 메서드로 이터레이터 받아서 next()메소드를 호출 후 
+	done 값이 true가 아니면 for문을 실행해서 value 값을 for문의 value값에 담겠지..
+	
+
+		let str = '가나다';
+		for(let value of str){ 
+			console.log(value); // '가','나','다' 한글자 씩 출력된다
+		}
+	
+	# while 문으로 출력해 보자
+		let str = '가나다';
+		let it = str[Symbol.iterator]();
+
+		let result;
+
+		result = it.next();
+		while(!result.done){
+			// '가','나','다' 한글자 씩 출력된다
+			console.log(result.value);
+			result = it.next();
+		}
+
+	--------------------- 종합 예제
+	# 일반객체를 이터러블로 만들어서 for(..of..)문을 사용해 보자.
+	# 아래 예제는 이터러블인 것과 동시에 이터레이터 역할도 겸하는 하는 객체다
+		let obj = {
+			i:1,
+
+			[Symbol.iterator]:function(){
+				return this; //이터레이터 리턴시 다시 이 객체를 가리킨다
+			},
+			
+			//내부적으로 이터레이터 구현을 했다
+			next:function(){
+				return (this.i < 4)? {value:this.i++, done: false}:{value:undefined, done: true};
+			}
+			
+		};
+		//이터러블 규약을 만족하고 이터레이터 규약도 구현했으므로 출력가능하다
+		for(let value of obj){ 
+			console.log(value);
+		}
+
+3. Array.forEach
+	형식:
+		array.forEach(callbackFunction(currnetValue, index, array), thisArg);
+	
+	테스트
+		let fruits = ["a","b"];
+		fruits.forEach(function (item) {
+		    console.log(item); //a , b
+		});
+
+		fruits.forEach(function (item,index) {
+		    console.log(item,index);// a 0 , b 1 
+		});
+
+		fruits.forEach(function (item,index,array) {
+		    console.log(array); //["a","b"] 2회 바복
+		});
+
+		let obj = {str:"test"};
+		fruits.forEach(function (item) {
+		    console.log(item +"-"+obj.str); //a-test, b-test
+		},obj);
+
+		fruits.forEach(element => console.log(element)); //a , b
+4. for in 문
+
+	# 객체의 속성명을 반환한다
+	# 속성명은 문자열이다..
+
+	//객체
+	var obj = {x : 1, y : true, z : 'dong'};
+	for (var k in obj) {
+	    console.log(k + ":" + obj[k]); // x:1, y:true, z:dong
+	}
+	//배열
+	var arr = [10, 20, 30];
+	for (var key in arr) {
+	    console.log(n + ":" + arr[key] ); //n:10,n:20,n:30
+	}
+
+	//배열연산 시 주의, 속성명(키)은 문자열이므로 문자열 연산
+	var arr = [10,20,30];
+	arr.add = 100;
+
+	for(var i in arr){
+		console.log(i + 1); // 01,11,21,add1
+	}
+
+5. for..of 문
+	
+	//기본
+	let str = '하루종일';
+
+	console.log(typeof str[Symbol.iterator]()); // object
+
+	for(let value of str){
+		console.log(value); //하,루,종,일
+	}
+
+	// for in 문과는 다르게 배열에서는 배열만 출력한다
+	var arr = [10,20,30];
+	arr.add = 100;
+
+	for(let i of arr){
+		console.log(i); // 10,20,30
+	}
+
+6. 템플릿 리터럴
+
+	` : 여러줄도 가능하다
+	보간표현범 : ${변수} 형식의 표현식
+	
+	예제1)
+	let str = `여러줄
+		두번째줄
+		세번째줄`;
+	console.log(str);
+
+	/**
+	여러줄
+		두번째줄
+		세번째줄
+	*/
+	
+
+	예제2)
+	let a = 100;
+	let b = 200;
+	let str = `a + b 결과는 ${a + b} 입니다`;
+
+	console.log(str); //a + b 결과는 300 입니다
+
+7.태그드 템플릿 리터럴
+	
+	형식:
+		함수명 `문자열[0] ${a} 문자열[1], ${b}`; 
+
+	예제로 보고 이해하자
+
+	function tagged(str, a,b){
+
+		let bigger;
+		(a > b) ? bigger='A' : bigger='B';
+		return str[0] + bigger + str[1];
+	}
+
+	let str = tagged`a 와 b 중 ${100} 가 더 크다 ${200}`;
+	console.log(str); //a 와 b 중 B 가 더 크다
+
+	# 매우 해괴하다
+	# 문자열은 하나라도 문자열배열[0]로 표현해야 한다
+
+
+8. Typed Array
+	바이너리 수준의 조작을 위한 방법.
+
+	타입 배열은 배열과 유사한 객체이며, 이진 데이터(binary data)를
+	보다 빨리 접근하고 조작할 수 있다.
+	타입 배열은 버퍼와 뷰로 나뉘는데 
+	버퍼(ArrayBuffer)는 단순히 데어터 청크를 나타내는 객체이며, 스스로 읽고 쓸 수는 없다.
+	뷰(typed array view)를 통해서만 버퍼의 데이터를 조작할 수 있다.
+	
+	// 버퍼
+	const buffer = new ArrayBuffer(16); //16바이트 버퍼배열 생성
+	console.log(buffer.byteLength);
+	// 뷰
+	const view = new Uint32Array(buffer);
+	console.log(view);
+
+9. 제너레이터(generator)
+
+	이터러블 규약과 이터레이터 규약을 따르는 제너레이터 객체를 만들어 주는 함수
+	직접 이런 객체를 만들려면 코드가 길어진다. 유용한 도움 함수.
+	예제로 이해하자
+
+	# 기본 제너레이터 생성 활용
+		function* gen(){
+			for(let i=0; i<3; i++){
+				yield i;
+			}
+		}
+
+		let generator = gen();
+		for(let value of generator){
+			console.log(value); // 0, 1, 2
+		}
+
+
+	# 제너레이터 이어 붙이기
+		function* gen1(n){
+			yield n + 1;
+			yield* gen2(n); //제너레이터 이어붙이기
+			yield n + 2;
+		}
+
+		function* gen2(n){
+			yield n + 100;
+			yield n + 200;
+		}
+
+		let generator2 = gen1(100);
+		for(let value of generator2){
+			console.log(value); // 101, 200, 300, 102
+		}
+
+
+	# return() 메서드 : 열거 강제 종료
+		function* gen(){
+			for(let i=0; i<3; i++){
+				yield i;
+			}
+
+		}
+
+		let generator =gen();
+		console.log(generator.next());//{value: 0, done: false}
+		generator.return(); //리터 메서드 후 호출하면 
+		console.log(generator.next());//{value: undefined, done: true}
+
+	# throw() 메서드 : 열거 중 강제 오류 발생시킴
+		function* gen(){
+			for(let i=0; i<2; i++){
+				try{
+					yield i;
+				}catch(e){
+					console.log("에러발생:"+e);
+				}
+			}
+		}
+
+		let generator = gen();
+		console.log(generator.next());//{value: 0, done: false}
+		console.log(generator.throw());
+			//에러발생:undefined
+			//{value: 1, done: false}
+		console.log(generator.next());//{value: undefined, done: true}
+
+10. Map 
+
+	자바의 map과 비슷하다.
+
+	size : 맵 향목 갯수 리턴, 메서드가 아니다(속성)
+	set(key,value) : 맵 셋팅 + 맵 인스턴스 반환
+	get(key) : 키에 관련된 값 리턴
+	clear() : 맵 항목 
+	delete(key) : key에 해당하는 항목 삭제
+	entries() : 이터레이터 반환
+	forEach(CallbackFn(key,value,map)) : 맵에 추가된 항목 열거 콜백 
+	has(key) : 키 항목 존재여부  true, false 리턴
+	keys() : key 이터레이터 반환
+	values() : 값 이터레이터 반환
+	[Symbol.iterator]() : entries()와 같다
+
+	예제들)	
+		let obj={name:'dong'};
+		let f = function(){};
+		let map = new Map();
+
+		//--------------------- set() , size
+		let map1 = map.set(f, obj); //map1 은 map과 같다
+		map.set('apple', 100);
+		console.log(map.size);		//2
+		
+		//--------------------- get()		
+		console.log(map.get('apple'));	//100
+		console.log(map.get(f));		//{name:'dong'}
+
+		//--------------------- delete()
+		map.delete(f);			//요소 한개 삭제
+		console.log(map.size);	//1
+		console.log(map);		//Map(1) {"apple" => 100}
+		
+		//--------------------- clear()
+		map.clear();			// 모두 삭제
+		console.log(map.size);	// 0
+		console.log(map);		// Map(0) {}
+
+		//--------------------- entries()
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+		let entries = map.entries(); //이터레이터 반환
+		console.log(entries);//MapIterator {"apple" => 100}
+
+		for(let value of map){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+		//console.log(map.next()); // 에러: map.next is not a function
+
+		for(let value of entries){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+
+		//이터레이터는 한번 열거하면 끝난다.
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		// map은 다시 열거 할 수있다
+		for(let value of map){
+			console.log(value);// ["apple", 100]
+			console.log(value[0]);// apple
+			console.log(value[1]);// 100
+			
+		}
+		
+	 
+		entries = map.entries(); //다시 이터레이터 반환
+		console.log(entries); ////MapIterator {"apple" => 100}
+		console.log(entries.next()); //{value: ["apple", 100], done: false}
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		//--------------------- forEach(callback)
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+
+		//콜백 순서를 잘 기억하자 key-> value -> map
+		map.forEach(function(key, value, map){
+			console.log(key);	// 100
+			console.log(value); // apple
+			console.log(map);	// {"apple" => 100}
+		});
+
+
+		//--------------------- keys() 
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+		let keys = map.keys(); //이터레이터 반환
+		console.log(keys.next()); //{value: "apple", done: false}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		keys = map.keys(); //이터레이터 반환
+		for(value of keys){
+			console.log(value);			// apple
+			console.log(map.get(value));// 100
+		}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		//--------------------- values() 
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+		let values = map.values(); //이터레이터 반환
+		console.log(values.next()); //{value: 100, done: false}
+		console.log(values.next());	//{value: undefined, done: true}
+
+		values = map.values(); //이터레이터 반환
+		for(value of values){
+			console.log(value); // 100
+		}
+		console.log(values.next()); //{value: undefined, done: true}
+
+		//--------------------- [Symbol.iterator]() 
+
+		map.clear(); //초기화
+		map.set('apple', 100); // 한개 담기
+
+		let mapIter = map[Symbol.iterator](); // map.entries() 와 같다
+		console.log(mapIter); //MapIterator {"apple" => 100}
+
+		for(value of mapIter){
+			console.log(value);	// ["apple", 100]
+			console.log(value[0]);	// apple
+			console.log(value[1]);	// 100
+		}
+
+		//--------------------- has() 
+		let obj2={name:'dong'};
+		let f2 = function(){};
+		let map2 = new Map();
+		map2.set(obj2, f2);
+
+		console.log(map2);//{{name:'dong'}=>function(){}}
+
+		//객체나 함수가 키일 경우는 참조키가 맞아야 포함된 것으로 인식힌다.
+		if(map2.has(obj2)){
+			console.log('맵있다1');// 같은 객체이므로 출력
+		} 
+		if(map2.has({name:'dong'})){
+			console.log('맵있다2');//(다른객체 , 출력 안함)
+		}
+
+
+		//일반 자료형 키는 리터럴이나 변수나 모두 같은 키다
+		let fruit = 'banana';
+		map2.set(fruit,10);
+		if(map2.has(fruit)){console.log('바나나1');}	//출력
+		if(map2.has('banana')){console.log('바나나2');}	//출력
+
+		//--------------------- delete (2)
+
+		let obj3={name:'dong'};
+		map3 = new Map();
+		map3.set(obj3, 100);
+		map3.set("dong3",200);
+
+
+		map3.delete({name:'dong'});	//키값이 같더라도 다른 객체이므로 안 지워진다
+		console.log(map3.size);		//2
+
+		map3.delete(obj3);		//참조키로 해야 지워진다
+		console.log(map3.size);		//1 
+
+		map3.delete("dong3");		// 일반자료형은 지워진다
+		console.log(map3.size);		//0
+	
+11. Set
+	Map과의 차이는 키가 없다는 것.
+	값은 중복 값을 가질 수 없다.
+	그 외 사용법은 맵과 유사하다.
+
+	size : set 향목 갯수 리턴, 메서드가 아니다(속성)
+	add(value) : set 셋팅 + set 인스턴스 반환
+	clear() : set 항목 
+	delete(value) : value에 해당하는 항목 삭제
+	entries() : 항목 이터레이터 반환
+	forEach(CallbackFn(key,value,set)) :  set에 추가된 항목 열거 콜백 
+	has(value) : 값 항목 존재여부  true, false 리턴
+	keys() : key(?) 이터레이터 반환,실제로는 value와 같다.[value,value]이기 때문에
+	values() : 값 이터레이터 반환
+	[Symbol.iterator]() : keys() 또는 values() 와 같은 이터레이터 반환(결국 다 같은 것)
+
+	예제)
+		let obj={name:'dong'};
+		let set = new Set();
+
+		//--------------------- add() , size
+		let set1 = set.add(obj); //set1 은 set과 같다
+		set.add('apple');
+		console.log(set.size);	//2
+		
+		//--------------------- delete()
+		set.delete(obj);		//요소 한개 삭제
+		console.log(set.size);		//1
+		console.log(set);		//Set(1) {"apple"}
+		
+		//--------------------- clear()
+		set.clear();			// 모두 삭제
+		console.log(set.size);		// 0
+		console.log(set);		// Set(0) {}
+
+		//--------------------- entries()
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		let entries = set.entries(); //이터레이터 반환
+		console.log(entries);//SetIterator {"apple=>"apple"}
+
+		for(let value of set){
+			console.log(value);	//apple
+			
+		}
+		//console.log(set.next()); //에러: set.next is not a function
+
+		for(let value of entries){
+			console.log(value);	// ["apple", "apple"]
+			console.log(value[0]);	// apple
+			console.log(value[1]);	// apple
+			
+		}
+
+		//이터레이터는 한번 열거하면 끝난다.
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		// set은 다시 열거 할 수있다
+		for(let value of set){
+			console.log(value); //apple
+		}
+		
+	 
+		entries = set.entries(); //다시 이터레이터 반환
+		console.log(entries); ////SetIterator {"apple=>"apple"}
+		console.log(entries.next()); //{value: ["apple", "apple"], done: false}
+		console.log(entries.next()); //{value: undefined, done: true}
+
+		//--------------------- forEach(callback)
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
+		//콜백 순서를 잘 기억하자 key-> value -> set
+		set.forEach(function(key, value, set1){
+			console.log(key);	// apple
+			console.log(value);	// apple
+			console.log(set1);	// Set(1) {"apple"}
+		});
+
+
+
+		//--------------------- keys() 
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
+		let keys = set.keys(); //이터레이터 반환
+
+		console.log(keys);		//SetIterator {"apple"}
+		console.log(keys.next());	//{value: "apple", done: false}
+		console.log(keys.next());	//{value: undefined, done: true}
+
+
+		keys = set.keys(); //이터레이터 반환
+		for(value of keys){
+			console.log(value);	// apple
+			
+		}
+		console.log(keys.next()); //{value: undefined, done: true}
+
+
+		//--------------------- values() 
+
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
+		let values = set.values(); //이터레이터 반환
+
+		console.log(values);		//SetIterator {"apple"}
+		console.log(values.next());	//{value: "apple", done: false}
+		console.log(values.next());	//{value: undefined, done: true}
+
+		values = set.values(); //이터레이터 반환
+		for(value of values){
+			console.log(value); // apple
+		}
+		console.log(values.next()); //{value: undefined, done: true}
+
+		//--------------------- [Symbol.iterator]() 
+
+		/*
+		Map 에서는 entries와 같았지만, 
+		Set에서는  {[Symbol.iterator]() == keys() == values()} 이다
+		*/
+
+
+		set.clear(); //초기화
+		set.add('apple'); // 한개 담기
+		console.log(set);		//Set(1) {"apple"}
+
+		let setIter = set[Symbol.iterator](); 
+		console.log(setIter); //SetIterator {"apple"}
+
+		for(value of setIter){
+			console.log(value);	//apple
+
+		}
+
+		//--------------------- has() 
+
+		let obj2={name:'dong'};
+		let set2 = new Set();
+		set2.add(obj2);
+
+		console.log(set2);//Set(1) {{name:'dong'}}
+
+		//객체나 함수가 존재여부는 참조키가 맞아야 포함된 것으로 인식힌다.
+		if(set2.has(obj2)){
+			console.log('set 있다1');// 같은 객체이므로 출력
+		} 
+		if(set2.has({name:'dong'})){
+			console.log('set 있다2');//(다른객체 , 출력 안함)
+		}
+
+
+		//일반 자료형 키는 리터럴이나 변수나 모두 같은 키다
+		let fruit = 'banana';
+		set2.add(fruit);
+		if(set2.has(fruit)){console.log('바나나1');}	//출력
+		if(set2.has('banana')){console.log('바나나2');}	//출력
+
+		//--------------------- delete (2)
+
+		let obj3={name:'dong'};
+		set3 = new Set();
+		set3.add(obj3);
+		set3.add("dong3");
+
+
+		set3.delete({name:'dong'});	//값이 같더라도 다른 객체이므로 안 지워진다
+		console.log(set3.size);		//2
+
+		set3.delete(obj3);		//참조키로 해야 지워진다
+		console.log(set3.size);		//1 
+
+		set3.delete("dong3");		// 일반자료형은 지워진다
+		console.log(set3.size);		//0 
+
+12. WeakMap
+	
+	가벼운 맵(key,value)
+	열거 할 수 없고(for of 문 사용 못함), size속성도 없다.
+	키는 참조형만 가능하다(원시타입 사용불가)
+
+	set(key,value) : 위크맵 항목추가 후 위크맵 인스턴스 반환.
+	get(key) : 키값에 해당하는 value 반환.
+	has(key) : 키항목의 존재여부 체크(true, false).
+	delete(key) : 키에 해당하는 항목 삭제 , 삭제항목 존재여부체크 (true , false)반환.
+
+	예제)
+		let weakMap = new WeakMap();
+		let f = function(){};
+
+		weakMap.set(f,200);
+		
+
+		if(weakMap.has(f)){
+			console.log(weakMap.get(f)); // 200
+		
+		} 
+
+		if(weakMap.delete(f)){
+			console.log('항목 제거'); // 실행됨
+		}
+
+
+		console.log(weakMap.get(f)); //undefined
+
+
+		/* 이터레이터 아니므로 열거할 수 없다.
+		//weakMap is not iterable : TypeError
+		for(let value of weakMap){ 
+			console.log(value);
+		}
+		*/
+
+13. WeakSet
+
+	가벼운 Set
+	열거 할 수 없고(for of 문 사용 못함), size속성도 없다.
+	값은 참조타입(원시타입 불가)만 가능하다.
+
+	add(value) : 위크셋 항목추가 후 위크셋 인스턴스 반환.
+	has(value) : 값의 존재여부 체크(true, false).
+	delete(value) : 값(참조키) 해당하는 항목 삭제 , 삭제항목 존재여부체크 (true , false)반환.
+
+	예제)
+		let weakSet = new WeakSet();
+		let f = function(){};
+		weakSet.add(f);
+		
+		if(weakSet.has(f)){
+			console.log("f 존재"); // 실행
+		} 
+
+		if(weakSet.delete(f)){
+			console.log('항목 제거'); // 실행됨
+		}
+
+		/* 이터레이터 아니므로 열거할 수 없다.
+		for(let value of weakSet){ //weakSet is not iterable : TypeError
+			console.log(value);
+		}
+		*/
+
+14. Symbol
+	
+	객체 내장속성명 중복을 피하기 위해 사용되는 type 이다
+	(유니크한 속명키가 생성되는 듯 하다.)
+	심볼 추가 후 for in 문 출력시 속성명으로 indexing 되지 않는다.
+
+	예제)
+		console.log(Symbol()==Symbol()); //false
+		console.log(Symbol('length')==Symbol('length')); //false
+
+		let symbol = Symbol('length');
+		console.log(symbol);	//Symbol(length)
+
+		let arr = [1,2,3];
+		const length = Symbol('length');
+		const length2 = Symbol('length');
+		arr[length] = 100;
+
+		console.log(arr[length]);	// 100
+		console.log(arr[length2]);	// undefined
+		console.log(arr.length);	// 3
+		console.log(arr['Symbol(length)']); // undefined
+
+		//심볼은 for in문에 속성명이 출력되지 않는다
+		for(let prop in arr){
+			console.log(prop); // 0, 1, 2
+		}
+
+15. Promise
+
+	비동기와 동기 프로그램의 간극을 해결해주는 기법
+	코드로 이해하는게 빠르다.
+
+	-----------// .then() 메소드
+
+		var cnt = 0;
+		let p = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve(++cnt); // 아래 p.then(function($cnt){});에 인수를 넘겨서 실행시킨다
+				
+			}, 1000);
+		});
+
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // (1초후에) 실행: 1
+		});
+
+	-----------// .catch() 메소드
+
+		var cnt = 0;
+		let p = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				//resolve(++cnt); 
+				reject('failed'); // 아래 p.catch(function($msg){});를 실행시킨다
+			}, 1000);
+		});
+
+		//-- 같은 결과 다른 코딩 1
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		});
+
+		p.catch(function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});
+
+		/*
+		//-- 같은 결과 다른 코딩 2 ( 메소드 체이닝을 사용해도 결과는 같다)
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		}).catch(function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});
+		//-- 같은 결과 다른 코딩 3 (then 두번째 인수로 해도 결과는 같다)
+		p.then(function($cnt){
+			console.log("실행: " , $cnt); // 실행하지 않는다
+		} , function($msg){
+			console.log("에러: " , $msg); // (1초후에) 에러: failed
+		});	
+		*/
+
+	----------- Promise.all() 메소드
+
+		var cnt = 0;
+
+		let p1 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p1=>"+ (++cnt));
+				
+			}, 5000);
+		});
+
+		let p2 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p2=>"+ (++cnt));
+				
+			}, 1000);
+		});
+
+
+		Promise.all([p1,p2]).then(function($cnt){
+			console.log("실행: " + $cnt); //실행: [p1=>2,p2=>1]  , 배열로 반환된다. 그러므로 for문을 돌려도 된다.
+			/*(5초 후 실행한 객체 모두 한꺼번에 배열로 반환한다, 결과값은 실행시간 순, 배열은 all[배열순]*/
+		},function($e){
+			
+			console.log("실패: "+$e);
+		});
+
+		/**
+		// 결과 배열이므로 아래처럼 looping 출력도 가능.
+		Promise.all([p1,p2]).then(function($cnt){
+			for(str of $cnt){
+				console.log("실행: " + str);
+				//실행: p1=>2
+				//실행: p2=>1
+			}		
+		},function($e){
+			
+			console.log("실패: "+$e);
+		});
+
+		
+		*/
+
+	----------- Promise.race() 메소드
+
+		var cnt = 0;
+
+		let p1 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p1=>"+ (++cnt));
+				
+			}, 5000);
+		});
+
+		let p2 = new Promise(function(resolve, reject){
+			setTimeout(function(){
+				resolve("p2=>"+ (++cnt));
+				
+			}, 1000);
+		});
+
+
+		Promise.race([p1,p2]).then(function($cnt){
+			console.log("실행: " + $cnt); //실행: p2=>1 (가장 빠른 한개만 실행한다)
+		},function($e){
+			console.log("실패: "+$e);
+		});
+
+
+
+16. Proxy
+	
+	객체 속성을 조회하거나, 할당, 열거, 호출등을 중간에서 관찰.
+	관찰 중인 객체의 변화가 있을 경우 객체보다 먼저 감지하여 여러 행동들을 결정할 수 있다.
+	
+	객체를 바로 조작하는 것이 아닌 중간에 proxy 놓고 조건 조작
+	런타임 전 실행 코드를 가로채서 조작한다
+	프록시 트랩(trap)메소드는 13개가 있다
+		1)  getPrototypeOf : 객체에 __proto__ (프로토타입) 속성을 얻으려 할때
+		2)  setPrototypePf : Object.setPrototypePf 호출시
+		3)  isExtensible : Object.isExtensible 호출시
+		4)  preventExtensions : Object.preventExtensions 호출시
+		5)  defineProperty : Object.defineProperty 호출시
+		6)  getOwnPropertyDescriptor : Object.getOwnPropertyDescriptor 호출시
+		7)  has	: 객체에 in 연산자 수행시
+		8)  get	: 객체에 속성값 얻을시
+		9)  set : 객체에 속성값 설정시
+		10) deleteProperty : 객체에 delete 연산 실행시
+		11) ownKeys : 객체가 지닌 속성키 조회시
+		12) apply : 함수에 call 또는 apply 메서드 호출시
+		13) construct : 객체에  new 연산 수행시
+	Reflect 메소드도 trap 메소드와 동일하게 13개다
+		
+	예제는 10개만 한다(책에 그렇게 나와서...아..귀찮다)
+	쓸데없이 복잡한 기능같다.
+
+	----------- 일단 느낌을 가져보자
+	(예제) set() : 객체 속성 설정시 동작을 가로채 진행 여부 결정
+
+		let target = [];
+
+		let handler = {
+			set:function(target , key, value , receiver){
+				console.log(key, value); // (1) name myproxy
+				return Reflect.set(target , key, value , receiver);
+			}
+		};
+
+
+		let proxy = new Proxy(target , handler);
+		proxy.name = 'myproxy'; // (1) name myproxy
+
+		console.log(target);	// (2) {name:myproxy}
+	
+	----------- (1) getPrototypeOf(target)
+	__proto__ 호출시 동작을 가로채 진행 여부 결정
+
+		function foo() {}
+
+		foo.prototype.a = 100;
+		foo.prototype.b = 200;
+
+		let obj = new foo();
+
+		let proxy = new Proxy(obj, {
+			
+			getPrototypeOf:function(target){
+				console.log('getPrototypeOf 호출');
+				return Reflect.getPrototypeOf(target);
+			}
+		});
+
+		let proto = proxy.__proto__;	//(1) getPrototypeOf 호출
+		console.log(proto);		//(2) {a: 100, b: 200, constructor: ƒ}
+
+	----------- (2) setPrototypeOf(target , prototype)
+	Object.setPrototypeOf 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {};let obj = {};
+		let proxy = new Proxy(obj,{
+			
+			setPrototypeOf:function(target, proto){
+				let bool = Reflect.setPrototypeOf(target, proto);
+				console.log('setPrototypeOf:',bool ,':', proto);
+				return bool;
+			}
+		});
+
+		let p = Object.setPrototypeOf(proxy, {a:100, b:200}); //(1) setPrototypeOf: true : {a: 100, b: 200}
+		console.log(p.__proto__); // (2) {a: 100, b: 200}
+
+	----------- (3) isExtensible(target)
+	Object.isExtensible 메서드 동작을 가로채 진행 여부 결정
+	객체에 새로운 속성 추가 가능여부 판단(true, false)
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			isExtensible:function(target){
+				console.log('isExtensible:',target);
+				return Reflect.isExtensible(target);
+			}
+		});
+
+		let bool = Object.isExtensible(proxy); //(1)isExtensible:{a: 100}
+		console.log(bool); // (2) true
+
+	----------- (4)preventExtensions(target)
+	Object.preventExtensions 메서드 동작을 가로채 진행 여부 결정
+	객체에 새로운 속성 추가 금지 설정
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			preventExtensions:function(target){
+				console.log('preventExtensions:',target);
+				return Reflect.preventExtensions(target);
+			},
+
+			isExtensible:function(target){
+				console.log('isExtensible:',target);
+				return Reflect.isExtensible(target);
+			}
+		});
+
+		//(객체에 새로운 속성 추가 금지 설정)
+		Object.preventExtensions(proxy); //(1)preventExtensions: {a: 100}
+
+		let bool = Object.isExtensible(proxy); //(2)isExtensible: {a: 100}
+		console.log(bool); // (3) false
+
+	----------- (5)defineProperty(target, prop, descriptor)
+	Object.defineProperty 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {a:100};
+		let proxy = new Proxy(obj,{
+			
+			defineProperty:function(target, prop, descriptor){
+				console.log('defineProperty(target):',target);
+				console.log('defineProperty(prop):',prop);
+				console.log('defineProperty(descriptor):', descriptor);
+
+				let bool = Reflect.defineProperty(target, prop, descriptor);
+				console.log('bool:', bool);
+				
+				return false; // 속성 추가 여부 반환, false면 Uncaught TypeError
+			},
+
+		});
+
+
+		Object.defineProperty(proxy, 'key',{
+			enumerable: false,
+			configurable : false,
+			writable : false,
+			value : 'static'
+		}); 
+		/* (1) defineProperty 실행
+		defineProperty(target): {a: 100}
+		defineProperty(prop): key
+		defineProperty(descriptor): {value: "static", writable: false, enumerable: false, configurable: false}
+		bool: true
+		*/
+
+
+		//속성 추가 여부에 따라(true) 속성 추가됨
+		console.log(proxy); //(2) Proxy {a: 100, key: "static"}
+
+	----------- (6)getOwnPropertyDescriptor(target, prop)
+	Object.getOwnPropertyDescriptor 메서드 동작을 가로채 진행 여부 결정
+
+		let obj = {a:100};
+
+		Object.defineProperty(obj, 'key',{
+			enumerable: true,
+			configurable : true,
+			value : 10
+		}); 
+
+		let proxy = new Proxy(obj,{
+			
+			getOwnPropertyDescriptor:function(target, prop){
+				console.log('getOwnPropertyDescriptor(target):',target);
+				console.log('getOwnPropertyDescriptor(prop):',prop);
+
+				let result = Reflect.getOwnPropertyDescriptor(target, prop);
+				console.log('result:', result);
+				
+				return result; 
+			},
+
+		});
+
+
+		// (1) 설명자(descriptor)가 있는 객체속성 얻기
+		let descriptor = Object.getOwnPropertyDescriptor(proxy,'key');
+		/* getOwnPropertyDescriptor 실행
+		getOwnPropertyDescriptor(target): {a: 100, key: 10}
+		getOwnPropertyDescriptor(prop): key
+		result: {value: 10, writable: false, enumerable: true, configurable: true}
+		*/
+
+		console.log(descriptor); 
+		//(2) {value: 10, writable: false, enumerable: true, configurable: true}
+
+	----------- (7) has(target, prop)
+	in 연산자 실행시 동작 가로채 진행여부 결정
+
+		let obj = {a:100, b:200};
+		let proxy = new Proxy(obj,{
+			
+			has:function(target, prop){
+				console.log('has(target):',target);
+				console.log('has(prop):',prop);
+
+				let bool = Reflect.has(target, prop);
+				console.log('bool:', bool);
+				
+				return bool; 
+			},
+
+		});
+
+		
+		let bool = 'a' in proxy;
+		/* (1)has 실행
+		has(target): {a: 100, b: 200}
+		has(prop): a
+		bool: true
+		*/
+
+		console.log(bool); //(2)true
+
+	-----------(8) get(target, prop,receiver)
+	객체 속성값을 얻으려고 할때 동작을 가로채 진행여부 결정
+
+		let obj = {a:100, b:200};
+		let proxy = new Proxy(obj,{
+			
+			get:function(target, prop,receiver){
+				console.log('get(target):',target);
+				console.log('get(prop):',prop);
+				console.log('get(receiver):',receiver);
+
+				let bool = Reflect.has(target, prop  ,receiver);
+				console.log('bool:', bool);
+				
+				return bool; 
+			},
+
+		});
+
+		let v = proxy.a;
+		/* (1) get() 실행
+		get(target): {a: 100, b: 200}
+		get(prop): a
+		get(receiver): Proxy {a: 100, b: 200}
+		bool: true
+		*/
+
+		console.log(v); //(2) true
+
+	----------- (9) set(target , prop, value , receiver)
+	객체 속성 설정시 동작을 가로채 진행 여부 결정
+
+		let target = {a:100};
+
+		let handler = {
+			set:function(target , prop, value , receiver){
+
+				if(value=='my'){
+					target[prop] = 'myone:my';
+				}else{
+					target[prop] = value;
+				}
+				console.log('target:', target); 
+				console.log('prop:', prop);
+				console.log('value:', value);
+				console.log('receiver:', receiver);
+				//Reflect.set(target , prop, value , receiver); //요걸 쓰면 속성을 조리할 수 없다
+
+				return true;
+			}
+		};
+
+
+		let proxy = new Proxy(target , handler);
+		proxy.name = 'my'; 
+		/* (1) 객체속성 설정시
+		target: {a: 100, name: "myone:my"}
+		key: name
+		value: my
+		receiver: Proxy {a: 100, name: "myone:my"}
+		*/
+
+		console.log(target);	
+		// (2) {a: 100, name: "myone:my"}
+
+	----------- (10) deleteProperty (target ,prop)
+	객체 속성을  delete 연산시 중간에서 가로채 결정여부 결정
+
+		let obj = {a:100};
+		
+		let isDelete = 0; // 1이면 삭제, 
+		let handler = {
+			deleteProperty:function(target ,prop){
+				if(isDelete == 1){
+					console.log('속성 삭제');
+					return Reflect.deleteProperty(target, prop); //삭제 true 반환
+				}else{
+					console.log('속성 삭제 안됨');
+					return false; //삭제 안하면 false 반환
+				}
+				
+			}
+		};
+
+		let proxy = new Proxy(obj , handler);
+		delete proxy.a; // (1) 속성 삭제 안됨 
+		
+		console.log(obj);// (2) {a:100}
+
+17. 펼침연산자 (...)
+	
+	이터러레이션 구현된 객체나 배열만 가능하다.
+	배열의 원소나, 객체(이터레이션)의 속성등을 펼쳐서 할당한다
+	배열 또는 객체(이터레이션)변수 앞에 '...' 문자를 붙인다.
+	배열은 이터레이션 구현된 객체다.
+	일반 객체는 이터레이션 구현을 해야 설정 가능하다.
+
+	//--------- (1) 배열에 설정하기
+	let arr=[1,2,3];
+	let arr2 = [0, ...arr, 4];
+	console.log(arr2); //[0, 1, 2, 3, 4]
+
+	//--------- (2) 함수 인수로 배열 설정하기
+	let arr=[1,2,3];
+	function foo(p1,p2,p3){
+		console.log(p1,p2,p3);
+	}
+	
+	foo(...arr); // 1 2 3
+
+	//--------- (3) 함수 인자의 나머지 선언하기
+	function foo(a,b,...arr){
+		console.log(arr); 
+	}
+
+	foo(1,2,3,4,5);	// [3,4,5]
+
+	//--------- (4) 객체 값 추가 + 업데이트
+	let obj = {p1:1, p2:2};
+	let obj2 = {p2:20, p3:30, ...obj};
+	console.log(obj2); // {p2: 2, p3: 30, p1: 1}
+
+	//--------- (5) 일반객체(이터레이션 구현) 
+	let obj = {
+		i : 0,
+		[Symbol.iterator]:function(){
+			return this; //이터레이터 리턴시 다시 이 객체를 가리킨다
+		},
+		
+		//내부적으로 이터레이터 구현을 했다
+		next:function(){
+			return (this.i < 4)? {value:this.i++, done: false}:{value:undefined, done: true};
+		}
+	};
+
+	function foo(a,b,c,d,e){
+		console.log(a,b,c,d,e); 
+	}
+
+	let iter = obj[Symbol.iterator]();
+	foo(...iter);	// 0 1 2 3 undefined
+
+18. 비구조할당(destructuring)
+	디스트럭링 구문은 배열 또는 객체에서 변수를 추출해내는 표현식이다
+
+	-----------배열 (1) 변수 배열에 값 설정
+	let arr = [0,1,2,3];
+	let [a,b,c] = arr; 
+	//let [a,b,c] = [0,1,2]; // 또는 이렇게
+
+	console.log(a,b,c); // 0, 1, 2
+
+	-----------배열 (2) 일부 변수 배열 원소 삭제 가능
+	let arr = [0,1,2,3];
+	let [a,,c] = arr;
+
+	console.log(a,c); // 0 2
+
+	-----------배열 (3) 초기화 설정한 변수배열에 값 재설정
+	undefined 또는 설정 안한 변수값은 기본 설정값
+	설정된 값이 있으면 그 값으로 설정
+
+	let [a=100,b=200, c=300] = [undefined, ,1000];
+
+	console.log(a,b,c); // 100 200 1000
+
+	-----------배열 (4) 나머지 패턴 설정
+	let arr = [0,1,2,3];
+	let [a, b, ...c] = arr;
+
+	console.log(a,b,c); // 0 1 [2, 3]
+
+	-----------객체 (1) 
+	let {a,b,c} = {b:200, a:100, c:300};
+	console.log(a,b,c); // 100 200 300
+
+	-----------객체 (2)
+	let {a,b,c} = {b:200,  c:300};
+	console.log(a,b,c); // undefined 200 300
+
+	-----------객체 (3) 초기화(기본값) 설정
+	기본값이 있는데,
+	undefined를 전달하면 그냥 기본값으로 셋팅된다(주의) 
+	let {a=1,b=2,c=3} = {a:100, c:undefined};
+	console.log(a,b,c); // 100 2 3 
+
+	-----------객체+배열 (4) 다양한 함수 인수로 설정
+	function foo([a,b,c=300]=[100,200],{d=400,e}={d:undefined, e:500}){
+		console.log(a,b,c,d,e);
+	}
+
+	foo(); // 100 200 300 400 500

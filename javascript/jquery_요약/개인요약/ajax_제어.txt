@@ -1,0 +1,147 @@
+$.param() : 폼 요소들의 값을 변환하여 직렬화된 문자열로 표현한다.
+var params = {width : 1680, height : 1050};	// 배열 선언
+var str = $.param(params); // Ajax로 전송가능하도록 직렬화 , width=1680&height=1050
+---------------------------------------//		     
+.serialize() : 선택한 form의 데이터를 ajax로 전송할 수 있도록 직렬화 한다.
+$("#form_1").serialize();    //  id name form_1의 데이터를 직렬화한다. a=1&b=2
+---------------------------------------//
+ $.ajax({
+	type : 'put',					// put  메소드 타입 전송
+	url : 'some.php',				// 전송 url
+	headers : {
+		"Content-Type" : "application/json",
+		"X-HTTP-Method-Override" : "PUT"
+	},
+	dataType : 'text';				// text, xml, json, script, html
+	data : "name=John&location=Boston",		// 전송 파라미터
+	cache : false,					/* ajax로 페이지를 요청해서 보여줄 경우
+							cache가 있으면 새로운 내용이 업데이트 되지 않는다.*/
+	async : true,					// 비동기 통신,  false : 동기 통신
+	beforSend : fucntion(jqXHR,settings){..}	// ajax 요청이 전송되기 전 실행 함수,return false; 일 경우 요청 중단
+	success : function(data,textStatus,jqXHR){..}   // 콜백 성공 응답시 실행
+	error : function(jqXHR,textStatus,errorThrown){..} // Ajax 전송 에러(실패) 발생시 실행
+	complete : function(jqXHR,textStatus){..}       //  success, error 실행 후 최종적으로 실행
+ });
+---------------------------------------//
+$.post() : post 방식으로 ajax 통신을 한다. 서버와 파라미터로 데이터를 주고받는다.
+var params = 'a=1&b=hi'; //또는 {a;1, b:'hi'}
+$.post("test.php", params, function(data, status, jqXHR){..});// data:출력데이터, status:success, jqXHR
+
+---------------------------------------//
+$.get() : get 방식으로 ajax 통신을 한다. 서버에서 가져온다.
+var params = 'a=1&b=hi'; //또는 {'a':'1', 'b':'hi'}
+$.get("test.php",params ,  function(data, status, jqXHR){..});  // data:출력데이터, status:success, jqXHR
+..
+---------------------------------------//$.get() 체인 메소드
+# jqXHR.readyState==4 와 textStatus=='success' 는 같은 의미
+
+$.get("example.php?Name=ajax&Age=10",function(data,textStatus,jqXHR) {
+    alert("success" );
+},'json' /* xml, text, script, html */)
+.done(function(data, textStatus, jqXHR ) {
+    alert("second success" );
+})
+.fail(function(jqXHR, textStatus, errorThrown) {
+	//jqXHR{readyState: 0, getResponseHeader: ƒ, getAllResponseHeaders: ƒ, setRequestHeader: ƒ, statusText: "error", …}
+	//textStatus=> error (jqXHR.statusText와 같다)
+	//errorThrown=>
+    alert("error" );
+})
+.always(function(data|jqXHR, textStatus, jqXHR|errorThrown) {
+    alert("finished" );
+});
+---------------------------------------// $.post() 체인 메소드
+# jqXHR.readyState==4 와 textStatus=='success' 는 같은 의미
+
+$.post("example.php?Name=ajax&Age=10", {
+    Name:'ajax',
+    Age:'10'
+},function(data,textStatus,jqXHR) {
+    alert("success" );
+},'json' /* xml, text, script, html */)
+.done(function(data, textStatus, jqXHR ) {
+    alert("second success" );
+})
+.fail(function(jqXHR, textStatus, errorThrown) {
+	//jqXHR{readyState: 0, getResponseHeader: ƒ, getAllResponseHeaders: ƒ, setRequestHeader: ƒ, statusText: "error", …}
+	//textStatus=> error (jqXHR.statusText와 같다)
+	//errorThrown=>
+    alert("error" );
+})
+.always(function(data|jqXHR, textStatus, jqXHR|errorThrown) {
+    alert("finished" );
+});
+
+---------------------------------------//json 형태로 전송하기
+json 형태로 전송하기 위해선 	data 에 json형태의 문자열을 만들어 줘야 한다
+아래처럼 JSON.stringify({..json..})
+
+$.ajax({
+	type : 'post',
+	url : '/replies',
+	headers : {
+		"Content-Type" : "application/json",
+		"X-HTTP-Method-Override" : "POST"
+	},
+	dataType : 'text',
+	data : JSON.stringify({
+		bno : bno,
+		replyer : replyer,
+		replytext : replytext
+	}),
+	success : function(result){
+
+	}
+	
+});
+
+---------------------------------------// ajax 파일 업로드
+<form id="ajaxForm" name="ajaxForm" action="save.php" method="post" enctype="multipart/form-data">
+	<input type="file" name="upfile" id="upfile" />
+	<button type="button" onclick="ajaxFileUpload()">전송1</button>
+</form>
+<script>
+
+	function ajaxFileUpload() {
+
+		if($('#upfile').val()==''){
+			alert('업로드파일을 선택해주세요');return;
+		}
+		var form = $("#ajaxForm")[0];
+		var formData = new FormData(form);
+		formData.append("message", "ajax로 파일 전송하기");
+		formData.append("upfile", $("#upfile")[0].files[0]);
+
+		$.ajax({
+		      url : "./save.php"
+		    , type : "POST"
+		    , processData : false
+		    , contentType : false
+		    , data : formData
+		    , success:function(json) {
+			
+			var obj = '';
+
+			try{
+				obj = JSON.parse(json);
+			}catch(e){
+				console.log(e);
+				alert('업로드 에러[1]');
+			}
+			var img ='<img src="'+obj.path+'" width="300" />';
+			$('body').append(img);
+		    }
+		    ,error:function(e){
+			alert('서버 에러입니다');
+			console.log("서버 에러=>",e);
+		    }
+		});
+	}
+</script>
+
+.............................save.php
+$file = $_FILES['upfile'];
+..
+echo '{"path":"data/1.png"}';
+
+
