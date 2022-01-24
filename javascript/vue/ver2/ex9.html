@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .red{color: red;}
+            .bold {font-weight: bold;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+<body>
+<!-- 
+    v-if , v-else , v-else-if 
+    v-show
+-->
+    <div id="app">
+        
+        <!-- 기본 -->
+        <h3>v-if , v-else</h3>
+        <div v-if="condition">기본출력</div>
+        <template v-if="condition">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+        </template>
+        <div v-else>no</div>
+        <button type="button" @click="toggleCondition">버튼</button>
+
+        <!-- v-else-if-->
+        <h3>v-else-if</h3>
+        <template v-if="number === 0">
+            <div>초기값은</div>
+            <div>0</div>
+            <div>이다</div>
+        </template>
+        <div v-else-if="number === 1">값 1 </div>
+        <div v-else>값 2 초과</div>
+        <button type="button" @click="increase">버튼</button>{{number}}
+
+
+        <!-- v-show -->
+        <h3>v-show</h3>
+        <div v-show="show" style="border: 1px solid red">보이냐?</div>
+        <button type="button" @click="toggleShow">버튼</button>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                
+                condition : true,
+                number : 0,
+                show : true
+            },
+            methods:{
+                toggleCondition(){
+                    this.condition = !this.condition;
+                },
+                increase(){
+                    this.number++;
+                },
+                toggleShow(){
+                    this.show = !this.show;
+                } 
+            }
+        })
+    </script>
+</body>
+</html>
