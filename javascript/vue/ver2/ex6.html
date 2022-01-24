@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+<body>
+<!-- computed : 
+    함수와는 다르게 캐싱된 결과를 유지한다.
+    변수처럼 사용한다, '()'를 사용하지 않음.
+-->
+    <div id="app">
+      
+       {{a}} 
+
+       <br />
+       <button @click="change">변경</button>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                messages : '테스트'
+            },
+            methods:{
+
+                change(){
+                    this.messages ="하루종일";
+                }
+                
+            },
+
+            computed:{
+
+                a(){
+                   return this.messages.split('').reverse().join('');
+                }
+            }
+        })
+    </script>
+</body>
+</html>

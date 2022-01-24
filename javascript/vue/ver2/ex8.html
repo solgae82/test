@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .red{color: red;}
+            .bold {font-weight: bold;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+<body>
+<!-- css(class, style 속성) 바인딩
+-->
+    <div id="app">
+        <!-- class -->
+        <div :class="{red: classRed, bold : cssBold}">class 테스트</div>
+        <button @click="changeClass">변경</button>
+
+        <div :style="{color: sColor, fontWeight : sBold}">style 테스트</div>
+        <button @click="changeStyle">변경</button>
+
+
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                classRed : true,
+                cssBold : true,
+                sColor : 'blue',
+                sBold : 'bolder'
+            },
+            methods:{
+
+                changeClass(){
+                    this.classRed = !this.classRed;
+                    this.cssBold = !this.cssBold;
+                },
+
+                changeStyle(){
+                    this.sColor = this.sColor==''?'blue':'';
+                    this.sBold = this.sBold==''?'bolder':'';
+                }
+                
+            }
+        })
+    </script>
+</body>
+</html>
