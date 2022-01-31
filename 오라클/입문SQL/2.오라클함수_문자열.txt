@@ -53,7 +53,7 @@
 	    RPAD('Oracle', 10, '*'),
 	    LPAD('Oracle', 4, '#'),
 	    RPAD('Oracle', 5, '*')
-	fromdual;
+	from dual;
 	
 	// Oracle	####Oracle	Oracle****   Orac	Oracl
 

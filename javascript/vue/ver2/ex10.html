@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .red{color: red;}
+            .bold {font-weight: bold;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+<body>
+<!-- 
+    v-for
+-->
+    <div id="app">
+        <div style="border: 1px solid blue" v-for="f in fruits">
+            {{f.name}} :  {{f.color}}
+        </div>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                fruits:[
+                    {name:'사과',color:'빨강'},
+                    {name:'바나나',color:'노랑'},
+                    {name:'포도',color:'검정'}
+                ]
+               
+            },
+            methods:{
+               
+            }
+        })
+    </script>
+</body>
+</html>
