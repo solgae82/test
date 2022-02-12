@@ -2,18 +2,18 @@
 <html>
     <head>
         <style>
-            .red{color: red;}
-            .bold {font-weight: bold;}
+
         </style>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     </head>
 <body>
 <!-- 
     v-for
+    :key 속성에는 유일한 아이디 값을 넣어준다.
 -->
     <div id="app">
-        <div style="border: 1px solid blue" v-for="f in fruits">
-            {{f.name}} :  {{f.color}}
+        <div style="border: 1px solid blue" v-for="(f, index) in fruits" :key="fruits.id">
+            {{index}}. {{f.name}} :  {{f.color}}
         </div>
     </div>
     <script>
@@ -21,9 +21,9 @@
             el: '#app',
             data: {
                 fruits:[
-                    {name:'사과',color:'빨강'},
-                    {name:'바나나',color:'노랑'},
-                    {name:'포도',color:'검정'}
+                    {id:1, name:'사과',color:'빨강'},
+                    {id:2, name:'바나나',color:'노랑'},
+                    {id:3, name:'포도',color:'검정'}
                 ]
                
             },
