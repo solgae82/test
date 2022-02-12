@@ -8,40 +8,101 @@
     </head>
 <body>
 <!-- 
-   인스턴스 두개 사용하기
+   component 사용하기
+   (전역등록 방법)
+   
+   vue 인스턴스 생성전에 생성되어야 한다.
+   templete: `'<div></div>', 처럼 root 엘리먼트를 생성해야 동작한다
+   (vue.js 3에서는 root 엘리먼트 없어도 된다고 함.)
+
+   data:{} 가 아닌 메서드로 data(){return {};} 로 해야한다.
+
+   컴포넌트 안에 다른 컴포넌트를 넣는 것도 가능.
 -->
     <div id="app">
-       {{name}}
-       <button @click="change">바뀜</button>
+      <global-button>얼</global-button>
     </div>
     <div id="app-1">
-        {{name}}
-        <button @click="change">바뀜</button>
-     </div>
+        <global-button />
+    </div>
     <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                name: '하늘'              
+        Vue.component('global-name',{
+            template:'<div><span style="color: blue">글로벌 동이!</span></div>'
+        });
+        Vue.component('global-button',{
+            template: `
+            <div>
+                {{name}}<br />
+                <global-name />
+                <button @click="change">전역등록</button>
+            </div>`,
+            data() {
+                return {
+                    name: '하늘'              
+                }
             },
             methods:{
                 change(){
-                    app1.name="하늘2";
+                    this.name="하늘2";
                 }
             }
         });
 
-        var app1= new Vue({
-            el: '#app-1',
-            data: {
-                name: '땅'              
+        //기본 인스턴스는 생성해줘야 한다.
+        var app = new  Vue({
+            el: '#app'
+        });
+        var app1 = new  Vue({
+            el: '#app-1'
+        });
+     </script>
+
+<!--
+    component 사용하기
+   (지역등록 방법)
+
+   지역 등록 변수안에 또 다른 지역 등록 컴포넌트를 등록할 수 있다.
+-->
+    <hr />
+    <div id="app-2">
+        <local-button>얼</local-button>
+    </div>
+
+    <script>
+        const localName = {
+            template :'<div style="color: red;">로컬동이</div>'
+        };
+        const localButton ={
+            components:{
+               'local-name': localName
+            },
+            template: `
+            <div>
+                {{name}}<br />
+                <global-name />
+                <local-name />
+                <button @click="change">지역등록</button>
+            </div>`,
+            data() {
+                return {
+                    name: '하늘'              
+                }
             },
             methods:{
                 change(){
-                    app.name="땅2";
+                    this.name="하늘2";
                 }
             }
+        };
+        var app2 = new  Vue({
+            el: '#app-2',
+            components:{
+                'local-button': localButton
+                
+            }
         });
+
+    
     </script>
 </body>
 </html>
