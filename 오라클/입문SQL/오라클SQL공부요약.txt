@@ -1,0 +1,44 @@
+1. 기초
+	is null, is not null
+	escape
+	in
+	between
+	not , != , <> ^=
+
+2. 문자열
+	upper, lower, initcap
+	length, lengthb
+	substr
+	instr
+	replace
+	lpad, rpad
+	cancat , ||
+	trim, ltrim, rtrim
+3. 숫자
+	round, trunc
+	ceil, floor
+	mod
+
+4. 날짜
+	sysdate
+	add_months
+	months_between
+	next_day
+	last_day
+	round , trunc
+
+5. 형변환
+	to_char
+	to_date
+	to_number
+
+6. NULL 처리 함수
+
+	NVL , NVL2
+
+7. decode
+
+8. case
+
+9. 집계함수
+	sum, avg, count , max, min
