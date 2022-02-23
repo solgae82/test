@@ -175,3 +175,119 @@ MVVM
 
 			});
 		</script>
+
+뷰 라우터
+	<div id="app">
+		<h1>뷰 라우터 예제</h1>
+		<p>
+			<router-link to="/main">main 컴포넌트 이동</router-link>
+			<router-link to="/login">login 컴포넌트 이동</router-link>
+
+			<router-view></router-view>
+		</p>
+
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+	<!-- router 추가 -->
+	<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+	<script>
+		var Main = {template: '<div style="border: 1px solid red">main</div>'};
+		var Login = {template: '<div style="border: 1px solid blue">login</div>'};
+
+		var routes =[
+		{path: '/main' , component: Main},
+		{path: '/login' , component: Login}
+		];
+
+		var router = new VueRouter({routes});
+
+		var app = new Vue({router}).$mount('#app');
+	</script>
+
+	-----------
+	//라우터 주소
+	#/main , #/login
+
+	//라우터 (#) 해시값 없애는 방법
+	var router = new VueRouter({mode: 'history', routes});
+
+	-----------
+
+네스티드 라우터(Nested Router)
+	<div id="app">
+		<router-view></router-view>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+	<!-- router 추가 -->
+	<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+	<script>
+
+		//상위 컴포넌트
+		var User = {template:`
+		    <div>
+			상위 컴포넌트
+			<router-view></router-view>
+		    </div>
+		`};
+
+		//하위컴포넌트 2개
+		var UserPost = {template: '<p>유저 Post 컴포넌트</p>'};
+		var UserProfile = {template: '<p>유저 Profile 컴포넌트</p>'};
+
+
+		var routes = [{
+		  path: '/user',
+		  component: User,
+		  children:[
+		    {path: 'posts' , component: UserPost},
+		    {path: 'profile' , component: UserProfile}
+		  ]
+		}];
+		var router = new VueRouter({routes});
+
+		var app = new Vue({router}).$mount('#app');
+	</script>
+
+	-----------
+	라우터 주소 3개 
+	#/user , #/user/posts ,  #/user/profile
+
+	네스티드 라우터는 화면을 구성하는 컴포넌트가 적을 때는 유용하지만,
+	더 많은 컴포넌트를 표시하는 데는 한계가 있다.
+	이 문제를 해결할 수 있는 방안으로 네임드 뷰가 있다.
+	-----------
+
+네임드 뷰(Named View)
+
+	<div id="app">
+		<router-view name="header"></router-view>
+		<router-view></router-view> <!-- 디폴트 (name 속성이 없는 경우) -->
+		<router-view name="footer"></router-view>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+	<!-- router 추가 -->
+	<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+	<script>
+
+		var Body = {template: '<div>몽뚱아리</div>'};
+		var Header = {template: '<div>머리라구</div>'};
+		var Footer = {template: '<div>풋터</div>'};
+
+		var router = new VueRouter({
+			routes:[
+				{
+				  path: '/',
+				  components:{
+				    default: Body,
+				    header : Header,
+				    footer : Footer
+				  }
+				}
+			]
+		});
+
+		var app = new Vue({router}).$mount('#app');
+	</script>
