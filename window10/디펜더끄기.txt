@@ -1,0 +1,6 @@
+gpedit.msc 실행
+
+로컬컴퓨터정책 > 컴퓨터구성>관리템플릿>Windows구성요소>Microsoft Defender 바이러스 백신
+>Microsoft Defender 바이러스 백신 끄기 
+
+클릭! 사용체크 
