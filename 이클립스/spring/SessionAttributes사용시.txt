@@ -1,0 +1,34 @@
+@Controller
+@SessionAttributes("testVO") //요기
+public class TestContoller {
+
+	// 이것 꼭 추가, 이거 안 하면 리스트 보기등에는 session 에러 남
+	@ModelAttribute("testVO")
+	public TestVO get() {
+		return new TestVO();
+	}
+	
+	@RequestMapping(value="/list.do")
+	public String list(@ModelAttribute("testVO") TestVO testVO , Model model){
+		return "/list";
+	}
+
+	@RequestMapping(value="/regist.do")
+	public String regist(@ModelAttribute("testVO") TestVO testVO , Model model){
+		
+		model.addAttribute("testVO", testService.selectTest(testVO));
+
+		return "/regist";
+	}
+
+	//@ResponseBody 사용시는 HttpSession을 인자로 꼭 넣어줘야 에러 안 남
+
+	@GetMapping("/ajax.do")
+	@ResponseBody
+	public String ajax(@ModelAttribute("testVO") TestVO testVO , 
+	Model model, HttpSession httpSession) {
+	   
+	    return "OK";
+	}
+
+}
