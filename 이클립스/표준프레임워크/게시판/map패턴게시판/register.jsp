@@ -73,7 +73,7 @@ span.error {font-size: 0.8em; color: #ff7744;}
 			alertAll : true, /* true면 모든 에러 갯수 만큼 alert 출력 */
 			errorJson : null,
 			setMode : function(mode){this.mode=mode;},
-			setAertAll : function(bool){this.alertAll=bool;},
+			setAlertAll : function(bool){this.alertAll=bool;},
 			setErrorJson : function(json){
 				try{
 					if(errorJson != ''){
