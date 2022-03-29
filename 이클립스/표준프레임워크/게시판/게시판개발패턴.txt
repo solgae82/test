@@ -5,9 +5,9 @@
 2. write 입력처리 만들기
 	- EgovIdGnrService 서비스 설정
 	- 날짜형식문자열 메서드 만들기(20220109115930) 또는 쿼리에서 설정하기
-	(validator 처리는 나중에 만든다)
-
+	- VO,jsonVO등은 빈것으로라도 셋팅 해야한다(update 모드와 똑같이, 같은 폼을 사용하므로)
 	- 등록, 취소 버튼 생성
+	:(validator 처리는 나중에 만든다)
 
 3. 처리 후 파라미터 랜딩 페이지 만들기
 	- write, update, delete 시 파라미터 거쳐가기 페이지
@@ -19,6 +19,7 @@
 	VO에 procMode 속성 변수 설정으로 처리 후 이동할 곳을 지정한다
 
 4. 리스트 기본 출력 만들기(페이징 없는 리스트)
+	- select 쿼리 resultType은 VO 보다는 Map(egovMap)으로 만든다(스칼라쿼리등의 가변필드가 많으므로)
 	- 등록,리스트삭제 버튼 생성
 
 5. 리스트 -> view 링크 만들고, 상세보기 만들기
@@ -27,7 +28,8 @@
 	- 수정,삭제, 목록 버튼 생성
 
 6. view -> 수정 링크 ->update 수정폼 만들기
-	수정폼 출력용 VO -> JSON 오브젝트로 만들기
+	select 쿼리 resultType은 VO 보다는 Map(egovMap)으로 만든다(스칼라쿼리등의 가변필드가 많으므로)
+	수정폼 출력용 JSON 오브젝트로 만들기
 	제목 : 스크립트로 출력한다(html태그등을 허용할 수 있게)
 	내용 : 스크립트로 출력한다(html태그등을 허용할 수 있게)
 
@@ -38,8 +40,12 @@
 8. view -> 삭제처리 만들기
 
 9. 리스트 검색처리 만들기
-	- 체크박스처럼 멀티 파라미터는 직렬화 변수 한개로 만든다(그래야 이동시 달고 다닐 수 있다)
+	- 체크박스처럼 멀티 파라미터는 직렬화 hidden 변수 한개로 만든다
+	(그래야 이동시 달고 다닐 수 있다)
+	(mybatis 동적 foreach 를 쓰기 위해선[ IN(,,) 쿼리] 다시 java List로 만들어야 한다)
+
 	- pageIndex, selectedId 등의 필수 파라미터는 hidden으로 한다.
+	- pageIndex 는 '1'로 초기화 해야한다.
 
 10. 리스트 검색 파라미터들 페이지 이동시 달고 다니기 체크
 	- write -> param landing page -> list
@@ -47,10 +53,12 @@
 	- view -> delete -> param landing page -> list
 
 11. 리스트 멀티 체크 삭제 만들기
-	잊지말자 mybatis <foreach ollection="list" ../>
+	컨트롤러 메소드 파라미터 List<String> 타입으로 바인딩 받는다
+	잊지말자 : mybatis 
+	parameterType="list"
+	<foreach collection="list" ../>
 	
 12. write, update 시 validator 만들기
 
 13. list 페이징 처리
-	- 검색 파라미터 중 체크박스처럼 직렬화된 파라미터 파싱, 리스트로 만들어서 SQL Collection으로 넘기기
 	- 첫 출력번호 계산 메서드 만들기
