@@ -73,6 +73,7 @@
 		
 		<!-- fmt:formatDate 로 데이트형을 문자열 패턴으로 변환 -->
 		<fmt:formatDate  value="${upDateString}" pattern="yyyy-MM-dd HH:mm:ss"/>
+		출력 : 2021-11-28 11:12:30
 
 	- fmt:formatNumber
 

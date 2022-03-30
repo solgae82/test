@@ -23,6 +23,7 @@
 	${test.regDate} => 20211203102433
 
 	<fmt:parseDate value="${test.regDate}" var="regDateString" pattern="yyyyMMddHHmmss"/>
+	<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss"/> 2021-12-03 10:24:33 출력
 	<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd"/> 2021-12-03 출력
 
 ---- 강제개행
