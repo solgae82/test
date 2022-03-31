@@ -28,6 +28,7 @@
 		border: 3px dotted red;
 		padding: 10px;
 	}
+.json{border: 1px dotted red}
 </style>
 <script  src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -111,11 +112,31 @@
 </script>
 </head>
 <body>
-${testVOJson}
+
 <div id="content">
+	<div class="json">
+	${testVOJson}
+	</div>
 	<a href="<c:url value="/" />">home</a>
-	<h1>BBS 3 등록폼/수정폼</h1>
+	<h1>BBS 3 
+		<c:choose>
+			<c:when test="${empty testVO.id}">
+				등록폼
+			</c:when>
+			<c:otherwise>
+				수정폼
+			</c:otherwise>
+		</c:choose>
+	</h1>
 	<form id="writeForm" name="writeForm" method="post" autocomplete="off">
+		<c:if test="${!empty testVO.id}">
+		<!-- 세션(SessionAttributes)을 사용했다면 이곳을 출력할 수 있다 -->
+		등록일 : 
+		<fmt:parseDate value="${testVO.regDate}" var="regDateString" pattern="yyyyMMddHHmmss"/>
+		<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss"/>
+		
+		<br />
+		</c:if>
 		제목 : <input type="text"   id="sbScription" name="sbScription" value="" />
 		<form:errors path="testVO.sbScription" cssClass="fieldError"/>
 		<br />
