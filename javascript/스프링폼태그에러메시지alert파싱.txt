@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+<style>
+	/* 출력 에러메시지는 모두 안 보이게 처리*/
+	span.fieldError{visibility: hidden;}
+</style>
+  <script  src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+  	/**
+	*	스프링  form태그 에러메시지 중 첫번째 메시지 alert창 출력
+	*/
+	function errorsFirstAlert(cssName){
+		var idNm = '';
+		$('.'+cssName).each(function(index, item){
+			if(index == 0){
+				var errorMsg = $(item).html();
+				idNm = $(item).attr('id');
+				
+				var chk = errorMsg.indexOf('<br>')
+				if(chk != -1){
+					alert(errorMsg.substr(0, chk));	
+				}else{
+					alert(errorMsg);
+					
+				}
+				
+				return false;
+			}
+			
+		});
+		if(idNm != ''){
+			$('#' + idNm.substr(0,idNm.indexOf('.'))).focus();
+		}
+		
+	}
+
+	$(function(){
+		errorsFirstAlert('fieldError');
+	});
+  </script>
+ </head>
+ <body>
+ <input type="text" id="cate" name="cate" /><br />
+  <span id="cate.errors" class="fieldError">카테고리를 선택해주세요[1]<br/>카테고리를 선택해주세요[2]</span>
+  <span id="cate.errors" class="fieldError">카테고리를 선택해주세요[3]<br/>카테고리를 선택해주세요[4]</span>
+ </body>
+</html>
