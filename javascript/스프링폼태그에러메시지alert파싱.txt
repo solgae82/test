@@ -25,7 +25,7 @@
 				idNm = $(item).attr('id');
 				
 				var chk = errorMsg.indexOf('<br>')
-				if(chk != -1){
+				if(chk > -1){
 					alert(errorMsg.substr(0, chk));	
 				}else{
 					alert(errorMsg);

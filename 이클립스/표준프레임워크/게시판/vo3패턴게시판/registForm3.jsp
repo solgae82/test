@@ -29,6 +29,8 @@
 		padding: 10px;
 	}
 .json{border: 1px dotted red}
+/* 출력 에러메시지는 모두 안 보이게 처리*/
+	span.fieldError{visibility: hidden;}
 </style>
 <script  src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -93,6 +95,35 @@
 		
 	}
 	
+	/**
+	*	스프링  form태그 에러메시지 중 첫번째 메시지 alert창 출력
+	*/
+	function errorsFirstAlert(cssName){
+		var idNm = '';
+		$('.'+cssName).each(function(index, item){
+			if(index == 0){
+				var errorMsg = $(item).html();
+				idNm = $(item).attr('id');
+				
+				var chk = errorMsg.indexOf('<br>')
+				if(chk > -1){
+					alert(errorMsg.substr(0, chk));	
+				}else{
+					alert(errorMsg);
+					
+				}
+				
+				
+				return false;
+			}
+			
+		});
+		if(idNm != ''){
+			$('#' + idNm.substr(0,idNm.indexOf('.'))).focus();
+		}
+		
+	}
+	
 	$(function(){
 		//등록
 		$('#writeBtn').on('click',function(event){writeForm()});
@@ -105,6 +136,9 @@
 		
 		//제목,내용은 스크립트로 넣는다
 		insertInputForm();
+		
+		//유효성 체크후 에러 메시지 첫번째 것 출력하기
+		errorsFirstAlert('fieldError');
 	});	
 	
 	
@@ -115,7 +149,7 @@
 
 <div id="content">
 	<div class="json">
-	${testVOJson}
+	${testVOFieldErrors}
 	</div>
 	<a href="<c:url value="/" />">home</a>
 	<h1>BBS 3 
@@ -130,7 +164,7 @@
 	</h1>
 	<form id="writeForm" name="writeForm" method="post" autocomplete="off">
 		<c:if test="${!empty testVO.id}">
-		<!-- 세션(SessionAttributes)을 사용했다면 이곳을 출력할 수 있다 -->
+		<!-- 세션(SessionAttributes)을 사용했다면 날짜를 출력할 수 있다 -->
 		등록일 : 
 		<fmt:parseDate value="${testVO.regDate}" var="regDateString" pattern="yyyyMMddHHmmss"/>
 		<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss"/>

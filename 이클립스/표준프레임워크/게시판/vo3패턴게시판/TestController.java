@@ -19,6 +19,7 @@ import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import egovframework.test.e3.service.TestService;
 import egovframework.test.e3.service.TestVO;
 import egovframework.test.e3.service.impl.BbsValidator;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Controller("test3Controller")
@@ -117,7 +118,7 @@ public class TestController {
 		if(bindResult.hasErrors()) { //재입력 요청시
 			model.addAttribute("category", testService.selectCategory("category"));
 			model.addAttribute("testVOJson", JSONObject.fromObject(testVO)); //json형식 오브젝트
-			
+						
 			return "/test3/registForm3";
 		}
 		
