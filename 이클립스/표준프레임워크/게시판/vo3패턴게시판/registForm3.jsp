@@ -149,7 +149,7 @@
 
 <div id="content">
 	<div class="json">
-	${testVOFieldErrors}
+	${testVOJson}
 	</div>
 	<a href="<c:url value="/" />">home</a>
 	<h1>BBS 3 
