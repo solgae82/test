@@ -65,6 +65,7 @@
 		등록일 : 
 		<fmt:parseDate value="${testVO.regDate}" var="regDateString" pattern="yyyyMMddHHmmss"/>
 		<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss"/>
+		<br />
 		제목 : <c:out value="${testVO.sbScription }" /> <br />
 		카테고리 :  <c:out value="${testVO.cateName }" /><br /> 
 		

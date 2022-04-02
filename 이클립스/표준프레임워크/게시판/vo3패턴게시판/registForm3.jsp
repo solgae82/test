@@ -119,7 +119,11 @@
 			
 		});
 		if(idNm != ''){
-			$('#' + idNm.substr(0,idNm.indexOf('.'))).focus();
+			if(idNm.indexOf('.') > -1){
+				$('#' + idNm.substr(0,idNm.indexOf('.'))).focus();	
+			}else{
+				$('#' + idNm).focus();
+			}
 		}
 		
 	}
