@@ -26,9 +26,10 @@ public class BbsValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(errors, "sbScription", null, "제목을 입력해주세요");
 		
 		//카테고리
-		if(StringUtils.equals(testVO.getCate(), "none")) {
-			errors.rejectValue("cate", null, "카테고리를 선택해주세요[1]");
-			errors.rejectValue("cate", null, "카테고리를 선택해주세요[2]");
+		if(StringUtils.isEmpty(testVO.getCate())) {
+			errors.rejectValue("cate", null, "카테고리 값이 없습니다");
+		}else if(StringUtils.equals(testVO.getCate(), "none")) {
+			errors.rejectValue("cate", null, "카테고리를 선택해주세요");
 		}
 		
 		//내용
