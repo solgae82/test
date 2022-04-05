@@ -1,7 +1,10 @@
+ID Generation 미리 만들어 놓기
+html필터 등 미리 확인 
+
 1. list 페이지 만들어서 [등록] 버튼 -> write 입력 폼 만들기
 	- write 입력폼은 update 수정폼과 공유해서 쓴다
 	- 입력, 수정 후 이동하는 파라미터 폼과, list,view에 이동시 필요한 폼 2개가 필요하다
-	- 수정폼과 같이 쓰기에 구분변수(글번호)를 초기화하고 등록폼으로 가야한다
+	- 수정폼과 같이 쓰기에 구분변수(글번호:selectedId)를 초기화하고 등록폼으로 가야한다
 
 2. write 등록처리 만들기
 	- EgovIdGnrService 서비스 설정
@@ -45,8 +48,8 @@
 	(그래야 이동시 달고 다닐 수 있다)
 	(mybatis 동적 foreach 를 쓰기 위해선[ IN(,,) 쿼리] 다시 java List로 만들어야 한다)
 
-	- pageIndex, selectedId 등의 필수 파라미터는 hidden으로 한다.
-	- pageIndex 는 '1'로 초기화 해야한다.
+	- 수정폼과 같이 쓰기에 (현재페이지번호:pageIndex) 는 '1'로 초기화 해야한다.
+	 
 
 10. 리스트 검색 파라미터들 페이지 이동시 달고 다니기 체크
 	- write -> param landing page -> list
