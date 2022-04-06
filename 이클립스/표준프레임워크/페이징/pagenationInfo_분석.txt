@@ -10,33 +10,16 @@
 
 
 ---------계산 값
-	아래 예제 값들은 
+	아래 계산 값들은 
 		recordCountPerPage = 10;
 		pageSize = 10; 
 
-	으로 가정한다
+	일때 계산값으로 가정한다
 
-	총 페이지 갯수 값
-
-		totalPageCount : 총 페이지 갯수 정수 값.. 
-
-	변수 없이 출력하는 계산 값
-		public int getFirstPageNo() {
-			return 1;
-		}
-
-		public int getLastPageNo() {
-			return 총 페이지갯수;
-		}
-
-
-	현재 페이지 리스트(블록)에서 쓰는 변수
-
-		firstPageNoOnPageList : 1 , 11, 21, 31 ..
-		lastPageNoOnPageList : 10, 20, 30, 40 ..
-
-
-	SQL에서 쓰는 rownum 값 변수
-
-		firstRecordIndex : 0 , 10, 20, 30 ..
-		lastRecordIndex : 10, 20, 30 ...
+	
+	
+	totalPageCount : 총 페이지 갯수
+	firstPageNoOnPageList : 페이지리스트(시작) ex) 1 , 11, 21, 31 ..
+	lastPageNoOnPageList : 페이지리스트(끝) ex) 10, 20, 30, 40 ..
+	firstRecordIndex : SQL Rownum ex) 0 , 10, 20, 30 ..
+	lastRecordIndex : SQL Rownum ex) 10, 20, 30 ...

@@ -106,6 +106,7 @@ sample/egovSampleList.jsp
 	<div id="paging">
 		<ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
 		<form:hidden path="pageIndex" />
+		<input type="hidden" id="pageIndex" name="pageIndex" value="${searchVO.pageIndex}" />
 	</div>
 
 	<script>

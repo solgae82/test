@@ -1,0 +1,76 @@
+VO.java
+	/** 페이징 : 현재 페이지 번호 */
+	private int currentPageNo = 1;
+	
+	/** 페이징 : 페이지에 출력될 게시물 수 */
+	private int recordCountPerPage = 10;
+	
+	/** 페이징 : 페이징 리스트에 출력될 페이지 수*/
+	private int pageSize = 10;
+	
+	/** 페이징 : SQL ROWNUM (시작) */
+	private int firstRecordIndex = -1;
+	
+	/** 페이징 : SQL ROWNUM (끝) */
+	private int lastRecordIndex = -1;
+
+Controller.java
+
+	@RequestMapping(value="/test4List.do")
+	public String test4List(@ModelAttribute("searchVO") Test4VO searchVO, Model model) throws Exception{
+		
+		
+		//페이징 기본 설정값 셋
+		searchVO.setRecordCountPerPage(propertiesService.getInt("pageUnit")); // 페이지당 레코드 갯수
+		searchVO.setPageSize(propertiesService.getInt("pageSize")); //출력할 페이지 리스트 갯수
+		
+		//페이징 셋팅
+		PaginationInfo paginationInfo = new PaginationInfo();		
+		
+		paginationInfo.setCurrentPageNo(searchVO.getCurrentPageNo()); //현재페이지 번호 셋
+		paginationInfo.setRecordCountPerPage(searchVO.getRecordCountPerPage()); //페이지당 레코드 갯수 셋 
+		paginationInfo.setPageSize(searchVO.getPageSize()); // 출력할 페이지 리스트 갯수 셋
+		
+		/*페이징 : 쿼리에 사용될 값 계산 셋 */
+		searchVO.setFirstRecordIndex(paginationInfo.getFirstRecordIndex()); //rownum 시작번호
+		searchVO.setLastRecordIndex(paginationInfo.getLastRecordIndex()); //rownum 끝번호
+		
+		//쿼리 (where절) 에 쓰일 검색 카테고리 파싱 셋
+		
+		//전체 게시물 갯수 셋팅(리스트 출력에 쓰이는 셋팅)
+		int totalRecordCount = test4Service.selectTest4TotalNum(searchVO);
+		paginationInfo.setTotalRecordCount(totalRecordCount);
+		
+		model.addAttribute("cateList", test4Service.selectCategoryList("category")); //카테고리 리스트
+		model.addAttribute("test4List", test4Service.selectTest4List(searchVO)); //현재 페이지 게시물 리스트
+		model.addAttribute("paginationInfo", paginationInfo); //view에 출력하기 위해 셋
+		//페이지에 출력될 게시물 첫 번호 셋
+		model.addAttribute("pageFirstIndex", test4Service.getCurrentPageFirstIndex(paginationInfo));
+		
+		
+		return "/test4/list4";
+	}
+
+map.xml
+
+	LIMIT #{firstRecordIndex} , #{pageSize}
+
+list.jsp
+
+	<%@ taglib prefix="ui"     uri="http://egovframework.gov/ctl/ui"%>
+	<form id="listForm" name="listForm">
+		..
+
+		<div id="paging">
+			<ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
+			<input type="hidden" id="pageIndex" name="pageIndex" value="${searchVO.pageIndex}" />
+		</div>
+	</form>
+	<script>
+		 /* 글 목록 화면 pagination 페이지 링크 function */
+		function fn_egov_link_page(pageNo){
+			document.listForm.currentPageNo.value = pageNo;
+			document.listForm.action = "<c:url value='/list.do'/>";
+			document.listForm.submit();
+		}
+	</script>
