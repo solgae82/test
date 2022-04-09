@@ -1,5 +1,5 @@
 MVVM 
-	model + view + model view
+	model + view + view model
 
 뷰특징
 	컴포넌트 기반 프레임워크
@@ -22,15 +22,16 @@ MVVM
 	인스턴스 생성
 		beforeCreate
 		created
+	인스턴스 화면에 부착
 		beforeMount
 		mounted
-	인스턴스 화면에 부착
+	인스턴스 내용 갱신
 		beforeUpdate
 		updated
-	인스턴스 내용 갱신
+	인스턴스 소멸
 		beforeDestroy
 		destroyed
-	인스턴스 소멸
+	
 
 뷰 컴포넌트 
 
