@@ -1,4 +1,4 @@
-CentOS에 APM (Apache,PHP,MySQL) 소스 설치 4
+1CentOS에 APM (Apache,PHP,MySQL) 소스 설치 4
 by keypointer • 2013년 10월 15일 • 42 Comments
 
 요즘 드는 생각은 굳이 시간을 들여 소스 설치를 할 필요는 없다고 생각되지만 특정 환경을 만들기 위해서 가끔 설치를 하면 컴파일 에러 잡느라 많은 시간을 소비한다.
