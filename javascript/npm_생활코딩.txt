@@ -1,0 +1,186 @@
+NPM  사이트 가입
+
+- npm 프로젝트 만들기 (npm init)
+
+	mkdir myfirst
+	cd ./myfirst
+	npm init 
+
+	이후 모든 npm 명령어는 이 ./myfirst 안에서 해야한다
+
+- npm 로그인 (npm login)
+
+	npm login 
+	(아이디,패스워드,이메일을 입력하면 해당 이메일로 임시 번호 받아서 입력하면 로그인 완료.)
+
+- npm에 업로드 하기 (npm publish)
+
+	- 처음 업로드
+		npm publish --access public 
+
+	- 처음 이후 업로드
+		package.json 의 해당 버전을 올린다
+			
+			"version": "0.0.2" // <= 0.0.1에서 바꿈
+			(!버전이 올라가지 않으면 업로드가 되지 않는다.)
+		
+		버전업 설정 후 
+		
+			npm publish
+	
+		만 하면 처음 설정된 옵션으로 업로드 된다.
+
+
+- npm 업데이트 상황 보기 (npm outdated)
+	
+	myfirst 모듈을 쓸  다른 npm 프로젝트를 만들자
+		
+		mkdir test
+		cd ./test
+		npm init 
+
+	myfirst 모듈을 0.0.2으로 업데이트 하고 npm 사이트에 업로드 했다면,
+	myfirst 모듈을 쓰는 test 프로젝트에 0.0.2 버전으로 업데이트 할 수있다.
+	test 프로젝트의  package.json에 업데이트하고자 하는  모듈의 버전을 올려줘야 업데이트 가능하다
+
+		"dependencies": {
+		    "@sorigae/myfirst": "0.0.2"
+		 }
+
+	업데이트 하기 전 체크
+		
+		npm outdated
+		
+		Package           Current  Wanted  Latest  Location                       Depended by
+		@sorigae/myfirst    0.0.1   0.0.2   0.0.2  node_modules/@sorigae/myfirst  test
+
+		(현재 0.0.3 버전으로 업데이트 가능하다고 나온다)
+
+- npm 업데이트 (mpm update)
+
+	mpm update
+
+	changed 1 package, and audited 2 packages in 608ms
+	found 0 vulnerabilities
+
+- npm 실행시 인수 넘기기
+	
+	node.js 실행시 인자를 넘기면 process 모듈(기본탑재)의 process.argv 프로퍼티 배열의 3번째 인자가 된다
+	
+	node index.js ko  실행
+		
+		var g = require('@sorigae/myfirst');
+		console.log(g[process.argv[2]]);
+
+- npm 명령행 실행파일 만들기
+
+	이 실행파일은 리눅스와 같은 bash 프로그램을 쓸 수 있는 곳이나 windows의 .cmd 에서 쓸 수 있다.
+	
+
+	- myfirst 모듈
+		
+		#!/usr/bin/env node 추가
+
+			./cli-ko.js		
+				#!/usr/bin/env node
+				var greeting = require('./index.js');
+				console.log('Greeting: ' , greeting.ko); 
+		
+		위와 같은 형식으로 명령행 실행 파일을 3(greeting.en , greeting.fr)개 만든다.
+		
+			./cli-ko.js 
+			./cli-en.js 
+			./cli-fr.js 
+		
+		
+		package.json에 bin 속성 추가 
+
+			"bin":{
+			    
+			    "say-ko":"./cli-ko.js",
+			    "say-en":"./cli-en.js",
+			    "say-fr":"./cli-fr.js"
+			},
+
+		package.json의 버전 올려주고
+
+			"version": "0.0.3"
+
+		npm 사이트에 업로드
+			
+			npm publish
+
+	- test 플젝
+
+		myfirst 모듈 버전 올려준다
+			- package.json
+			"dependencies": {
+				"@sorigae/myfirst": "0.0.3"
+			}
+
+		
+		npm outdated (업데이트 확인하기)
+
+			Package           Current  Wanted  Latest  Location                       Depended by
+			@sorigae/myfirst    0.0.2   0.0.3   0.0.3  node_modules/@sorigae/myfirst  test
+
+		모듈 업데이트 
+
+			npm update
+
+	: 이렇게 업데이트 재설치를 하게되면 test 프로젝트의
+		D:\tmp\node\test\node_modules 안에 .bin 디렉토리가 생긴다
+		그 .bin 디렉토리 안에 
+			
+		
+		say (리눅스등의 bash 쉘 가능한 곳에 쓰는 파일)
+		say.cmd (windows에서 쓰는 파일)
+		say.ps1 (모르겠음..다른  운영체제 시스템 같은데..)
+		
+		say-en
+		..
+		say-ko
+		..
+		say-fr
+		..
+
+		이런 실해하는 운영체제별로 실행할 수 있는 파일이 생긴다
+
+
+		실행방법 (윈도우즈)
+
+			cd D:\tmp\node\test\node_modules\.bin
+
+			say-ko.cmd
+			
+			Greeting:  안녕
+
+		실행방법 (bash)
+			
+			cd /d/tmp/node/test/node_modules/.bin
+
+			say-ko
+			
+			Greeting:  안녕
+
+
+		만약 전역으로 설치했다면 --global 
+		
+		윈도우즈 에서는 아무 디렉토리에서 say-ko 하면 실행될 것이고,
+		bash 에서 실행하면 say 명령행만 치면 실행될 것이다.
+
+- npx 
+	모듈을 실행하는 방법 3가지
+	- 전역으로 설치해서 실행
+		npm i -g @sorigae/myfirst
+		node say
+
+	- 로컬로 설치해서 실행
+		npm i @sorigae/myfirst
+		cd myfirst
+		node index
+
+	- npx 이용
+		로컬 체크 > 전역 체크 > 없으면 실시간 다운로드 받아서 실행 후 삭제
+
+		npx @sorigae/myfirst ko

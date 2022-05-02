@@ -15,7 +15,7 @@ Node.js path : C:\Program Files\nodejs\node.exe(Node설치 디렉토리 path가 
 
 3. js작성 후 우측 마우스 > Run As > NodeApplication
 
------------------------3. STS에 플러그인으로 Suversion플러그인 설정
+-----------------------3. STS에 플러그인으로 Subversion플러그인 설정
 1.이클립스(PDT) >  Help > Eclipse Marketplace
 : subversive 검색해서 subversive - SVN Tema Provider 4.0 설치
 : 재시작 후 svn kit 1.8.12 추가 설치 후 또 재시작(또는 window > preference > team > svn > svn connector > get connector로 해도 된다)
