@@ -1,0 +1,63 @@
+파일을 번들링하여 1개의 압축파일을 만드는 기술
+
+#프로젝트를 node 플젝으로 만들어 준다
+
+	mkdir test
+	cd test
+	npm init #현재 플젝을 node 프로젝트로 만든다 
+
+#웹팩 설치
+npm install -D webpack webpack-cli #현제 플젝 모듈에 설치
+
+	(./node_modules 디렉토리에 관련 모듈들이 로컬 설치된다)
+
+#번들링 파일 생성 (명령어로)
+	mkdir ./public
+	
+	$ npx webpack --entry ./index.js --output-path ./public --output-filename other.js
+	(번들링한 ./public/other.js 파일이 생성됨)
+
+	번들링 된 other.js 파일을 해당 html 파일에서 쓴다
+	<script src="./public/other.js"></script>
+
+# 설정파일로 번들링 파일 생성
+
+	플젝 디렉토리에 webpack.config.js 파일을 만들고
+		const path = require('path');
+
+		module.exports = {
+		  entry: './index.js',
+		  output: {
+		    path: path.resolve(__dirname, 'public'),
+		    filename: 'bundle.js',
+		  },
+		};
+
+	npx webpack --config webpack.config.js 
+	
+	또는 (약속된 이름인 webpack.config.js 로 설정파일을 만들었다면 )
+	
+	npx webpack
+	
+	하면 ./public 에 bundle.js 파일이 만들어진다..
+
+	만들어진 번들 파일을 아래처럼 가져와서 쓴다
+	<script src="./public/bundle.js"></script>
+
+# webpack.config.js 파일 의 mode 속성
+	
+	develpment, production, none 모드가 있다.
+
+	module.exports = {
+		  mode : 'develpment', // <= mode 설정
+		  entry: './index.js',
+		  output: {
+		    path: path.resolve(__dirname, 'public'),
+		    filename: 'bundle.js',
+		  },
+	};
+
+	번들링한 소스가 develpment 는 개발모드라서 조금 보기 편하게, 
+	production은 최대한 압축형식으로 되어 있다.
+	none 은 디폴트 셋팅으로 압축하는데 자세한 차이는 모르겠다.
+	기본값은 'production' 이다
