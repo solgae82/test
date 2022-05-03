@@ -181,6 +181,28 @@ NPM  사이트 가입
 		node index
 
 	- npx 이용
-		로컬 체크 > 전역 체크 > 없으면 실시간 다운로드 받아서 실행 후 삭제
+		로컬 체크 > 전역 체크 > 없으면 실시간 다운로드 받아서 실행 후 삭제(1회용)
 
-		npx @sorigae/myfirst ko
+		npx @sorigae/myfirst ko (생활코딩 유투브에서는 되던데, 윈도우즈에서는 안된다)
+			npm ERR! could not determine executable to run
+
+		- p 옵션
+			npx -p @sorigae/myfist say ko
+			
+			실행 => Greeting:  안녕
+
+
+		- test 플젝 디렉토리에서 로컬모듈 실행파일 바로 실행
+			로컬 설치된 myfirst 모듈을 실행하려면 
+
+			test/node_modules/@sorigae/say-ko.cmd
+				Greeting:  안녕
+
+			해야 실행 되었던 것이(윈도우즈 기준)
+				
+
+			npx say-ko 
+				
+				Greeting:  안녕
+			
+			하면 바로 실행된다 
