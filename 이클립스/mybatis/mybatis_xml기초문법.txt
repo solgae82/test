@@ -46,8 +46,9 @@
 	<insert id="create" parameterType="boardVO">
 		<selectKey keyProperty="id" resultType="int" order="BEFORE">
 			SELECT SAMPLE_SEQ.NEXTVAL AS ID FROUM DUAL <!--오라클-->
-			<!-- 또는 -->
+			<!-- 또는 
 			SELECT max(id) + 1 FROM tbl_board 
+			-->
 		</selectKey>
 
 		<!-- insert 실행 전(BEFORE) boardVO.id = id 로 들어가게 된다 -->
@@ -57,24 +58,31 @@
 	</insert>
 	
 	삽입한 레코드 id값 반환 셋팅
+	: id 필드가 AUTO_INCREMENT  (자동증가) 일때
+
 	<insert id="create" parameterType="boardVO">
 		<selectKey keyProperty="id" resultType="int" order="AFTER">
 			SELECT LAST_INSERT_ID()
 		</selectKey>
 
-		<!-- insert 실행 후 (AFTER) boardVO.id = id 로 들어가게 된다 -->
+		<!--	insert 실행 후 (AFTER) :  
+				boardVO.id = SELECT LAST_INSERT_ID() 
+			자동증가된 키값이 들어가게 된다 
+		-->
 
-		insert into tbl_board (id, title, content, writer) 
-		values(#{id},#{title},#{content},#{writer})
+		insert into tbl_board (title, content, writer) 
+		values(#{title},#{content},#{writer})
 	</insert>
 	
 	ServiceImpl.java 코드
 		public Integer create(BoardVO boardVO) throws Exception {
 			
 			Integer cnt = mapper.create(boardVO);
+			String insertId = boardVO.getId(); //isnert 된 ID 반환
 			
-			return boardVO.getId(); //담겨진 삽입 ID 반환
-					
+			this.fileInsert(boardVO.getFile() , insertId);//첨부파일 추가 삽입
+
+			return cnt; 					
 		}
 
 4. select

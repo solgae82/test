@@ -115,7 +115,7 @@ test.jsp
 	</resultMap>
 	<!-- B타입 extends 속성!! -->
 	<resultMap type="egovframework.test.e1.service.B" id="B" extends="base">
-		<result column="A_VALUE" property="bValue" jdbcType="VARCHAR" />
+		<result column="B_VALUE" property="bValue" jdbcType="VARCHAR" />
 	</resultMap>
 
 test.jsp
