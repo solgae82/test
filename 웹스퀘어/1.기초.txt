@@ -1,0 +1,70 @@
+메인 작업 탭
+	Design : 화면 그리는 작업 하는 탭
+	Script : 실제 소스에 디플로이 될 스크립트
+	DataConlection : 데이터 주고 받을 형태 지정
+	Submission : 전송 관련 
+	Source : 웹스퀘어 플젝 설정 파일
+
+왼쪽 프로젝트창
+	Project Explorer 
+		websquare 디렉토리
+			- config.xml (웹스퀘어 설정)
+		
+	Palette
+		각종 컨트롤 객체 팔렛
+	
+	객체 그린 후 사용법
+
+		객체선택 > F1 : Help 창에서 사용 가이드가 나온다
+
+웹브라우저 Ctl + 마우스 우클릭 (개발시에만 사용가능한 웹브라우저 개발옵션) 
+	로그보기
+	주소
+	소스보기
+	dataCollection
+	인스턴스보기
+	Client Name변경
+	현재 화면 디버그 실행
+	전체 시스템 디버그 실행
+	인쇄
+	전체 새로고침
+	새로고침
+	File 정보
+	Version 정보
+
+	websquare > config.xml
+		<debugMenu value="use"/> <!-- use(개발) / block(운영) -->
+그리기 모드 설정
+	
+	그리기 위치는 CSS 위치 속성인 absolute/static/relative 등과 유사하다
+
+	이클립스 메뉴바 > 손바닥 모양 아이콘(지구본 옆에) 클릭
+	변경창이 뜨는데  
+		'신규 컴포넌트를 'absolute' 포지션으로 변경하시겠습니까?'
+	라는 메시지로 뜨게 되는데,
+
+	기본 설정은 static 모드이고, static모드이므로 'absolute'로 바꾸겠냐고 뜨는 것
+
+	'확인' 설정하면 이제 부터 모든 그리기는 absolute 모드로 작동한다
+	
+	다시 바꾸려면,
+	다시 손바닥 아이콘 클릭 :  
+		'신규 컴포넌트를 'static' 포지션으로 변경하시겠습니까?'
+	
+	'static' 변경메시지로 변경되어서 안내 될 것이다. 그리고 '확인'
+
+CSS 설정
+	inline style 추가 
+		property > 속성 > style : 직접 입력
+		property > 하단 Style 입력창 : 직접 입력
+
+	<style> 태그로 추가
+		outline > (<>+:아이콘) > 내부 스타일 시트 추가
+		
+		: 메인 > Source 탭에 xml 태그로 집접 입력가능하게 태그 추가 됨.
+			<style type="text/css"><![CDATA[ ]]></style>
+	css 파일 추가
+		1) outline > (<>+:아이콘) > 외부 스타일 시트 추가 
+		: 파일 선택 창으로 추가 됨
+
+		2)Project Explorer 창에서 CSS파일을 Design 빈 곳으로 drag&drop

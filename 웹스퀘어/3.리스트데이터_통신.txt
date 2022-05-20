@@ -1,0 +1,144 @@
+그리드 뷰 사용법
+
+기본 통신은 단건데이터 방식과 같다
+
+그리드 뷰 설정
+	outline > DataCollection > 우측마우스 선택 > DataList 추가 
+		
+		DataCollection Editor Dialog 창
+		1) ID 변경 버튼 클릭 : id 설정
+		2) 엑셀 그리드에서 데이터 행 추가 : id , name , dataType등
+		3) Apply and Close
+
+		: 사용할 데이터 포맷의 선언이라 생각하면 될 듯
+
+
+
+	팔렛 > Grid > GridView : 원하는 곳에 설정
+
+	그리드뷰 선택 > Property > 속성 > dataList : 위에서 만든 DataCollection 선택
+
+	(DataCollection 과 그리드 뷰 연결 완료)
+
+그리드 뷰 사용
+	처음 설정하면 한개의 셀만 있게 된다
+	
+	셀 제목 설정
+
+		셀의 제목 헤더를 더블 클릭 (또는 우측마우스 편집) > 값 수정 창 > '셀 제목' 입력 > OK
+
+	셀과 가져온 DataCollection field 매칭
+		빈셀 선택 > Property > 속성 > id 선택 : 설정된 DataList의 item중 하나 선택
+
+	열 추가
+		제목셀, 또는 데이터셀 우측마우스 클릭 > 열 삽입 : 왼쪽 ,오른쪽 등으로 추가
+	행 추가
+		제목셀, 또는 데이터셀 우측마우스 클릭 > 행 삽입 : 위 ,아래 등으로 추가
+
+	열 이동
+		제목셀, 또는 데이터셀 우측마우스 클릭 > 열 이동 : 왼쪽 ,오른쪽 등으로 이동
+	
+	열 삭제 , 행 삭제
+		제목셀, 또는 데이터셀 우측마우스 클릭 > 삭제 : 열, 행등 선택 삭제
+		
+	열 숨김 
+		제목셀, 또는 데이터셀 우측마우스 클릭 > 열 숨김 : 선택 열 숨김
+
+	열 병합
+		ctrl + 셀 중복 선택 :  병합
+
+	이클립스 메뉴 아이콘으로도 할 수 있고 단축메뉴로도 할 수 있다
+	그리드 뷰 전체 선택 후 더블클릭 하면 각 셀을 자세히 설정하는 창으로도 제어할 수 있다
+	이외에 각종 제어 메뉴들이 있다
+
+한방에 연결하기
+	하나씩 추가하면서 제어해도 되겠지만,
+	일반적으로 DataList 한개의 item와 셀과의 매칭이 되는 구조이므로, 
+	drag & drop으로 연결하는게 편하다
+
+		1) Outline > DataCollection > 해당 DataList 선택 
+		2) 그리드 뷰로 drag & drop : 생성 팝업창 뜸
+		3) 팝업창 > Option > 신규생성 : 선택 
+		4) OK 
+
+성별 코드 M => 남성으로 치환
+
+	1)데이터셀 선택 > Property> 속성 > inputType > select 선택
+
+	2)변경된 데이터셀 더블클릭 > SelectBox 설정 팝업창
+
+	3) 직접 데이터 셀을 만들거나  BindeItem Set(이미 설정되어 있는) 에서 선택 후
+		Label , Value등 설정
+
+	4) All Option , choose옵션등 선택  OK
+
+날짜 데이터 형식 
+	1)데이터셀 선택 > Property> 속성 > inputType > calender 선택
+
+
+그리드뷰 열 폭 조절
+	셀 당 드래그로 조절 가능.
+
+	브라우저 전체 크기 맞춤
+		Property > 속성 > autoFit :  lastColumn , AllColumn등 설정
+		
+		lastColumn : 마지막 컬럼에 나머지 폭 모두 몰아주기
+		AllColumn : 전체 균등 분할 폭
+
+	그리드 폭 최소 고정폭 설정
+		기본은 전체 폭 맞춤!
+		브라우저가 줄어 들때, 설정한 최소폭 이하이면 
+		가로 스크롤바가 생기게 하는 기능.
+		
+		Property > 속성 > autoFitMinWidth : 1000 (픽셀 크기로 설정)
+
+그리드 번호 달기
+	그리드 전체 선택 후 
+	Property > 속성 >
+		rowNumHeaderValue : 번호
+		rowNumVisible : true
+		rowNumWidth : 30
+		..
+
+그리드 정렬 기능
+	그리드 전체 선택 후 
+	Property > 속성 > sortable : true
+
+	웹브라우저 그리드에서
+		헤더 컬럼 더블클릭 : 해당 컬럼 기준으로 정렬 (더블클릭시마다 : 기본 > 오름차순 > 내림차순)
+		ctrl + 2개셀이상 더블클릭 : 멀티셀 정렬
+
+	Property > 속성 > sortEvent : ondbClick(더블클릭), onClick(한번클릭)
+
+필터 기능
+	기본 셀 필터 적용 
+		헤더셀 선택 > Property > 속성 > useFilter : true
+			(해당 셀에 필터 창 기능이 설정 됨)
+	
+	체크박스로 필터 기능 추가하고 싶을때
+		그리드 전체선택 > Property > 속성 > useFilterList : true
+	
+	: 보통 이 두개를 같이 설정한다고 생각해야한다
+
+컬럼 이동 기능(웹브라우저에서)
+	그리드 전체선택 > Property > 속성 > moveColumn : true
+
+	: 드래그로 컬럼을 이동 시킬 수 있다
+
+
+그리드 데이터(행) 선택 시 수정폼에 값 바인딩 셋팅 시키기
+	
+	그리드 뷰
+	---------
+	한 레코드 수정입력폼
+	
+	이렇게 뷰와 한 행의 수정입력폼이 같은 화면에 있다고 가정
+
+	한 행(레코드) 클릭시
+	수정입력폼 한행에 관련된 여러 매칭 컨트롤러와 그리드뷰 값과 자동 매칭시키는 기능 구현
+
+	
+	1) outline > Head > DataCollection > DataList: 해당 데이터 리스트 선택
+	2) 리스트 컬럼 속성을 각 컨트롤러에 drag&drop 으로 연결(ref 연결)
+	3) 웹브라우저에서 조회 후 한행 레코드 선택하면 자동으로 수정 입력폼에 값 셋팅됨.
+

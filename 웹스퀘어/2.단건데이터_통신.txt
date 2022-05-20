@@ -1,0 +1,70 @@
+데이터 컬렉션 설정
+	이곳은 주고 받을 통신포맷(데이터셋)의 선언부분인 듯 하다
+
+	메인 작업 택에서 해도 되지만, 
+	화면을 보면서 하려면,
+
+	우측 작업창 Outline > head > DataCollection 선택 하기
+
+	1) DataCollection 우측 마우스 > 추가 > 
+	2) DataCollection Editor Dialog 새창 뜸
+	3) 신규 > DataList 또는 DataMap 선택
+	4) 추가 아이콘 탭 누르고 엑셀 화면에 id , name , type(무조건 text) 설정
+	5) Apply and Close 
+
+Submission
+	
+	주고 받을 통신용 제어 설정 부분이라고 보면 될 듯..
+	데이터 컬렉션에서 선언한 통신 포맷(데이터셋)을 이곳에서 
+		- 보내기용 DataCollection 연결
+		- 받기용 DataCollection 연결 
+	등등 통신 설정등을 하는 곳 같다
+
+	우측 작업창 Outline > head > Submission 추가
+
+	1) Add submission 새창에 뜸
+		
+		ID* : 아이디 설정 (ex: sub_select)
+		Reference : 보내기용 DataCollection 연결 
+		Target : 받기용 DataCollection 연결 
+		URL Action : 통신할 URL
+		Process Message : '통신중입니다..'
+		Submit: 보내기 전 실행함수 부분
+		Submit-don: 받은 후 실행함수 부분
+		Submit-error: 통신 에러가 났을때(받을때) 실행 함수 
+
+
+조회 버튼에 이벤트 삽입
+
+	텍스트컨트롤러 id : ui_empcd
+	조회버튼 id : btnSelect
+
+	아래 두가지 방법으로 텍스트 컨트롤러 값을 보내기 DataCollection에 셋한다
+
+		1) 텍스트 컨트롤러 값을 직접 보내기 DataCollection에 Script로 set 하기
+		2) outline > head > 보내기 DataCollection > 텍스트컨트롤러에 ref로 set하기
+
+	script 탭 : 
+		//조회전 텍스트 체크
+		scwin.submission5_submit = function(e) {
+			/* 직접 보내기 DataCollection 에 셋하기 */
+			//dc_reqUserInfo.set("EMP_CD", ui_empcd.getValue());
+			if(ui_empcd.getValue()==''){alert('값을 넣어주세요');ui_empcd.focus(); return false;}
+		};
+
+		//조회버튼
+		scwin.btnSelect_onclick = function(e) {
+			//Submission 설정에서 Submission의 id 값을 실행 메소드에 넣어서 호출
+			$p.executeSubmission("sub_select");
+		};
+	
+		
+
+가져온 DataCollection 객체값과 컴포넌트 연결(ref 연결)
+	
+	1) outline > DataCollection > (받아온) 컬렉션(Map, List) > 연결하려는 key 선택
+	2) Design 탭의 연결하려는 컨트롤 객체에 드래그 앤 드롭(ref 연결)
+	3) 연결되면 해당 컨트롤 객체에 녹색 아이콘 표시됨
+	
+	(Property > 속성 > ref : data:dc_userInfo.EMP_NM 등으로 연결되었음을 확인가능)
+
