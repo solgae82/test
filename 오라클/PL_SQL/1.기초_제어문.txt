@@ -287,3 +287,125 @@ BEGIN
     END LOOP;
 END;
 /
+
+-------------- RECORD(자료형)
+DECLARE
+    -- 레코드 TYPE 선언
+    
+    TYPE REC_DEPT IS RECORD(
+        DEPTNO NUMBER(2) NOT NULL :=90,
+        DNAME DEPT.DNAME%TYPE,
+        LOC DEPT.LOC%TYPE
+    );
+    
+    dept_r REC_DEPT; -- 변수선언
+    
+BEGIN
+    
+    dept_r.DEPTNO := 90;
+    dept_r.DNAME := 'DATABASE';
+    dept_r.LOC := 'SEOUL';
+        
+    DBMS_OUTPUT.PUT_LINE('DEPTNO => ' || dept_r.DEPTNO);
+    DBMS_OUTPUT.PUT_LINE('DNAME => ' || dept_r.DNAME );
+    DBMS_OUTPUT.PUT_LINE('SEOUL => ' || dept_r.LOC);
+    
+END;
+/
+/*
+-- 테스트를 위해 임시 테이블 및 데이터 복사
+CREATE TABLE DEPT_RECORD 
+AS
+SELECT * FROM DEPT;
+
+SELECT * FROM DEPT_RECORD; -- 생성 확인
+*/
+
+-- RECORD를 사용하여 INSERT 
+DECLARE
+    -- RECORD 자료형 선언
+    
+    TYPE REC_DEPT IS RECORD(
+        DEPTNO NUMBER(2) NOT NULL := 99,
+        DNAME DEPT.DNAME%TYPE,
+        LOC DEPT.LOC%TYPE
+    );
+    
+    dept_r REC_DEPT; --RECORD 변수 선언
+    
+BEGIN
+    
+
+    dept_r.DEPTNO :=55;
+    dept_r.DNAME := 'database';
+    dept_r.LOC := 'seoul';
+    
+    -- RECORD 자료형으로 INSERT 하기
+    INSERT INTO DEPT_RECORD 
+    VALUES dept_r;
+    
+END;
+/
+-- RECORD를 사용하여 UPDATE
+DECLARE
+    TYPE REC_DEPT IS RECORD(
+        DEPTNO NUMBER(2) NOT NULL := 99,
+        DNAME DEPT.DNAME%TYPE,
+        LOC DEPT.LOC%TYPE        
+    );
+    
+    dept_r REC_DEPT;
+    
+BEGIN
+    dept_r.DEPTNO := 56;
+    dept_r.DNAME := 'db1';
+    dept_r.LOC := 'SOUL';
+    
+    UPDATE DEPT_RECORD 
+    SET ROW = dept_r 
+    WHERE DEPTNO = 55;    
+    
+END;
+/
+
+-- RECORD를 포함하는 RECORD
+DEClARE
+    TYPE REC_DEPT IS RECORD(
+        deptno DEPT.DEPTNO%TYPE,
+        dname DEPT.DNAME%TYPE,
+        loc DEPT.LOC%TYPE
+    );
+    TYPE REC_EMP IS RECORD(
+        empno EMP.EMPNO%TYPE,
+        ename EMP.ENAME%TYPE,
+        dinfo REC_DEPT
+    );
+    
+    emp_rec REC_EMP; -- 내부 레코드를 가지고 있는 포함하는 TYPE 변수 선언
+    
+BEGIN
+    
+    SELECT 
+        E.EMPNO 
+        , E.ENAME 
+        , D.DEPTNO
+        , D.DNAME
+        , D.LOC
+    INTO 
+        emp_rec.empno
+        , emp_rec.ename
+        , emp_rec.dinfo.deptno --  내부 레코드 
+        , emp_rec.dinfo.dname  --  내부 레코드
+        , emp_rec.dinfo.loc    --  내부 레코드
+    FROM EMP E, DEPT D
+    WHERE 
+        E.DEPTNO = D.DEPTNO AND E.EMPNO = 7788; 
+        
+    DBMS_OUTPUT.PUT_LINE('empno=>' || emp_rec.empno);
+    DBMS_OUTPUT.PUT_LINE('ename=>' || emp_rec.ename);
+    DBMS_OUTPUT.PUT_LINE('dinfo.deptno=>' || emp_rec.dinfo.deptno);
+    DBMS_OUTPUT.PUT_LINE('dinfo.dname=>' || emp_rec.dinfo.dname);
+    DBMS_OUTPUT.PUT_LINE('dinfo.loc=>' || emp_rec.dinfo.loc);
+    
+END;
+/
