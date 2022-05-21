@@ -1,0 +1,289 @@
+SET SERVEROUT ON;
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE( 'Hello, PL/SQL ');
+END;
+/
+
+-------------- 변수출력 + 한줄 주석
+
+DECLARE
+    
+V_EMPNO NUMBER(4) := 7788;
+V_ENAME VARCHAR2(10);
+
+BEGIN
+    V_ENAME := 'SCOTT';
+    
+    dbms_output.put_line('어이 : ' || V_ENAME);
+    --dbms_output.put_line('NUMBER : ' || V_EMPNO); --한줄주석
+    
+END;
+/
+
+-------------- 변수 출력 + 여러줄 주석
+
+DECLARE
+    V_EMPNO NUMBER(4) := 7788;
+    V_ENAME VARCHAR2(10);
+    V_AGE NUMBER(4) := 30;
+BEGIN
+    V_ENAME := 'SCOTT'; -- begin ~ end 사이에는 한문장이라도 있어야 실행 된다.
+    
+    --dbms_output.put_line('V_ENAME :' || V_ENAME);
+    /* 여러줄 주석
+    dbms_output.put_line('V_EMPNO :' || V_EMPNO);
+    dbms_output.put_line('V_AGE :' || V_AGE);
+    */
+END;
+/
+
+--------------상수 정의
+DECLARE
+
+    V_TAX CONSTANT NUMBER(1) :=3;
+
+BEGIN
+    --V_TAX := 4; 에러
+    DBMS_OUTPUT.PUT_LINE('V_TAX : ' || V_TAX);
+END;
+/
+
+--------------변수 기본값 설정
+DECLARE
+    V_DEPTNO NUMBER(2) DEFAULT 10;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('V_DEPTNO =>' ||  V_DEPTNO);
+END;
+/
+
+--------------변수에 NOT NUMLL  지정
+
+DECLARE
+    V_DEPTNO NUMBER(2) NOT NULL := 10; --not null은 선언과 동시에 값을 넣어줘야 됨
+    V_TMP NUMBER(2) NOT NULL DEFAULT 12; -- DEFAULT도 가능함
+BEGIN
+   V_DEPTNO := 11; 
+   
+   DBMS_OUTPUT.PUT_LINE('NOT NULL :=10 =>' || V_DEPTNO);
+   DBMS_OUTPUT.PUT_LINE('NOT NULL DEFAULT:=12 =>' || V_TMP);
+END;
+/
+/*
+    변수의 자료형
+    스칼라형 : 숫자, 문자열, 날짜, 논리데이터
+    참조형 : 
+        1) 변수이름 테이블이름.컬럼명%TYPE; (열 타입)
+        2) 변수이름 테이블이름%ROWTYPE; (행)
+    복합형 :
+        1) COLLECTION
+        2) RECORD
+        
+    LOG형 : BLOB, CLOB 등
+*/
+
+--------------참조형 %TYPE  지정
+DECLARE
+    V_DEPNO DEPT.deptno%TYPE;
+    V_DEPNO2 DEPT.deptno%TYPE := 10; --선언과 동시에 초기화 가능
+BEGIN
+    V_DEPNO := 12;
+    DBMS_OUTPUT.PUT_LINE('V_DEPNO =>' || V_DEPNO);
+    DBMS_OUTPUT.PUT_LINE('V_DEPNO =>' || V_DEPNO2);
+END;
+/
+
+--------------참조형 %ROWTYPE  지정
+DECLARE
+    V_DEPT_ROW DEPT%ROWTYPE; --  :='값' 형식을 쓸 수 없음
+    
+BEGIN
+    SELECT DEPTNO, DNAME, LOC INTO V_DEPT_ROW FROM DEPT WHERE DEPTNO = 40 ;
+    DBMS_OUTPUT.PUT_LINE('DEPTNO=>' || V_DEPT_ROW.DEPTNO);
+    DBMS_OUTPUT.PUT_LINE('DNAME=>' || V_DEPT_ROW.DNAME);
+    DBMS_OUTPUT.PUT_LINE('LOC=>' || V_DEPT_ROW.LOC);
+END;
+/
+
+-------------- IF-THEN 조건문
+DECLARE
+    V_N NUMBER :=13;
+BEGIN
+    IF MOD(V_N , 2) =1 THEN 
+        DBMS_OUTPUT.PUT_LINE('홀수여');
+    END IF;
+END;
+/
+-------------- IF-THEN-ELSE 조건문
+DECLARE
+    V_N NUMBER := 14;
+BEGIN
+    IF MOD(V_N, 2) = 1 THEN
+        DBMS_OUTPUT.PUT_LINE('홀수여');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('짝수여');
+    END IF;
+END;
+/
+
+-------------- IF-THEN-ELSIF-ELSE 조건문
+/*
+    ELSEIF (X) ELSIF(0)
+*/
+DECLARE
+    V_SCORE NUMBER := 80;
+BEGIN
+    IF V_SCORE >= 90 THEN
+        DBMS_OUTPUT.PUT_LINE('A 학점');
+    ELSIF V_SCORE >=80 THEN
+    
+        DBMS_OUTPUT.PUT_LINE('B 학점');
+        
+    ELSIF V_SCORE >=70 THEN
+        DBMS_OUTPUT.PUT_LINE('C 학점');
+        
+    ELSIF V_SCORE >=60 THEN
+        DBMS_OUTPUT.PUT_LINE('D 학점');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('F 학점');
+    END IF;
+END;
+/
+
+-------------- CASE (기본)
+DECLARE
+    V_SCORE NUMBER := 86;
+  
+BEGIN
+        
+    CASE TRUNC(V_SCORE/10)
+        WHEN 10 THEN   
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN 9 THEN   
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN 8 THEN   
+            DBMS_OUTPUT.PUT_LINE('B 학점');
+        WHEN 7 THEN    
+            DBMS_OUTPUT.PUT_LINE('C 학점');            
+        WHEN 6 THEN  
+            DBMS_OUTPUT.PUT_LINE('D 학점');            
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('F 학점');
+       END CASE;
+    
+END;
+/
+-------------- CASE 검색 (조건식)
+DECLARE
+    V_SCORE NUMBER := 7;
+BEGIN
+    CASE
+        WHEN V_SCORE >= 90 THEN 
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN V_SCORE >= 80 THEN
+            DBMS_OUTPUT.PUT_LINE('B 학점');
+        WHEN V_SCORE >= 70 THEN
+            DBMS_OUTPUT.PUT_LINE('C 학점');            
+        WHEN V_SCORE >= 60 THEN 
+            DBMS_OUTPUT.PUT_LINE('D 학점');            
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('F 학점');
+    END CASE;
+END;
+/
+
+-------------- 반복 제어문
+/*
+    기본 LOOP
+    WHILE LOOP
+    FOR LOOP
+    Cusor FOR LOOP
+    
+    --제어 키워드
+    EXIT 수행중인 반복문 종료
+    EXIT WHEN 조건식 : 조건식 TRUE이면 반복문 종료 
+    CONTINUE : 현재 수행중인 반복문 건너 뜀
+    CONTINUE WHEN 조건식 : 조건식이 TRUE 이면 현재 반복문 건너뜀
+*/
+
+------------- 기본 LOOP
+DECLARE
+    V_NUM NUMBER :=0;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('현재 V_NUM=' || V_NUM);
+        V_NUM := V_NUM + 1;
+        EXIT WHEN V_NUM > 4;
+    END LOOP;
+END;
+/
+
+DECLARE
+    V_NUM NUMBER :=0;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('V_NUM=>' || V_NUM);
+        V_NUM := V_NUM + 1;
+        IF V_NUM > 4 THEN 
+            EXIT;
+        END IF;
+    END LOOP;
+END;
+/
+-------------- WHILE LOOP
+DECLARE
+    V_NUM NUMBER :=0;
+BEGIN
+    WHILE V_NUM <=4 LOOP
+        DBMS_OUTPUT.PUT_LINE('WHILE LOOP=>' || V_NUM);
+        V_NUM := V_NUM + 1;
+    END LOOP;
+END;
+/
+-------------- FOR LOOP
+/* 기본 FOR LOOP */
+DECLARE
+    
+BEGIN
+    FOR i IN 0..4 LOOP
+        DBMS_OUTPUT.PUT_LINE('FOR LOOP=>' || i);
+    END LOOP;
+END;
+/
+
+/* REVERSE 키워드 FOR LOOP */
+DECLARE
+    
+BEGIN
+    FOR i IN REVERSE 0..4 LOOP
+        DBMS_OUTPUT.PUT_LINE('FOR REVERSE LOOP=>' || i);
+    END LOOP;
+END;
+/
+
+-------------- CONTINUE, CONTINUE WHEN
+/*
+    오라클 11g 부터 사용 가능
+*/
+DECLARE
+
+BEGIN
+    FOR i IN 0..4 LOOP
+        IF MOD(i , 2) = 1 THEN 
+            CONTINUE;
+        END IF;
+        DBMS_OUTPUT.PUT_LINE('짝수=>' || i);
+    END LOOP;
+END;
+/
+
+DECLARE
+    
+BEGIN
+    FOR i IN 0..4 LOOP
+        
+        CONTINUE WHEN MOD(i , 2) = 1;
+        DBMS_OUTPUT.PUT_LINE('짝수=>' || i);
+    END LOOP;
+END;
+/
