@@ -409,3 +409,124 @@ BEGIN
     
 END;
 /
+
+-------------- 컬렉션(자료형)
+/*
+    종류:
+        1)연관배열 (associative array(or index by table))
+        2)중첩테이블 (nested table)
+        3)VARRAY(variable-size array)
+*/
+DECLARE
+    
+    -- 연관배열 컬렉션 선언
+    TYPE ITAB_EX IS TABLE OF VARCHAR(20)
+    /*
+        키로 사용할 인덱스 자료형 종류
+        BINARY_INTEGER, PLS_INTEGER, VARCHAR2 등..
+    */
+    INDEX BY PLS_INTEGER; --PLS_INTEGER 설정
+    
+    text_arr ITAB_EX; --사용할 컬렉션 변수 설정
+    
+BEGIN
+    text_arr(1) := '1번째 data';
+    text_arr(2) := '2번째 data';
+    text_arr(3) := '3번째 data';
+    text_arr(4) := '4번째 data';
+    
+    DBMS_OUTPUT.PUT_LINE('text_arr(1)=>' || text_arr(1));
+    DBMS_OUTPUT.PUT_LINE('text_arr(2)=>' || text_arr(2));
+    DBMS_OUTPUT.PUT_LINE('text_arr(3)=>' || text_arr(3));
+    DBMS_OUTPUT.PUT_LINE('text_arr(4)=>' || text_arr(4));
+END;
+/
+
+-- 레코드를 활용한 연관 배열
+
+DECLARE
+    TYPE REC_DEPT IS RECORD(
+        deptno DEPT.DEPTNO%TYPE,
+        dname DEPT.DNAME%TYPE
+    );
+    
+    
+    TYPE ITAB_DEPT IS TABLE OF REC_DEPT 
+    INDEX BY PLS_INTEGER;
+    
+    dept_arr  ITAB_DEPT;
+    idx PLS_INTEGER := 0;
+    
+    
+BEGIN
+    FOR i IN (SELECT DEPTNO, DNAME FROM DEPT) LOOP
+        idx := idx + 1;
+        dept_arr(idx).deptno := i.DEPTNO;
+        dept_arr(idx).dname := i.DNAME;
+        
+        DBMS_OUTPUT.PUT_LINE(
+            dept_arr(idx).deptno || ':' || dept_arr(idx).dname
+        );
+    END LOOP;
+END;
+/
+
+-- 특정 테이블과 같은 연관 배열 사용
+DECLARE
+    TYPE ITAB_DEPT IS TABLE OF DEPT%ROWTYPE
+    INDEX BY PLS_INTEGER;
+    
+    dept_arr ITAB_DEPT;
+    idx PLS_INTEGER := 0;
+    
+BEGIN
+    FOR i IN(SELECT * FROM DEPT) LOOP
+        idx := idx + 1;
+        dept_arr(idx).DEPTNO := i.DEPTNO;
+        dept_arr(idx).DNAME := i.DNAME;
+        dept_arr(idx).LOC := i.LOC;
+        
+        DBMS_OUTPUT.PUT_LINE(
+            dept_arr(idx).DEPTNO  
+            || ' : ' || dept_arr(idx).DNAME
+            || ' : ' || dept_arr(idx).LOC
+            
+        );
+    END LOOP;
+END;
+/
+
+/*
+    컬렉션 메서드
+    
+    EXISTS
+    COUNT
+    LIMIT
+    FIRST
+    LAST
+    PRIOR
+    NEXT
+    DELETE
+    EXTEND
+    TRIM
+*/
+DECLARE
+    TYPE ITAB_EX IS TABLE OF VARCHAR2(20)
+    INDEX BY PLS_INTEGER;
+    
+    text_arr ITAB_EX;
+BEGIN
+    text_arr(1) := '1번째 DATA';
+    text_arr(2) := '2번째 DATA';
+    text_arr(3) := '3번째 DATA';
+    text_arr(50) := '4번째 DATA';
+    
+    DBMS_OUTPUT.PUT_LINE('COUNT => ' || text_arr.COUNT);
+    DBMS_OUTPUT.PUT_LINE('FIRST => ' || text_arr.FIRST);    
+    DBMS_OUTPUT.PUT_LINE('LAST => ' || text_arr.LAST);
+    DBMS_OUTPUT.PUT_LINE('PRIOR(50) => ' || text_arr.PRIOR(50)); --바로 앞 INDEX반환 , 3
+    DBMS_OUTPUT.PUT_LINE('NEXT(3) => ' || text_arr.NEXT(3)); -- 바로 다음 INDEX 반환,  50
+    DBMS_OUTPUT.PUT_LINE('NEXT(50) => ' || text_arr.NEXT(50));
+    
+END;
+/
