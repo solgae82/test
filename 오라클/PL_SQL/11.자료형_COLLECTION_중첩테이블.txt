@@ -1,0 +1,39 @@
+SET SERVEROUT ON;
+--------- 컬렉션 종류
+
+    종류:
+        1)연관배열 (associative array(or index by table))
+        2)중첩테이블 (nested table)
+        3)VARRAY(variable-size array)
+---------
+
+	2) 중첩테이블, Nested Table
+    
+	선언 구문 : 
+	TYPE 중첩_테이블명 IS TABLE OF 값타입 ;
+	    
+	- 크기에 제한 없다
+	- 숫자형 인덱스만 사용가능
+	- 생성자 사용
+---------
+
+DECLARE
+
+    TYPE nt_type IS TABLE OF VARCHAR(10);
+    
+    vnt_test nt_type;
+BEGIN
+
+    vnt_test := nt_type('first','second','third','');
+    
+    --값 출력
+    DBMS_OUTPUT.PUT_LINE (vnt_test(1));
+      DBMS_OUTPUT.PUT_LINE (vnt_test(2));
+      DBMS_OUTPUT.PUT_LINE (vnt_test(3));
+    /*
+        first
+        second
+        third
+    */
+END;
+/

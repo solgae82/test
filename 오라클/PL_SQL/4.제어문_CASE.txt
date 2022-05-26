@@ -1,0 +1,42 @@
+SET SERVEROUT ON;
+-------------- CASE (기본)
+DECLARE
+    V_SCORE NUMBER := 86;
+  
+BEGIN
+        
+    CASE TRUNC(V_SCORE/10)
+        WHEN 10 THEN   
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN 9 THEN   
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN 8 THEN   
+            DBMS_OUTPUT.PUT_LINE('B 학점');
+        WHEN 7 THEN    
+            DBMS_OUTPUT.PUT_LINE('C 학점');            
+        WHEN 6 THEN  
+            DBMS_OUTPUT.PUT_LINE('D 학점');            
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('F 학점');
+       END CASE;
+    
+END;
+/
+-------------- CASE 검색 (조건식)
+DECLARE
+    V_SCORE NUMBER := 7;
+BEGIN
+    CASE
+        WHEN V_SCORE >= 90 THEN 
+            DBMS_OUTPUT.PUT_LINE('A 학점');
+        WHEN V_SCORE >= 80 THEN
+            DBMS_OUTPUT.PUT_LINE('B 학점');
+        WHEN V_SCORE >= 70 THEN
+            DBMS_OUTPUT.PUT_LINE('C 학점');            
+        WHEN V_SCORE >= 60 THEN 
+            DBMS_OUTPUT.PUT_LINE('D 학점');            
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('F 학점');
+    END CASE;
+END;
+/

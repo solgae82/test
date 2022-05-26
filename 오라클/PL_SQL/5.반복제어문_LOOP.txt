@@ -1,0 +1,40 @@
+SET SERVEROUT ON;
+-------------- 반복 제어문
+/*
+    기본 LOOP
+    WHILE LOOP
+    FOR LOOP
+    Cusor FOR LOOP
+    
+    --제어 키워드
+    EXIT 수행중인 반복문 종료
+    EXIT WHEN 조건식 : 조건식 TRUE이면 반복문 종료 
+    CONTINUE : 현재 수행중인 반복문 건너 뜀
+    CONTINUE WHEN 조건식 : 조건식이 TRUE 이면 현재 반복문 건너뜀
+*/
+
+------------- 기본 LOOP
+DECLARE
+    V_NUM NUMBER :=0;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('현재 V_NUM=' || V_NUM);
+        V_NUM := V_NUM + 1;
+        EXIT WHEN V_NUM > 4;
+    END LOOP;
+END;
+/
+
+DECLARE
+    V_NUM NUMBER :=0;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('V_NUM=>' || V_NUM);
+        V_NUM := V_NUM + 1;
+        IF V_NUM > 4 THEN 
+            EXIT;
+        END IF;
+    END LOOP;
+END;
+/
+

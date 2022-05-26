@@ -1,0 +1,24 @@
+SET SERVEROUT ON;
+
+--------------참조형 %TYPE  지정
+DECLARE
+    V_DEPNO DEPT.deptno%TYPE;
+    V_DEPNO2 DEPT.deptno%TYPE := 10; --선언과 동시에 초기화 가능
+BEGIN
+    V_DEPNO := 12;
+    DBMS_OUTPUT.PUT_LINE('V_DEPNO =>' || V_DEPNO);
+    DBMS_OUTPUT.PUT_LINE('V_DEPNO =>' || V_DEPNO2);
+END;
+/
+
+--------------참조형 %ROWTYPE  지정
+DECLARE
+    V_DEPT_ROW DEPT%ROWTYPE; --  :='값' 형식을 쓸 수 없음
+    
+BEGIN
+    SELECT DEPTNO, DNAME, LOC INTO V_DEPT_ROW FROM DEPT WHERE DEPTNO = 40 ;
+    DBMS_OUTPUT.PUT_LINE('DEPTNO=>' || V_DEPT_ROW.DEPTNO);
+    DBMS_OUTPUT.PUT_LINE('DNAME=>' || V_DEPT_ROW.DNAME);
+    DBMS_OUTPUT.PUT_LINE('LOC=>' || V_DEPT_ROW.LOC);
+END;
+/

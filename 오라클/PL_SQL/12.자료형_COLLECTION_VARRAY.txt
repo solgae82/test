@@ -1,0 +1,76 @@
+SET SERVEROUT ON;
+--------- 컬렉션 종류
+
+    종류:
+        1)연관배열 (associative array(or index by table))
+        2)중첩테이블 (nested table)
+        3)VARRAY(variable-size array)
+---------
+
+    3) VARRAY , Variable-Sze-Array
+    
+    선언 구문:
+    TYPE VARRAY명 IS VARRAY(최대 크기) OF 요소값_타입;
+        
+    - 인덱스는 1부터 시작한다
+    - 생성자로 초기화 하기전까지 값할당 및 읽기 불가능
+    - 선언한 크기보다 크거나 작게 값을 할당한다
+	만약 전체크기가 5인데 4개만 생성자 초기화를 했다면,
+	5는 참조 불가능하다,NULL값 초기화 가능.
+
+    
+---------
+
+DECLARE
+    TYPE va_type IS VARRAY(5) OF VARCHAR(20);
+    
+    vva_test va_type;
+    
+    vn_cnt NUMBER :=0;
+BEGIN
+
+    vva_test := va_type('FIRST','SECOND','THIRD','','');
+    
+    LOOP
+        vn_cnt := vn_cnt + 1;
+        
+        IF vn_cnt > 5 THEN 
+            EXIT;        
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE(vn_cnt || ':' || vva_test(vn_cnt));
+        /*      
+            1:FIRST
+            2:SECOND
+            3:THIRD
+            4:
+            5:
+        */
+    END LOOP;
+    
+    -- 값 변경
+    
+    vva_test(2) := 'TEST';
+    vva_test(4) := 'FOURTH';
+    
+    -- 다시 출력
+    vn_cnt :=0;
+    
+    LOOP
+        vn_cnt := vn_cnt + 1;
+        IF vn_cnt > 5 THEN
+            EXIT;
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE(vn_cnt || ':' || vva_test(vn_cnt));
+        /*       
+            1:FIRST
+            2:TEST
+            3:THIRD
+            4:FOURTH
+            5:
+        */
+    END LOOP;
+    
+END;
+/

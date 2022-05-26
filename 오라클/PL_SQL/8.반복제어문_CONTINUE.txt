@@ -1,0 +1,40 @@
+SET SERVEROUT ON;
+-------------- 반복 제어문
+/*
+    기본 LOOP
+    WHILE LOOP
+    FOR LOOP
+    Cusor FOR LOOP
+    
+    --제어 키워드
+    EXIT 수행중인 반복문 종료
+    EXIT WHEN 조건식 : 조건식 TRUE이면 반복문 종료 
+    CONTINUE : 현재 수행중인 반복문 건너 뜀
+    CONTINUE WHEN 조건식 : 조건식이 TRUE 이면 현재 반복문 건너뜀
+*/
+-------------- CONTINUE, CONTINUE WHEN
+/*
+    오라클 11g 부터 사용 가능
+*/
+DECLARE
+
+BEGIN
+    FOR i IN 0..4 LOOP
+        IF MOD(i , 2) = 1 THEN 
+            CONTINUE;
+        END IF;
+        DBMS_OUTPUT.PUT_LINE('짝수=>' || i);
+    END LOOP;
+END;
+/
+
+DECLARE
+    
+BEGIN
+    FOR i IN 0..4 LOOP
+        
+        CONTINUE WHEN MOD(i , 2) = 1;
+        DBMS_OUTPUT.PUT_LINE('짝수=>' || i);
+    END LOOP;
+END;
+/

@@ -1,0 +1,147 @@
+SET SERVEROUT ON;
+--------- 컬렉션 종류
+
+    종류:
+        1)연관배열 (associative array(or index by table))
+        2)중첩테이블 (nested table)
+        3)VARRAY(variable-size array)
+
+---------
+	1) 연관배열 , Associative Array, Index-by table 
+    
+	    선언 구문 : 
+	    TYPE 연관_배열명 IS TABLE OF 연관_배열_값타입 
+	    INDEX BY 인덱스타입;
+	    
+	    - 연관_배열_값타입은 어떤 데이터 타입이든 올 수 있지만, 
+	    - 인덱스 타입은 문자형이나 PLS_INTEGER 타입만 올 수 있다. 
+	    - 생성자를 사용할 수 없다.
+	    - 크기에 제한없이 입력해서 사용한다.
+	    - 사용자가 지정한 인덱스값 기준으로 자동 정렬된다.
+--------- 
+DECLARE
+    
+    -- 연관배열 컬렉션 선언
+    TYPE ITAB_EX IS TABLE OF VARCHAR(20)
+    /*
+        키로 사용할 인덱스 자료형 종류
+        BINARY_INTEGER, PLS_INTEGER, VARCHAR2 등..
+    */
+    INDEX BY PLS_INTEGER; --PLS_INTEGER 설정
+    
+    text_arr ITAB_EX; --사용할 컬렉션 변수 설정
+    
+BEGIN
+    text_arr(1) := '1번째 data';
+    text_arr(2) := '2번째 data';
+    text_arr(3) := '3번째 data';
+    text_arr(4) := '4번째 data';
+    
+    DBMS_OUTPUT.PUT_LINE('text_arr(1)=>' || text_arr(1));
+    DBMS_OUTPUT.PUT_LINE('text_arr(2)=>' || text_arr(2));
+    DBMS_OUTPUT.PUT_LINE('text_arr(3)=>' || text_arr(3));
+    DBMS_OUTPUT.PUT_LINE('text_arr(4)=>' || text_arr(4));
+END;
+/
+
+--------- 레코드를 활용한 연관 배열
+
+DECLARE
+    TYPE REC_DEPT IS RECORD(
+        deptno DEPT.DEPTNO%TYPE,
+        dname DEPT.DNAME%TYPE
+    );
+    
+    
+    TYPE ITAB_DEPT IS TABLE OF REC_DEPT 
+    INDEX BY PLS_INTEGER;
+    
+    dept_arr  ITAB_DEPT;
+    idx PLS_INTEGER := 0;
+    
+    
+BEGIN
+    FOR i IN (SELECT DEPTNO, DNAME FROM DEPT) LOOP
+        idx := idx + 1;
+        dept_arr(idx).deptno := i.DEPTNO;
+        dept_arr(idx).dname := i.DNAME;
+        
+        DBMS_OUTPUT.PUT_LINE(
+            dept_arr(idx).deptno || ':' || dept_arr(idx).dname
+        );
+    END LOOP;
+END;
+/
+
+-- 특정 테이블과 같은 연관 배열 사용
+DECLARE
+    TYPE ITAB_DEPT IS TABLE OF DEPT%ROWTYPE
+    INDEX BY PLS_INTEGER;
+    
+    dept_arr ITAB_DEPT;
+    idx PLS_INTEGER := 0;
+    
+BEGIN
+    FOR i IN(SELECT * FROM DEPT) LOOP
+        idx := idx + 1;
+        dept_arr(idx).DEPTNO := i.DEPTNO;
+        dept_arr(idx).DNAME := i.DNAME;
+        dept_arr(idx).LOC := i.LOC;
+        
+        DBMS_OUTPUT.PUT_LINE(
+            dept_arr(idx).DEPTNO  
+            || ' : ' || dept_arr(idx).DNAME
+            || ' : ' || dept_arr(idx).LOC
+            
+        );
+    END LOOP;
+END;
+/
+
+/*
+    컬렉션 메서드
+    
+    EXISTS(n) : 컬렉션에 n인덱스이 데이터 존재여부, true/false 반환
+    COUNT : 컬렉션 요소 갯수 반환
+    LIMIT : 컬렉션이 가질수 있는 요소의 최대수 반환
+        (3가지 컬렉션 타입 중 최대치를 명시할 수 있는 것은 VARRAY 뿐이므로, 
+        나머지 연관 배열과 중첩 테이블의 경우 반환 값은 항상 NULL이다.)
+    FIRST : 컬렉션의 첫번째 인덱스 반환
+    LAST : 컬렉션의 맨 마지막 인덱스 반환
+    PRIOR(n) : n인덱스 컬렉션 바로 이전 인덱스 반환,없으면 NULL 반환
+    NEXT : n인덱스 컬렉션 바로 다음 인덱스 반환,없으면 NULL 반환
+    DELETE : 컬렉션 삭제 
+        DELETE : 모두 삭제
+        DELETE(n) : n인덱스 요소 삭제
+        DELETE(n,m) : n ~ m 인덱스 요소 삭제
+    EXTEND :  연관배열(x) 중첩 테이블(o) , VARRAY(o)
+    TRIM :  연관배열(x) 중첩 테이블(o) , VARRAY(o)
+*/
+DECLARE
+    TYPE ITAB_EX IS TABLE OF VARCHAR2(20)
+    INDEX BY PLS_INTEGER;
+    
+    text_arr ITAB_EX;
+BEGIN
+    text_arr(1) := '1번째 DATA';
+    text_arr(2) := '2번째 DATA';
+    text_arr(3) := '3번째 DATA';
+    text_arr(50) := '4번째 DATA';
+    
+    
+    IF text_arr.EXISTS(1) = TRUE  THEN
+        DBMS_OUTPUT.PUT_LINE('존재=> ' || text_arr(1));
+    END IF;
+    
+    
+    
+    DBMS_OUTPUT.PUT_LINE('COUNT => ' || text_arr.COUNT);
+    DBMS_OUTPUT.PUT_LINE('LIMIT => ' || text_arr.LIMIT); /* 연관배열이므로 NULL 반환*/
+    DBMS_OUTPUT.PUT_LINE('FIRST => ' || text_arr.FIRST);    
+    DBMS_OUTPUT.PUT_LINE('LAST => ' || text_arr.LAST);
+    DBMS_OUTPUT.PUT_LINE('PRIOR(50) => ' || text_arr.PRIOR(50)); /*바로 앞 INDEX반환 , 3 */
+    DBMS_OUTPUT.PUT_LINE('NEXT(3) => ' || text_arr.NEXT(3));  /* 바로 다음 INDEX 반환,  50 */
+    DBMS_OUTPUT.PUT_LINE('NEXT(50) => ' || text_arr.NEXT(50)); /* 50 인덱스 다음은 없으므로 NULL반환*/
+    
+END;
+/

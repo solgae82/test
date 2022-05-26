@@ -1,0 +1,45 @@
+SET SERVEROUT ON;
+-------------- IF-THEN 조건문
+DECLARE
+    V_N NUMBER :=13;
+BEGIN
+    IF MOD(V_N , 2) =1 THEN 
+        DBMS_OUTPUT.PUT_LINE('홀수여');
+    END IF;
+END;
+/
+-------------- IF-THEN-ELSE 조건문
+DECLARE
+    V_N NUMBER := 14;
+BEGIN
+    IF MOD(V_N, 2) = 1 THEN
+        DBMS_OUTPUT.PUT_LINE('홀수여');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('짝수여');
+    END IF;
+END;
+/
+
+-------------- IF-THEN-ELSIF-ELSE 조건문
+/*
+    ELSEIF (X) ELSIF(0)
+*/
+DECLARE
+    V_SCORE NUMBER := 80;
+BEGIN
+    IF V_SCORE >= 90 THEN
+        DBMS_OUTPUT.PUT_LINE('A 학점');
+    ELSIF V_SCORE >=80 THEN
+    
+        DBMS_OUTPUT.PUT_LINE('B 학점');
+        
+    ELSIF V_SCORE >=70 THEN
+        DBMS_OUTPUT.PUT_LINE('C 학점');
+        
+    ELSIF V_SCORE >=60 THEN
+        DBMS_OUTPUT.PUT_LINE('D 학점');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('F 학점');
+    END IF;
+END;
+/
