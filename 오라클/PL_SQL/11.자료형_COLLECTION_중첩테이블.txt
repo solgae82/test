@@ -13,8 +13,10 @@ SET SERVEROUT ON;
 	TYPE 중첩_테이블명 IS TABLE OF 값타입 ;
 	    
 	- 크기에 제한 없다
-	- 숫자형 인덱스만 사용가능
+	    - 인덱스는 1부터 시작한다
+	- 숫자형 인덱스 자동 생성
 	- 생성자 사용
+		- 생성자로 초기화 하기전까지 값할당 및 읽기 불가능
 ---------
 
 DECLARE
@@ -24,16 +26,23 @@ DECLARE
     vnt_test nt_type;
 BEGIN
 
-    vnt_test := nt_type('first','second','third','');
-    
-    --값 출력
-    DBMS_OUTPUT.PUT_LINE (vnt_test(1));
-      DBMS_OUTPUT.PUT_LINE (vnt_test(2));
-      DBMS_OUTPUT.PUT_LINE (vnt_test(3));
-    /*
-        first
-        second
-        third
-    */
+	vnt_test := nt_type('first','second','third','');
+
+	--값 출력
+	DBMS_OUTPUT.PUT_LINE (vnt_test(1));
+	DBMS_OUTPUT.PUT_LINE (vnt_test(2));
+	DBMS_OUTPUT.PUT_LINE (vnt_test(3));
+	
+	IF vnt_test(4) is null  THEN 
+		DBMS_OUTPUT.PUT_LINE ( '없다=>' || vnt_test(4));
+	ELSE
+		DBMS_OUTPUT.PUT_LINE ( '있다=>' || vnt_test(4));
+	END IF;
+	/*
+		first
+		second
+		third
+		없다=>
+	*/
 END;
 /
