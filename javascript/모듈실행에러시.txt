@@ -1,0 +1,23 @@
+npm 이나 yarn 또는 모듈 실행시 오류메시지 중
+
+"이 시스템에서 스크립트를 실행할 수 없으므로 ~(블라블라)~  파일을 로드할 수 없습니다. 
+자세한 내용은 about_Execution_Policies(https://go.microsoft.com/fwlink/?LinkID=135170)를 참조하십시오." 
+
+라는 메시지가 나올때가 있다.
+
+운영체제(window10기준) 시스템의 설정에서 스크립트를 실행할 수 있는 
+권한이 부여되어있지 않은 상태라서 
+해당 작업 명령을 수행할 수 없어서 발생하는 오류이다
+
+해결법:
+1. 윈도우 powershell 검색해서 [관리자모드] 로 실행
+2. 실행정책 보기 명령어
+	> get-ExecutionPolicy 
+	Restricted (나의 경우는 이거였다 [제한됨])
+
+3. 풀기
+	 >Set-ExecutionPolicy RemoteSigned
+	 > ...변경하시겠습니까? : Y #입력
+
+다시 npm 또는 모듈 명령어를 실행해보면 잘 될 것이다.
+	

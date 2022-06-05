@@ -12,7 +12,7 @@
 	instr
 	replace
 	lpad, rpad
-	cancat , ||
+	concat , ||
 	trim, ltrim, rtrim
 3. 숫자
 	round, trunc
