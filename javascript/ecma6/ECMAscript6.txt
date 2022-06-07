@@ -9,7 +9,7 @@
 		이터러블의 형식을 규약하면 그게 이터러블 규약.
 
 	이터러블 : 이터레이터를 리턴하는, [Symbol.iterator] 메소드를 구현한 객체.
-		for of 문, spread 문법 등과 한께 동작하도록 만든 객체.
+		for of 문, spread 문법 등과 함께 동작하도록 만든 객체.
 		[Symbol.iterator] 메소드는 이터레이터 객체를 반환한다.
 		이터러블 규약을 구현한 대표적 내장객체중에는 
 		Array, String, Map, Set, arguments 등이 있다.(믈론 더 많이 있다)
@@ -19,7 +19,7 @@
 		{value:[자료] done:[true,false]} 형식의 result 객체를 리턴함.
 	
 
-	--------------------- 이터러블 이해하기 
+	--------------------- 기본 이터러블 이해하기 
 
 	예) String 객체를 이용한  for(..of..) 문 출력.
 
@@ -32,23 +32,46 @@
 	# 그러므로 for(..of..) 문을 사용할 수 있는 것이다.
 	# 일반객체도 내부에 이터레이터 메서드를 구현하면 for(..of..) 문으로 출력 가능하다.
 
-		//아래처럼 구현하면 된다
-		let it ={
-			[Symbol.iterator]:function{
-				여기까지 구현 한것을 이터러블
-				return 
-				{// 여기부터는 이터레이터 영역
-					next : function(){
-						return {value:값, done:[boolean]};
-					}
-				};
-			
+
+	-------------------- 직접 이터레이터 구현해보기
+		
+	et it = {
+
+		index : 0,
+		data : [1,2,3,4,5],
+		[Symbol.iterator]:function(){
+			return this;
+		},
+					
+		next : function(){
+			if(this.index < this.data.length){
+				return {value:this.data[this.index++], done:false};
+			}else{
+				return {value:undefined, done:true};
 			}
-		};
+			
+		}
+			
+		
+		
+	};
+
+	//구현한 것 플레이
+	for (let i of it ){
+		console.log('=>' + i);
+
+		/*
+		=>1
+		=>2
+		=>3
+		=>4
+		=>5
+		*/
+	}
 
 	
 
-	--------------------- 이터레이터 이해하기 
+	--------------------- 이터레이터 자세히 보기
 
 	# 다음과 같이 이터러블 객체에서 직접 내장 이터레이터 메서드를 이용해 
 	,이터레이터객체를 리턴 받아서 수동으로 사용할 수도 있다.
@@ -62,8 +85,8 @@
 		let it = str[Symbol.iterator](); //내장된 이터레이터 객체를 빼낸다
 		//직접 하나씩 출력
 		console.log(it.next()); //{value:"가",done: false}
-		console.log(it.next()); //{value:"가",done: false}
-		console.log(it.next()); //{value:"가",done: false}
+		console.log(it.next()); //{value:"나",done: false}
+		console.log(it.next()); //{value:"다",done: false}
 		console.log(it.next());	//{value:undefined ,done: true}
 
 	# 이터러블 객체를 for(..of..) 문으로 출력할 수 있는 이유는, 
@@ -71,6 +94,7 @@
 	내부적으로 이터레이터 메서드로 이터레이터 받아서 next()메소드를 호출 후 
 	done 값이 true가 아니면 for문을 실행해서 value 값을 for문의 value값에 담겠지..
 	
+	그래서 아래처럼 이미 구현된 이터러블인 String 객체도  for..of 문이 가능하다
 
 		let str = '가나다';
 		for(let value of str){ 
@@ -90,26 +114,6 @@
 			result = it.next();
 		}
 
-	--------------------- 종합 예제
-	# 일반객체를 이터러블로 만들어서 for(..of..)문을 사용해 보자.
-	# 아래 예제는 이터러블인 것과 동시에 이터레이터 역할도 겸하는 하는 객체다
-		let obj = {
-			i:1,
-
-			[Symbol.iterator]:function(){
-				return this; //이터레이터 리턴시 다시 이 객체를 가리킨다
-			},
-			
-			//내부적으로 이터레이터 구현을 했다
-			next:function(){
-				return (this.i < 4)? {value:this.i++, done: false}:{value:undefined, done: true};
-			}
-			
-		};
-		//이터러블 규약을 만족하고 이터레이터 규약도 구현했으므로 출력가능하다
-		for(let value of obj){ 
-			console.log(value);
-		}
 
 3. Array.forEach
 	형식:
