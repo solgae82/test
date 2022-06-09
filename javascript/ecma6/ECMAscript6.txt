@@ -136,7 +136,8 @@
 		let obj = {str:"test"};
 		fruits.forEach(function (item) {
 		    console.log(item +"-"+obj.str); //a-test, b-test
-		},obj);
+			
+		},obj); // 외부 객체에 접근하기 위해 두번째 인자로 객체 참조변수를 넣었다 obj
 
 		fruits.forEach(element => console.log(element)); //a , b
 4. for in 문
@@ -152,7 +153,7 @@
 	//배열
 	var arr = [10, 20, 30];
 	for (var key in arr) {
-	    console.log(n + ":" + arr[key] ); //n:10,n:20,n:30
+	    console.log("n:" + arr[key] ); //n:10,n:20,n:30
 	}
 
 	//배열연산 시 주의, 속성명(키)은 문자열이므로 문자열 연산
@@ -210,22 +211,36 @@
 7.태그드 템플릿 리터럴
 	
 	형식:
-		함수명 `문자열[0] ${a} 문자열[1], ${b}`; 
+		함수명 `문자열[0] ${a} 문자열[1], ${b}` ...; 
 
+	${데이터} 태그가 구분 문자열 및 함수의 2번째 이상의 인수가 된다..
+
+	
 	예제로 보고 이해하자
 
-	function tagged(str, a,b){
+		function fn_test(str,a,b,c,d){
 
-		let bigger;
-		(a > b) ? bigger='A' : bigger='B';
-		return str[0] + bigger + str[1];
-	}
-
-	let str = tagged`a 와 b 중 ${100} 가 더 크다 ${200}`;
-	console.log(str); //a 와 b 중 B 가 더 크다
+				console.log('인수1 문자열 배열: ', str);
+				console.log('인수1 문자열 배열갯수: ' + str.length);
+				console.log('인수2: ' + a);
+				console.log('인수3: ' +b);
+				console.log('인수4: ' +c);
+				
+				/*
+				인수1 문자열 배열:  (4) ['문', '자열', '이다', '', raw: Array(4)]
+				인수1 문자열 배열갯수: 4
+				인수2: 1이다
+				인수3: 2이다
+				인수4: 3이다
+				인수5: undefined
+				*/
+		}
+		
+		fn_test`문${'1이다'}자열${'2이다'}이다${'3이다'}`;
 
 	# 매우 해괴하다
 	# 문자열은 하나라도 문자열배열[0]로 표현해야 한다
+	# 마지막이 ${데이터}로 끝나도 ''배열값 하나가 더 있음.주의
 
 
 8. Typed Array
