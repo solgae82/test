@@ -1,0 +1,5 @@
+select * from dba_profiles where profile = 'DEFAULT'
+and resource_name ='PASSWORD_LIFE_TIME'
+; -- 180이 기본
+
+alter profile default limit password_life_time unlimited; -- 무제한 변경
