@@ -10,13 +10,15 @@ SET SERVEROUT ON;
 	1) 연관배열 , Associative Array, Index-by table 
     
 	    선언 구문 : 
-	    TYPE 연관_배열명 IS TABLE OF 연관_배열_값타입 
+	    TYPE 연관_배열명 IS TABLE OF 값타입 
 	    INDEX BY 인덱스타입;
 	    
 	    - 크기에 제한 없다
-	    - 인덱스 타입은 문자형이나 PLS_INTEGER 타입만 올 수 있다. 
+	    - 생성자로 생성하지 않는다
+	    	- 직접 인덱스값을 지정 대입해서 생성한다
+		- 인덱스 타입은 문자형이나 PLS_INTEGER 타입만 올 수 있다. 
 		- 내부적으로 사용자가 지정한 인덱스값 기준으로 자동 정렬된다.
-	    - 생성자를 사용할 수 없다. 
+	     
 --------- 
 DECLARE
     

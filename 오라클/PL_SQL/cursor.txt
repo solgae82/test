@@ -1,0 +1,195 @@
+set SERVEROUTPUT ON;
+-- 데이터가 한개 또는 1개 row 일때 select into 방식 사용
+declare
+    v_dept_row dept%rowtype;
+begin
+    select deptno , dname, loc into v_dept_row from dept where deptno=40;
+    
+    dbms_output.put_line('deptno => ' || v_dept_row.deptno);
+    dbms_output.put_line('dname => ' || v_dept_row.dname);
+    dbms_output.put_line('loc => ' || v_dept_row.loc);
+end;
+/
+
+
+/*
+    cursor (커서)
+    select문, 데이터 조작어 같은 sql문을 실행 후 생겨진 데이터 메모리 공간 포인터
+    
+    - 실행된 sql문은 결과값을 사용 가능(여러행 접근 가능)
+    - 명시적(expllicit),  묵시적(implicit) 커서로 나뉜다.
+    - 하나의 행 , 여러행 접근 가능.
+
+    
+*/
+
+-- 명시적 커서 (단일행 접근)
+declare
+    v_dept_row dept%rowtype;
+    --커서 선언
+    cursor c1 is 
+        select deptno, dname, loc from dept where deptno =40;
+begin
+
+    --커서열기
+    open c1;
+    
+    -- 커서로부터 읽어온 데이터 사용 (fetch)
+    fetch c1 into v_dept_row;
+    
+    dbms_output.put_line('c1.deptno => ' || v_dept_row.deptno);
+    dbms_output.put_line('c1.dname => ' || v_dept_row.dname);
+    dbms_output.put_line('c1.loc => ' || v_dept_row.loc);
+    --커서 닫기
+    close c1;
+end;
+/
+-- 명시적 커서 (여러행 접근 : loop)
+declare
+    v_dept_row dept%rowtype;
+    
+    --커서 선언
+    cursor c1 is
+        select deptno, dname, loc from dept;
+        
+begin
+    open c1; --커서열기
+    loop
+        fetch c1 into v_dept_row; --한행 가져오기
+        exit when c1%notfound; --커서 행이 없으면 중지
+        
+        dbms_output.put_line(v_dept_row.deptno  || ':' ||  v_dept_row.dname || '|' || v_dept_row.loc) ;
+    
+    end loop; 
+    close c1;--커서 닫기
+end;
+/
+
+-- 명시적 커서 (여러행 접근 : for loop)
+/*
+    open, fetch , close가  필요 없다
+*/
+
+declare
+    cursor c1 is
+        select deptno, dname, loc from dept;
+    
+begin
+
+    for v_rw in c1 loop
+        dbms_output.put_line(v_rw.deptno  || '/' ||  v_rw.dname || '/' || v_rw.loc) ;
+    end loop;
+
+end;
+/
+
+--명시적 커서(여러행 , 파라미터 사용)
+declare
+    v_dept_row dept%rowtype;
+    
+    --커서 선언
+    cursor c1(p_deptno dept.deptno%type) is 
+        select deptno, dname, loc from dept where deptno = p_deptno;
+begin
+
+    --10번 부서 출력
+    open c1(10);
+    
+        loop
+            fetch c1 into v_dept_row;
+            exit when c1%notfound;
+            dbms_output.put_line(v_dept_row.deptno  || '/' ||  v_dept_row.dname || '/' || v_dept_row.loc) ;
+            
+        end loop;
+         
+    close c1;
+    
+    --20번 부서 출력
+    open c1(20);
+         loop
+            fetch c1 into v_dept_row;
+            exit when c1%notfound;
+            dbms_output.put_line(v_dept_row.deptno  || '/' ||  v_dept_row.dname || '/' || v_dept_row.loc) ;
+            
+        end loop;
+    close c1;
+
+end;
+/
+
+-- 명시적 커서 (파라미터 입력받기)
+
+declare
+    v_deptno dept.deptno%type;
+    cursor c1 (p_deptno dept.deptno%type) is
+        select deptno, dname, loc from dept where deptno = p_deptno;
+begin
+
+    v_deptno := &input_deptno; -- 입력값 받기
+    
+    for v_rw in c1(v_deptno) loop
+         dbms_output.put_line(v_rw.deptno  || '/' ||  v_rw.dname || '/' || v_rw.loc) ;
+    end loop;
+end;
+/
+/*
+	명시적 커서 속성
+
+	커서이름%notfound : fetch문을 통해 추출된 행이 있으면 false, 없으면 true
+	커서이름%found : fetch문을 통해 추출된 행이 있으면 true, 없으면 false
+	커서이름%rowcount : 현재까지 추출된 행 수를 반환
+	커서이름%isopen : 커서가 open 되어 있으면 true, close되었으면 false
+*/
+-----------------------------
+
+/*
+	묵시적 커서
+
+	커서 선언 없이 sql문이 사용될 때 자동으로 선언 되는 커서
+	pl/sql 내부에서 DML등을 사용할때 자동 생성 처리되는 커서
+
+	묵시적 커서 속성 (SQL 키워드 사용)
+	SQL%notfound : 
+		묵시적 커서안에 추출된 행이 있으면  false, 없으면 true. 
+		DML 명령어로 영향받은 행이 있으면  false, 없으면 true.
+	SQL%found : 
+		묵시적 커서안에 추출된 행이 있으면  true, 없으면 false. 
+		DML 명령어로 영향받은 행이 있으면  true, 없으면 false.
+	SQL%rowcount : 
+		묵시적 커서에서 현재까지 추출한 행수 반환
+		DML 명령어로 영향받은 행 수 반환
+	SQL%isopen :
+		묵시적 커서는 자동으로 sql문 실행 후 close되므로, 항상 false 반환
+*/
+-- 묵시적 커서 속성 테스트
+declare
+    
+begin
+    update dept set dname = 'DATABASE' where deptno=50; -- 실행된 행 수가 없다
+    
+    -- SQL%rowcount
+    dbms_output.put_line('갱신된 행 갯수 => ' || SQL%rowcount);
+    
+    -- SQL%found
+    if(SQL%found) then 
+        dbms_output.put_line('갱신된 행 존대여부 => true');
+    else
+        dbms_output.put_line('갱신된 행 존대여부 => false');
+    end if;
+    
+    --
+    if(SQL%isopen) then 
+        dbms_output.put_line('커서 열림');
+    else
+        dbms_output.put_line('커서 닫힘');
+    end if;
+    
+end;
+/
+
+/* 출력 : 
+
+	갱신된 행 갯수 => 0
+	갱신된 행 존대여부 => false
+	커서 닫힘
+*/

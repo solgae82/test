@@ -1,0 +1,41 @@
+선언부를 먼저 컴파일 후 body 부분을 컴파일 한다
+
+
+-- 선언부
+create or replace package dept_pkg 
+is
+    --함수
+    function fn_get_dept_record_dname(p_deptno dept_record.deptno%type) 
+    return dept_record.dname%type;
+    
+    -- 프로시저
+    procedure insert_dept_record_proc(
+	p_dname dept_record.dname%type , 
+	p_loc dept_record.loc%type);
+end dept_pkg;
+
+--body 구현
+create or replace package body dept_pkg 
+is
+    --function 1
+    function fn_get_dept_record_dname(p_deptno dept_record.deptno%type) 
+    return dept_record.dname%type
+    is
+        v_dname DEPT_RECORD.DNAME%type;
+    begin
+        v_dname := fn_get_dname(p_deptno); --만들어진 함수를 재사용
+        return v_dname;
+    end fn_get_dept_record_dname;
+    
+    -- procedure
+    procedure insert_dept_record_proc(p_dname dept_record.dname%type , p_loc dept_record.loc%type)
+    is    
+    begin
+        insert_dept_proc(p_dname ,p_loc ); -- 만들어진 프로시저 재사용
+    end insert_dept_record_proc;
+end dept_pkg;
+
+---------------실행
+exec dept_pkg.insert_dept_record_proc('카이스트','deajeon'); -- 삽입실행
+--최신 삽입 이름 가져오기
+select dept_pkg.fn_get_dept_record_dname(dept_seq.currval) as dname from dual; -- 카이스트

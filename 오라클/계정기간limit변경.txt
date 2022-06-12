@@ -1,5 +1,16 @@
+sys, system으로 접속
+
+
 select * from dba_profiles where profile = 'DEFAULT'
 and resource_name ='PASSWORD_LIFE_TIME'
 ; -- 180이 기본
 
-alter profile default limit password_life_time unlimited; -- 무제한 변경
+-- 현재 계정 기간 변경도 해줘야 하더라
+alter user DONG2 identified by "123456"; //패스워드 변경
+
+
+-- 무제한으로 변경
+alter profile default limit PASSWORD_LIFE_TIME unlimited; -- 무제한 변경
+
+
+commit; 

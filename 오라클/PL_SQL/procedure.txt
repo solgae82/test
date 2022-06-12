@@ -1,0 +1,25 @@
+create or replace procedure insert_dept_proc(
+    p_dname dept_record.dname%type,
+    p_loc dept_record.loc%type
+)
+is
+    v_seq DEPT_RECORD.DEPTNO%type :=0 ;
+begin
+    select dept_seq.NEXTVAL into v_seq from dual;
+    
+    insert into dept_record (deptno, dname,loc) values(
+        v_seq,
+        p_dname,
+        p_loc
+    );
+    
+    commit;
+end;
+/
+
+	Procedure INSERT_DEPT_PROC이(가) 컴파일되었습니다.
+
+
+exec insert_dept_proc('AA','jeonju');
+
+	PL/SQL 프로시저가 성공적으로 완료되었습니다.

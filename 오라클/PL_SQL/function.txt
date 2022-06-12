@@ -1,0 +1,20 @@
+create or replace function fn_get_dname(
+    p_deptno  dept.deptno%type
+) 
+return dept.dname%type
+is
+
+   v_dname dept.dname%type;
+    
+begin
+    
+    select dname into v_dname from dept  
+    where deptno = p_deptno;
+    
+    return v_dname;
+end;
+/
+
+-- Function FN_GET_DNAME이(가) 컴파일되었습니다.
+
+select fn_get_dname(10) from dual; // 'ACCOUNTING'
