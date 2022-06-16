@@ -9,7 +9,7 @@ ojdbc6.jar (11 버전 용)
 
 이것만 하면 될 줄 알았더니 안 올라오더라..
 
-프로젝트 우클릭 > properties > java Deployment Assembly > Add 
+프로젝트 우클릭 > properties > java Deployment Assembly > Add > Archives from File System
 	: ojdbc6.jar 경로로 가서 선택해준다.
 	
 	(이 모드는 war 빌드시 해당 웹애플리케이션 , WEB-INF/lib/ojdbc6.jar 를 넣어주는 것같다)
