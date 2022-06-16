@@ -1,0 +1,17 @@
+WEB-INF/lib 직접 넣기
+ojdbc6.jar (11 버전 용) 
+
+또는 java build path에 추가하기
+
+	프로젝트 우클릭 > java build path > Libraries > Add external JARS..
+
+	: ojdbc6.jar 경로로 가서 선택해준다.
+
+이것만 하면 될 줄 알았더니 안 올라오더라..
+
+프로젝트 우클릭 > properties > java Deployment Assembly > Add 
+	: ojdbc6.jar 경로로 가서 선택해준다.
+	
+	(이 모드는 war 빌드시 해당 웹애플리케이션 , WEB-INF/lib/ojdbc6.jar 를 넣어주는 것같다)
+
+어쩼든 이렇게 두개 모드를 설정하고 톰캣 실행하니 올라오더라
