@@ -131,7 +131,8 @@ git remote -v # 클론 후 확인해보면 자동 원격저장소가 설정되�
 # fetch는 현재 브랜치와 바로 병합하는 것이 아니라, 임시 저장소(origin/master)에 가져오고,
 충돌 났는지, 비교등을 하고  직접 수정해서 반영하라는 수동모드.
 
-git fetch
+git fetch origin master
+
 git branch -a
   remotes/origin/master		#origin/master 가 원격저장소에서 가져온 브랜치
 

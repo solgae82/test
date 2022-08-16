@@ -1,0 +1,43 @@
+
+#플젝 디렉토리 만들고 초기화하기
+	$ mkdir test
+	$ cd test
+	$ git init #초기화
+
+#로컬플젝 name, email 값 설정
+	$ git config --local user.name "fetch2"
+	$ git config --local user.email "fetch2@test.com"
+	$ git config --local --list #값 확인
+
+#원격주소 별칭 설정하기
+	사용법 : git remote add <원격 저장소 별칭> <원격 저장소 주소>
+	
+	$ git remote -v #설정 확인(현재는 없다)
+	$ git remote add github https://github.com/solgae82/test.git #설정
+
+	$ git remote -v #설정값 확인
+	github  https://github.com/solgae82/test.git (fetch)
+	github  https://github.com/solgae82/test.git (push)
+
+# fetch 플젝소스 가져오기
+	임시 브랜치로 가져오기만 하는 명령어
+
+	사용법 : git fetch <원격 저장소 별칭> <원격 저장소 브랜치명>
+
+	$ git fetch github main
+		: 플젝이 다운로드 된다
+		..
+		From https://github.com/solgae82/test
+		 * [new branch]      main       -> github/main (#받아 온 임시 브랜치명)
+
+
+	$ git branch -a (임시 브랜치 확인)
+	  remotes/hub/main
+ 
+# merge로 합치기
+
+	사용법 : git merge <합칠 브랜치명>
+	현재 브랜치 기준으로 지정한 branch를 합치는 명령어 
+
+	$ git merge hub/main
+
