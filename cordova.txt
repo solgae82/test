@@ -1,3 +1,4 @@
+test
 1. java 설치 
 
 2. node.js 설치
