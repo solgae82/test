@@ -1,4 +1,4 @@
-원격저장소
+기본 요약
 
 	- 원격저장소 가져오기 : clone, fetch, pull 
 	- 원격저장소로 내보내기 : push
@@ -12,6 +12,8 @@
 			- 원격 저장소 소스 복제 기능으로 
 			로컬저장소 자동생성 + 원격 저장소 연결(remote)
 			한번에 이루어진다.
+
+원격 저장소 연결하기
 
 	1. 로컬 리포지터리 생성 후 원격 리포지터리에 연결 하는 방법
 		
@@ -31,33 +33,21 @@
 				github   https://github.com/solgae82/test.git (fetch)
 				github   https://github.com/solgae82/test.git (push)
 
-	2. clone 연결하기
+	2. clone 명령어로 복제해서 연결하기
+
 		로컬리포지터리 생성 없이 원격 저장소 소스를 로컬로 받아오면서 
-		init(로컬 저장소생성) + remote 과정이 한번에 해결되는 방법
+		init(로컬 저장소생성) + remote 과정이 한번에 해결되는 방법이다
+		아래에서 다룬다
 
 
 
-	--------- 처음 가져오기 예제(clone, fetch, pull)
+처음 가져오기
 
-	- test1(로컬저장소) 에 가져온다고 가정할 경우
+	- 처음 가져오기 예제(clone, fetch, pull)
+	- test1(로컬저장소) 에 가져온다고 가정
 
-	1. clone으로 가져오기
-		
-		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요없다
-		- 사용법 :  git clone <연결한 원격주소 url> <생성될 로컬 저장소명>
-		
-		$ git clone https://github.com/solgae82/test.git test1	
-		
-
-		$ cd test1		#복사된(로컬저장소) 위치로 이동
-		$ git branch -a		#branch 확인
-		* master
-		  remotes/github/HEAD -> github/main
-		  remotes/github/main
-
-		$ git status	 #확인
-
-	2. fetch로 가져오기
+	
+	1. fetch로 가져오기
 
 		- 사용법 : git fetch <원격 저장소 별칭> <원격 저장소 브랜치명>
 		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요하다
@@ -83,7 +73,7 @@
 
 		$ git status		#상태확인
 
-	3. pull로 가져오기
+	2. pull로 가져오기
 		
 		- 사용법 : git pull <원격 저장소 별칭> <원격 저장소 브랜치명>
 		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요하다
@@ -111,7 +101,25 @@
 
 		$ git status	#상태확인
 
-	------------ 원격저장소에 올리기(push)
+	3. clone으로 가져오기
+		
+		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요없다
+		- 사용법 :  git clone <연결한 원격주소 url> <생성될 로컬 저장소명>
+		
+		$ git clone https://github.com/solgae82/test.git test1	
+		
+
+		$ cd test1		#복사된(로컬저장소) 위치로 이동
+		$ git branch -a		#branch 확인
+		* master
+		  remotes/github/HEAD -> github/main
+		  remotes/github/main
+
+		$ git status	 #확인
+
+
+	
+원격저장소에 올리기(push)
 
 	- 먼저 fetch 또는 pull을 한다...그리고 병합 수정 작업 후 commit
 	- 사용법 : git push <원격 저장소 별칭> <로컬 저장소 브랜치명> 
@@ -145,3 +153,36 @@
 		- 아래처럼 -u옵션 한번만 해주면 다음 push 부터는   'git push' 만 해도 된다.
 
 			$ git push -u github master:main 
+
+원격 저장소 삭제
+	
+	- 사용법 : git push <원격 저장소 별칭> --delete <원격저장소 브랜치명>
+		또는
+		git push <원격 저장소 별칭>:<원격저장소 브랜치명>
+
+		$ git branch -r #현재 3개의 원격저장소(깃허브) 브랜치가 있다
+		github/main
+		github/master
+		github/test1
+
+		$ git push github --delete test1  #원격저장소 test1 브랜치 삭제
+
+		$ git branch -r # test1 로컬 리스트 삭제 확인
+		github/main
+		github/master
+
+		# 실제 원격저장소의 브랜치도 삭제되었는지 확인한다.
+
+
+원격저장소 브랜치 리스트와 로컬 원격 저장소 리스트 동기화 하기
+	
+	: 예를 들어 원격 저장소의 브랜치를 해당 사이트 웹프로그램에서 직접 지웠을 경우
+	로컬에 연결된 원격저장소 리스트가 자동으로 삭제되는 것은 아니다
+	이럴때 로컬 원격 저장소 브랜치 리스트 <-> 원격 저장소 브랜치 리스트의 동기화가 필요하다
+
+	$ git fetch --all --prune
+	또는
+	$ git remote prune github
+
+
+

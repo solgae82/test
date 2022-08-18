@@ -126,6 +126,11 @@ stage에 올린 파일 unstage 하기 (add 취소하기)
 
 	$ git branch -M main	# 현재 master 명을 -> main으로 변경
 
+	$ git branch -r # 원격 브랜치만 보여주기
+
+	$ git branch -d t1	# t1브랜치 삭제
+
+
 병합
 
 	- master + ver2 합치기
