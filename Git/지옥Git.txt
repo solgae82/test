@@ -194,7 +194,7 @@
 
 	사용법 : git fetch <원격 저장소 별칭> <원격 저장소 브랜치명>
 
-	$git fetch test1 main
+	$ git fetch test1 main
 
 	- fetch 는 임시로 가져오는 것이다
 	- FETCH_HEAD라는 임시 브랜치에 있다.

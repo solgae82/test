@@ -1,0 +1,37 @@
+# pull request
+	
+	지역 로컬에서 브랜치(mybranch 라고 하자)를 만들고
+	그 브랜치를 깃허브에 push 하면, 깃허브 브랜치 란에 있게 된다.
+
+	push 한 깃허브 저장소 올린 브랜치(mybranch)를  깃허브 master 에 merge 하는 과정중에 
+	pull request  라는 모드(?)가 있다.
+
+	이 과정을 거쳐서 merge 하게 되면 깃허브 master에 병합된다.
+	공동작업자 누구나 그 브랜치 내용을 보고 merge 할 수 있다.
+
+	과정은 아래와 같다
+	
+	1) New pull request
+	2) Merge pull request
+	3) Confirm merge (commit)
+
+	복잡한 용어를 쓴다..
+	깃허브만의 규칙 같다..깊이 생각하지 말자.
+
+	또는
+	
+	fork한 (깃 허브에서)
+	원본 저장소의 개발자에게 내가 수정한 것을 반영(merge)해 달라고 요청하는 것을 풀 리퀘스트(pull request) 라고 한다.
+
+	1) New pull request
+	2) create pull request
+	3) create pull request (commit)
+
+	원본 저장소 개발자가 검토 후 merge 를 결정했다면,
+
+	1) Merge pull request
+
+	고로 결론을 종합해보면,
+
+	원본 저장소 주인에게 그 소스를 내려받고 
+	수정한 사람이 원본 브랜치에 검토 후 반영(merge)해 달라고 요청하는 것 같다..(ㅋㅋ)

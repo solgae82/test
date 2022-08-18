@@ -32,12 +32,12 @@
 
 
 	$ git branch -a (임시 브랜치 확인)
-	  remotes/hub/main
+	  remotes/github/main
  
 # merge로 합치기
 
 	사용법 : git merge <합칠 브랜치명>
 	현재 브랜치 기준으로 지정한 branch를 합치는 명령어 
 
-	$ git merge hub/main
+	$ git merge github/main
 
