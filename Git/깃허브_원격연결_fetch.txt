@@ -54,7 +54,7 @@
 
 	$ git branch -M main  # 현재 브랜치를 'main'으로 이름 변경
 
-이렇게 하면 push 시에 명령 옵션이 짧아진다
+이렇게 하면 push 시에 명령인수가 짧아진다
 
 	$ git push github main  
 
