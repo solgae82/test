@@ -1,0 +1,28 @@
+clone 명령은 복제개념인데 편리하다
+원격연결도 자동으로 된 채로 복제된다..
+
+	- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요없다
+	- 원격저장소 별칭은 자동으로 'origin' 이 된다
+	- 원격저장소 브랜치명과 통일된 브랜치명이 생성된다
+
+	- 사용법 :  git clone <연결한 원격주소 url> [생성될 로컬 저장소명]
+
+	(깃허브 브랜치명이 'main'일때)
+	$ git clone https://github.com/solgae82/test.git test1	
+
+	
+	$ cd test1		#복사된(로컬저장소) 위치로 이동
+	$ git branch -a		#branch 확인
+	* main
+	  remotes/origin/HEAD -> origin/main
+	  remotes/origin/main
+
+	$ git status	 #확인
+
+	# [생성될 로컬 저장소명]을 생략하면
+		$ git clone https://github.com/solgae82/test.git 
+		(원격 리포지터리 명이 'test2' 면 test2 디렉토리가 생기고 복제된다)
+
+push 하기
+
+	$ git push origin main
