@@ -1,0 +1,365 @@
+기본용어
+	working directory = working tree = working copy : 작업공간
+	staging area = index = cache : 커밋 전 등록하는 곳
+	repository = history = tree : 최종확정본
+
+로컬 저장소 초기화
+	
+	$ mkdir project		# 저장소 생성, 디렉토리생성
+	$ git init		# git 초기화, git에 의해 이 디렉토리 관리됨.
+	$ git init test		# test 디렉토리 만들고 그안에 설정
+
+로컬 저장소 상태 확인
+
+	$ git status	# 저장소 상태 확인
+			(디렉토리에 .git 파일 삭제하면 로컬 저장소 삭제됨)
+
+로컬 저장소 설정
+
+	- global 설정 
+	
+		$ git config --global --list			#전역 설정 리스트 보기
+		$ git config --global user.name "dong"		#전역설정에 user.name설정
+		$ git config --global user.email "dong@ggg.com"	#전역설정에 user.email설정
+		$ git config --global user.name
+		dong #설정값 출력 
+
+	- local 디렉토리 설정 
+
+		$ mkdir test2
+		$ cd test2
+		$ git init					#test2 디렉토리 git으로 관리 초기화
+		$ git config --local --list			#test2 디렉토리 로컬 설정 보기
+		$ git config --local user.name "dong2"		#test2 디렉토리 로컬 user.name설정
+		$ git config --local user.email "dong2@ggg.com"	#test2 디렉토리 로컬 user.email설정
+		$ git config --local user.email
+		dong2@ggg.com #설정값 출력
+
+등록(commit)
+	
+	- add 사용법 : git add [파일명] [.]  [*]
+
+	$ git add hello.txt	#hello.txt 파일 커밋 전 index(staging area)등록.
+				(.git/index 에 staging 내용이 저장된다)
+
+	$ git commit		# index(staging area)에 등록된 파일 git에 버전 저장.
+				(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
+
+	$ git commit -a		#저장소에 변경된 모든 파일들 index(staging area)에 add후 바로 commit
+				(저장전 커밋메시지 작성 후 저장하면 커밋 완료.)
+
+	$ git commit -am "add first"	#저장소에 변경된 모든 파일들 index(staging area)에 add후 메시지까지 작성 후 바로 commit
+
+	$ git commit --amend #최신버전 커밋메시지 변경 
+
+로그
+	$ git log		#다음보기 이동(스페이스바), 끝내기 : 'q' 입력.
+	$ git log --graph		# 병합내역 아스키로 보여줌
+	$ git log --stat		# 커밋 수정 통계정보(세부변경까지 자세히) (다음:enter , 실행중지: q)
+
+	- 깃 로그 각 브랜치별로 한 라인씩 보기
+
+		$ git log --oneline --branches
+
+	- 깃 로그 각 브랜치별로 그래프 표시로 보기
+
+		$ git log --oneline --branches --graph
+
+	- 깃 로그 브랜치 vs 브랜치로 비교
+	
+		(아래 예제는 master 브랜치에는 없고, apple 브랜치에만 있는 commit 로그를 보여준다)
+
+		$ git log master..apple
+
+비교하기 
+	
+	$ git diff		#작업트리 버전과 리포지터리 버전을 비교하는 것
+
+
+수정 전 최신상태로 되돌리기
+
+	- 수정파일 (stage 올리기 전) 리포지터리 최신버전으로 복구
+
+	$ git checkout -- [파일명] [.]  [*]  #최신버전으로 다시 복구
+	
+	또는
+	
+	$ git restore [파일,.,*] 
+
+stage에 올린 파일 unstage 하기 (add 취소하기)
+
+	- add한 파일들을 다시 add전으로 돌리는 기능
+	- 수정된 파일은 그대로 있다.
+	- staged 상태만 취소된다.(modified 상태)
+
+	$ git reset HEAD [파일명,.,*]
+	
+	또는
+	
+	$ git restore --staged [파일명,.,*]
+
+브랜치
+	$ git branch		# 현재 브랜치들 보기, 기본(master)만 있음
+	$ git branch ver2		# ver2 브랜치 생성
+	$ git branch		# master, ver2 2개 있음.
+
+	$ git checkout ver2	# ver2 브랜치로 이동.
+	$ git checkout -b ver3	# ver3 브랜치 만들고 ver3 브랜치로 이동.
+
+	$ git branch -a		#원격저장소에 fetch로 가져온 remote-tracking 도 보여준다
+
+	- 브랜치 보기(현재 체크아웃된 브랜치는 (*)표시가 있다)
+		
+		$ git branch
+		*master #현재 브랜치
+		apple
+
+	- t1 브랜치 만들기
+
+		$ git branch t1
+		
+	- t1 브랜치로 체크아웃하기
+
+		$ git checkout t1
+				
+		$ git checkout -b t1	# 깃 t1 브랜치 만들고 t1 브랜치로 체크아웃하기(동시)
+
+	$ git branch -M main	# 현재 master 명을 -> main으로 변경
+
+병합
+
+	- master + ver2 합치기
+
+	$ git checkout master	# 병합될 기준되는 위치로 이동
+	$ git merge ver2		# 다른 branch인 ver2를 master로 합침.
+
+	---------병합충돌(파일 내용)
+		<<<<< HEAD
+		abc		#현재 위치한 branch 파일에 내용
+		=====
+		abcd		# 병합을 가져오는 곳에 파일에 내용
+		>>>>> ver2
+				# git은 충돌난 지접을 알려줄 뿐이고 처리는 사용자에게 위임한다.
+				# 충돌난 파일을 편집하고, 다시 commit하면 된다
+	---------병합충돌(파일 내용)
+
+		$ git commit -am "conflict resolved"	#편집 후 커밋
+
+
+	
+파일등록 무시하기
+	
+	.gitignore	#파일 생성  
+	.gitignore	#파일에 git에 등록되지 말아야할 파일패턴 입력.
+	
+	$ git add .gitignore
+	$ git commit -m "add .ignore"	# git에 등록함. 다른 사람과 연동시에 저 법칙을 공유하게 됨.
+
+커밋 (취소)하기 # discard , reset(hard) , reset(mixed) , revert
+
+	1.discard  : 최신 work tree에서 작업하다 취소하면 최근 커밋했던 상태로 다시 돌아감.
+
+	2.reset(hard) : 이전 커밋 버전을 선택해서 실행, 이전 커밋버전 모두삭제, 
+			work tree 상태는 선택버전으로 교체.
+		-v3 (삭제)
+		-v2 (삭제)
+		-v1 (여기서 실행,새로운 work tree HEAD)
+
+	3.reset(mixed) : 이전 커밋 버전을 선택해서 실행, 이전 커밋버전 모두삭제, 
+			 working tree상태는 유지.
+		-v3 (삭제)
+		-v2 (삭제)
+		-work tree 유지(이전 최신(v3) 커밋되지 않은 상태 생성, 새로운 work tree HEAD)
+		-v1 (여기서 실행)
+
+	4.revert : 현재 선택버전 이전으로 커밋버전 추가.(증가)
+		-v2 : revert 실행
+		-v1
+		#결과	
+		-new v1(v1과 같은 커밋된 새로운버전, 새로운 work tree HEAD)
+		-v2
+		-v1
+
+
+	- 커밋취소 (staged 상태로)
+		
+		$ git reset --soft HEAD^
+
+	- 커밋취소 (modified 상태로) 
+		
+		$ git reset --mixed HEAD^
+		
+		또는
+		
+		$ git reset HEAD^ (기본으로 하면 mixed 옵션과 같다)
+
+	- 커밋취소 (수정 이전상태 = 이전 커밋 상태로)
+		
+		$ git reset --hard HEAD^
+
+
+	- 커밋취소 (특정 커밋 해쉬 이전으로 되돌리기)
+
+		- [git해쉬id] 바로 *이전버전이 새로 커밋된다
+		- 되돌리기 효과 , git log는 늘어남.
+		- 다른 브랜치 해쉬id라도 그것으로 변경되고, 결국 연결이 끊어진 브랜치 커밋은 삭제됨.
+
+		$ git revert [git해쉬id]
+
+원격저장소
+
+	- 원격저장소 가져오기 : clone, fetch, pull 
+	- 원격저장소로 내보내기 : push
+	- 로컬 저장소와 원격 저장소를 연결해야 한다
+		- 연결 방법
+		1. 로컬 리포지터리 생성 후 원격 리포지터리에 연결 하는 방법
+			- git init으로 로컬 저장소 생성
+			- git remote로 원격 저장소 연결
+			
+		2. clone 연결하기
+			- 원격 저장소 소스 복제 기능으로 
+			로컬저장소 자동생성 + 원격 저장소 연결(remote)
+			한번에 이루어진다.
+
+	1. 로컬 리포지터리 생성 후 원격 리포지터리에 연결 하는 방법
+		
+		- 로컬 리포지터리를 생성해야한다.
+			$ mkdir test1
+			$ cd test1
+			$ git init
+
+		- 생성한 로컬 저장소와 원격저장소를 연결하는 작업을 해야한다
+		- 연결 후 ferch, pull(가져오기), push(내보내기) 등을 할 수 있다.
+	
+			#원격 저장소 연결하기
+				$ git remote add github https://github.com/solgae82/test.git
+
+			#원격 저장소 내역 보기
+				$ git remote -v
+				github   https://github.com/solgae82/test.git (fetch)
+				github   https://github.com/solgae82/test.git (push)
+
+	2. clone 연결하기
+		로컬리포지터리 생성 없이 원격 저장소 소스를 로컬로 받아오면서 
+		init(로컬 저장소생성) + remote 과정이 한번에 해결되는 방법
+
+
+	
+	--------- 처음 가져오기 예제(clone, fetch, pull)
+
+	- test1(로컬저장소) 에 가져온다고 가정할 경우
+
+	1. clone으로 가져오기
+		
+		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요없다
+		- 사용법 :  git clone <연결한 원격주소 url> <생성될 로컬 저장소명>
+		
+		$ git clone https://github.com/solgae82/test.git test1	
+		
+
+		$ cd test1		#복사된(로컬저장소) 위치로 이동
+		$ git branch -a		#branch 확인
+		* master
+		  remotes/github/HEAD -> github/main
+		  remotes/github/main
+
+		$ git status	 #확인
+
+	2. fetch로 가져오기
+
+		- 사용법 : git fetch <원격 저장소 별칭> <원격 저장소 브랜치명>
+		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요하다
+		- fetch는 현재 브랜치와 바로 병합하는 것이 아니라, 임시 저장소(remotes/github/main)에 가져오고,
+		충돌 났는지, 비교등을 하고  직접 수정해서 반영하라는 수동모드.
+
+		$ mkdir test1		#로컬저장소 디렉토리 생성
+		$ cd test1		#이동
+		$ git init		#로컬저장소 생성
+		$ git remote add github https://github.com/solgae82/test.git	#원격저장소 설정
+		$ git remote -v		#원격저장소 설정 확인
+		  github  https://github.com/solgae82/test.git (fetch)
+		  github  https://github.com/solgae82/test.git (push)
+
+		$ git fetch github main	#원격저장소에서 가져오기
+		$ git branch -a		#임시로 받은 원격저장소 브랜치 확인
+		  remotes/github/main		#원격으로 가져온 임시 브랜치
+
+		$ git merge remotes/github/main		#(편집수정할 내용없음) 현재 master로 합침 
+		$ git branch -a		#브랜치 다시 확인
+		* master		#원격으로 가져온 브랜치와 합쳐서 새로 생성된 master
+		  remotes/github/main	#원격으로 가져온 임시 브랜치
+
+		$ git status		#상태확인
+
+	3. pull로 가져오기
+		
+		- 사용법 : git pull <원격 저장소 별칭> <원격 저장소 브랜치명>
+		- 로컬 저장소를 만들고 원격저장소를 연결하는 과정이 필요하다
+		- fetch + merge 명령이라고 생각할 수 있음.
+			
+		$ mkdir test1		#로컬저장소 디렉토리 생성
+		$ cd test1		#이동
+		$ git init		#로컬저장소 생성
+		$ git remote add github https://github.com/solgae82/test.git	#원격저장소 설정
+		$ git remote -v		#원격저장소 설정 확인
+		  github  https://github.com/solgae82/test.git (fetch)
+		  github  https://github.com/solgae82/test.git (push)
+
+		$ git pull github main		#가져오기 (fetch + merge)
+		-----------------------
+		★ 에러발생시 : fatal: refusing to merge unrelated histories
+			(--allow-unrelated-histories 옵션주면 해결 됨)
+
+			$ git pull github main --allow-unrelated-histories
+
+		-----------------------
+		$ git branch -a			#가져온 브랜치 확인,master가 생겼음을 볼 수 있음(병합되었음)
+		* master			#원격으로 가져온 브랜치와 병합된 로컬 master브랜치
+		  remotes/github/main		#원격 브랜치
+
+		$ git status	#상태확인
+
+	------------ 원격저장소에 올리기
+
+	- 먼저 fetch 또는 pull을 한다...그리고 병합 수정 작업 후 commit
+	- 사용법 : git push <원격 저장소 별칭> <로컬 저장소 브랜치명> 
+		 git push <원격 저장소 별칭> <로컬 저장소 브랜치명>:<원격 저장소 브랜치명>
+
+	예제)
+	로컬 브랜치명 : master
+	원격저장소 브랜치명 : main
+
+		$ git push github master 
+		# 로컬저장소 master 브랜치 -> 원격 저장소의 master 브랜치에 업로드,없다면 새로운 원격브랜치(master)생성
+
+		$ git push github master:main
+		# 로컬저장소 master 브랜치 -> 원격 저장소의 main 브랜치에 업로드,없다면 새로운 원격브랜치(main)생성
+				
+	- 브랜치명은 원격 브랜치명과 로컬 브랜치명을 같게 하는게 일관성 측면에 좋다
+			
+		$git branch -M main
+		# 현재 위치의 브래치명인 master -> main 으로 변경 
+		
+		# 이렇게 일치 시키면 명령어 길이도 줄어든다
+		$ git push github main 
+
+	- 깃 허브 올려 보기(현재 로컬 브랜치 master 가정)
+
+			$ git push github master:main	
+		
+			# 깃허브 기본 브랜치명이 master 이었는데, main으로 바뀌었음(노예제 연상시킨다고)
+			# ex) 계정(dong) , 깃허브 비밀번호 등을 입력한다
+
+		- 아래처럼 -u옵션 한번만 해주면 다음번엔  'git push' 만 해도 된다.
+
+			$ git push -u github master:main 
+
+	-------
+
+	원격 장소에 브랜치 생성하고 올리기
+		
+		# 로컬 master 브랜치 소스를 원격에 master 브랜치를 만들고 올리기
+			$ git push github master 
+		
+		# 로컬 master 브랜치 소스를 원격 저장소에 r-test 브랜치를 만들고 올리기
+			$ git push github master:r-test 
