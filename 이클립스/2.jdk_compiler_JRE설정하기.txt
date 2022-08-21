@@ -1,0 +1,20 @@
+java compiler + JRE 설정
+
+	이클립스 전역 설정
+		
+		Window>Preferences
+
+		>Java>Complier>JDK Compliance>Compiler compliance level : java 컴파일러 버전 설정 
+		
+		>Java>Installed JREs : JRE 설정 [add , edit, remove]등 
+
+
+	프로젝트에서 설정
+
+		프로젝트 우클릭>Properties
+
+		>Java Compilier>JDK Compliance>Compiler compliance level : java 컴파일러 버전 설정 
+
+		>Java Build Path>Libraries>JRE System Library[JavaSE-1.8] : JRE 설정
+	 
+		>Project Facets : java 버전, Dynamic Web Module 버전등 설정

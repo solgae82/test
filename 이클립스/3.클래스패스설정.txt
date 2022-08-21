@@ -1,0 +1,66 @@
+이클립스 클래스패스 설정 방법
+	- 클래스 디렉토리, jar 등의 연결을 의미한다
+	
+	1) 이클립스 전역 클래스패스 변수 등록 후 프로젝트에서 변수값 불러오기 
+		
+		이클립스 전역 클래스패스 변수 등록
+		
+			방법 1 : Preferences>Java>Build Path>Classpath variables: 
+				
+				Name: 변수명 설정 
+
+				File버튼 : jar파일 path설정 
+				Folder버튼 : 클래스패스디렉토리 path설정
+
+			방법 2: Preferences>Java>Build Path>User Libararies: 
+				프로젝트 내부(상대경로), 외부경로(절대경로) jar 추가
+
+		프로젝트에서 등록한 전연 클래스패스 변수 연결 
+
+			방법 1 : 프로젝트 우클릭>Properties>Java Build Path>Libararies>Add Variable: 
+				전역 Classpath variables 설정 내용이 나온다, 선택
+
+			방법 2 : 프로젝트 우클릭>Properties>Java Build Path>Libararies>Add Library>User Library: 
+				전역 User Libararies 설정 내용이 나온다, 선택
+			
+	2) 이클립스 전역 JRE에 수동으로 jar 넣기 , 또는 프로젝트 JRE에서 외부 jar 연결하기
+		
+		방법1: 
+			사용하는 jre에 수동으로 사용자 jar파일을 복사해 넣는다
+
+		방법2:
+			Window>Preferences>Java>Installed JREs>추가된 jre 선택>Edit>JRE system libraries>Add external JARs..
+			: 외부 jar 파일을 연결한다
+
+
+	3) 프로젝트 Java Build path 로 클래스패스 및 jar 추가하기
+		
+		프로젝트 우클릭>Properties>Java Build Path
+
+		Source : 프로젝트에 포함된 소스 디렉토리의 구체적 구조 확인 및 추가, 삭제 , 출력 빌드 디렉토리 설정등. 
+			(jar, 클래스디렉토리) 추가 가능.
+
+		Project: 다른 프로젝트를 참조해야할 경우..
+			(java 플젝 기준이며, 웹 플젝에서 웹플젝을 가져오는 것은 안됨, 웹플젝에서 자바플젝은 가능, 쓸일 별로 없을 듯)
+		
+		Libraries : 주로 여기서 클래스패스 또는 jar등을 추가한다
+			Add Jars : 플젝 내부에(상대경로) jar을 넣고 연결하는 모드. (소스 다른 PC 이전시 안전)
+			Add External Jars : 플젝 외부(절대경로) jar를 연결하는 모드.(소스 다른 PC 이동시 경로깨짐)
+			Add Variable : 이클립스 전역 Classpath variables 변수 등록 후 연결하는 모드(소스 다른 PC 이동시 문제발생,이클립스 통째로 옮겨야 함)
+			Add Library : 이클립스 전역 User Library 등록 후 연결하는 모드(소스 다른 PC 이동시 문제발생,이클립스 통째로 옮겨야 함)
+			Add Class Folder : 플젝 내부에(상대경로) 클래스패스 폴더를 놓고 연결하는 모드(소스 다른 PC 이전시 안전)
+			Add External Class Folder :플젝 외부(절대경로) 클래스패스 폴더를 연결하는 모드(소스 다른 PC 이동시 경로깨짐)
+
+	※ 빌드 디렉토리 설정
+		프로젝트 우클릭>Propeties>Java Build Path>Source : 하단 Default output folder 설정
+
+	4) 웹 플젝 실행 및 배포시
+		- 웹 플젝은 일반 자바 플젝과 달리 , j2ee 구조로 배포가 되어야 하므로, 
+		Java Build Path 등에서 설정한 값들을 웹배포 디렉토리에 매치시켜줘야 한다.
+
+		- 웹 배포 디렉토리: /WEB-INF/classes, /WEB-INF/lib 등
+
+		- 웹 배포 매칭 설정 하는 메뉴: 
+		프로젝트 우클릭>Properties
+			>Web Deployment Assembly : 전역(classe 디렉토리,jar) + 플젝(classe 디렉토리,jar) 등을
+			웹 배포 디렉토리(/WEB-INF/classes, /WEB-INF/lib)로 배치하는 매칭 설정

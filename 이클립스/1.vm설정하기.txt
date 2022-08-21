@@ -1,0 +1,7 @@
+이클립스 디렉토리 > eclipse.ini 에 -vm  추가하기 
+
+	-vm
+	D:\JAVA\bin\javaw.exe
+
+	-vm 옵션을 사용한다. 반드시 실행파일명을 포함한 전체경로를 적어야 한다. 
+	정확한 위치에 기입해야 한다.-product, --launcher.* 가 있는 라인 이후, -vmargs 라인의 이전에 넣어 주어야 한다.
