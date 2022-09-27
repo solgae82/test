@@ -13,9 +13,12 @@ mysql -u root -p
 	mysql> CREATE USER 'dong'@'%' IDENTIFIED BY '123489';
 
 	(두개 이상 등록 가능,로컬과 원격)
+	
 
 'test' 데이터베이스 모든 사용권한 'dong'에게 주기
 	mysql> GRANT ALL PRIVILEGES ON test.* TO 'dong'@'localhost'
+	또는
+	mysql> GRANT ALL PRIVILEGES ON test.* TO 'dong'@'%' -- 계정추가를 이렇게 했다면 뒤에도 똑같이
 
 'dong'사용자 계정 추가하면서 'test' 데이터베이스에 모든권한 주기
 	mysql> GRANT ALL PRIVILEGES ON test.* TO 'dong'@'localhost' IDENTIFIED BY '123489';
@@ -27,4 +30,5 @@ mysql -u root -p
 	mysql> DROP USER 'dong'@'localhost';
 
 mysql> flush privileges;
+
 
