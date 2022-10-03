@@ -1,0 +1,79 @@
+----- 프로젝트 가져오기(import)
+이클립스 프로젝트가 폴더채로 있던가 압축(.zip, .war)형식으로 받게 된다.
+	
+(기본) 가져오기
+	- zip 파일이든 디렉토리든  압축해제
+	- workspace 에 플젝 디렉토리 복사
+	- File > import > General > Existing into Workspace > 해당 플젝 폴더 선택 > finish
+
+가져오기 : File > import > General 선택 중 주로 
+
+		- Existing Projects into Workspace
+		- Projects from Folder or Archive
+
+	두개 메뉴가 프로젝트 import 메뉴 이다
+
+	1) 한개만 있는 독립 프로젝트 디렉토리 및  Archive 일때 : 
+		
+		ex01 플젝 디렉토리, ex01.zip 있다고 가정.
+
+		Existing Projects into Workspace:
+			select root directory > ex01 외부플젝디렉토리 선택 > finish
+				- Package Explore 에 ex01 프로젝트가 생김.
+				- workspace 엔 프로젝트 안 생김.
+
+			select archive file > ex01.zip 파일 선택 > finish 
+				- Package Explore 에 ex01 프로젝트가 생김.
+				- workspace 에 ex01 디렉토리 생김(복사 됨)
+
+		Projects from Folder or Archive:
+			
+			import source > Directory > ex01 디렉토리 선택 > finish
+				- Package Explore 에 ex01 프로젝트 생김.
+				- workspace 엔 프로젝트 안 생김.
+
+			import source > Archive > ex01.zip 파일 선택
+				ex01.zip_expanded
+				ex01.zip_expanded\ex02 
+				- 두개 체크 박스가 생기는데 한개만 선택 함(ex01.zip_expanded 선택)
+
+			> finish
+
+				- Package Explore ex01.zip_expanded 플젝 생기고 그 아래에 ex01 프로젝트 생김.
+				- workspace 에 ex01.zip_expanded\ex01 디렉토리 생김.
+
+	2) 다건의 프로젝트들을 모아 놓은 디렉토리 및 Archive 일때: 
+		jpa-basic 디렉토리 , jpa-basic.zip 으로 있다고 가정할때
+
+		Existing Projects into Workspace:
+			select root directory > jpa-basic 외부디렉토리 선택 > finish
+				- Package Explore 에 jpa-basic 프로젝트가 생기고 서브 프로젝트들이 그 속에 생김.
+				- workspace 엔 프로젝트 안 생김.
+
+			select archive file > jpa-basic.zip 파일 선택 : finish  버튼 비활성화(import 안됨)
+			
+		Projects from Folder or Archive:
+			
+			import source > Directory > jpa-basic 디렉토리 선택 > finish
+				- Package Explore 에 jpa-basic 속의 각 프로젝트들이 root 개별 플젝으로 생겨남
+				- workspace 엔 프로젝트 안 생김.
+
+			import source > Archive > jpa-basic.zip 선택 > finish
+				- Package Explore 에 
+					- jpa-basic 플젝 생기고 그 속에 하위 프로젝트들이 있는 플젝 생겨남.
+					- jpa-basic 속의 각 프로젝트들이 root 개별 플젝으로 생겨남.
+				 - workspace 엔 'jpa-basic.zip_expanded'\jpa-basic 속에 각 프로젝트들이 생겨남.
+
+	
+	@ import > General 의 기타 메뉴인 
+		- Archive File
+		- File System
+		- Preferences 
+		등은 이미 생성된 프로젝트 안에 파일이나 디렉토리 등등을 import 할때 쓰는 메뉴 같다.(혼동 하지 말자)
+
+---- 내보내기(Export)
+
+프로젝트 선택 > 우클릭 단축메뉴 > Export 
+	> General > Archive File : 플젝을 .zip 파일로 묶어서 내보내기
+	
+	> Web > War File : 플젝을 .war 파일로 만들어서 웹 배포 가능한 형태로 내보내기
