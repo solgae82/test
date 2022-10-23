@@ -12,6 +12,7 @@
 
 4.방화벽 포트(3690) 열기
 	firewall-cmd --permanent --zone=public --add-port=3690/tcp
+	firewall-cmd --reload
 
 5.자동시작 설정
 
