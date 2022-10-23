@@ -4,27 +4,29 @@
 2.확인
 	svn
 	svnserve
-	
 
-3.service  시작/정지 스크립트 만들기 (이거 안하면 실행 안됨)
+3.root 저장소 생성
+	mkdir /svn
+
+4.service  시작/정지 스크립트 만들기 (이거 안하면 실행 안됨)
 	echo 'OPTIONS="--threads --root /svn"' > /etc/sysconfig/svnserve
 	cat /etc/sysconfig/svnserve
 
-4.방화벽 포트(3690) 열기
+5.방화벽 포트(3690) 열기
 	firewall-cmd --permanent --zone=public --add-port=3690/tcp
 	firewall-cmd --reload
 
-5.자동시작 설정
+6.자동시작 설정
 
 	systemctl enable svnserve (서비스로 자동 등록)
 
-6.시작/정지
+7.시작/정지
 	systemctl start svnserve 
 	systemctl stop svnserve 
 
 -------------------------------사용법
 1.root 저장소 생성
-	mkdir /svn
+	mkdir /svn (위에서 생성했다)
 
 2.root 저장소 아래  repository 생성
 	cd /svn
