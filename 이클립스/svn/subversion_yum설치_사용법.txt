@@ -24,7 +24,7 @@
 	systemctl start svnserve 
 	systemctl stop svnserve 
 
--------------------------------사용법
+-------------------------------저장소 생성 사용법
 1.root 저장소 생성
 	mkdir /svn (위에서 생성했다)
 
@@ -32,8 +32,18 @@
 	cd /svn
 	svnadmin create --fs-type fsfs repo1
 
+	pwd
+	/svn/repo1 # 저장소 생성됨.
 
-3.생성한 repository(repo1) > conf > svnserve.conf 설정
+	
+
+3. 저장소 설정 디렉토리 이동
+	cd /svn/repo1/conf #설정 디렉토리 이동.
+
+4. svnserve.conf 설정
+	
+	vi svnserve.conf
+	..
 	[general]
 	anon-access = none
 	auth-access = write
@@ -53,21 +63,30 @@
 		 
 	---설명끝
 
-4.생성한 repository(repo1) > conf > passwd 설정
-	[users]
-	desktop = 1234
-	notebook = 1234
+5. authz 설정(계정 생성)
+	vi authz
+	..
 
-5.생성한 repository(repo1) > conf > authz 설정
 	[/]
 	desktop = rw
 	notebook = rw
 
-6.설정 후 재시작
+6. passwd 설정
+	vi passwd
+	..
+
+	[users]
+	desktop = 1234
+	notebook = 1234
+
+
+
+7. 설정 후 재시작
 	systemctl stop svnserve 
 	systemctl start svnserve 
 	
-7.svn에 접속이 되는지 인증 확인을 한다.(리눅스에서)
+8. svn에 접속이 되는지 인증 확인을 한다.(리눅스에서)
+
 	# svn co svn://ip 또는 도메인 주소/저장소
 	svn co svn://127.0.0.1/repo1
 
@@ -75,5 +94,5 @@
 
 	사용자명,암호입력 , y  또는 한글로 '예'
 
-	“svn 인증 실패”이면 svnserve.conf, passwd, authz 설정 부분을 다시 확인한다. 
+	"svn 인증 실패"이면 svnserve.conf, passwd, authz 설정 부분을 다시 확인한다. 
 
