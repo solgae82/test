@@ -4,7 +4,7 @@
 
 접속하려는 아이디로 github사이트 로그인 후 
 우측 메뉴에서 개인 프로필 이미지 클릭 > 
-Settings > Account settings > Developer settings > Personal access tokens
+Settings > Developer settings > Personal access tokens
 
 Generate new token 누르고 토큰 생성하는데, 
 	Note : 토큰명 (이 문자로 토큰을 생성한다..'아이디_token' 등으로 생성)
@@ -15,7 +15,8 @@ Generate new token 누르고 토큰 생성하는데,
 
 마지막 Generate token 버튼으로 생성하는데,	
 다음 페이지에서 처음 한번만 생성된 토큰 문자열이 보인다
-잘 Copy해서 보관해야한다..
+잘 Copy해서 보관해야한다..(다시 확인 불가능)
+
 또한 그 계정의 이메일 주소로도 토근을 생성했네 하는 메일도 올 것이다..
 그 메일에서 인증도 해야한다..
 
