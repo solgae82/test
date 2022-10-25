@@ -7,7 +7,7 @@
 프로젝트 우측메뉴 > SVN > team > share project 
 URL : svn://192.168.0.3/node 
 User : notebook
-Password : 100you 
+Password : 1234 
 
 --- 다른 사용자 이클립스에 svn 리포지터리 가져오기(checkout)  
 1.window > show view > svn > svn Repositories 추가
@@ -15,5 +15,5 @@ Password : 100you
 3.General탭
 URL : svn://192.168.0.3/node 
 User : desktop
-Password : 100you
+Password : 1234
 4.생성된 svn 아이콘 우측클릭  checkout 으로 가져온다
