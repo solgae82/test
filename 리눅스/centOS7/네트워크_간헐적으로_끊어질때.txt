@@ -1,0 +1,7 @@
+네트워크매니저라는 프로그램이 centOS7 부터는 기본적으로 설치 된다는데, 
+요녀석이 말썽이다..
+저 프로그램을 비활성화 하거나 삭제하라.
+
+[root@localhost ~]# systemctl stop NetworkManager
+[root@localhost ~]# yum -y remove NetworkManager
+[root@localhost ~]# shutdown -r now

@@ -36,7 +36,7 @@
 
 	vi /etc/ssh/sshd_config 
 
-		UseDNS no
+		UseDNS no #없으면 추가
 		GSSAPIAuthentication no
 		
 	systemctl restart sshd 
