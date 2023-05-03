@@ -1,23 +1,37 @@
 <a href="#" onclick="foo(event);">여기</a>
+
 function foo(e) {
 
-
-   // 이벤트 객체 얻기
+   //1. 이벤트 객체 얻기
    var event = e ? e : window.event;
 
    //링크 이동 막기
+   if (event.preventDefault) {
+	event.preventDefault(); //링크 이동 막기
+   }else{ // IE 8 이하
+	e.returnValue = false; // 링크 이동 막기
+   }
+   
+   //2. 이벤트 버블링 막기 (같은 이벤트)
    if (event.stopPropagation) {
-      // 넷스케이프 계열의 경우
-      event.stopPropagation();
-      event.preventDefault();
-   } else {
-      // IE의 경우
+      event.stopPropagation(); 
+   } else { // IE 8 이하
       event.cancelBubble = true;
    }
 
-   // 이벤트 타겟 얻기, 클릭객체, this
+   
+   // 3. 이벤트 버블링 막기 (다른 이벤트, 또는 동일한 복수 이벤트 포함)
+   if (event.stopImmediatePropagation) {
+	event.stopImmediatePropagation(); // 같은 target에 걸린 다른 이벤트 , 복수 핸들러도 중단 시킴
+   }else{ // IE 8 이하
+	event.isImmediatePropagationEnabled = false;
+   }
+
+   
+
+   // 이벤트 타겟 얻기, this 객체라 생각하면 됨. 이 예제에서는 <a> 태그
    var target = event.target ? event.target : event.srcElement;
 
-   console.log($(target).text()); // 여기
+   console.log($(target).text()); // '여기'
 
 }
