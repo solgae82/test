@@ -1,85 +1,97 @@
 <script language="JavaScript">
 
+    /**
+    *	메인 팝업 클래스
+    */
     var mainPopupObj = {
-      popupWidth : 800,
 
-      id : 'mainPopupLayer', 
-      setCookie : function(cName, cValue, cDay){
-        var expire = new Date();
-        expire.setDate(expire.getDate() + cDay);
-        cookies = cName + '=' + encodeURIComponent(cValue) + '; path=/ '; // 한글 깨짐을 막기위해 encodeURIComponent(cValue)를 합니다.
-        if(typeof cDay != 'undefined') cookies += ';expires=' + expire.toGMTString() + ';';
-        document.cookie = cookies;
-      },
-      getCookie : function(cName) {
-          cName = cName + '=';
-          var cookieData = document.cookie;
-          var start = cookieData.indexOf(cName);
-          var cValue = '';
-          if(start != -1){
-                start += cName.length;
-                var end = cookieData.indexOf(';', start);
-                if(end == -1)end = cookieData.length;
-                cValue = cookieData.substring(start, end);
-          }
-          return decodeURIComponent(cValue);
-      },
-      getParameter : function(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-      },
+    id : 'mainPopupLayer', 
+    block_ui_id : 'mainPopupLayer_block_ui',
+    setCookie : function(cName, cValue, cDay){
+      var expire = new Date();
+      expire.setDate(expire.getDate() + cDay);
+      cookies = cName + '=' + encodeURIComponent(cValue) + '; path=/ '; // 한글 깨짐을 막기위해 encodeURIComponent(cValue)를 합니다.
+      if(typeof cDay != 'undefined') cookies += ';expires=' + expire.toGMTString() + ';';
+      document.cookie = cookies;
+    },
+    getCookie : function(cName) {
+        cName = cName + '=';
+        var cookieData = document.cookie;
+        var start = cookieData.indexOf(cName);
+        var cValue = '';
+        if(start != -1){
+              start += cName.length;
+              var end = cookieData.indexOf(';', start);
+              if(end == -1)end = cookieData.length;
+              cValue = cookieData.substring(start, end);
+        }
+        return decodeURIComponent(cValue);
+    },
+    getParameter : function(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+          results = regex.exec(location.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    },
 
-      stopCheck : function(obj, day){
-        var isChk = $(obj).prop('checked');
-        if(isChk){ this.popupStopDay(day);}
-      },
-      popupStopDay : function(day){
-        this.setCookie('mainNotice', 'off', day);
-        this.close();
-      },
-      show : function(){ $('#' + this.id).show();},
-      close : function(){ $('#' + this.id).hide();},
-      insertHtml : function(){
-        $('body').append(this.content);
-      },
-      content : `<div id="mainPopupLayer" style="
-        width: 800px; /*넓이*/
+    stopCheck : function(obj, day){
+      var isChk = $(obj).prop('checked');
+      if(isChk){ this.popupStopDay(day);}
+    },
+    popupStopDay : function(day){
+      this.setCookie('mainNotice', 'off', day);
+      this.close();
+    },
+    show : function(){ 
+      $('#' + this.block_ui_id).show();
+      $('#' + this.id).show();
+    },
+    close : function(){ 
+    $('#' + this.id).hide();
+    $('#' + this.block_ui_id).fadeOut(200);
+    },
+    insertHtml : function(){
+      $('body').append(this.content);
+    },
+    content : `<div id="mainPopupLayer_block_ui" style="z-index: 100;width:100%;min-height:1000%;background-color: #111;position: absolute;top: 0;left: 0;opacity:0.5;display: none;"></div>
+      <div id="mainPopupLayer" style="
+        width:800px;
         position: absolute;
         left: 50%;
         top: 50%;
-        margin-left: -400px;/*좌측 이동 -(width / 2)*/
-        margin-top: -210px;
+        margin-left: -400px;
+        margin-top: -310px;
         border: 1px solid #111;
         background-color:#eee;
-        line-height: 1.5em;display: none;">  
-          <div style="text-align: center;">
-            <h3>제목</h3>
-            <button style="position: absolute; top: 8px; right: 5px;font-size: 2.3em;padding: 0 7px 0 7px;" type="button" onclick="mainPopupObj.close()">x</button>
-          </div>
-          <hr />
-          <div style="width: 96%;margin: 0 auto;padding: 5px;border: 1px solid #111;background-color: #fff;">
-            <p>컨텐츠</p>
-          </div>
-          <hr />
-          <div style="text-align: center;position: relative;">
-              <button style="font-size: 1em;" type="button" onclick="mainPopupObj.close()">닫기</button>
-              <div style="position: absolute; top: 0px; right: 5px;"><input type="checkbox" onclick="mainPopupObj.popupStopDay(1)" />오늘 하루 그만보기</div>
-          </div>
-        </div>`
+        box-shadow: 5px 5px 5px;
+        line-height: 1.5em;font-size: 1.2em;display: none;z-index: 101;">  
+        <div style="text-align: center;">
+          <h3>제목</h3>
+          <button style="position: absolute; top: 5px; right: 5px;font-size: 2.0em;padding: 0 7px 2px 7px;color: #000;font-weight: normal;"  title="닫기" type="button" onclick="mainPopupObj.close()">×</button>
+        </div>
+        <hr />
+        <div style="width: 96%;margin: 0 auto;padding: 10px;border: 1px solid #ff4800;background-color: #fff;border-radius: 10px">
+          <p>컨텐츠</p>   
+          
+        </div>
+        <hr />
+        <div style="text-align: center;position: relative;">
+            <button style="margin-bottom: 10px;font-size: 1.2em;padding: 2px 20px 2px 20px;border-radius: 20px;background-color: #fff;color: #000;border-width: 1px;" type="button" onclick="mainPopupObj.close()" title="닫기">× 닫기</button> 
+            <div style="position: absolute;top: 0px; right: 5px;"><input type="checkbox" onclick="mainPopupObj.popupStopDay(1)" id="popupStop"  title="오늘 하루 그만보기" /><label for="popupStop" title="오늘 하루 그만보기">오늘 하루 그만보기</label></div>
+        </div>
+      </div>`
 
     };
 
     $(function(){
 
-      if(mainPopupObj.getParameter("test") == '1'){ // ?test=1 일때
-          
-        if(mainPopupObj.getCookie('mainNotice') != 'off'){
-          mainPopupObj.insertHtml();
-          mainPopupObj.show();
-        }
-      }
+	    if(mainPopupObj.getParameter("test") == '1'){ //?test=1
+		
+	      if(mainPopupObj.getCookie('mainNotice') != 'off'){
+		mainPopupObj.insertHtml();
+		mainPopupObj.show();
+	      }
+	    }
 
     });
-</script>
+  </script>
