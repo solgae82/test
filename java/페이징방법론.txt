@@ -1,54 +1,184 @@
-전체 리스트수 : totalList = 쿼리 count(*)
+package com.solgae.common;
 
-전체 페이지 수 : totalPage 
-	totalPage = (int)(totalList/pagePerList);
-	if(totalList % pagePerList > 0) {totalPage++;}
-페이지당 리스트 수 : listPerPage = 10
-현재페이지 번호 : currentPage , ?page=1
+public class Pagination {
+
+	
+	private int totalListCnt; // 전체 리스트 갯수
+	
+	private int currentPageNum; //현재 페이지 번호
+	private int listPerPageCnt; //페이지당 리스트 갯수
+	private int totalPageCnt; 	//전체 페이지 갯수
+	
+	private int pagePerBlockCnt; //블록당 페이지 갯수
+	private int totalBlockCnt; //전체 블록 갯수 
+	private int currentBlockNum; //현재 블록 번호
+	private int startPageNumOfBlock; //현재 블록 시작 페이지 번호
+	private int endPageNumOfBlock; //현재 블록 끝 페이지 번호
+	
+	private int queryStartNum; // 쿼리로 가져올 row 시작 번호
+	
+	private boolean prevBlock;  //이전 블록 존재 여부
+	private boolean nextBlock; //다음 블록 존재 여부
+	
+	/**
+	 * 페이지 계산값 셋팅
+	 * @param currentPageNum (현재 페이지 번호)
+	 * @param totalListCnt (전체 리스트 갯수)
+	 * @param listPerPageCnt (페이지당 리스트 갯수)
+	 * @param pagePerBlockCnt (블록당 페이지 갯수)
+	 */
+	public void setlValues(int currentPageNum, int totalListCnt, int listPerPageCnt, int pagePerBlockCnt) {
+		this.currentPageNum = currentPageNum;
+		this.totalListCnt = totalListCnt;
+		this.listPerPageCnt = listPerPageCnt;
+		this.pagePerBlockCnt = pagePerBlockCnt;
+		this.calculate();
+	}	
+	public void calculate() {
+		
+		//1.전체 페이지 갯수 계산
+		totalPageCnt = (int)(totalListCnt/listPerPageCnt);
+		if(totalListCnt % listPerPageCnt > 0) {totalPageCnt++;}
+		
+		//2.전체 블록 갯수 계산
+		 totalBlockCnt = totalPageCnt / pagePerBlockCnt;
+		if(totalPageCnt % pagePerBlockCnt > 0) {totalBlockCnt++;}
+		
+		//3.현재 블록 번호 계산 
+		currentBlockNum = (int)Math.ceil(currentPageNum / (double) pagePerBlockCnt);
+		
+		//4.현재 블록 시작 페이지 번호 계산
+		startPageNumOfBlock = ((currentBlockNum -1) * pagePerBlockCnt) + 1;
+		
+		//5.현재 블록 끝 페이지 번호 계산
+		endPageNumOfBlock = (startPageNumOfBlock + pagePerBlockCnt) - 1;
+		if(endPageNumOfBlock > totalPageCnt) {endPageNumOfBlock = totalPageCnt;}
+		
+		//6.쿼리로 가져올 row 시작 번호 계산
+		queryStartNum = (currentPageNum-1) * listPerPageCnt; 
+		
+		//7.이전 블록 존재 여부 계산
+		prevBlock = (currentBlockNum > 1)?true:false;
+		
+		//8.다음 블록 존재 여부
+		nextBlock = (currentBlockNum < totalBlockCnt)?true:false;
+		
+	}
+	public int getTotalListCnt() {
+		return totalListCnt;
+	}
+	public void setTotalListCnt(int totalListCnt) {
+		this.totalListCnt = totalListCnt;
+	}
+	public int getCurrentPageNum() {
+		return currentPageNum;
+	}
+	public void setCurrentPageNum(int currentPageNum) {
+		this.currentPageNum = currentPageNum;
+	}
+	public int getListPerPageCnt() {
+		return listPerPageCnt;
+	}
+	public void setListPerPageCnt(int listPerPageCnt) {
+		this.listPerPageCnt = listPerPageCnt;
+	}
+	public int getTotalPageCnt() {
+		return totalPageCnt;
+	}
+	public void setTotalPageCnt(int totalPageCnt) {
+		this.totalPageCnt = totalPageCnt;
+	}
+	public int getPagePerBlockCnt() {
+		return pagePerBlockCnt;
+	}
+	public void setPagePerBlockCnt(int pagePerBlockCnt) {
+		this.pagePerBlockCnt = pagePerBlockCnt;
+	}
+	public int getTotalBlockCnt() {
+		return totalBlockCnt;
+	}
+	public void setTotalBlockCnt(int totalBlockCnt) {
+		this.totalBlockCnt = totalBlockCnt;
+	}
+	public int getCurrentBlockNum() {
+		return currentBlockNum;
+	}
+	public void setCurrentBlockNum(int currentBlockNum) {
+		this.currentBlockNum = currentBlockNum;
+	}
+	public int getStartPageNumOfBlock() {
+		return startPageNumOfBlock;
+	}
+	public void setStartPageNumOfBlock(int startPageNumOfBlock) {
+		this.startPageNumOfBlock = startPageNumOfBlock;
+	}
+	public int getEndPageNumOfBlock() {
+		return endPageNumOfBlock;
+	}
+	public void setEndPageNumOfBlock(int endPageNumOfBlock) {
+		this.endPageNumOfBlock = endPageNumOfBlock;
+	}
+	public int getQueryStartNum() {
+		return queryStartNum;
+	}
+	public void setQueryStartNum(int queryStartNum) {
+		this.queryStartNum = queryStartNum;
+	}
+	public boolean isPrevBlock() {
+		return prevBlock;
+	}
+	public void setPrevBlock(boolean prevBlock) {
+		this.prevBlock = prevBlock;
+	}
+	public boolean isNextBlock() {
+		return nextBlock;
+	}
+	public void setNextBlock(boolean nextBlock) {
+		this.nextBlock = nextBlock;
+	}
+	
+	
+}
 
 
-한 블록당 페이지 수 pagePerBlock = 10 ( << < 1~10 > >> )
-전체 블록 수 : totalBlock
-	totalBlock = totalPage / pagePerBlock;
-	if(totalPage % pagePerBlock > 0) {totalBlock++;}
-현재 블록 번호 : currentBlock
-현재 블록 시작 페이지 번호 : startBlockPage
-현재 블록 끝 페이지 번호 : endBlockPage
+--------------------
+package test;
 
+import com.solgae.common.Pagination;
 
-가져올 시작 쿼리 번호 : startQryNum
+public class Test {
 
-
-이전 여부 : isPrev
-다음 여부 : isNext
----------------
-int currentPage = 23; //현재 페이지
+	public static void main(String[] args) {
+		 
+		int currentPageNum = 11; //현재 페이지 번호
+		int totalListCnt = 302;	//전체 리스트 갯수
+		int listPerPageCnt = 10; //페이지당 리스트 갯수
+		int pagePerBlockCnt = 10; //블록당 페이지 갯수
+		
+		Pagination pagination = new Pagination();
+		pagination.setlValues(currentPageNum, totalListCnt, listPerPageCnt, pagePerBlockCnt);
+		
+		System.out.println("현재 페이지 : "+pagination.getCurrentPageNum());
+		System.out.println("전체 페이지 갯수: "+pagination.getTotalPageCnt());		
+		System.out.println("전체 블록 갯수:"+ pagination.getTotalBlockCnt());		
+		System.out.println("현재블록 번호:"+pagination.getCurrentBlockNum());		
+		System.out.println("현재블록 시작 페이지 번호:" + pagination.getStartPageNumOfBlock());		
+		System.out.println("현재블록 끝 페이지 번호:" + pagination.getEndPageNumOfBlock());
+		System.out.println("쿼리로 가져올 시작 번호:" + pagination.getQueryStartNum());
+		System.out.println();
+		
+		int start = pagination.getStartPageNumOfBlock();
+		int end  = pagination.getEndPageNumOfBlock();
+		String strPage = "";
+		for(int i=start; i<=end; i++) {
 			
-int totalList = 240;
-int listPerPage = 10;
-int pagePerBlock = 10;
+			strPage += i +"|";
+		}
+		
+		if(!"".equals(strPage)) { strPage = strPage.substring(0,strPage.length()-1);}
+		if(pagination.isPrevBlock()) System.out.print("<이전 ");
+		System.out.print(strPage);
+		if(pagination.isNextBlock()) System.out.print(" 다음>");
 
-int totalPage = (int)(totalList/listPerPage);
-if(totalList % listPerPage > 0) {totalPage++;}
-System.out.println("전체페이지 수: "+totalPage);
-
-int totalBlock = totalPage / pagePerBlock;
-if(totalPage % pagePerBlock > 0) {totalBlock++;}
-System.out.println("전체블록수:"+ totalBlock);
-
-
-int currentBlock = (int)Math.ceil(currentPage / (double) pagePerBlock);
-System.out.println("현재블록:"+currentBlock);
-
-//현재블록시작번호
-int startBlockPage = ((currentBlock -1) * pagePerBlock) + 1;
-System.out.println("현재블록시작번호:" + startBlockPage);
-
-//현재블록끝번호
-int endBlockPage = (startBlockPage + pagePerBlock) - 1;
-if(endBlockPage > totalPage) {endBlockPage = totalPage;}
-System.out.println("현재블록시작번호:" + endBlockPage);
-
-
-int startQryNum = (currentPage-1) * listPerPage; 
-System.out.println("가져올 시작쿼리 번호:" + startQryNum);
+	}
+}
