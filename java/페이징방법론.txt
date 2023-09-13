@@ -1,0 +1,54 @@
+전체 리스트수 : totalList = 쿼리 count(*)
+
+전체 페이지 수 : totalPage 
+	totalPage = (int)(totalList/pagePerList);
+	if(totalList % pagePerList > 0) {totalPage++;}
+페이지당 리스트 수 : listPerPage = 10
+현재페이지 번호 : currentPage , ?page=1
+
+
+한 블록당 페이지 수 pagePerBlock = 10 ( << < 1~10 > >> )
+전체 블록 수 : totalBlock
+	totalBlock = totalPage / pagePerBlock;
+	if(totalPage % pagePerBlock > 0) {totalBlock++;}
+현재 블록 번호 : currentBlock
+현재 블록 시작 페이지 번호 : startBlockPage
+현재 블록 끝 페이지 번호 : endBlockPage
+
+
+가져올 시작 쿼리 번호 : startQryNum
+
+
+이전 여부 : isPrev
+다음 여부 : isNext
+---------------
+int currentPage = 23; //현재 페이지
+			
+int totalList = 240;
+int listPerPage = 10;
+int pagePerBlock = 10;
+
+int totalPage = (int)(totalList/listPerPage);
+if(totalList % listPerPage > 0) {totalPage++;}
+System.out.println("전체페이지 수: "+totalPage);
+
+int totalBlock = totalPage / pagePerBlock;
+if(totalPage % pagePerBlock > 0) {totalBlock++;}
+System.out.println("전체블록수:"+ totalBlock);
+
+
+int currentBlock = (int)Math.ceil(currentPage / (double) pagePerBlock);
+System.out.println("현재블록:"+currentBlock);
+
+//현재블록시작번호
+int startBlockPage = ((currentBlock -1) * pagePerBlock) + 1;
+System.out.println("현재블록시작번호:" + startBlockPage);
+
+//현재블록끝번호
+int endBlockPage = (startBlockPage + pagePerBlock) - 1;
+if(endBlockPage > totalPage) {endBlockPage = totalPage;}
+System.out.println("현재블록시작번호:" + endBlockPage);
+
+
+int startQryNum = (currentPage-1) * listPerPage; 
+System.out.println("가져올 시작쿼리 번호:" + startQryNum);
