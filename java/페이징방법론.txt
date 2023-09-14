@@ -1,4 +1,4 @@
-package com.solgae.common;
+package org.dong2.asset;
 
 public class Pagination {
 
@@ -12,8 +12,8 @@ public class Pagination {
 	private int pagePerBlockCnt; //블록당 페이지 갯수
 	private int totalBlockCnt; //전체 블록 갯수 
 	private int currentBlockNum; //현재 블록 번호
-	private int startPageNumOfBlock; //현재 블록 시작 페이지 번호
-	private int endPageNumOfBlock; //현재 블록 끝 페이지 번호
+	private int startPageNumInBlock; //현재 블록 시작 페이지 번호
+	private int endPageNumInBlock; //현재 블록 끝 페이지 번호
 	
 	private int queryStartNum; // 쿼리로 가져올 row 시작 번호
 	
@@ -48,11 +48,11 @@ public class Pagination {
 		currentBlockNum = (int)Math.ceil(currentPageNum / (double) pagePerBlockCnt);
 		
 		//4.현재 블록 시작 페이지 번호 계산
-		startPageNumOfBlock = ((currentBlockNum -1) * pagePerBlockCnt) + 1;
+		startPageNumInBlock = ((currentBlockNum -1) * pagePerBlockCnt) + 1;
 		
 		//5.현재 블록 끝 페이지 번호 계산
-		endPageNumOfBlock = (startPageNumOfBlock + pagePerBlockCnt) - 1;
-		if(endPageNumOfBlock > totalPageCnt) {endPageNumOfBlock = totalPageCnt;}
+		endPageNumInBlock = (startPageNumInBlock + pagePerBlockCnt) - 1;
+		if(endPageNumInBlock > totalPageCnt) {endPageNumInBlock = totalPageCnt;}
 		
 		//6.쿼리로 가져올 row 시작 번호 계산
 		queryStartNum = (currentPageNum-1) * listPerPageCnt; 
@@ -107,16 +107,16 @@ public class Pagination {
 		this.currentBlockNum = currentBlockNum;
 	}
 	public int getStartPageNumOfBlock() {
-		return startPageNumOfBlock;
+		return startPageNumInBlock;
 	}
-	public void setStartPageNumOfBlock(int startPageNumOfBlock) {
-		this.startPageNumOfBlock = startPageNumOfBlock;
+	public void setStartPageNumOfBlock(int startPageNumInBlock) {
+		this.startPageNumInBlock = startPageNumInBlock;
 	}
 	public int getEndPageNumOfBlock() {
-		return endPageNumOfBlock;
+		return endPageNumInBlock;
 	}
-	public void setEndPageNumOfBlock(int endPageNumOfBlock) {
-		this.endPageNumOfBlock = endPageNumOfBlock;
+	public void setEndPageNumOfBlock(int endPageNumInBlock) {
+		this.endPageNumInBlock = endPageNumInBlock;
 	}
 	public int getQueryStartNum() {
 		return queryStartNum;
@@ -144,7 +144,7 @@ public class Pagination {
 --------------------
 package test;
 
-import com.solgae.common.Pagination;
+import org.dong2.asset.Pagination;
 
 public class Test {
 
@@ -162,8 +162,8 @@ public class Test {
 		System.out.println("전체 페이지 갯수: "+pagination.getTotalPageCnt());		
 		System.out.println("전체 블록 갯수:"+ pagination.getTotalBlockCnt());		
 		System.out.println("현재블록 번호:"+pagination.getCurrentBlockNum());		
-		System.out.println("현재블록 시작 페이지 번호:" + pagination.getStartPageNumOfBlock());		
-		System.out.println("현재블록 끝 페이지 번호:" + pagination.getEndPageNumOfBlock());
+		System.out.println("현재블록 시작 페이지 번호:" + pagination.getStartPageNumInBlock());		
+		System.out.println("현재블록 끝 페이지 번호:" + pagination.getEndPageNumInBlock());
 		System.out.println("쿼리로 가져올 시작 번호:" + pagination.getQueryStartNum());
 		System.out.println();
 		
