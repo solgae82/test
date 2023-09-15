@@ -171,7 +171,7 @@ public class Pagination {
 }
 
 
--------------------- 사용하기
+-------------------- java 테스트
 package test;
 
 import org.dong2.asset.Pagination;
@@ -227,3 +227,53 @@ public class Test {
 		if(!pagination.isLastBlock()) System.out.print(" 마지막>>");
 	}
 }
+
+------------------- 실전 (jsp)
+//페이징 셋
+String p_page = (request.getParameter("page")==null)?"1":request.getParameter("page");	
+int currentPageNum = 0; //현재 페이지 번호
+
+try{
+	currentPageNum = Integer.parseInt(p_page);
+}catch(Exception e){
+	out.println("paging parse error=>" + e.toString());
+	return;
+}
+
+int totalListCnt = getAllCount(searchTxt);	//전체 리스트 갯수
+int listPerPageCnt = 10; //페이지당 리스트 갯수
+int pagePerBlockCnt = 10; //블록당 페이지 갯수
+
+Pagination pagination = new Pagination();
+pagination.setlValues(currentPageNum, totalListCnt, listPerPageCnt, pagePerBlockCnt);
+
+//최종 쿼리 
+sql = "SELECT * FROM T_TEST where 1=1 order by mIndex DESC limit %s,%s";
+sql = String.format(sql, pagination.getQueryStartNum(), pagination.getListPerPageCnt());
+
+------------------- 실전 (jstl)
+<ul id="paging">
+	<c:if test="${not pagination.isFirstBlock()}">
+		 <li><a href="javascript: void(0)" onclick="choosePage(1)" title="처음">&lt;&lt;</a></li>
+	</c:if>
+	<c:if test="${pagination.isPrevBlock()}">
+		 <li><a href="javascript: void(0)" onclick="choosePage(${pagination.getStartPageNumInBlock() -1})" title="이전">&lt;</a></li>
+	</c:if>
+	<c:forEach var="i" begin="${pagination.getStartPageNumInBlock()}"  end="${pagination.getEndPageNumInBlock()}">
+		<c:choose>
+			<c:when test="${pagination.getCurrentPageNum() eq i }">
+		<li><span style="color: red" title="현재페이지">${i}</span></li>
+			</c:when>
+			<c:otherwise>
+		<li><a href="javascript: void(0)" onclick="choosePage(${i})">${i}</a></li>
+			</c:otherwise>
+		</c:choose>
+		
+	</c:forEach>
+	<c:if test="${pagination.isNextBlock()}">
+		 <li><a href="javascript: void(0)" onclick="choosePage(${pagination.getEndPageNumInBlock() + 1})" title="다음">&gt;</a></li>
+	</c:if>
+	<c:if test="${not pagination.isLastBlock()}">
+		 <li><a href="javascript: void(0)" onclick="choosePage(${pagination.getTotalPageCnt()})" title="마지막">&gt;&gt;</a></li>
+	</c:if>
+</ul>
