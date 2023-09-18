@@ -277,3 +277,70 @@ sql = String.format(sql, pagination.getQueryStartNum(), pagination.getListPerPag
 		 <li><a href="javascript: void(0)" onclick="choosePage(${pagination.getTotalPageCnt()})" title="마지막">&gt;&gt;</a></li>
 	</c:if>
 </ul>
+
+---------------------실전 응용 html 출력 클래스
+package org.dong2.asset;
+
+public class HtmlPaination extends Pagination {
+
+	public static String getPureHtml(Pagination pagination , String funcNm) {
+		StringBuilder stb = new StringBuilder();
+		
+		stb.append("<ul>");
+		stb.append(System.lineSeparator());
+		//처음 블록
+		if(!pagination.isFirstBlock()) {
+			stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
+			stb.append(funcNm);
+			stb.append("(1)\" title=\"처음\">&lt;&lt;</a></li>");
+			stb.append(System.lineSeparator());
+		}
+		//이전 블록
+		if(pagination.isPrevBlock()) {
+			stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
+			stb.append(funcNm);stb.append("(");stb.append(pagination.getStartPageNumInBlock() -1);
+			stb.append(")\" title=\"이전\">&lt;</a></li>");
+			stb.append(System.lineSeparator());
+		}
+		
+		//블록 페이지
+		int start = pagination.getStartPageNumInBlock();
+		int end = pagination.getEndPageNumInBlock();
+		
+		for(int i=start; i <= end; i++) {
+			if(pagination.getCurrentPageNum() == i) {
+				stb.append("<li><span class=\"currentPage\" title=\"현재");
+				stb.append(i);stb.append("페이지\">");
+				stb.append("</span></li>");
+			}else {
+				stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
+				stb.append(funcNm);
+				stb.append("(");stb.append(i);stb.append(")\" title=\"");
+				stb.append(i);stb.append("페이지\">");
+				stb.append(i);stb.append("</a></li>");
+			}
+			stb.append(System.lineSeparator());
+		}
+		//다음 블록
+		if(pagination.isNextBlock()) {
+			stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
+			stb.append(funcNm);stb.append("(");stb.append(pagination.getEndPageNumInBlock() + 1);
+			stb.append(")\" title=\"다음\">&gt;</a></li>");
+			stb.append(System.lineSeparator());
+		}
+		//마지막 블록
+		if(!pagination.isLastBlock()) {
+			stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
+			stb.append(funcNm);stb.append("(");stb.append(pagination.getTotalPageCnt());
+			stb.append(") title=\"마지막\">&gt;&gt;</a></li>");
+			stb.append(System.lineSeparator());
+		}
+		stb.append("</ul>");
+		stb.append(System.lineSeparator());
+		return stb.toString();
+		
+	}
+}
+
+// 사용
+HtmlPaination.getPureHtml(Pagination,"choosePage");
