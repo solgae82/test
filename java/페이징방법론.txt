@@ -220,7 +220,7 @@ public class Test {
 		if(!"".equals(strPage)) { strPage = strPage.substring(0,strPage.length()-1);}
 		
 		//페이지 출력
-		if(!pagination.isFirstBlock()) System.out.print(" <<처음");
+		if(!pagination.isFirstBlock()) System.out.print("<<처음 ");
 		if(pagination.isPrevBlock()) System.out.print("<이전 ");
 		System.out.print(strPage);
 		if(pagination.isNextBlock()) System.out.print(" 다음>");
@@ -281,7 +281,7 @@ sql = String.format(sql, pagination.getQueryStartNum(), pagination.getListPerPag
 ---------------------실전 응용 html 출력 클래스
 package org.dong2.asset;
 
-public class HtmlPaination extends Pagination {
+public class HtmlPaination {
 
 	public static String getPureHtml(Pagination pagination , String funcNm) {
 		StringBuilder stb = new StringBuilder();
@@ -311,7 +311,7 @@ public class HtmlPaination extends Pagination {
 			if(pagination.getCurrentPageNum() == i) {
 				stb.append("<li><span class=\"currentPage\" title=\"현재");
 				stb.append(i);stb.append("페이지\">");
-				stb.append("</span></li>");
+				stb.append(i);stb.append("</span></li>");
 			}else {
 				stb.append("<li><a href=\"javascript: void(0)\" onclick=\"");
 				stb.append(funcNm);
@@ -343,4 +343,5 @@ public class HtmlPaination extends Pagination {
 }
 
 // 사용
-HtmlPaination.getPureHtml(Pagination,"choosePage");
+String paginHtml = HtmlPaination.getPureHtml(Pagination,"choosePage");
+<%=paginHtml%>
