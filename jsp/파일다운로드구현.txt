@@ -1,0 +1,82 @@
+<%@ page import="java.io.File" %>
+<%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.BufferedInputStream" %>
+<%@ page import="java.io.BufferedOutputStream" %>
+<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.net.URLDecoder"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+	String fileName = request.getParameter("fileName"); //utf-8로 URLEncoder 인코딩으로 된 파라미터로 보내서 받는다 (원래 문자열로 돌아옴)
+        
+	fileName = URLDecoder.decode(fileName,"UTF-8"); //원본명 변환
+
+    StringBuilder stb = new StringBuilder();
+
+	String fileDirectoryPath = pageContext.getServletContext().getRealPath("/") + "download";
+    
+	//실제 파일 경로
+	String absoluteFilePath = fileDirectoryPath + File.separator + fileName;
+    
+	//userAgent 문자열
+	String userAgent = request.getHeader("user-agent");
+
+
+	try {
+		// < MSIE 10
+		if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+			stb.append("filename=")
+						 .append("\"")
+						 .append(URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "\\ "))
+						 .append("\"");
+		} else {
+			stb.append("filename*=")
+						 .append("UTF-8")
+						 .append("''")
+						 .append(URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20"));
+			
+		} 
+	} catch (Exception e) {
+		out.print("error occurred while processing content-disposition filename=>"+e.toString());
+
+	}
+
+
+	String fileNameStr = stb.toString();
+
+	FileInputStream fis = null;
+	BufferedInputStream bis = null;
+	BufferedOutputStream bos = null;
+
+	try{
+
+		out.clear();
+		out = pageContext.pushBody();
+
+		File file = new File(absoluteFilePath);
+
+		byte b[] = new byte[1024];
+
+		response.reset();
+		response.setHeader("Content-Type", "application/octet-stream;");
+		response.setHeader("Content-Disposition", "attachment; " + fileNameStr + ";");
+
+		fis = new FileInputStream(absoluteFilePath);
+		bis = new BufferedInputStream(fis);
+		bos = new BufferedOutputStream(response.getOutputStream());
+
+		int numRead;
+
+		while((numRead = bis.read(b,0,b.length)) != -1){
+		  bos.write(b,0,numRead);
+		}
+		bos.flush();
+		
+
+	}catch(Exception e){
+		e.printStackTrace();
+	}finally{
+		if(bos != null){try{bos.close();}catch(Exception e2){e2.printStackTrace();}}
+		if(bis != null){try{bis.close();}catch(Exception e2){e2.printStackTrace();}}
+		if(fis != null){try{fis.close();}catch(Exception e2){e2.printStackTrace();}}
+	}
+%>

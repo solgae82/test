@@ -343,5 +343,5 @@ public class HtmlPaination {
 }
 
 // 사용
-String paginHtml = HtmlPaination.getPureHtml(Pagination,"choosePage");
+String paginHtml = HtmlPaination.getPureHtml(pagination,"choosePage");
 <%=paginHtml%>
