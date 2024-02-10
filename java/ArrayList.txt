@@ -94,12 +94,12 @@ public class ListTest {
 		
 		//indexOf
 		int index = list.indexOf("셋"); //없으면 -1
-		System.out.println("처음부터 검색(셋)위치:" +  index);//처음부터 검색(셋)위치:2
+		System.out.println("처음부터 검색(셋)위치:" +  index);//처음부터 검색, 첫번째(셋)위치:2
 		
 		
 		//lastIndexOf
 		int lastIndex = list.lastIndexOf("셋");
-		System.out.println("끝에서 역으로 검색(셋)위치:"+lastIndex); //끝에서 역으로 검색(셋)위치:4
+		System.out.println("끝에서 역으로 검색(셋)위치:"+lastIndex); //처음부터 검색, 마지막(셋)위치:4
 		
 		
 		
