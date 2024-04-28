@@ -1,0 +1,25 @@
+sys as sysdba
+
+
+SYSTEM 계정 만료 복구
+
+	ORA-28001 메시지 뜨면서 접속 안 될때.
+
+	sqlplus로 접속
+
+		# SYS 계정으로 접속해야함
+		sqlplus /nolog
+		conn /as sysdba
+
+
+		#계정상태 확인
+		SQL> select username,expiry_date,account_status from dba_users where username='SYSTEM';
+
+		#계정 패스워드 변경
+		SQL> alter user SYSTEM identified by "100you";
+			
+			#계정 패스워드 변경했는데 'ora-28000 : the accout is locke' 일때..
+			alter user SYSTEM account unlock;
+		 
+		#시스템(전체) 패스워드 만료시간 무제한 설정
+		SQL> alter profile default limit password_life_time UNLIMITED;

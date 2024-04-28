@@ -1,0 +1,41 @@
+1.github 연결 방식이 일반 로그인에서 토큰 방식으로 바뀌었다
+	- 클래식토큰을 생성해서, [id / 클래식토큰] 으로 로그인해서 연결해야 한다
+
+2. 이클립스 github 연결방식
+	- 연결 방식에는 두가지가 있다
+	1. 생성한 github 리포지터리에 첫 push로 업로드해서 연결하기
+	2. 이미 소스가 올라간 리포지터리에서 clone(또는 pull) 등으로 연결하기 후 다운받기
+
+3. 첫 프로젝트 push
+	- 깃허브에 빈 리포지토리 생성
+	- 이클립스 : 프로젝트 생성
+	- 로컬 리포지토리 생성 : 
+		프로젝트 우클릭>Team>Share Project..>Git>
+		Use or create repository in parent folder of project 체크 > 
+		아래 Create Repository 버튼 클릭(로컬리포지토리 생성) > 해당 프로젝트 체크 > finish
+	- 파일 add 후 첫 로컬 커밋
+	- 첫 push
+		프로젝트 우클릭>team>remote>push>
+		push to another repository 박스 :
+			Location>URI에 깃허브 주소 복사 붙이기(자동으로 대충 채워짐)
+			Connection : protocol 란에 https인지 확인
+			Authentication : 
+				User : 깃허브 계정
+				Password : 계정에서 생성한 토큰(로그인 암호가 아님)
+
+			마지막 Store in Secure Store 체크 (다음 부터 암호 안 물어보고 바로 push 할 수 있음)
+			Next 클릭
+
+		push Ref Specifications 박스
+			Add create/update specification
+				Source ref: master[branch] 선택
+				Destination ref: refs/heads/master 로 바뀜
+				Add Spec 버튼 클릭
+
+			Specifications for push 
+				테이블 행에 Update가 추가된 것을 확인한다
+
+			finish 버튼 클릭
+		
+		push results 박스
+			잘 전송되었다는 메시지 박스가 뜬다

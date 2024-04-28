@@ -1,0 +1,3 @@
+사용자 이름 : sys <=(x)
+
+사용자 이름 : sys as sysdba <=(o)
