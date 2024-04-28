@@ -1,1 +1,101 @@
-공부 중..
+//-----------------매개변수
+   /* 1.나머지 매개변수 (...연산자) */
+	   function my(p1, ...rest){
+		
+		console.log(rest); //나머지 매개변수는 배열이다
+		if(rest.length > 0){
+		    console.log(p1 + rest[0]);
+		}else{
+		    console.log(p1);    
+		}
+		
+		
+	   }
+
+	   my(10); // [] , 10
+	   my(10,100) // [100] , 110
+
+   /* 2. 기본 매개변수 */
+	   function foo1(p1=1){
+		console.log(p1);
+	   }
+	   foo1();  // 1
+
+	   function foo2(p1=1 , p2=2 , p3=p1+p2){
+		console.log(p3); 
+	   }
+	   foo2(5);  // 7
+
+	   function foo3(p1=100, p2){
+	    console.log(p1, p2);
+	   }
+
+	   foo3(undefined , 30); // 100 30
+
+   /* 3. 함수 리턴도 가능한 기본 매개변수 */
+	   function message(){
+	    return '연습 2016';
+	   }
+
+	   function sendTest(msg = message()){
+	    console.log(msg); 
+	   }
+
+	   sendTest();//연습 2016
+
+//-----------------화살표 함수
+   /* 1.기본 화살표 함수
+
+	   let add = (a,b) =>{return a + b;};
+	   console.log(add(2,4)); // 6
+   
+   /* 2.화살표 함수 '블록 생략' : 한줄일 경우 가능, 리턴문은 할 수 없음. */
+	   
+	   let add2 = (a,b) => console.log( a + b);
+	   add2(2,4); // 6
+
+	   let add3 = (a,b) => return a+b; // return 사용불가
+   
+   /* 3.화살표함수 '단일인자일 경우 () 생략 가능' */
+
+	   let print = message => console.log(message);
+	   print('Hi there'); // Hi there
+
+   /* 4.화살표함수 '디스트럭쳐링' 가능 */
+	   
+	   let add4 = ({a=100, b=200})=>{console.log(a, b);}
+	   add4({a:200}); // 200, 200
+
+   /* 5.화살표함수 객체 메소드 사용가능 */
+	   
+	   const calculation = {
+		add: (a, b)=>{return a + b;}
+	   };
+	   console.log(calculation.add(2,6)); // 8
+
+   /* 6.화살표 함수는 일반함수와 달리 this 생성하지 않는다 */
+	   
+	   var obj = {foo:function(){console.log(this);}}
+	   obj.foo(); // this => obj
+
+	   var obj2 = {foo:()=>{console.log(this);}}
+	   obj2.foo(); // this =>window 객체
+
+   /* 7.화살표 함수는 일반함수와 달리 arguments 를 생성하지 않는다 */
+	   
+	   var arg = function(a){console.log(arguments[0]);};
+	   arg(2); // 2
+
+	   var arg2 = (a)=>{console.log(arguments);};
+	   arg2(2); // Uncaught TypeError: arguments is not defined
+
+   /* 8.화살표 함수는 일반함수와는 달리 new 연산자 호출이 불가능하다 */
+	   
+	   let newFoo = ()=>{console.log('test');};
+	   let nf = new newFoo(); //Uncaught TypeError: newFoo is not a constructor
+
+   /* 9.화살표 함수는 일반함수와는 달리 prototype 속성이 존재하지 않는다 */
+	   let f = function(){}; 
+	   console.log(f.prototype); // {}
+	   let pro = () => {};
+	   console.log(pro.prototype); // undefined
