@@ -1,0 +1,148 @@
+
+모듈은 로컬 파일에서 동작하지 않고, HTTP 또는 HTTPS 프로토콜을 통해서만 동작합니다.
+
+//------- 기본 무작정 해보기
+export , import , <script type="module"> 등
+
+/* 변수 모듈*/
+	--module.js
+		export const name='dong';
+
+	--/test
+		<script type="module">
+		    import {name} from './js/module.js';
+		    console.log(name); //dong		    
+		</script>
+
+/* 객체 모듈*/
+	--module.js
+		export const obj = {n:1, str:'객체문자열'};
+
+	--/test
+		<script type="module">
+		    import {obj} from './js/module.js';
+		    console.log(obj.str); //객체문자열		    
+		</script>
+/* 함수 모듈*/
+	--module.js
+		export function say(){
+		    console.log('say 함수()');
+		}
+
+	--/test
+		<script type="module">
+		    import {say} from './js/module.js';
+		    say(); //say 함수()		    
+		</script>
+
+/* export 따로 하기*/
+	--module.js
+		const number = 20;
+		const obj = {n:1, str:'객체문자열'};
+
+		export {number, obj}; // {} 를 써서 export 해야 한다
+
+	--/test
+		<script type="module">
+			// export 한 변수명를 일치해야 한다
+			import {obj,number} from './js/module.js';
+			console.log(obj.str, number);	   // 객체문자열 20
+		</script>
+
+---------// default 
+default는 기본값으로 내보낼 값,  함수, 객체 등이며, 받아올 때(import) 사용자가 원하는 대로 이름을 지정할 수 있다.
+모듈에서 하나만 가능하다
+
+/* default 값 반환 하기*/
+	--module.js
+		export default 30; //디폴트는 하나만 가능하다
+		//export default 40;
+
+	--/test
+		<script type="module">
+			import value from './js/module.js'; //디폴트 변수명은 임의로 하면 된다
+			console.log(value); // 30
+		</script>
+/* default 함수 */
+	--module.js
+		export default function(){
+		    console.log('default 함수()');
+		}
+
+	--/test
+		<script type="module">
+			 import func from './js/module.js'; //디폴트 변수명은 임의로 하면 된다
+			 func(); //default 함수()
+		</script>
+
+/* default 객체 */
+	--module.js
+		export default {number:1, str:'객체문자열'}
+
+	--/test
+		<script type="module">
+			import obj from './js/module.js'; //디폴트 변수명은 임의로 하면 된다
+			console.log(obj.str); // 객체문자열
+		</script>
+
+/* 모듈은 단 한번만 실행됨.*/
+	모듈은 두번 실행해도 같은 값,함수,객체를 참조한다
+	--module.js
+		export default {number:1, str:'객체문자열'}
+		console.log("hi");
+
+	--/test
+		<script type="module">
+			import obj from './js/module.js'; //디폴트 변수명은 임의로 하면 된다
+			// hi
+			console.log(obj.str); //객체문자열
+
+			import obj2 from './js/module.js'; //디폴트 변수명은 임의로 하면 된다
+			console.log(obj2.str);//객체문자열
+		</script>
+
+/* import.meta */
+	import.meta 객체는 현재 모듈에 대한 정보를 제공해줍니다.
+	호스트 환경에 따라 제공하는 정보의 내용은 다른데, 브라우저 환경에선 스크립트의 URL 정보를 얻을 수 있습니다.
+	--/js/module.js
+		
+		export default {number:1, str:'객체문자열', metaurl: import.meta.url};
+
+	--/test
+		<script type="module">
+			import obj from './js/module.js'; 
+			console.log(import.meta.url); //http://localhost:3000/test
+			console.log(obj.metaurl); //http://localhost:3000/js/module.js
+		</script>
+
+/* 모듈에서 this는 undefined */
+	<script>
+	  alert(this); // window
+	</script>
+
+	<script type="module">
+	  alert(this); // undefined
+	</script>
+
+/*경로가 없는 모듈은 금지*/
+	import {sayHi} from 'sayHi'; // Error!
+	// './sayHi.js'와 같이 경로 정보를 지정해 주어야 합니다.
+
+/* 호환을 위한 nomodule */
+	<script type="module">
+	  alert("모던 브라우저를 사용하고 계시군요.");
+	</script>
+
+	<script nomodule>
+	  alert("type=module을 해석할 수 있는 브라우저는 nomodule 타입의 스크립트는 넘어갑니다. 따라서 이 alert 문은 실행되지 않습니다.")
+	  alert("오래된 브라우저를 사용하고 있다면 type=module이 붙은 스크립트는 무시됩니다. 대신 이 alert 문이 실행됩니다.");
+	</script>
+
+/* 대충요약 */
+	모듈은 로컬 파일에서 동작하지 않고, HTTP 또는 HTTPS 프로토콜을 통해서만 동작합니다.
+	모듈은 항상 엄격 모드(use strict)로 실행됩니다
+	모듈 스크립트는 항상 지연 실행됩니다. 
+	src 속성값이 동일한 외부 스크립트는 한 번만 실행됩니다
+	모듈에서 this는 undefined
+	경로가 없는 모듈 주소는 금지
+	참조 : https://ko.javascript.info/modules-intro#ref-955

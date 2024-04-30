@@ -1,0 +1,67 @@
+//-----------------클래스 
+    /* 1.생성자 */
+    class a{
+
+	constructor(x,y){
+	    this.x = x;
+	    this.y = y;
+	    console.log('생성자 실행', this.x, this.y);
+	}
+    }
+
+    const b1 = new a(); //생성자 실행 undefined undefined
+    const b2 = new a(1); //생성자 실행 1 undefined
+    const b3 = new a(1,2); //생성자 실행 1 2
+
+    /* 2.(프로토타입)메서드 */
+    class proto{
+	foo(){ console.log('foo실행',this);}
+    }
+    const f = new proto();
+    f.foo(); // foo실행 proto{}
+
+    /* 3.정적 메서드 */
+    class B{
+	static msg(){return '정적메서드 호출'}
+	static foo(){console.log(this.msg() ,',' ,'static 메서드' );}
+    }
+    B.foo(); //정적메서드 호출 , static 메서드
+
+    /* 3.상속 */
+    class Parent{
+	x = 'p'; // 일반변수 선언
+	foo(){ console.log('Parent foo');}
+    }
+    
+    class Child2 extends Parent{
+	ch(){console.log('child2');}
+    }
+
+    class Child3 extends Parent{
+	x = 'c';
+	constructor(){super();} //생성자를 쓸 경우 부모 생성자(super();)를 꼭 호출해줘야 한다
+	ch(){
+	    console.log('child3');
+	    super.foo(); //부모 메서드를 쓰고 싶을땐(프로토타입 메서드만 가능) super 를 쓴다.
+	}
+    }
+
+    let child2 = new Child2();
+    child2.ch(); // child2
+    console.log(child2.x); // p
+
+    let child3 = new Child3();
+    child3.ch(); // child3  / Parent foo
+    console.log(child3.x); // c
+
+    /* 4. 프로토타입 메서드 오버라이딩 */
+    class Parent2{
+	foo(){console.log('난 부모');}
+    }
+
+    class Child4 extends Parent2{
+	foo(){super.foo(); console.log('난 자식');}
+    }
+
+    let child4 = new Child4();
+    child4.foo(); // 난 부모 / 난 자식
