@@ -1,0 +1,37 @@
+css link + @import 상대경로
+	link는 불러오는 html파일 현재경로 기준으로 상대경로
+	@import 는 css 파일 현재경로 기준으로 상대경로
+
+	root
+		- test
+			- app.html
+				<link rel="stylesheet" type="text/css" href="../css/test/test.css" />
+				<body>
+					<h1>제목</h1>	<!-- yellow -->
+					<p>일반글..</p>	<!-- blue -->
+				
+				<body>
+		- css
+			main.css
+				h1{color: yellow;}
+				body{color : red;}
+			- test
+				test.css
+					@import url("../main.css"); /* 이 파일 기준 상대경로*/
+					body{color: blue;}
+					
+------------------
+자바스크립트 import 로 상대경로 가져오기
+	html 파일 script 태그 안에서는 그 html파일 현재경로 기준으로 상대경로를 찾는다
+	가져온 js 안에서 import 할때는 가져온 그 js 의 현재경로 기준으로 상대경로를 찾는다
+
+	root
+		-test
+			- app.html
+				<script type="module" src="../js/test/test.js"></script>
+		- js
+			module.js
+			
+			- test
+				test.js
+					import obj from '../module.js';
