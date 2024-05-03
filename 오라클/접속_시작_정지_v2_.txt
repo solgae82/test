@@ -4,7 +4,7 @@
 	1)
 	sqlplus
 	Enter user-name: sys / as sysdba
-	Enter password: 
+	Enter password: 그냥 엔터(비밀번호 입력 안해도 됨)
 	SQL>
 
 	2)
@@ -23,7 +23,7 @@
 	5)
 	sqlplus /nolog
 	SQL>conn sys / as sysdba
-	Enter password:
+	Enter password:그냥 엔터(비밀번호 입력 안해도 됨)
 	Connected.
 	SQL>
 
