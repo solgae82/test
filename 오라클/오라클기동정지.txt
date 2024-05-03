@@ -12,7 +12,7 @@
 
 	# 기본 프로세스 올린 후 sqlplus 실행
 
-	sqlplus "/as sysdba"
+	sqlplus "/ as sysdba"
 	
 	접속 후 기동
 	SQL>startup # 오라클 인스턴스 기동
