@@ -12,14 +12,14 @@
 시스템권한
 	권한설정
 		형식)
-		grant [시스템권한]  to [사용자 / role / publc] [with admin option];
+		grant [시스템권한]  to [사용자 / role / public] [with admin option];
 	
 		예제)
 		grant connect, resource, create session,  create table to DONG2;
 	
 	권한 취소
 		형식)
-		revoke [시스템권한] from [사용자 / role / publc] //권한취소
+		revoke [시스템권한] from [사용자 / role / public] //권한취소
 	
 		예제)
 		revoke connect, resource, create session,  create table from DONG2;
