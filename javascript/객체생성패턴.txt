@@ -1,0 +1,64 @@
+js 객체 생성 패턴
+--------- 1. 리터럴 생성
+	
+	var person = {
+		name: 'dong',
+		age : 24
+	};
+
+	console.log(person.age); // 24
+
+--------- 2. 사용자 정의 생성자 함수로 생성
+	
+	function Person(name, age){
+		this.name = name;
+		this.age = age;
+	}
+
+	Person.prototype.desc = function(){
+		return this.name + '의 나이는 ' + this.age + '입니다';
+	};
+
+	var person = new Person('dong',24);
+	console.log(person.name); // dong
+	console.log(person.desc()); // dong의 나이는 24입니다
+
+--------- 3. Object 로 생성
+	
+	var personA = new Object(); // {} 빈객체 생성 후 
+	personA.name = 'dong';
+	personA.age = 24;
+	personA.desc = function(){
+		return this.name + '의 나이는 ' + this.age + '입니다';
+	}
+	console.log(personA.desc()); // dong의 나이는 24입니다
+
+--------- 4. Object.create () 생성
+	
+	//create(생성될 객체의 proto 설정(부모객체도 가능), [객체 속성들의 좀더 상세한 설정(옵션)])
+	// 이 방식은 따른 챕터로 더 상세히 분석해봐야 한다.
+	
+	const personB = Object.create(Object.prototype, {
+	  name: { value:'jiho'},
+	  age: { value: 24},
+	});
+	personB.desc = function(){
+		return this.name + '의 나이는 ' + this.age + '입니다';
+	};
+	personB.desc(); //dong의 나이는 24입니다
+
+--------- 5. class 문법
+	// ECMAScript 6부터 지원
+
+	class PersonC{
+		constructor (name, age){
+			this.name = name;
+			this.age = age;
+		}
+		desc(){
+			return this.name + '의 나이는 ' + this.age + '입니다';
+		}
+	}
+
+	var personC = new  PersonC('dong2', 24);
+	console.log(personC.desc()); //dong2의 나이는 24입니다
