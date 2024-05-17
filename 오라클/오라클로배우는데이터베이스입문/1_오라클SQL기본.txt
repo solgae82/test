@@ -30,9 +30,9 @@ select * from emp where sal >=3000;
 select * from emp where ename >= 'F'; //사원이름 첫문자가 'F'자 이상인것만 검색
 
 
--- 등가비교 연산자( = , != , <> ,^=)
+-- 등가비교 연산자( = , != , <> , ^=)
 
--- 같지 않을때 (not , , != , <> ,^=)
+-- 같지 않을때 (not , != , <> , ^=)
 
 select * from emp where sal != 3000;
 
@@ -44,7 +44,9 @@ select * from emp where not sal = 3000; //논리 부정 연산자
 
 -- IN 연산자
 select * from emp where job in ('MANAGER','SALESMAN','CLERK');
+	: (위와 같다) select * from emp where job = 'MANAGER' OR job='SALESMAN' OR job='CLERK';
 select * from emp where job not in ('MANAGER','SALESMAN','CLERK'); // 아닌 것 검색
+	: (위와 같다) select * from emp where job <> 'MANAGER' AND job <> 'SALESMAN' AND job <> 'CLERK';
 
 -- between 연산자
 select * from emp where sal between 800 and 1600;
