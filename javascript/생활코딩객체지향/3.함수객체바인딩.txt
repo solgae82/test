@@ -1,0 +1,15 @@
+    var kim = {name:'kim',first:10, second: 20};
+    var lee = {name:'lee',first:10, second: 10};
+    function sum(thrid){
+      return 'name:'+this.name+',sum()=>'+(this.first + this.second + thrid) ;
+    }
+--------- Function.call(객체,인수들..)
+    console.log(sum.call(kim,20)); //name:kim,sum()=>50
+    console.log(sum.call(lee,10)); //name:lee,sum()=>30
+
+--------- Function.apply(객체, [인,수,배,열])
+    console.log(sum.apply(lee,[20])); //name:lee,sum()=>40
+
+--------- Function.bind(객체,인수들..) => 새객체와 인수들로 셋팅한 실행가능한 함수를 리턴
+    var bindObj = sum.bind(kim,100);
+    console.log(bindObj()); //name:kim,sum()=>130

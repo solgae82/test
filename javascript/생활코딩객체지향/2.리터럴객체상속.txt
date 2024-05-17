@@ -1,0 +1,10 @@
+--------- __proto__ 로 리터럴 객체 상속
+     var superObj = {superVal:'super'};
+     var subObj ={subVal: 'sub'};
+     subObj.__proto__ = superObj;
+     console.log(subObj.superVal); // super
+
+--------- Object.create 로 리터럴 객체 상속
+     var subObj2 = Object.create(subObj);
+     subObj2.subVal = 'sub2';
+    console.log(subObj2.superVal); // super

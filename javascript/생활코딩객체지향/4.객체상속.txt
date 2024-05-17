@@ -1,0 +1,69 @@
+------------------- ECMAScript 5 이하 버전
+         function Person(name, first, second){
+        this.name = name;
+        this.first = first;
+        this.second = second;
+     }
+
+     Person.prototype.sum = function(){
+      
+      return this.first + this.second;
+     }
+  
+     function PersonPlus(name, first, second, third){
+        Person.call(this ,  name, first, second); // super()
+        this.third = third;
+     }
+
+     //PersonPlus.prototype.__proto__ = Person.prototype; //메소드 상속 (아래 두줄과 같다)
+     //-----------상속패턴
+     PersonPlus.prototype = Object.create(Person.prototype); //PersonPlus.prototype = {__proto__:Person.prototype}
+     PersonPlus.prototype.constructor = PersonPlus; // PersonPlus.prototype = {constructor : PersonPlus,__proto__:Person.prototype}
+      
+     //-----------상속패턴
+     
+     //새 메소드 생성
+      PersonPlus.prototype.avg = function(){
+      return (this.first + this.second + this.third) / 3 ;
+     }
+     //PersonPlus.prototype = {constructor : PersonPlus,__proto__:Person.prototype , avg: funciton(){..}}
+     
+     //sum() 메소드 오버라이드 , 부모의 sum()메소드 위에 확장해서 구현
+     PersonPlus.prototype.sum = function(){
+      return (this.first + this.second + this.third)  ;
+     }
+     //PersonPlus.prototype = {constructor : PersonPlus,__proto__:Person.prototype , avg: funciton(){..},sum:function(){..}}
+
+    var kim = new PersonPlus('kim',10,20,30);
+    // kim.sum = function(){return (PersonPlus.prototype.sum.call(this) + this.third) }; //이 객체만 오버라이딩
+    console.log(kim.sum()); // 60
+    console.log(kim.avg()); // 20
+
+------------------- ECMAScript 6 이상 class  문법 상속
+    class Person{
+      constructor(name, first, second){
+        this.name = name;
+        this.first = first;
+        this.second = second;
+      }
+      sum(){
+        return this.first + this.second;
+      }
+    }
+
+    class PersonPlus extends Person{
+      constructor(name, first, second, third){
+        super(name, first, second); //부모 생성자 호출
+        this.third = third;
+      }
+      sum(){
+        return super.sum() + this.third;
+      }
+      avg(){
+        return this.sum() / 3;
+      }
+    }
+
+    var kim = new PersonPlus('kim',10,20,30);
+    console.log(kim.sum()); // 60
+    console.log(kim.avg()); // 20
