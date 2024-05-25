@@ -1,6 +1,6 @@
 
 -- distinct (중복제거된 자료만)
-select distinct job, deptno from emp; // job, deptno를 합친 결과가 유일한 것만 출력
+select distinct job, deptno from emp; // job +  deptno를 합친 결과가 유일한 것만 출력
 
 -- ALL (기본)
 select all job, deptno from emp;
@@ -26,61 +26,79 @@ select * from emp where sal * 12 = 36000; //sal곱하기 12한 값이 36000인�
 
 -- 비교연산자 ( > , >= , < , <=)
 select * from emp where sal >=3000;
-
 select * from emp where ename >= 'F'; //사원이름 첫문자가 'F'자 이상인것만 검색
 
 
 -- 등가비교 연산자( = , != , <> , ^=)
+select * from emp where sal = 3000;
 
 -- 같지 않을때 (not , != , <> , ^=)
-
 select * from emp where sal != 3000;
-
 select * from emp where sal <> 3000;
-
 select * from emp where sal ^= 3000;
-
 select * from emp where not sal = 3000; //논리 부정 연산자
 
 -- IN 연산자
 select * from emp where job in ('MANAGER','SALESMAN','CLERK');
-	: (위와 같다) select * from emp where job = 'MANAGER' OR job='SALESMAN' OR job='CLERK';
+(위와 같다): select * from emp where job = 'MANAGER' OR job='SALESMAN' OR job='CLERK';
+
 select * from emp where job not in ('MANAGER','SALESMAN','CLERK'); // 아닌 것 검색
-	: (위와 같다) select * from emp where job <> 'MANAGER' AND job <> 'SALESMAN' AND job <> 'CLERK';
+(위와 같다): select * from emp where job <> 'MANAGER' AND job <> 'SALESMAN' AND job <> 'CLERK';
 
 -- between 연산자
 select * from emp where sal between 800 and 1600;
 select * from emp where sal >=800 and sal <=1600;
 
 -- like  연산자
-_: 한개의 문자 데이터
-%: 모든 문자데이터
+_: 한개의 문자 데이터 (와일드카드)
+%: 모든 문자데이터 (와일드카드)
+
 select * from emp where ename like '_C%'; // SCOTT , ACDC 등
 select * from emp where ename not like '_C%'; //두번째 글자가 'C'가 아닌 모든 데이터
 
--- escape 연산자
-'_'를 데이터로 체크하기 위해 escape '\'를 사용했음[\문자외에 다른문자 사용가능]
+-- escape 연산자(escape 문자를 지정해서 표현식에 사용)
+와이드카드인 '_'를 데이터로 체크하기 위해 escape '\'를 사용했음[\문자외에 다른문자 사용가능]
 
 ESCAPE 키워드를 문자를 설정하여 이스케이프 사용하기('\'가 아닌 다른 문자 사용도 가능)
 select * from emp where ename like 'A\_%' escape '\'; // A_DB , A_BBB등
 
-
 -- is null , is not null
+a= null :  등가비교 연산 결과가 true/false 값이 아닌 null 반환
+where true AND NULL => NULL
+where false AND NULL => false
+where true OR NULL => true
+where false OR NULL => NULL
+
 select * from emp where comm= null; // 안 나온다, true, false 가 아닌  null이므로
 select * from emp where comm is null;  // null이면 true
 select * from emp where comm is not null;	//not null이면 true
 
 -- 집합연산자
-select empno, ename from emp where deptno =10
-union<union all, minus, intersect>
-select empno, ename from emp where deptno =10
+union : 합집합(A ∪ B , 중복제거) 
+union all : 합집합(A ∪ B , 중복포함)
+minus : 차집합 (A-B)
+intersect : 교집합(A∩B)
+※열이름 갯수와 자료형이 같아야 출력된다.
 
-union : 합집합, 중복제거
-union all : 합집합, 중복허용
-minus : 차집합 
-intersect : 교집합
+	-- union
+	select empno, ename, sal, deptno from emp where deptno=10 
+	union
+	select sal, job, deptno, sal from emp where deptno=20;
+	
+	-- union all
+	select empno, ename, sal,deptno from emp where deptno =10
+	union all
+	select empno, ename, sal, deptno from emp where deptno = 10;
 
-열이름 갯수와 자료형이 같아야 출력된다.
+	-- minus
+	select empno , ename, sal, deptno from emp 
+	minus
+	select empno , ename, sal, deptno from emp where deptno=10;
+
+	--intersect
+	select empno, ename, sal,deptno from emp 
+	intersect
+	select empno, ename, sal, deptno from emp where deptno=10;
 
 -- 연산자 우선순위 (높은 것에서 낮은 순)
 *, /
