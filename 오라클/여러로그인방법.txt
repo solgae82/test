@@ -15,7 +15,7 @@
 	또는
 
 	sqlplus /nolog
-	SQL>  connn /as sysdba
+	SQL>  conn /as sysdba
 	휴지 인스턴스에 접속되었습니다
 
 	또는 
