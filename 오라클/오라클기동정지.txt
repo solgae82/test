@@ -10,7 +10,12 @@ sys,system 계정 접속 후 기동 가능하다
 	SQL>startup	# 오라클 인스턴스 기동
 	SQL>quit	# sqlplus 종료
 	
-	lsnrctl start	#리스너 실행
+	lsnrctl start	#리스너 실행(리스너 실행 후 대략 1분정도 지나야 리스너가 작동함)
+
+	!tip) 빠르게 리스너 등록하기
+		리스너 실행 후
+		sqlplus / as sysdba
+		SQL>alter system register;
 
 2.끄기 (시동시 역순으로 프로세서 정지)
 
@@ -22,5 +27,3 @@ sys,system 계정 접속 후 기동 가능하다
 	SQL>shutdown immediate	# 오라클 인스턴스  정지
 	SQL>quit	#sqlplus 종료
 	
-	
-
