@@ -22,7 +22,8 @@
 -- 글자자르기
 	substr(문자열데이터, 시작위치, 추출길이)
 
-	select job , substr(job, 1,2) , substr(job,3,2) , substr(job , 5) from emp; // CLERK	CL	ER	K
+	select job , substr(job, 1,2) , substr(job,3,2) , substr(job , 5) from emp  where job='CLERK'; 
+	//   CLERK	CL	ER	K
 
 -- 글자위치 반환
 	찾은 문자열 위치값 반환

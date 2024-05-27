@@ -57,7 +57,7 @@ select * from emp where ename like '_C%'; // SCOTT , ACDC 등
 select * from emp where ename not like '_C%'; //두번째 글자가 'C'가 아닌 모든 데이터
 
 -- escape 연산자(escape 문자를 지정해서 표현식에 사용)
-와이드카드인 '_'를 데이터로 체크하기 위해 escape '\'를 사용했음[\문자외에 다른문자 사용가능]
+와일드카드인 '_'를 데이터로 체크하기 위해 escape '\'를 사용했음[\문자외에 다른문자 사용가능]
 
 ESCAPE 키워드를 문자를 설정하여 이스케이프 사용하기('\'가 아닌 다른 문자 사용도 가능)
 select * from emp where ename like 'A\_%' escape '\'; // A_DB , A_BBB등
