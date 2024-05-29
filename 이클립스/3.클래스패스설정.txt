@@ -5,23 +5,28 @@
 		
 		이클립스 전역 클래스패스 변수 등록
 		
-			방법 1 : Preferences>Java>Build Path>Classpath variables: 
+			방법 1 : Preferences>Java>Build Path>Classpath variables: New버튼
 				
 				Name: 변수명 설정 
+				Path : 
+					File버튼 : jar파일 path설정 
+					Folder버튼 : 클래스패스디렉토리 path설정
 
-				File버튼 : jar파일 path설정 
-				Folder버튼 : 클래스패스디렉토리 path설정
+			방법 2: Preferences>Java>Build Path>User Libararies: New버튼
+				User library name : ex) my_oracle (이름 입력 후 OK 클릭)
 
-			방법 2: Preferences>Java>Build Path>User Libararies: 
-				프로젝트 내부(상대경로), 외부경로(절대경로) jar 추가
+				생성된 my_oracle 선택 후 활성화되는 연결 버튼들 중에 선택 
+					Add JARs... : 프로젝트들 내부중에서 jar 추가(상대경로)
+					Add External JARs...: 외부경로 jar 추가(절대경로)
 
 		프로젝트에서 등록한 전연 클래스패스 변수 연결 
 
 			방법 1 : 프로젝트 우클릭>Properties>Java Build Path>Libararies>Add Variable: 
 				전역 Classpath variables 설정 내용이 나온다, 선택
 
-			방법 2 : 프로젝트 우클릭>Properties>Java Build Path>Libararies>Add Library>User Library: 
-				전역 User Libararies 설정 내용이 나온다, 선택
+			방법 2 : 프로젝트 우클릭>Properties>Java Build Path>Libararies>Add Library 창
+				User Library 선택 후 Next: 
+					전역 User Libararies 설정 내용이 나온다, 적용할 Library 선택 > finish
 			
 	2) 이클립스 전역 JRE에 수동으로 jar 넣기 , 또는 프로젝트 JRE에서 외부 jar 연결하기
 		

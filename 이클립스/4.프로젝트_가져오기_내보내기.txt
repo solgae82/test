@@ -15,7 +15,7 @@
 
 	1) 한개만 있는 독립 프로젝트 디렉토리 및  Archive 일때 : 
 		
-		ex01 플젝 디렉토리, ex01.zip 있다고 가정.
+		workspace 외부에 ex01 플젝 디렉토리, ex01.zip 있다고 가정.
 
 		Existing Projects into Workspace:
 			select root directory > ex01 외부플젝디렉토리 선택 > finish
