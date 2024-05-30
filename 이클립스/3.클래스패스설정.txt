@@ -76,6 +76,7 @@
 			- 웹 플젝은 일반 자바 플젝과 달리 , j2ee 구조로 배포가 되어야 하므로, 
 			Java Build Path 등에서 설정한 값들을 웹배포 디렉토리에 매치시켜줘야 한다.
 			(웹 배포 디렉토리: /WEB-INF/classes, /WEB-INF/lib 등)
+			이렇게 매칭 시켜줘야 실제 배포시에 /WEB-INF/* 구조에 해당 라이브러리들이 배포된다
 
 			- 웹 배포 매칭 설정 하는 메뉴: 
 			프로젝트 우클릭>Properties > Deployment Assembly 프로젝트 우클릭 > properties > 
