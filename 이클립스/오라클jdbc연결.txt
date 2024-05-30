@@ -1,17 +1,24 @@
-WEB-INF/lib 직접 넣기
-ojdbc6.jar (11 버전 용) 
+웹프로그램일 경우다
 
-또는 java build path에 추가하기
+1. WEB-INF/lib 직접 넣기
+	context/WEB-INF/lib/ojdbc6.jar (11 버전 용) 
 
-	프로젝트 우클릭 > java build path > Libraries > Add external JARS..
-
-	: ojdbc6.jar 경로로 가서 선택해준다.
-
-이것만 하면 될 줄 알았더니 안 올라오더라..
-
-프로젝트 우클릭 > properties > java Deployment Assembly > Add > Archives from File System
-	: ojdbc6.jar 경로로 가서 선택해준다.
+2. 프로젝트 java build path에 추가하기
 	
-	(이 모드는 war 빌드시 해당 웹애플리케이션 , WEB-INF/lib/ojdbc6.jar 를 넣어주는 것같다)
+	일반 자바프로그램과는 다르게 두번의 설정이 필요하다
+	1) 프로젝트 java build path에 추가하기
+		- 프로젝트 우클릭 > java build path > Libraries > [Add JARS.. / Add external JARS..]
+		: ojdbc6.jar 경로로 가서 선택해준다.
 
-어쩼든 이렇게 두개 모드를 설정하고 톰캣 실행하니 올라오더라
+	2) Deployment Assembly 에 설정한 path 추가하기
+		- 프로젝트 우클릭 > properties > Deployment Assembly > Add > Java Build Path Entries > Next
+		: 설정한 ojdbc6.jar 선택해준다.
+
+	[OK & Apply and close]
+
+결론
+	실제 WAS에 배포 후 기동되므로 , 웹 배포 디렉토리 구조인 /WEB-INF/* 등에 배포가 되어야 하는 매핑정보가 필요하다
+	그 매핑하는 곳이 Deployment Assembly 메뉴이다
+	Deployment Assembly에서 배포 디렉토리와 외부 라이브러리들을 매핑해 주면, 
+	실제 WAR로 배포할때도 매핑된 /WEB-INF/* 에 [*.jar / *.class] 가 배포되게 된다
+
