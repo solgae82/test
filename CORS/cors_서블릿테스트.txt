@@ -1,0 +1,375 @@
+서블릿으로 테스트 했다
+(jsp는 [OPTION] 메소드로는 접근 할 수 없으므로, java 레벨에서 구현해야한다)
+
+1. simple request 시나리오
+
+    ====== http://localhost:3000/index
+	<button type="button" class="simReq">1.simple request 실행</button>
+
+	$('button.simReq').click(function () {
+		$.ajax({
+			url: "http://localhost:8080/web/cors",
+			type: "get",
+			data: {cors_mode:'simple'},
+			success: function (data) {
+			  alert(data);
+			  console.log(data); //방식:simple
+			},
+			error: function (xhr) {
+			  console.log('실패: '+ xhr);
+			}
+		});
+	});
+
+	---- Request Headers ----
+		GET /web/cors?cors_mode=simple HTTP/1.1
+		Origin: http://localhost:3000
+		..
+	---- Request Headers ----
+
+    ====== http://localhost:8080/web/cors
+	:CorsServlet.java
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.setContentType("text/html; charset=utf-8");
+		
+		response.getWriter().append("방식:").append(request.getParameter("cors_mode"));
+		System.out.println("----------GET,POST");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Content-Type: text/html;charset=utf-8
+		..
+	---- Response Headers ----
+
+	---- Message Body ----
+	방식:simple
+	---- Message Body ----
+
+
+2. preflight request 시나리오
+
+    preflighted 조건을 위해 (비표준)커스텀 헤더 추가하면 preflight request로 작동한다(2회 요청)
+    preflight request는 http 메소드 중 'OPTIONS' 을 사용하므로 서블릿 메소드 중 doOptions 메소드를 구현해야한다.
+	- (응답헤더 Access-Control-Max-Age 초는 테스트를 위해 1초로 설정했다)
+	- Access-Control-Max-Age : 3600 이라면 1시간 동안은 preflight 요청을 하지 말라는 설정이다
+		- (처음 한번 요청 후 1시간 동안은 preflight 요청 없이 Main 요청만 브라우저가 보내게 된다)
+    
+    ====== http://localhost:3000/index
+	<button type="button" class="preReq">2.preflighted request 실행</button>
+
+	$('button.preReq').click(function () {
+
+		$.ajax({
+			url: "http://localhost:8080/web/cors",
+			type: "get",
+			data: {cors_mode:'preflighted'},
+			beforeSend: function (xhr) {
+			  xhr.setRequestHeader("SPORT","pingpong");  /* (비표준) 커스텀 헤더 추가, SPORT -> sport명으로 바뀜*/
+			},
+			success: function (data) {
+			  alert(data);
+			  console.log(data); // 방식:preflighted
+			},
+			error: function (xhr) {
+			  console.log('실패: '+ xhr);
+			}
+		});
+	});
+
+	:1차 요청 (preflight)
+	---- Request Headers ----
+		OPTIONS /web/cors?cors_mode=preflighted HTTP/1.1
+		Origin: http://localhost:3000
+		Access-Control-Request-Headers: sport
+		Access-Control-Request-Method: GET
+		..
+	---- Request Headers ----
+
+	:2차 요청 (메인 요청)
+	---- Request Headers ----
+		GET /web/cors?cors_mode=preflighted HTTP/1.1
+		Origin: http://localhost:3000
+		..
+	---- Request Headers ----
+
+    ====== http://localhost:8080/web/cors
+	:CorsServlet.java
+	
+	: 1차 preflight 응답
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		System.out.println("----------OPTIONS");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS") ;
+		response.addHeader("Access-Control-Allow-Headers", "SPORT, Content-Type") ;	
+		response.addIntHeader("Access-Control-Max-Age", 1); // 캐쉬 초 설정
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Methods: POST, GET, OPTIONS
+		Access-Control-Allow-Headers: SPORT, Content-Type
+		Access-Control-Max-Age: 1
+		..
+	---- Response Headers ----
+
+
+	:2차 메인 응답
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.setContentType("text/html; charset=utf-8");
+		
+		response.getWriter().append("방식:").append(request.getParameter("cors_mode"));
+		System.out.println("----------GET,POST");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Content-Type: text/html;charset=utf-8
+		..
+	---- Response Headers ----
+	
+	---- Message Body ----
+	방식:preflighted
+	---- Message Body ----
+
+3. simple request + credential 시나리오
+   요청 헤더에 Authentication 나 cookie 등 자격증명을 요하는 요청 일때 시나리오다 
+   simple request(1회요청) 이면서 , 자격증명(Authentication / cookie) 추가했을 경우다
+	
+    ====== http://localhost:3000/index
+	<button type="button" class="simAndCre">3.(simple + credential) request 실행</button>
+
+	$('button.simAndCre').click(function () {
+
+		$.ajax({
+			url: "http://localhost:8080/web/cors",
+			type: "get",
+			data: {cors_mode:'simple + credential'},
+			xhrFields: {
+			      withCredentials: true /* credential 설정 */
+			},
+			beforeSend: function (xhr) {
+			  document.cookie = 'test=1'; /* credential 테스트 하기 위해 셋팅 */
+			},
+			success: function (data) {
+			  alert(data);
+			  console.log(data); //방식:simple + credential
+			},
+			error: function (xhr) {
+			  console.log('실패: '+ xhr);
+			}
+		});
+	});
+
+	---- Request Headers ----
+		GET /web/cors?cors_mode=simple%20%2B%20credential HTTP/1.1
+		Cookie: test=1
+		Origin: http://localhost:3000
+		..
+	---- Request Headers ----
+
+    ====== http://localhost:8080/web/cors
+	:CorsServlet.java
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.setContentType("text/html; charset=utf-8");
+		
+		response.getWriter().append("방식:").append(request.getParameter("cors_mode"));
+		System.out.println("----------GET,POST");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		response.addHeader("Access-Control-Allow-Credentials", "true"); 
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Credentials: true
+		Content-Type: text/html;charset=utf-8
+		..
+	---- Response Headers ----
+
+	---- Message Body ----
+	방식:simple + credential
+	---- Message Body ----
+
+4. preflight request  + credential 시나리오
+    
+    요청 헤더에 Authentication 나 cookie 등 자격증명을 요하는 요청 일때 시나리오다 
+    preflight request(2회요청) 이면서 , 자격증명(Authentication / cookie) 추가했을 경우다
+    응답 헤더 중 Access-Control-Allow-Credentials : true 설정이 핵심 포인트다
+	- 1차요청(preflight) 과 2차 메인요청시 응답에 모두 설정되어야 한다(중요)
+
+    preflighted 조건을 위해 (비표준)커스텀 헤더 추가하면 preflight request로 작동한다(2회 요청)
+    preflight request는 http 메소드 중 'OPTIONS' 을 사용하므로 서블릿 메소드 중 doOptions 메소드를 구현해야한다.
+	- (응답헤더 Access-Control-Max-Age 초는 테스트를 위해 1초로 설정했다)
+	- Access-Control-Max-Age : 3600 이라면 1시간 동안은 preflight 요청을 하지 하지 말라는 설정이다
+		- (처음 한번 요청 후 1시간 동안은 preflight 요청 없이 Main 요청만 브라우저가 보내게 된다)
+    
+    ====== http://localhost:3000/index
+	<button type="button" class="preAndCre">4.(preflighted + credential) 실행</button>
+
+
+	$('button.preAndCre').click(function () {
+
+		$.ajax({
+			url: "http://localhost:8080/web/cors",
+			type: "get",
+			data: {cors_mode:'preflighted + credential'},
+			xhrFields: {
+				withCredentials: true /* credential 설정 */
+			},
+			beforeSend: function (xhr) {
+
+			  xhr.setRequestHeader("SPORT","pingpong");  /* (비표준) 커스텀 헤더 추가, SPORT -> sport명으로 바뀜*/
+			  document.cookie = 'test=1'; /* credential 테스트 하기 위해 셋팅 */
+
+			},
+			success: function (data) {
+			  alert(data);
+			  console.log(data); //방식:preflighted + credential
+			},
+			error: function (xhr) {
+			  console.log('실패: '+ xhr);
+			}
+		});
+
+
+	});
+
+	:1차 요청 (preflight)
+	---- Request Headers ----
+		OPTIONS /web/cors?cors_mode=preflighted%20%2B%20credential HTTP/1.1
+		Origin: http://localhost:3000
+		Access-Control-Request-Headers: sport
+		Access-Control-Request-Method: GET
+		..
+	---- Request Headers ----
+
+	:2차 요청 (메인 요청)
+	---- Request Headers ----
+		GET /web/cors?cors_mode=preflighted%20%2B%20credential HTTP/1.1
+		Origin: http://localhost:3000
+		Cookie: test=1
+		..
+	---- Request Headers ----
+
+    ====== http://localhost:8080/web/cors
+	:CorsServlet.java
+	
+	: 1차 preflight 응답
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		System.out.println("----------OPTIONS");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS") ;
+		response.addHeader("Access-Control-Allow-Headers", "SPORT, Content-Type") ;	
+		response.addIntHeader("Access-Control-Max-Age", 1); // 캐쉬 초 설정
+		response.addHeader("Access-Control-Allow-Credentials", "true");/* 1,2차요청 모두 설정해야한다*/
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Methods: POST, GET, OPTIONS
+		Access-Control-Allow-Headers: SPORT, Content-Type
+		Access-Control-Max-Age: 1
+		Access-Control-Allow-Credentials: true
+		..
+	---- Response Headers ----
+
+
+	:2차 메인 응답
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.setContentType("text/html; charset=utf-8");
+		
+		response.getWriter().append("방식:").append(request.getParameter("cors_mode"));
+		System.out.println("----------GET,POST");
+		
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 1,2차요청 모두 설정해야한다*/
+		
+	}
+
+	---- Response Headers ----
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Credentials: true
+		Content-Type: text/html;charset=utf-8
+		..
+	---- Response Headers ----
+	
+	---- Message Body ----
+	방식:preflighted + credential
+	---- Message Body ----
+
+※ 종합 결론 :
+위에서 살펴본 총 4가지 시나리오에 맞게 각 맞춤형으로 서버 설정을 할 수 있겠지만,
+그 방식 보단 모든 시나리오를 포용하는 서버 설정을 하는게 나을 듯 하다
+불필요한 응답헤더가 추가되었다고 CORS 오류가 나지 않기 때문이다.
+
+마지막 4번째 설정이 모든 시나리오에 응답하는 형식일 것이다.
+조금 더 확실하게 [모든 시나리오 포함하는 서버설정]을 다시 한번 정리해 둔다
+
+	애스터리크(*) 사용여부
+	- Access-Control-Allow-Origin : 값으로 '*'는 가능하지만, credential이 적용된 요청시는 위반이므로, 항상 요청 Origin을 넣어준다
+	- Access-Control-Allow-Methods : 값으로 '*' 가 작동하는 듯 보이는데 정확한 방법인지 모르므로, 허용할 메소드를 설정하자
+	- Access-Control-Allow-Headers : 값으로 '*'는 preflight request  + credential 방식으로는 안된다(하나씩 설정해줘야함)
+	
+
+	/**
+	* preflight 응답용 설정 
+	*/
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		/* 아래처럼 설정하면 모든 요청 시나리오를 수용하는 설정이 된다.*/
+		String origin = request.getHeader("Origin");
+		String accessControlRequestHeaders = request.getHeader("Access-Control-Request-Headers");
+				
+		response.addHeader("Access-Control-Allow-Origin", origin) ; /* 모든 도메인을 다 받는다 */
+		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST") ; /* 본(메인) 요청시, 허용할 메소드 */
+		response.addHeader("Access-Control-Allow-Headers", accessControlRequestHeaders) ; /*  본(메인) 요청시, 모든 커스텀 헤더 허용 */
+		response.addIntHeader("Access-Control-Max-Age", 3600); /* prefight 용 캐쉬 초 설정(1시간) */
+		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 자격증명 허용,  [preflight/메인요청] 모두 설정해야한다*/
+		
+	}
+	
+	/**
+	* 메인(본) 응답 용
+	*/
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.setContentType("text/html; charset=utf-8");
+		
+		/* 아래처럼 설정하면 모든 요청 시나리오를 수용하는 설정이 된다.*/
+		String origin = request.getHeader("Origin");				
+		response.addHeader("Access-Control-Allow-Origin", origin) ;
+		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 자격증명 허용, [preflight/메인요청] 모두 설정해야한다*/
+		
+		/* 비즈니스 로직..*/
+	}
+
