@@ -327,7 +327,10 @@
 	방식:preflighted + credential
 	---- Message Body ----
 
+===================
 ※ 종합 결론 :
+===================
+
 위에서 살펴본 총 4가지 시나리오에 맞게 각 맞춤형으로 서버 설정을 할 수 있겠지만,
 그 방식 보단 모든 시나리오를 포용하는 서버 설정을 하는게 나을 듯 하다
 불필요한 응답헤더가 추가되었다고 CORS 오류가 나지 않기 때문이다.
@@ -336,10 +339,17 @@
 조금 더 확실하게 [모든 시나리오 포함하는 서버설정]을 다시 한번 정리해 둔다
 
 	애스터리크(*) 사용여부
-	- Access-Control-Allow-Origin : 값으로 '*'는 가능하지만, credential이 적용된 요청시는 위반이므로, 항상 요청 Origin을 넣어준다
-	- Access-Control-Allow-Methods : 값으로 '*' 가 작동하는 듯 보이는데 정확한 방법인지 모르므로, 허용할 메소드를 설정하자
-	- Access-Control-Allow-Headers : 값으로 '*'는 preflight request  + credential 방식으로는 안된다(하나씩 설정해줘야함)
+	- Access-Control-Allow-Origin : 
+		- 값으로 와일드카드 '*'는 가능하지만, credential이 적용된 요청시는 위반이므로, 항상 출처 Origin을 넣어준다
+	- Access-Control-Allow-Methods : 
+		- API 설명에는 허용할 Method를 ',' 구분해서 하나 이상 설정 할 수 있는 것으로 되어 있다
+		- 크롬으로 실험해보니, 값으로 '*' 가 작동하지만 정확한 방법은 아니므로 사용하지 말자
+	- Access-Control-Allow-Headers : 
+		-  API 설명에는 허락할 Header를 ',' 구분해서 하나 이상 설정 할 수 있는 것으로 되어 있다
+		- 크롬으로 실험해 보니 값으로 '*'는 preflight request  + credential 방식에서는 CORS 오류가 뜬다. 사용하지 말자
+
 	
+	: 아래는 만능 CORS 응답 서블릿 소스 일부이다
 
 	/**
 	* preflight 응답용 설정 
@@ -350,9 +360,9 @@
 		String origin = request.getHeader("Origin");
 		String accessControlRequestHeaders = request.getHeader("Access-Control-Request-Headers");
 				
-		response.addHeader("Access-Control-Allow-Origin", origin) ; /* 모든 도메인을 다 받는다 */
-		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST") ; /* 본(메인) 요청시, 허용할 메소드 */
-		response.addHeader("Access-Control-Allow-Headers", accessControlRequestHeaders) ; /*  본(메인) 요청시, 모든 커스텀 헤더 허용 */
+		response.addHeader("Access-Control-Allow-Origin", origin) ; /* 모든 도메인을 다 받게 설정됨 */
+		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST") ; /* 본(메인) 요청시, 허용할 메소드 설정 */
+		response.addHeader("Access-Control-Allow-Headers", accessControlRequestHeaders) ; /*  본(메인) 요청시, 허용할 커스텀 헤더 설정 */
 		response.addIntHeader("Access-Control-Max-Age", 3600); /* prefight 용 캐쉬 초 설정(1시간) */
 		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 자격증명 허용,  [preflight/메인요청] 모두 설정해야한다*/
 		
