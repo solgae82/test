@@ -1,0 +1,42 @@
+AJAX 통신시 브라우저는 같은 출처가 아니면 브라우저는 값은 받아왔지만, Block 처리하며 에러를 뿜는다
+	CORS 정책 어쩌고 저쩌고...
+브라우저와 서버간 약속된 CORS 프로토콜을 맞춰주면 브라우저는 Block 처리 하지 않는다.
+
+여러 문서 중 가장 설명이 잘 되어있는 MDN 문서로 이해하자
+	https://developer.mozilla.org/ko/docs/Web/HTTP/CORS
+
+----------------------------- 문서 내용 중 놓치기 쉬운 포인트
+
+Access-Control-Allow-Origin
+	서버가 "*" 와일드카드 대신에 하나의 origin을 지정하는 경우, 
+	서버는 Vary 응답 헤더에 Origin 을 포함해야 합니다. 
+	이 origin은 화이트 리스트의 일부로 요청 origin에 따라 동적으로 변경될 수 있습니다. 
+	서버 응답이 Origin 요청 헤더에 따라 다르다는것을 클라이언트에 알려줍니다.
+
+Preflighted requests
+	1차 request(preflight) 후 
+	실제 POST 요청에는 Access-Control-Request-* 헤더가 포함되지 않습니다. 
+	OPTIONS 요청에만 필요합니다
+
+Preflighted requests 와 리다이렉트
+	: 요게 문서를 봐도 뭔 소린지 도통 이해가 가질 않는데, 덕분에 301,302 리다이렉트를 공부하게 되었지만....
+	: 현 시점에는 해당 사항이 거의 없는 문제로 보이므로 그냥 패쓰하자
+
+자격 증명 요청에 응답할 때 서버는 Access-Control-Allow-Origin 헤더 값에 반드시 "*" 와일드카드를 지정하는 대신 
+출처를 지정해야 합니다.
+
+실행 전 요청 및 자격 증명
+	CORS 실행 전 요청(preflight) 에는 자격 증명이 포함되지 않아야 합니다. 
+	실행 전 요청에 대한 응답은 Access-Control-Allow-Credentials: true를 지정하여 
+	자격 증명으로 실제 요청을 수행할 수 있음을 나타내야 합니다.
+
+----------------------------- 테스트 하며 알게된  Tip
+
+브라우저 요청(request) 시나리오는 총 4개가 있다(문서에는 3번까지만 나온다)
+	1. simple request
+	2. preflight request
+	3. simple request & credential(자격증명포함)
+	4. preflight request & credential(자격증명포함)
+
+응답 헤더값 중 '*' 값은 Access-Control-Allow-Origin 에만 가능하다([credential/자격증명포함]이면 사용 못함)
+(블로그등에는 다른 응답헤더에도 막 쓰던데 그렇게 하지 말자)

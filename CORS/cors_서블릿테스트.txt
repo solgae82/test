@@ -347,7 +347,9 @@
 	- Access-Control-Allow-Headers : 
 		-  API 설명에는 허락할 Header를 ',' 구분해서 하나 이상 설정 할 수 있는 것으로 되어 있다
 		- 크롬으로 실험해 보니 값으로 '*'는 preflight request  + credential 방식에서는 CORS 오류가 뜬다. 사용하지 말자
-
+	※ Access-Control-Allow-Origin : * 여부
+		- '*' 이 아니고 출처 도메인을 값으로 사용할땐, 응답헤더에 Vary 항목을 추가하고 값으로 'Origin' 추가하라고 API 설명에 나와 있다.
+		(ex) Vary : Origin
 	
 	: 아래는 만능 CORS 응답 서블릿 소스 일부이다
 
@@ -365,7 +367,7 @@
 		response.addHeader("Access-Control-Allow-Headers", accessControlRequestHeaders) ; /*  본(메인) 요청시, 허용할 커스텀 헤더 설정 */
 		response.addIntHeader("Access-Control-Max-Age", 3600); /* prefight 용 캐쉬 초 설정(1시간) */
 		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 자격증명 허용,  [preflight/메인요청] 모두 설정해야한다*/
-		
+		response.addHeader("Vary", "Origin"); /* Access-Control-Allow-Origin : * 아니면 이렇게 설정해줘야한다고 명시되어있다*/
 	}
 	
 	/**
@@ -379,6 +381,7 @@
 		String origin = request.getHeader("Origin");				
 		response.addHeader("Access-Control-Allow-Origin", origin) ;
 		response.addHeader("Access-Control-Allow-Credentials", "true"); /* 자격증명 허용, [preflight/메인요청] 모두 설정해야한다*/
+		response.addHeader("Vary", "Origin"); /* Access-Control-Allow-Origin : * 아니면 이렇게 설정해줘야한다고 명시되어있다*/
 		
 		/* 비즈니스 로직..*/
 	}

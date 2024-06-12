@@ -1,0 +1,95 @@
+------------------- 자격증명시 설정 옵션들
+	/* axios */
+	axios.get("https://example.com/items", {
+		withCredentials: true /* credential 설정 */
+	});
+
+	/* fetch API */
+	fetch("https://example.com:1234/users", {
+	credentials: "include" /* credential 설정 */
+	});
+    
+	/* 코어 스크립트 */
+	const xhr = new XMLHttpRequest();
+	xhr.open("GET", "http://example.com/", true);
+	xhr.withCredentials = true; /* credential 설정 */
+	xhr.send(null);
+    
+	/* jquery */
+	$.ajax({
+		url: "http://localhost:8080/web/cors",
+		type: "get",
+		xhrFields: {
+			withCredentials: true /* credential 설정 */
+		},
+		success: function (data) {},
+		error: function (xhr) {}
+	});
+      
+------------------- jquery 요청 시나리오 예제 
+	/**
+	* 1.simple request 실행 
+	*/
+    
+	$.ajax({
+		url: "http://localhost:8080/web/cors",
+		type: "get",
+		success: function (data) {},
+		error: function (xhr) {}
+	});
+
+
+
+	/**
+	* 2.preflighted request 실행 
+	*/
+	$.ajax({
+		url: "http://localhost:8080/web/cors",
+		type: "get",
+		beforeSend: function (xhr) {
+			/* preflighted 조건을 위해 커스텀 헤더 추가, 
+			실제 헤더에 쓰일땐 SPORT -> sport명으로 바뀜*/
+			xhr.setRequestHeader("SPORT","pingpong");  
+		},
+		success: function (data) {},
+		error: function (xhr) {}
+	});
+
+
+	/**
+	* 3.(simple request + [credential 포함]) 실행 
+	*/
+	$.ajax({
+		url: "http://localhost:8080/web/cors",
+		type: "get",
+		xhrFields: {
+			withCredentials: true /* credential 설정 */
+		},
+		beforeSend: function (xhr) {
+			document.cookie = 'test=1'; /* credential 테스트 하기 위해 셋팅 */
+		},
+		success: function (data) {},
+		error: function (xhr) {}
+	});
+	
+
+	/**
+	* 4.(simple request + [credential 포함]) 실행 
+	*/      
+	$.ajax({
+		url: "http://localhost:8080/web/cors",
+		type: "get",
+		xhrFields: {
+			withCredentials: true /* credential 설정 */
+		},
+		beforeSend: function (xhr) {
+			/* preflighted 조건을 위해 커스텀 헤더 추가, 
+			실제 헤더에 쓰일땐 SPORT -> sport명으로 바뀜*/
+			xhr.setRequestHeader("SPORT","pingpong");
+
+			document.cookie = 'test=1'; /* credential 테스트 하기 위해 셋팅 */
+		},
+		success: function (data) {},
+		error: function (xhr) {}
+	});
+      
