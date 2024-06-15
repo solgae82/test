@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>노드</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<h1>노드,index</h1>
+
+<body>
+
+  <button type="button" class="simReq">1.simple request 실행</button>
+  <button type="button" class="preReq">2.preflighted request 실행</button>
+  <button type="button" class="simAndCre">3.(simple + credential) request 실행</button>
+  <button type="button" class="preAndCre">4.(preflighted + credential) 실행</button>
+  <script>
+    
+    /* 1.simple 실행 */
+    $('button.simReq').click(function () {
+      
+      $.ajax({
+        url: "http://localhost:8080/web/cors",
+        type: "get",
+        data: {cors_mode:'simple'},
+        success: function (data) {
+          alert(data);
+          console.log(data);
+        },
+        error: function (xhr) {
+          console.log('실패: '+ xhr);
+        }
+      });
+    });
+
+
+    /* 2.preflighted 실행 */
+    $('button.preReq').click(function () {
+      
+      $.ajax({
+        url: "http://localhost:8080/web/cors",
+        type: "get",
+        data: {cors_mode:'preflighted'},
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader("SPORT","pingpong");  /* preflighted 조건을 위해 커스텀 헤더 추가, SPORT -> sport명으로 바뀜*/
+        },
+        success: function (data) {
+          alert(data);
+          console.log(data);
+        },
+        error: function (xhr) {
+          console.log('실패: '+ xhr);
+        }
+      });
+    });
+
+    /* 3.(simple + credential) 실행 */
+    $('button.simAndCre').click(function () {
+      
+      $.ajax({
+        url: "http://localhost:8080/web/cors",
+        type: "get",
+        data: {cors_mode:'simple + credential'},
+        xhrFields: {
+		      withCredentials: true /* credential 설정 */
+        },
+        beforeSend: function (xhr) {
+          document.cookie = 'test=1'; // credential 테스트 하기 위해 셋팅
+        },
+        success: function (data) {
+          alert(data);
+          console.log(data);
+        },
+        error: function (xhr) {
+          console.log('실패: '+ xhr);
+        }
+      });
+    });
+
+    /* 4.(preflighted + credential) 실행 */
+    $('button.preAndCre').click(function () {
+      
+      $.ajax({
+        url: "http://localhost:8080/web/cors",
+        type: "get",
+        data: {cors_mode:'preflighted + credential'},
+        xhrFields: {
+		      withCredentials: true /* credential 설정 */
+        },
+        beforeSend: function (xhr) {
+
+          xhr.setRequestHeader("SPORT","pingpong");  /* preflighted 조건을 위해 커스텀 헤더 추가, SPORT -> sport명으로 바뀜*/
+          document.cookie = 'test=1'; // credential 테스트 하기 위해 셋팅
+        },
+        success: function (data) {
+          alert(data);
+          console.log(data);
+        },
+        error: function (xhr) {
+          console.log('실패: '+ xhr);
+        }
+      });
+      
+    
+    });
+
+    /* axios */
+    /*axios.get("https://example.com/items", {
+      withCredentials: true
+    });*
+
+    /* fetch API */
+    /*fetch("https://example.com:1234/users", {
+      credentials: "include"
+    });*/
+    
+    /*
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://example.com/", true);
+    xhr.withCredentials = true;
+    xhr.send(null);
+    */
+  </script>
+
+</body>
+
+</html>
