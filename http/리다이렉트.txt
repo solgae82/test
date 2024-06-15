@@ -1,0 +1,78 @@
+301 : 영구 이동
+302 : 일시 이동
+
+301과 302 리다이렉션을 구분해서 사용해야하는 이유는 간단하다.
+구글과 같은 검색엔진에서 페이지 검색 노출도 등과 관련이 있기 때문이다.
+
+301 리다이렉트는 새로운 URL 혹은 사용하지 않는 페이지를 이동시키는데 적합하다.
+302 리다이렉트는 기존 URL에 컨텐츠 URL를 추가하려고 할 때 사용하면 유용하다.
+- 무의미하게 사용할 경우, 검색엔진이 302 리다이렉트를 악용하는 광고 컨텐츠들로 판단해 사이트랭크 점수에 패널티를 부여한다.
+
+
+jsp 
+
+	301 리다이렉트 (영구):
+
+		response.setStatus(301);
+		response.setHeader( "Location", "/web/index.jsp" );
+		response.setHeader( "Connection", "close" );
+
+		HTTP/1.1 301
+		Set-Cookie: JSESSIONID=2450E06F915D3B76D451BE754B64D2CF; Path=/web; HttpOnly
+		Location: /web/index.jsp
+		Connection: close
+		Content-Type: text/html;charset=UTF-8
+		Content-Length: 8
+		Date: Sat, 15 Jun 2024 16:10:58 GMT
+
+	302 리다이렉트 (일시)
+		response.sendRedirect(request.getContextPath() + "/index.jsp"); :   Status Code: 302 Not Modified
+
+		HTTP/1.1 302
+		Location: /web/index.jsp
+		Content-Type: text/html;charset=UTF-8
+		Content-Length: 0
+		Date: Sat, 15 Jun 2024 15:57:58 GMT
+		Keep-Alive: timeout=20
+		Connection: keep-alive
+
+
+	301 리다이렉트 (영구) : 
+		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+		response.setHeader("Location", request.getContextPath() + "/index.jsp");
+
+		HTTP/1.1 301
+		Set-Cookie: JSESSIONID=43E0FEF3F8A2A17BFF7C9295217743F3; Path=/web; HttpOnly
+		Location: /web/index.jsp
+		Content-Type: text/html;charset=UTF-8
+		Content-Length: 8
+		Date: Sat, 15 Jun 2024 16:09:02 GMT
+		Keep-Alive: timeout=20
+		Connection: keep-alive
+
+스프링
+	// 301 (영구) 리다이렉트
+	response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+	response.setHeader("Location", '/web/index');
+
+	// 302 (일시) 리다이렉트
+	RedirectView redirectView = new RedirectView('/web/index');
+	redirectView.setStatusCode(HttpStatus.TEMPORARY_REDIRECT);
+
+	// 302 (일시) 리다이렉트 (컨트롤러 메소드)
+	public String list{ return "redirect:/web/index";}
+
+
+브라우저
+	url창 : /web/index			:   Status Code: 200 OK
+	<a href="/web/index">링크</a>		:   Status Code: 200 OK
+	
+	<meta http-equiv="refresh" content="0;URL='/web/index'" /> :   Status Code: 304 Not Modified
+	window.location = '/web/index';		:   Status Code: 304 Not Modified
+	window.location.href = '/web/index';	:   Status Code: 304 Not Modified
+	window.location.replace('/web/index');	:   Status Code: 304 Not Modified
+	window.location.assign('/web/index');	:   Status Code: 304 Not Modified
+	window.open('/web/index', '_self');	:   Status Code: 304 Not Modified
+
+
+정리하자면 서버단에서는 영구, 일시 리다이렉트 모두 가능하지만, 프론트단에서는 오로지 일시 리다이렉트만 할 수 있다고 보면 된다.
