@@ -1,9 +1,29 @@
-웹프로그램일 경우다
+-------------------java
+프로젝트 우클릭>Java Build path>Libraries
+	Add Jars : 플젝 내부에(상대경로) jar을 넣고 연결하는 모드. (이클립스 다른 PC 이전시 안전)
+	Add External Jars : 플젝 외부(절대경로) jar를 연결하는 모드.(이클립스 다른 PC 이동시 경로깨짐) 
 
-1. WEB-INF/lib 직접 넣기
+-------------------WEB APP
+- 이클립스 웹프로그램 실행시(톰캣등) 내부적으로 각종 자원들을 j2ee web구조에 맞게 배포된 후 실행된다
+- 이클립스 웹 플젝 실행 
+	일반 자바프로그램과는 다르게 두번의 설정이 필요하다
+	1) 프로젝트 java build path에 추가하기 (기본)
+	2) Deployment Assembly 에 1)에서 설정한 path 추가하기
+	
+	설정 후 서버 실행하면 Deployment Assembly 에 설정한 대로 /WEB-INF/* 에 배포한 후 
+	그 구조대로 서버(톰캣 등)가 실행된다
+★★★ 
+실제 테스트 해보면 서버 기동 후 연결 되는 자원들은(classes/jar)등은 Deployment Assembly 해도 충분하다
+추가 java 소스 작성시에 그 자원들이 혹시 필요할지도 모르니 두군데 연결하는 것으로 이해하자.
+
+(빌드 패스 설정 + 배포)는 2가지 방법이 있다
+
+1. WEB-INF/lib 직접 넣기 (간단하다)
 	context/WEB-INF/lib/ojdbc6.jar (11 버전 용) 
 
-2. 프로젝트 java build path에 추가하기
+	: 한방에 끝난다
+
+2. 프로젝트 java build path에 추가한 것 배포하기
 	
 	일반 자바프로그램과는 다르게 두번의 설정이 필요하다
 	1) 프로젝트 java build path에 추가하기
