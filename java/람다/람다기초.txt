@@ -5,24 +5,31 @@
 
 - 람다 표현식은 익명 클래스 구현과 같다.
 - 람다 표현식은 익명 클래스와 상호 호환할 수 있다
-- 메소드가 하나만 있는 인터페이스 구현에 쓸 수 있다.
-- 람다 표현식에 쓸 수 있는 이런 인터페이스를 (함수형 인터페이스)라 부른다.
+- 추상 메소드가 하나만 있는 인터페이스 구현에 쓸 수 있다.
+	- static 메서드와, default 메서드는 갯수 제한이 없다. 
+- 람다 표현식을 쓸 수 있는 이런 인터페이스를 '함수형 인터페이스'라 부른다.
 - @FunctionalInterface 어노테이션을 인터페이스에 붙여서 더 명확히 할 수 있다.(붙이지 않아도 람다식 사용 가능)
 - java 1.8 이상에서 쓴다
 
 -----------------------------// 메소드 람다식 표현 규칙
-@FunctionalInterface
+@FunctionalInterface /* 어노테이션을 사용하면 컴파일단계에서 함수형 인터페이스인지 확인해 주므로 선언하는게 좋다*/
 interface MyClass{
 	int max(int a, int b);
 }
 
-아래처럼 구현해야할 경우 가정
-MyClass my = new  MyClass(){
-	int max(int a, int b){
-		return a + b;
-	}
-};
+/*다른 클래스 메소드에서 아래처럼 구현해야할 경우 가정 */
+class A{
 
+	void method(){
+		MyClass my = new  MyClass(){
+			int max(int a, int b){
+				return a + b;
+			}
+		};
+	}
+}
+
+--------- 람다식 만들기
 (new 없고, 구현클래스 이름 없이) 반환타입,메서드이름 삭제 , '->' 붙여서 람다식 표현
 	MyClass my = (int a, int b)->{return a + b;}
 
@@ -34,15 +41,25 @@ MyClass my = new  MyClass(){
 	MyClass my = (int a, b)-> a + b; // (x)
 
 매개변수가 하나일때는 타입과 + 괄호 생략가능
-	MyClass my = new  MyClass(){
+	interface MyClass{
 		int max(int a);
-	};
-
+	}
+	//-------매개변수가 하나인 메소드를 구현해야할 경우
+	class A{
+		void method(){
+			MyClass my = new  MyClass(){
+				int max(int a);
+			};
+		}
+	}
+	//----- 람다식
 	MyClass my = a -> a + 5; //(int a)->a + 5;
 	MyClass my = int a -> a + 5; //(x) 타입이 있을땐 괄호 생략 불가!
 	MyClass my = (int a) -> a + 5;
 	
 괄호{}안의 문장이 하나일때, 괄호 생략 가능(';' 포함)
+	
+	
 	MyClass my = new  MyClass(){
 		void print(int a);
 	};
@@ -58,7 +75,7 @@ MyClass my = new  MyClass(){
 -----------------------------//
 package com.lambda.test;
 
-@FunctionalInterface // 안 붙여도 된다.
+@FunctionalInterface // 안 붙여도 되지만 붙여서 컴파일러 도움도 받고 가독성을 높이자.
 interface MyFunction{
 	void run();
 }
@@ -100,8 +117,96 @@ public class LambdaTest {
 		f3.run(); //메소드리턴=>f3.run(): v2
 		
 
-		excute(()->System.out.println("excute->run()")); // excute->run()
+		excute(()->System.out.println("excute.run() 실행")); // excute.run() 실행
 	}
 
 }
+-----------------------------//
+람다식의 타입과 형변환
+	함수형 인터페이스로 람다식을 참조할 수 있는 것일뿐,
+	람다식의 타입이 함수형 인터페이스의 타입과 일치하는 것은 아니다.
+	람다식 타입은 컴파일러가 임의로 정하기 때문에 알 수가 없다.
+	원래는 함수형 인터페이스형으로 형변환 해서 함수형 참조변수에 대입해야 하는 것이다
+	
+	@FunctionalInterface // 안 붙여도 되지만 붙여서 컴파일러 도움도 받고 가독성을 높이자.
+	interface MyFunction{
+		void run();
+	}
+	
+	--다른 클래스 메소드에서 구현 사용
+	MyFunction my = (MyFunction) (()->{}); // 원래는 이렇게 해야한다.
+	
+	람다식은 MyFunction 인터페이스를 직접 구현하지 않았지만, 이 인터페이스를 구현한 클래스의 객체와 동일하기
+	때문에 위와 같은 형변환을 허용한다. 그리고 이 형변환은 생략 가능하다.
+	그래서 아래와 같은 람다식이 성립한다
+	
+		MyFunction my = ()->{};
+	
+	람다식은 오직 함수형 인터페이스로만 형변환 가능하다
+	다음과 같이 Object 타입으로 형변환 할 수 없다.
+		
+		Object my = (Object)(()->{}); // (x)
+	
+	굳이 Object 형으로 변환하고 싶다면 아래와 같이 해야한다.
+	
+		Object obj = (MyFunction2)(()->{});
+		String str = ((Object) (MyFunction2) (()->{})).toString();
 
+-----------------------------//
+외부변수 참조하는 람다식
+
+	람다식도 익명객체이므로 , 메소드내  Inner Class 사용시 외부 메소드 지역변수 접근 규칙과 동일하다
+		- 메소드내 지역변수를 Inner Class 내에서 쓰려면 final (상수)을 붙여줘야한다.
+		- JDK1.8 이상은 Inner Class 내에 사용된 메소드 지역변수는 자동으로 final을 붙여 컴파일 한다
+	그러므로,
+	람다식 내에서 참조하는 지역변수는 final이 붙지 않았어도 상수로 간주된다.
+	람다식 내에서 사용되는 지역변수 무조건 상수이므로 람다식 내에서 또는 외부 영역에서도 절대 변경 불가이다.
+
+	//-------------- 예제를 실행해 보자
+	package com.lambda.test;
+
+	@FunctionalInterface
+	interface MyFuc{
+		void myMethod();
+		
+	}
+	class Outer {
+		int val =10; 		// Outer.this.val
+		
+		class Inner{
+			
+			int val= 20; 	// this.val
+			
+			void method(int i) {
+				// void method(final int i) {
+				
+				int val=30; // final int val=30; 이 지역변수도 자동 final (람다식 내에서 쓰이므로)
+			//	i = 10; 	// 이  매개변수도 자동 final 이므로 수정할 수 없다 (람다식 내에서 쓰이므로)
+				
+				MyFuc f = ()->{
+					System.out.println("매개변수 i->" + i);	//매개변수 i->100
+					System.out.println("지역변수 val->" + val);	//지역변수 val->30
+					System.out.println("Inner 클래스 멤버 val->" + (++this.val));	//Inner 클래스 멤버 val->21
+					System.out.println("Outer 클래스 멤버 val->" + (++Outer.this.val)); //Outer 클래스 멤버 val->11
+				
+				};
+				
+				f.myMethod();
+			}
+		}
+	}
+
+	public class LambdaOuter{
+		public static void main(String[] args) {
+			Outer outer = new Outer();
+			Outer.Inner inner = outer.new Inner();
+			inner.method(100);
+			/*
+				매개변수 i->100
+				지역변수 val->30
+				Inner 클래스 멤버 val->21
+				Outer 클래스 멤버 val->11
+			 */
+		}
+	}
+	
