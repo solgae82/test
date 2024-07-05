@@ -1,0 +1,56 @@
+java.util.function  패키지
+
+메서드 형식을 크게보면 몇개의 패턴으로 볼 수 있다.
+	1. 매개변수도 없고, 반환값도 없는 메소드
+	2. 매개변수는 없고, 반환값은 있는 메소드
+	3. 매개변수가 있고, 반환값은 없는 메소드	
+	4. 매개변수도 있고, 반환값도 있는 메소드
+위와 같은 패턴에서, 매개변수 숫자와, 매개변수 타입등만 변하게 된다.
+
+그래서 함수형 인터페이스도 이런 형식에 맞춰 네이티브 차원에서 미리 정의된 것들이 있다.
+java.util.function 패키지에 이런 준비된 함수형 인터페이스들이 있는데, 
+매개변수가 2개 이상만 아니라면, 커스텀 함수형 인터페이스를 만들 필요 없이 
+java.util.function 패키지 에 있는 함수형 인터페이스를 쓰면 된다.
+
+	java.lang,Runable
+		void run() : 매개변수도 없고, 반환값도 없음.
+	
+	java.util.function.Supplier<T> 
+		T get() : 매개변수는 없고, 반환값만 있음.
+		
+	java.util.function.Consumer<T>
+		void accept(T t) : 매개변수가 한개 있고, 반환값 없음
+	
+	java.util.function.Function<T,R>
+		R apply(T t) : 매개변수가 한개 있고, 반환값 있음
+
+	java.util.function.Predicate<T>
+		boolean test(T t) : 매개변수 한개 있고, boolean형 반환 (조건식 표현)
+	
+매개변수가 한개 이상이면, Bi 라는 접두사가 붙는 함수형 인터페이스가 있다.
+
+	java.util.function.BiConsumer<T,U>
+		void accept(T t , U u) : 매개변수 두개 있고, 반환값 없음.
+		
+	java.util.function.Function<T,U>
+		R apply(T t , U u) : 매개변수 두개 있고, 반환값 있음
+		
+	java.util.function.Predicate<T,U>
+		boolean test(T t , U u) : 매개변수 두개 있고, boolean형 반환 (조건식 표현)
+	
+Function의 변형으로  UnaryOperator 와 BinaryOperator 가 있다.
+매개변수 타입과 반환 타입이 같다는 점이 Function과 다르다
+
+	java.util.function.UnaryOperator<T>
+		T apply(T t) : 매개변수가 한개 있고, 반환 타입도 매개변수 타입과 같다
+		
+	java.util.function.BinaryOperator<T>
+		T apply(T t, T t) : 매개변수 두개(같은 타입) 있고, 반환타입도 매개변수 타입과 같다	
+		
+		
+
+대충 대표 인터페이스는 위와 같고 , 매개변수 타입 또는 반환 타입별로 접두어가 붙는 변형 함수형 인터페이스가 있다
+	
+	예) Predicate 변형 인터페이스 : IntPredicate , DoublePredicate , LongPredicate 
+	
+자주 사용하는 패턴등은 실전으로 반복 연습 해봐야 한다.
