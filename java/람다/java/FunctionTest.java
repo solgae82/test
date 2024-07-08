@@ -21,6 +21,8 @@ import java.util.function.ToLongFunction;
 /**
  * 
  * Function 함수형 인터페이스 사용 테스트
+ * 
+ * 입력매개변수(1개이상) 있고, 반환값 있음
  *
  */
 public class FunctionTest {

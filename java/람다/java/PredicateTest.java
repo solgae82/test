@@ -9,7 +9,8 @@ import java.util.function.Predicate;
 /**
  * Predicate 테스트 
  * 
- * 조건을 표현하는데 사용
+ * 
+ * Function의 변형, boolean만 반환한 다는 점이 다름, 조건을 표현하는데 사용
  * 매개변수 1개, 반환 타입은 boolean
  *
  */
