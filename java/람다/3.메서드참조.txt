@@ -1,29 +1,40 @@
-람다식에 '::' 을 사용하는 문법
+
+람다식 메서드 호출에 '::' 을 사용하는 문법
 
 메서드 참조 방식이라고 하더라
-
-1 . 람다 표현식이 단 하나의 메서드만을 호출하는 경우
-2.  람다 표현식이 단순히 객체를 생성하고 반환하는 경우 
-
-불필요한 매개변수를 제거하여 간단하게 표현할 수 있도록 도와주는 역할을 합니다.
+불필요한 매개변수를 제거하여 간단하게 표현할 수 있도록 도와주는 역할.
 매개변수가 예측 가능한 메소드일때 축약형 '(static,instance)::메소드명'  형식 사용가능
 
-형식)
-	클래스이름::메소드이름
-	참조변수이름::메소드이름
-	Object::new	(생성자의 메서드 참조)
-
-예제:
+1 . 람다 표현식이 단 하나의 메서드만을 호출하는 경우
+	
+	: 하나의 메서드만 호출하는 람다식은 
+		'클래스이름::메서드이름' 
+		'참조변수::메서드이름'
+	으로 바꿀 수 있다
+	
+	(예):
 	System.out::print
 	Integer::parseInt
 	String::equals
 	사용자객체::메소드
 	
+2.  람다 표현식이 단순히 객체를 생성하고 반환하는 경우(생성자 메소드 참조) 
+
+	(예):
+	Object::new
+
+
 -------------------//.java
 class My2Class{
 	
 	private String name;
 	
+	
+	public My2Class(){}
+	
+	public My2Class(String name) {
+		this.name = name;
+	}
 	public String getName() {
 		return name;
 	}
@@ -39,7 +50,7 @@ class My2Class{
 public class LambdaMethodReferenceTest {
 
 	public static void main(String[] args) {
-		
+				
 		// static 메서드 참조
 		Function<String, Integer> f1 = (String s)-> Integer.parseInt(s);
 		System.out.println("String->Integer변환:"+ f1.apply("34")); //String->Integer변환:34
@@ -72,6 +83,31 @@ public class LambdaMethodReferenceTest {
 		
 		obj.setName("test");
 		System.out.println("String비교/'test'이름변경(메서드참조):"+f6.apply("dong")); //String비교/'test'이름변경(메서드참조):false
+		
+		
+		//생성자 호출 메서드 참조
+		Function<String, My2Class> f7 = (s) -> new My2Class(s);
+		My2Class my2First = f7.apply("하늘");
+		System.out.println("My2Class.getName():"+my2First.getName()); //My2Class.getName():하늘
+		
+		Function<String, My2Class> f8 = My2Class::new;
+		My2Class my2Second = f8.apply("땅");
+		System.out.println("My2Class.getName():메서드참조:"+my2Second.getName()); // My2Class.getName():메서드참조:땅
+		
+		
+		Function<Integer, int[]> f9 = size -> new int[size];
+		int[] iArr1 = f9.apply(3);
+		iArr1[0]= 3;
+		iArr1[1]= 4;
+		iArr1[2]= 5;
+		System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
+		
+		Function<Integer, int[]> f10 = int[]::new; //요게 좀 직관적이지 못하다. 이런 것 까지 추측해주면, 외울게 너무 많아지는데..
+		int[] iArr2 = f10.apply(3);
+		iArr2[0]= 5;
+		iArr2[1]= 6;
+		iArr2[2]= 7;
+		System.out.println("int[]:메서드참조:"+ Arrays.toString(iArr2)); // int[]:메서드참조:[5, 6, 7]
 		
 	}
 }
