@@ -92,10 +92,8 @@ public class LambdaMethodReferenceTest {
 		System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
 		
 		Function<Integer, int[]> f10 = int[]::new; //요게 좀 직관적이지 못하다. 이런 것 까지 추측해주면, 외울게 너무 많아지는데..
-		int[] iArr2 = f10.apply(3);
-		iArr2[0]= 5;
-		iArr2[1]= 6;
-		iArr2[2]= 7;
+		int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
+		for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
 		System.out.println("int[]:메서드참조:"+ Arrays.toString(iArr2)); // int[]:메서드참조:[5, 6, 7]
 		
 	}
