@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 
 class My2Class{
 	
-	private String name;
+	private String name = "default";
 	
 	
 	public My2Class(){}
@@ -103,12 +103,20 @@ public class LambdaMethodReferenceTest {
 		
 		
 		//생성자 , 메서드 참조
+		Supplier<My2Class> sup1 = () -> new My2Class();
+		My2Class my1 = sup1.get();
+		System.out.println("My2Class.getName():" + my1.getName()); // My2Class.getName():default
+		
+		Supplier<My2Class> sup2 = My2Class::new; //메서드 참조 , 위와 같다
+		My2Class my2 = sup2.get();
+		System.out.println("My2Class.getName():메서드참조:" + my2.getName()); //My2Class.getName():메서드참조:default
+		
 		//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
 		Function<String, My2Class> f7 = (s) -> new My2Class(s);
 		My2Class my2First = f7.apply("하늘");
 		System.out.println("My2Class.getName():"+my2First.getName()); //My2Class.getName():하늘
 				
-		Function<String, My2Class> f8 = My2Class::new; //메서드 참조로 생성 반환 코드, 위와 같다
+		Function<String, My2Class> f8 = My2Class::new; //메서드 참조로 생성 반환 코드, 위와 같다 (생성자 호출에 String 매개변수가 있다고 가정하게 된다)
 		My2Class my2Second = f8.apply("땅"); //설정 후 생성
 		System.out.println("My2Class.getName():(생성자)메서드참조:"+my2Second.getName()); // My2Class.getName():(생성자)메서드참조:땅
 		
@@ -120,7 +128,7 @@ public class LambdaMethodReferenceTest {
 		iArr1[2]= 5;
 		System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
 		
-		Function<Integer, int[]> f10 = int[]::new; //요게 좀 직관적이지 못하다. 이런 것 까지 추측해주면, 외울게 너무 많아지는데..
+		Function<Integer, int[]> f10 = int[]::new; // 위와 같다. (요게 좀 직관적이지 못하다,Integer 가 배열 size로 사용됨을 추측할 수 있다)
 		int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
 		for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
 		System.out.println("int[]:메서드참조:"+ Arrays.toString(iArr2)); // int[]:메서드참조:[5, 6, 7]
