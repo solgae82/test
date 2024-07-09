@@ -25,6 +25,23 @@
 
 
 -------------------//.java
+package com.lambda.test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+/**
+ * 메서드 참조 방식
+ * 람다식에 하나의 메서드만 호출할때 사용가능.
+ * 
+ * 컴파일러가 예측 가능한 메소드일때 축약형 '(static,instance)::메소드명'  형식 사용가능
+ * 생성자 반환 코드도 줄임 가능
+ *
+ */
+
 class My2Class{
 	
 	private String name;
@@ -85,16 +102,17 @@ public class LambdaMethodReferenceTest {
 		System.out.println("String비교/'test'이름변경(메서드참조):"+f6.apply("dong")); //String비교/'test'이름변경(메서드참조):false
 		
 		
-		//생성자 호출 메서드 참조
+		//생성자 , 메서드 참조
+		//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
 		Function<String, My2Class> f7 = (s) -> new My2Class(s);
 		My2Class my2First = f7.apply("하늘");
 		System.out.println("My2Class.getName():"+my2First.getName()); //My2Class.getName():하늘
+				
+		Function<String, My2Class> f8 = My2Class::new; //메서드 참조로 생성 반환 코드, 위와 같다
+		My2Class my2Second = f8.apply("땅"); //설정 후 생성
+		System.out.println("My2Class.getName():(생성자)메서드참조:"+my2Second.getName()); // My2Class.getName():(생성자)메서드참조:땅
 		
-		Function<String, My2Class> f8 = My2Class::new;
-		My2Class my2Second = f8.apply("땅");
-		System.out.println("My2Class.getName():메서드참조:"+my2Second.getName()); // My2Class.getName():메서드참조:땅
-		
-		
+		//배열객체 생성자
 		Function<Integer, int[]> f9 = size -> new int[size];
 		int[] iArr1 = f9.apply(3);
 		iArr1[0]= 3;
@@ -103,10 +121,8 @@ public class LambdaMethodReferenceTest {
 		System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
 		
 		Function<Integer, int[]> f10 = int[]::new; //요게 좀 직관적이지 못하다. 이런 것 까지 추측해주면, 외울게 너무 많아지는데..
-		int[] iArr2 = f10.apply(3);
-		iArr2[0]= 5;
-		iArr2[1]= 6;
-		iArr2[2]= 7;
+		int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
+		for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
 		System.out.println("int[]:메서드참조:"+ Arrays.toString(iArr2)); // int[]:메서드참조:[5, 6, 7]
 		
 	}

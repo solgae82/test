@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * 메서드 참조 방식
@@ -74,16 +75,17 @@ public class LambdaMethodReferenceTest {
 		System.out.println("String비교/'test'이름변경(메서드참조):"+f6.apply("dong")); //String비교/'test'이름변경(메서드참조):false
 		
 		
-		//생성자 호출 메서드 참조
+		//생성자 , 메서드 참조
+		//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
 		Function<String, My2Class> f7 = (s) -> new My2Class(s);
 		My2Class my2First = f7.apply("하늘");
 		System.out.println("My2Class.getName():"+my2First.getName()); //My2Class.getName():하늘
+				
+		Function<String, My2Class> f8 = My2Class::new; //메서드 참조로 생성 반환 코드, 위와 같다
+		My2Class my2Second = f8.apply("땅"); //설정 후 생성
+		System.out.println("My2Class.getName():(생성자)메서드참조:"+my2Second.getName()); // My2Class.getName():(생성자)메서드참조:땅
 		
-		Function<String, My2Class> f8 = My2Class::new;
-		My2Class my2Second = f8.apply("땅");
-		System.out.println("My2Class.getName():메서드참조:"+my2Second.getName()); // My2Class.getName():메서드참조:땅
-		
-		
+		//배열객체 생성자
 		Function<Integer, int[]> f9 = size -> new int[size];
 		int[] iArr1 = f9.apply(3);
 		iArr1[0]= 3;
