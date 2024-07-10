@@ -12,6 +12,12 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * 
+ * 컬렉션 프레임웍의 인터페이스에 다수의 defualt 메서드가 추가 되었는데, 그 중의 일부는 함수형 인터페이스를 사용한다.
+ * 자주 사용하게 될(또는 분석하게 될) 함수형 인터페이스 테스트
+ *
+ */
 public class LambdaConllectionTest {
 
 	public static void main(String[] args) {
@@ -67,6 +73,8 @@ public class LambdaConllectionTest {
 		 * Map.computeIfAbsent
 		 * Map.computeIfPresent
 		 * Map.merge
+		 * Map.forEach
+		 * Map.replaceAll
 		 */
 		
 		Map<String , Integer> map = new HashMap<>();
@@ -155,6 +163,15 @@ public class LambdaConllectionTest {
 		Integer rV4 = map.merge("second", 22, (oldVal,newVal)->{return (oldVal + newVal);});
 		System.out.println(map); // {third=3, first=1, second=24}
 		System.out.println("second,반환값->"+rV4); //second,반환값->24반환값->24
+		
+		
+		// forEach
+		map.forEach((k,v)->System.out.print(v+",")); //3,1,24,
+		System.out.println();
+		
+		// replaceAll
+		map.replaceAll((k,v)-> ("second".equals(k))?(v * 10):v); //key가 "second" 인것만 곱하기 10
+		System.out.println(map); //{third=3, first=1, second=240}
 		
 	}
 

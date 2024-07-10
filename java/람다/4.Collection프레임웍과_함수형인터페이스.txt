@@ -158,6 +158,15 @@ public class LambdaConllectionTest {
 		System.out.println(map); // {third=3, first=1, second=24}
 		System.out.println("second,반환값->"+rV4); //second,반환값->24반환값->24
 		
+		
+		// forEach
+		map.forEach((k,v)->System.out.print(v+",")); //3,1,24,
+		System.out.println();
+		
+		// replaceAll
+		map.replaceAll((k,v)-> ("second".equals(k))?(v * 10):v); //key가 "second" 인것만 곱하기 10
+		System.out.println(map); //{third=3, first=1, second=240}
+		
 	}
 
 }
