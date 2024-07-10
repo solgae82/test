@@ -17,7 +17,7 @@ public class MapTest {
 		map.put("3","third");
 		map.put("3","셋");	//업데이트
 				
-		System.out.println(map); // {1=하나, 2=둘, 3=third}
+		System.out.println(map); // {1=하나, 2=둘, 3=셋}
 		
 		//size
 		System.out.println(map.size()); // 3
