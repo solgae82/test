@@ -69,6 +69,8 @@ public class LambdaConllectionTest {
 		 * Map.computeIfAbsent
 		 * Map.computeIfPresent
 		 * Map.merge
+		 * Map.forEach
+		 * Map.replaceAll
 		 */
 		
 		Map<String , Integer> map = new HashMap<>();
