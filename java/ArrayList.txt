@@ -11,27 +11,29 @@ public class ListTest {
 
 		List<String> list = new ArrayList<String>();
 		
-		//add
+		//1.add
 		list.add("하나");
 		list.add("둘");
 		list.add("셋");
-		//size
-		System.out.println("size:"+list.size()); //size:3
-		//get
+		
+		//2.get
 		System.out.println("get(1):"+list.get(1));//get(1):둘
 		
-		//set (없데이트), 범위에 없는 index면 에러((list.size()-1)까지 가능)
+		//3.set (없데이트), 범위에 없는 index면 에러((list.size()-1)까지 가능)
 		list.set(list.size()-1, "둘라");
 		System.out.println(list);//[하나, 둘, 둘라]
 		
-		//remove
+		//4.size
+		System.out.println("size:"+list.size()); //size:3
+		
+		//5.remove
 		list.remove(1);
 		System.out.println(list);//[하나, 둘라]
 		
-		//clear
+		//6.clear
 		list.clear();
 		
-		//isEmpty
+		//7.isEmpty
 		if(list.isEmpty()) System.out.println("없다"); // 없다
 		
 		//다시 셋팅
@@ -44,10 +46,10 @@ public class ListTest {
 		
 		System.out.println(list);//[하나, 둘, 셋, 넷, 셋, -추가-]
 		
-		//contains
+		//8.contains
 		if(list.contains("하나")) System.out.println("존재해");//존재해
 				
-		//iterator
+		//9.iterator
 		Iterator<String> iter = list.iterator();
 		while(iter.hasNext()) { //반복
 			String str = iter.next();
@@ -92,17 +94,15 @@ public class ListTest {
 			 */
 		}
 		
-		//indexOf
+		//10.indexOf
 		int index = list.indexOf("셋"); //없으면 -1
 		System.out.println("처음부터 검색(셋)위치:" +  index);//처음부터 검색, 첫번째(셋)위치:2
 		
 		
-		//lastIndexOf
+		//11.lastIndexOf
 		int lastIndex = list.lastIndexOf("셋");
 		System.out.println("끝에서 역으로 검색(셋)위치:"+lastIndex); //처음부터 검색, 마지막(셋)위치:4
-		
-		
-		
+				
 		
 	}
 

@@ -7,35 +7,35 @@ import java.util.Set;
 public class SetTest {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		Set<String> set = new HashSet<String>();
 		
-		//add
+		//1.add
 		set.add("하나");
 		set.add("둘");
 		
-		//size
+		//2.size
 		System.out.println("갯수:"+set.size()); //갯수:2
 		
-		//remove
+		//3.remove
 		set.remove("하나");
 		System.out.println(set); // [둘]
 		
-		//clear
+		//4.clear
 		set.clear();
 		System.out.println(set); // []
 		
-		//isEmpty
+		//5.isEmpty
 		if(set.isEmpty()) System.out.println("없다"); //없다
 		
 		//다시 값 셋팅
 		set.add("하나");
 		set.add("둘");
 		
-		//contains
+		//6.contains
 		if(set.contains("둘")) System.out.println("둘 있다"); // 둘 있다
 		
-		//iterator
+		//7.iterator
 		Iterator<String> iter = set.iterator();
 		String str = null;
 		while(iter.hasNext()) {
