@@ -1,0 +1,49 @@
+
+bean 태그 속성
+	bean id="tv" name="test,test2;test3" class="polymorphism.SamsungTV"></bean>
+	<alias name="test3" alias="atv"/>
+
+	AbstractApplicationContext factory = new GenericXmlApplicationContext("applicationContext.xml");
+	TV tv = (TV)factory.getBean("atv"); //tv, test, test2, test3, atv 가능
+
+	- id ="my" : 태그 대표 호출명
+		ex) f.getBean("my");
+	- name ="my,my2;m3" : id처럼 호출 가능, ',' 쉼표 또는 ';'세미콜론 구분자로 복수명 지정 가능
+		ex) f.getBean("m3");
+	- init-method = "initMethod" : 객체 생성 직후 호출 메소드명
+	- destroy-method="destroyMethod" : 객체 삭제 직전 호출 메소드명
+	- lazy-init="true" : 요청시 생성
+	- scope="singleton" (기본)
+		"prototype" (요청시마다 생성)
+
+IoC (제어의 역행)
+	Dependency Lookup 과 Dependency Injection 있다
+	주로 DI를 사용한다.
+
+DI (Dependency Injection)
+	- Constructor Injection, Setter Injection 이 있다.
+
+Constructor Injection
+	설정한 constructor 매개변수에 맞는 생성자를 호출한다.
+
+	기본:
+		-- appContext.xml
+		<bean id="tv" class="polymorphism.SamsungTV">
+			<constructor-arg ref="sony"></constructor-arg>
+		</bean>		
+		<bean id="sony" class="polymorphism.SonySpeaker"></bean>
+		
+		-- main.java 
+		//SamsungTV(SonySpeaker sonySpeaker); //생성자 호출
+
+	다중생성자:
+		-- appContext.xml
+		<bean id="tv" class="polymorphism.SamsungTV">
+			<constructor-arg index="0" ref="sony"></constructor-arg>
+			<constructor-arg  index="1" value="2700"></constructor-arg>
+		</bean>
+		<bean id="sony" class="polymorphism.SonySpeaker"></bean>
+		
+		-- main.java 
+		//SamsungTV(SonySpeaker sonySpeaker, int price); //생성자 호출
+			
