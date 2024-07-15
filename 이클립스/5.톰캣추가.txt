@@ -1,28 +1,65 @@
-tomcat 다운로드 사이트 접속
-	tomcat 8.0 zip 다운로드 > .zip 디렉토리 풀어 놓음
 
-이클립스 서버환경 추가
-	window > Preference > Server > Runtime Environments
-	Add 클릭 > Apache Tomcat v8.0 선택 > next > Tomcate installation directory > Browse버튼 클릭
-	다운로드 받아서 풀어놓은 tomcat 디렉토리 선택 > finish > Apply and close
+-------------------
+크게 보면 
+	[서버환경 추가]와 [서버 생성]으로 나눠진다
+	서버환경을 미리 이클립스 환경설정에 추가 놓으면, 서버 생성시 추가한 서버환경이 자동으로 나오게 된다.
+	서버환경 추가와 서버 생성을 동시에 할 수도 있다.
 
-서버(생성)추가 
-	Window > show views > Servers : 서버탭 생성
+대충 3가지 설정 방법이 있다(결론은 언제나 같다)
+	1.이클립스 환경설정에서 서버환경 추가 후 Servers 탭에서 서버 생성
+	2.Servers 탭에서 한번에 (서버환경 추가 + 서버 생성)
+	3.프로젝트 Run and Server 로 한번에 (서버환경 추가 + 서버 생성)
 
-	서버탭 우측 클릭 > New > Sever > New Server(Define a New Server) 
-	위에서 추가한 버전과 같은 Tomcat v.8.0 Sever 선택
-		: 선택하면 Server runtime enviroments 정보가 나온다.(서버환경 추가에서 추가한 정보)
-		: (서버환경 추가 안한 다른 버전을 선택하면 Server runtime enviroments 가 없을 것이다.)
+	※ 2,3번 Tomcat installation directory 를 설정하면 이클립스 환경설정 
+		window > Preference > Server > Runtime Environments 에 자동 추가 된다.
+-------------------
 
-	Next > Add or Remove : 왼쪽에 현재 프로젝트가 보이고 tomcat에 올릴 프로젝트를 선택해서 Add 시키면 오른쪽
-	탭 정보로 이동한다(톰캣 컨텍스트에 추가된 것)
-	
-	Finish : 생성한 서버에 프로젝트 컨텍스트 추가되었음
+준비물 :
+	tomcat 다운로드 사이트 접속 > tomcat 8.0 zip 다운로드 > .zip 디렉토리 풀어 놓음
 
-	이제 서버탭에서 시작 , 중지등을 실행하면 됨.
+1.이클립스 환경설정에서 서버환경 추가 후 Servers 탭에서 서버 생성
 
+	이클립스 환경설정에서 서버환경 추가
+		window > Preference > Server > Runtime Environments
+		Add 클릭 > Apache Tomcat v8.0 선택 > next > Tomcate installation directory > Browse버튼 클릭
+		다운로드 받아서 풀어놓은 tomcat 디렉토리 선택 > finish > Apply and close
 
-etc
+	Servers 탭 서버(생성)추가 
+		Window > show views > Servers : 서버탭 생성
+
+		서버탭 우측 클릭 > New > Sever > New Server(Define a New Server) 
+		위에서 추가한 버전과 같은 Tomcat v.8.0 Sever 선택
+			: 선택하면 [이클립스 환경설정에서 서버환경 추가] 에서 추가한 
+			Server runtime enviroments 정보가 나온다.
+			: (서버환경 추가 안한 다른 버전을 선택하면 Server runtime enviroments 가 나오지 않는다.)
+
+		Next > Add or Remove : 왼쪽에 현재 프로젝트가 보이고 tomcat에 올릴 프로젝트를 선택해서 Add 시키면 오른쪽
+		탭 정보로 이동한다(톰캣 컨텍스트에 추가된 것)
+		
+		Finish : 생성한 서버에 프로젝트 컨텍스트 추가되었음
+
+		이제 서버탭에서 시작 , 중지등을 실행하면 됨.
+
+2.Servers 탭에서 한번에 (서버환경 추가 + 서버 생성)
+		Window > show views > Servers : 서버탭 생성
+
+		서버탭 우측 클릭 > New > Sever > New Server(Define a New Server) 
+		위에서 추가한 버전과 같은 Tomcat v.8.0 Sever 선택 > Next버튼
+
+		Tomcat Server 창
+			Tomcat installation directory: [Browse...] 버튼으로 톰캣 경로 추가
+			Next버튼
+		
+		Add and Remove
+			: Context를 추가 및 삭제 할 수 있는 화면이 나온다.(없으면 그냥 finish)
+
+		Finish 버튼 
+
+		※ Tomcat installation directory 를 설정하면 이클립스 환경설정 
+		window > Preference > Server > Runtime Environments 에 자동 추가 된다.
+
+3.프로젝트 Run and Server 로 한번에 (서버환경 추가 + 서버 생성)
+
 	프로젝트를 기준으로 서버 설정을 할수도 있다
 
 	프록젝트 우측 마우 클릭 > Run As > Run and Server :
@@ -31,6 +68,5 @@ etc
 	2. Manually define a new server (새 서버 생성 후 배포)
 
 	서버(생성)추가 해서 생성한 서버가 있을 경우는 
-	1번을 선택해서 생성한 서버를 선택하고 그 서버에 배포하겠다는 뜻이고
-	2번은 새로운 서버환경 추가 생성하고 그 서버에 배포하겠다는 것임. 
-
+	1번을 선택해서 생성한 서버를 선택하고 그 서버에 배포하겠다는 것이고
+	2번은 새로운 서버환경 추가 후 서버 생성하고 그 서버에 배포하겠다는 것임. 
