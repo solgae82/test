@@ -1,0 +1,33 @@
+
+이클립스는 내부 자체 컴파일러가 있다고 한다.
+컴파일러 버전은 고정이므로, 이클립스 버전마다 다르다 (검색하라)
+
+사용자가 수동 설정하는 것은 JRE로서 사용자가 설정할 수 있다.
+그러므로 이클립스 내장 컴파일러가 어느 버전으로 컴파일 하는지 알아야 한다.
+
+만약, 이클립스가 jdk 1.7로 컴파일하는 버전이라면, 람다식을 사용하지 못할 것이다
+어디서 받은 java 소스를 이클립스에 프로젝트로 등록하려면, java 소스 버전과 이클립스 버전(내장 컴파일러)
+을 맞춰야 한다. 
+
+java source 버전과 맞는 버전의 이클립스를 선택해야한다는 것이다
+
+------------------- JDK(JRE) 설정
+이클립스는 버전별로 java jre 최소버전 지원 제한이 있다
+대충 아래와 같다(검색해서 확인해야 한다)
+
+	이클립스 4.6부터는 JDK 8 이상
+	이클립스 4.17부터는 JDK 11 이상
+	이클립스 4.25부터는 JDK 17 이상
+
+출처: https://esoog.tistory.com/entry/스프링spring-버전-관리 [Blue Whale Wave:티스토리]
+
+------------------- STS
+STS(Spring Tool Suite)도 이클립스를 확장한 버전이므로, 
+jdk 지원 버전 확인하려면 이클립스 빌드 버전을 확인해야한다.
+Help>about Spring Tool Suite 4>Installation Details(버튼)>
+Features(탭)>Feature Name : Eclipse Platform 버전 확인
+
+예)
+STS : 4.15.1.RELEASE
+Eclipse Platfrom : 4.24.0
+(해당 sts 이클립스 버전은 4.24.0 이다)
