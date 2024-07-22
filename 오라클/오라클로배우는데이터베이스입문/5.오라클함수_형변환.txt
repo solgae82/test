@@ -78,5 +78,5 @@ to_number
 
 to_date
 	문자열을 date형식으로 변환
-	select to_date('2018-04-04', 'YYYY-MM-DD') from dual; // 18/04/04
-	select to_date('20180404', 'YYYY-MM-DD') from dual; // 18/04/04
+	select to_date('2018-04-04', 'YYYY-MM-DD') from dual; // 18/04/04 (date형으로 바뀐 것임)
+	select to_date('20180404', 'YYYY-MM-DD') from dual; // 18/04/04 (date형으로 바뀐 것임)
