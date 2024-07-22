@@ -63,9 +63,10 @@ Constructor Injection
 		<bean id="sony" class="polymorphism.SonySpeaker"></bean>
 		
 		-- main.java 
-		//SamsungTV(SonySpeaker sonySpeaker); //생성자 호출
+		TV tv = (TV)factory.getBean("tv");
+		//SamsungTV(SonySpeaker sonySpeaker); // 이 생성자 호출
 
-	다중생성자:
+	(다중)생성자 인젝션:
 		-- appContext.xml
 		<bean id="tv" class="polymorphism.SamsungTV">
 			<constructor-arg index="0" ref="sony"></constructor-arg>
@@ -74,5 +75,115 @@ Constructor Injection
 		<bean id="sony" class="polymorphism.SonySpeaker"></bean>
 		
 		-- main.java 
-		//SamsungTV(SonySpeaker sonySpeaker, int price); //생성자 호출
-			
+		TV tv = (TV)factory.getBean("tv");
+		//SamsungTV(SonySpeaker sonySpeaker, int price); //이 생성자 호출
+
+	setter 인젝션 (이 방식을 많이 사용함)
+		기본(default) 생성자가 반드시 있어야 한다
+
+		-- appContext.xml
+		<bean id="tv" class="polymorphism.SamsungTV">
+			<property name="speaker" ref="apple"></poperty>
+			<property name="price" value="400000"></property>
+		</bean>
+		<bean id="apple" class="polymorphism.SonySpeaker"></bean>
+		
+		-- main.java 
+		TV tv = (TV)factory.getBean("tv");
+		/*
+		//1.기본 생성자로 객체 만든 후 property 에 맞는 setter 메소드 실행
+		SamsungTV();
+		tv.setSpeaker(apple 객체 빈);
+		tv.setPrice(400000);
+		*/
+	p:변수명 인젝션
+		속성에 설정하면 Setter 인젝션으로 작동한다
+		beans 태그 속성에 xmlns:p 설정
+			xmlns:p="http://www.springframework.org/schema/p"
+		p:변수명-ref="참조할 객체의 이름, 아이디"
+		p:변수명="값"
+			예) <bean p:speaker-ref="apple" p:price="45000" ../>
+
+		-- appContext.xml
+		<beans xmlns:p="http://www.springframework.org/schema/p" ..>
+			<bean id="tv" class="polymorphism.SamsungTV" p:speaker-ref="apple" p:price="45000"></bean>
+			<bean id="apple" class="polymorphism.AppleSpeaker" />
+		</beans>
+		-- main.java 
+		TV tv = (TV)factory.getBean("tv");
+		/*
+		//1.기본 생성자로 객체 만든 후 property 에 맞는 setter 메소드 실행
+		SamsungTV();
+		tv.setSpeaker(apple 객체 빈);
+		tv.setPrice(45000);
+		*/
+
+	List,Set,Map,Propeties
+		반드시 디폴트 생성자가 있어야 한다
+		propety 태그 아래에 java 대표 자료형에 맞게 설정하는 법이 있다.
+
+		-- appContext.xml
+			<bean id="samsung" class="polymorphism.SamsungTV">
+			  
+			  <!-- List 설정 -->
+			  <property name="list">
+				<list value-type="java.lang.String">
+					<value>강남구</value>
+					<value>성동구</value>
+					<value>서초구</value>
+				</list>
+			  </property>
+			  
+			  <!-- Set 설정 -->
+			  <property name="set">
+				<set value-type="java.lang.String">
+					<value>성동구</value>
+					<value>성동구</value>
+					<value>동작구</value>
+				</set>
+			  </property>
+			  
+			  <!-- Map 설정 -->
+			  <property name="map">
+				<map value-type="java.lang.String">
+					<entry>
+						<key><value>하나</value></key>
+						<value>사과</value>
+					</entry>
+					<entry>
+						<key><value>둘</value></key>
+						<value>배</value>
+					</entry>
+					<entry>
+						<key><value>셋</value></key>
+						<value>복숭아</value>
+					</entry>
+				</map>
+			  </property>
+
+			  <!-- Properties 설정 -->
+			  <property name="prop">
+				<props>
+					<prop key="kim">성동구</prop>
+					<prop key="bak">동작구</prop>
+					<prop key="lee">강남구</prop>
+				</props>
+			  </property>
+		  
+			</bean>
+		-- SamsungTV.java
+		private List<String> list;
+		private Set<String> set;
+		private Map<String,String> map;
+		private Properties prop;
+		.. 각 프로퍼티 getter, setter가 있어야 한다
+
+		-- main.java 
+		SamsungTV tv  = (SamsungTV) context.getBean("samsung");
+		System.out.println("리스트=>" + tv.getList());//리스트=>[강남구, 성동구, 서초구]
+		System.out.println("셋=>" + tv.getSet());//셋=>[성동구, 동작구]
+		System.out.println("맵=>" + tv.getMap());//맵=>{하나=사과, 둘=배, 셋=복숭아}
+		System.out.println("프로퍼터=>" + tv.getProp());//프로퍼터=>{lee=강남구, bak=동작구, kim=성동구}
+		
+
+
