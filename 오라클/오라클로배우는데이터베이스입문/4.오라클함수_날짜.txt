@@ -6,49 +6,47 @@
 -- sysdate :오늘 날짜 반화 함수
 select sysdate from dual; //19/08/21
 
-
 날짜 데이터 연산
-	sysdate + 1 : 하루증가
+	sysdate + 1 : 하루증가 (날짜 반환)
 		select sysdate , sysdate + 1 from dual;	// 19/08/21	19/08/22
 
-	sysdate - 1 : 하루감소
+	sysdate - 1 : 하루감소 (날짜 반환)
 		select sysdate , sysdate -1 from dual;   //  19/08/21	19/08/20
 
-	날짜 - 날짜 : 뺀 날짜 반환
+	날짜 - 날짜 : 뺀 일수 반환(정수 반환)
 		select sysdate - (sysdate -1) from dual; // 1
 		select sysdate - (sysdate + 1) from dual;  // -1
 
 	날짜 + 날짜 : (X) 연산불가
 
-
-
-add_months : 몇 개월 이후 날짜를 구하는 함수
+add_months : 몇 개월 이후 날짜를 구하는 함수 (날짜 반환)
 	add_months(날짜데이터, 더할 개월 수)
 
 	select sysdate, add_months(sysdate, 3) from dual; // 19/08/21	19/11/21
 
 	select * from emp where add_months(hiredate, 240) < sysdate; // 입사일이 20년  넘는 데이터
 
-months_between : 두 날짜간의 개월 수 차이
-
+months_between : 두 날짜간의 개월 수 차이 (실수 반환), 실수로 반환하므로 trunc() 함수 조합을 사용
+	: 개월수가 소숫점 계산까지 되니 trunc 함수로 소숫점을 제거하면 보기 편하다.
+	
 	select empno, ename, hiredate,sysdate ,
 	    months_between(hiredate, sysdate),
 	    months_between(sysdate, hiredate),
 	    trunc(months_between(sysdate, hiredate)) /* 이런 형식으로 쓰자 */
 	from emp;
 
-	//개월수가 소숫점 계산까지 되니 trunc 함수로 소숫점을 제거하면 보기 편하다.
-
-next_day :  입력날짜 다음 요일의 날짜를 반환
+next_day :  입력날짜 다음 요일의 날짜 반환 (날짜 반환)
 	next_day(입력날짜, [요일문자, 숫자])
-	1~7 : 일~토
-	월요일~일요일
+	요일문자 예)
+		- 1~7 : 일~토
+		- 일요일~토요일
+	: 첫번째 인수의 요일과 두번째 인수 요일이 겹쳤다면 , 다음 주 두번째 요일 날짜로 반환
 
-	select next_day(sysdate, 2) from dual;			//입력날 다음에 나오는 첫번째 월요일 날짜 반환
-	select next_day(sysdate, '월요일') from dual;	// 입력날 다음에 나오는 첫번째 월요일 날짜 반환
+	select next_day(sysdate, 2) from dual;		//입력날 기준 다음 첫번째 월요일 날짜 반환
+	select next_day(sysdate, '월요일') from dual;	// 입력날 기준 다음 첫번째 월요일 날짜 반환
 
-last_day : 입력날짜가 해당하는 달의 마지막날 반환
-	select sysdate, last_day(sysdate) from dual;	 //19/08/24	19/08/31
+last_day : 입력날짜가 해당하는 달의 마지막 날짜 반환 (날짜 반환)
+	select sysdate, last_day(sysdate) from dual;	 //24/02/21	24/02/29
 
 날짜 반올림(round), 내림(trunc)
 
