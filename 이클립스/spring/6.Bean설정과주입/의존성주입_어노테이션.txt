@@ -6,7 +6,7 @@
 		사용할 수 있는 위치 : 
 			멤버변수, setter메소드, 생성자, 일반 메소드
 		빈 찾기 순서 : 
-			타입 -> 이름 -> @Qualifier -> 예외
+			타입 -> @Qualifier -> 이름 -> 예외
 		스프링 포함 여부 : 기본 포함
 		
 		빈 명시적 지정 :
@@ -24,21 +24,22 @@
 		사용할 수 있는 위치 :
 			멤버변수, setter메소드, 생성자, 일반 메소드
 		빈 찾기 순서 : 
-			타입 -> @Qualifier-> 이름 -> 예외
+			타입 -> @Qualifier,@Named -> 이름 -> 예외
 		스프링 포함 여부 :포함 안됨
 			- javax.inject 라이브러리 포함해야함
 		
 		빈 명시적 지정 :
-			@Qualifier 조합
+			@Qualifier 조합 (되긴 하지만, 비추천)
 				패키지 : 패키지: org.springframework.beans.factory.annotation.Qualifier
 				사용법:
 					@Autowired
 					@Qualifier("id")
-			@Named 조합
+					
+			@Named 조합 (같은 패키지이므로, 이걸로 추천)
 				패키지 : javax.inject.Named
 				사용법 :
 					@Autowired
-					@Named(value="id")
+					@Named(value="id") //@Named("id") 가능
 		
 		Nullable 여부 : 해당 빈이 존재하지 않으면 에러 
 		
@@ -70,8 +71,11 @@
 		
 @Primary 어노테이션
 	패키지 : org.springframework.context.annotation.Primary
+	
 	- 동일한 타입의 빈이 여러 개 존재할 경우 
 	해당 빈에 	@Primary을 사용해서 주입될 빈 지정 가능
+	
+	- @Qualifier, @Named 등으로 지정된게 @Primary 보다 우선
 
 	예제)
 		@Bean
@@ -83,5 +87,4 @@
 		..
 		
 		@Inject
-		Product p; // Lg로 주입
-		
+		Product p; // Lg로 주입		
