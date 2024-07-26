@@ -1,0 +1,20 @@
+요약 : 
+
+	<form:errors />
+	
+	path: 필수 아니다, command 오브젝트 필드명 또는 '*' 등 기입
+	delimeter : 에러가 두개 이상일때 구분자 , 디폴트 <br />
+	cssClass : 에러 메시지 지정 css클래스
+
+	폼 에러를 출력한다.
+	<span></span>안에 메시지 출력.
+
+	일반 필드명 에러를 출력하거나,폼 전체(글로벌) 에러를 출력할때 사용된다.
+	
+	<form:errors /> 글로벌 에러만 출력 
+	<form:errors path="*" /> 글로벌 에러 + 필드명 에러 등 모두 출력
+	<form:errors path="uid" /> uid필드명 에러 출력
+
+-------------------//
+
+

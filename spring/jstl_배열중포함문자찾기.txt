@@ -1,0 +1,40 @@
+<c:set var="paramCate" value="${fn:join(paramValues.cate,'')}" />
+
+<form id="search" method="get">
+	<c:forEach items="${cate}" var="c" varStatus="status">
+
+	<input type="checkbox" id="c_${c.id}" name="cate" value="${c.id}"
+	<c:if test="${fn:contains(paramCate , c.id)}"> checked</c:if> />
+	
+	<label for="c_${c.id}">${c.name}</label>
+	</c:forEach>
+	<button type="button" id="search_btn">검색</button>
+</form>
+
+---
+<form id="search" method="get">
+	
+	<input type="checkbox" id="c_1" name="cate" value="1" checked /><label for="c_1">일반</label>
+	<input type="checkbox" id="c_2" name="cate" value="2" /><label for="c_2">공지사항</label>
+	<input type="checkbox" id="c_3" name="cate" value="3" checked /><label for="c_3">갤러리</label>
+
+	<button type="button" id="search_btn">검색</button>
+</form>
+
+---
+1번째 3번째 체크 후 검색 전송하면 
+	cate=1&cate=3
+다시 현재페이지 돌아와서 cate 파라미터별로 체크박스 checked 해주려면
+
+	paramValues.cate 배열 파라미터를 문자열 직렬화 해줘서 비교하면 된다.
+	
+	//배열 직렬화
+	<c:set var="paramCate" value="${fn:join(paramValues.cate,'/')}" />
+
+
+그리고 비교
+
+	${fn:contains(paramCate , c.id)}
+
+
+

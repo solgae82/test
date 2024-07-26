@@ -1,0 +1,63 @@
+
+1.커스텀propertyEditor.txt
+2.커스텀propertyEditor.txt 
+문서와 연결되는 3번째 문서다
+
+	
+WebBindingInitializer 구현 방법
+컨트롤러마다 @InitBinder 방법이 아닌 모든 컨트롤러에 적용하고자 할때 설정 방법
+
+	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+	빈 에 설정하는 방법이다
+	( AnnotationMethodHandlerAdapter은 스프링 3.2 이후로 Deprecated 되었다고 함)
+
+	표준프레임워크등에는 이 방법을 쓴다
+
+	커스텀 프로퍼티에디터 적용이 우선순위가 높다.
+	그 다음 디폴트에디터이다
+
+	그러므로 이 방법은 커스텀에디터에 등록된 타입이 없는 컨트롤러에도 적용되므로 약간의 낭비가 있다.
+
+	sts IDE 스프링 4 에 생성한 프로젝트 중심으로 기술	
+	
+---------// 바인딩 초기화 클래스 작성
+
+MyWebBindingInitializer.java
+
+	package com.solgae.common;
+
+	import org.springframework.web.bind.WebDataBinder;
+	import org.springframework.web.bind.support.WebBindingInitializer;
+	import org.springframework.web.context.request.WebRequest;
+
+	import com.solgae.domain.Level;
+	import com.solgae.test.LevelPropertyEditor;
+	import com.solgae.test.MinMaxPropetyEditor;
+
+	public class MyWebBindingInitializer implements WebBindingInitializer {
+
+		@Override
+		public void initBinder(WebDataBinder binder, WebRequest request) {
+
+			binder.registerCustomEditor(Level.class, new LevelPropertyEditor());
+			binder.registerCustomEditor(int.class,"age", new MinMaxPropetyEditor(0,200));
+
+		}
+
+	}
+
+---------// servelet-context.xml
+
+	: <annotation-driven /> 태그는 많은 일을 한번에 해주지만, 
+	바인딩 초기화 설정을 위해서 <annotation-driven /> 설정이 아니 직접 빈 등록 방법으로 설정해야한다.
+
+	<!--  annotation-driven /-->
+
+	<beans:bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+	
+	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<beans:property name="webBindingInitializer">
+			<beans:bean class="com.solgae.common.MyWebBindingInitializer" /> <!--여기 설정-->
+		</beans:property>
+	</beans:bean>

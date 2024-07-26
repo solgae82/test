@@ -1,0 +1,243 @@
+요약 : 
+	<form:checkboxes  path ="checkes" items="${codeTypes}" itemValue="code" itemLabel="label">
+	<form:checkbox path="checkes" value="data1"  label="일반회원">
+
+	<form:checkboxes>
+		path : 필수 속성 , command오브젝트 필드명 설정
+		items : 
+			HashMap : 순서지정이 없다
+				키=checkbox 태그의 value 
+				값=checkbox 태그의 text(label)
+			
+			LinkedHashMap : 순서지정 가능하다
+				키=checkbox 태그의 value 
+				값=checkbox 태그의 text(label)
+				
+			Collection 도메인 객체 :  (getter,setter가 있는) , 순서지정 가능하다			
+				itemValue : checkbox 태그의 value 값. 도메인 객체에서 매핑할 속성명 지정
+				itemLabel : checkbox 태그의 text(label) 값. 도메인 객체에서 매핑할 속성명 속성명 지정
+	<form:checkbox>
+		path : 필수 속성 , command오브젝트 필드명 설정
+		value : checkbox 태그의 value 값 지정.
+		lable : checkbox 태그의 text 값 지정.
+
+	------ 기타 공통 속성들(html에 대응하는 속성들이 더 있다)
+
+	cssClass : 바인딩 오류 없을시 출력될 css 속성명
+	cssErrorClass : 바인딩 오류시 출력될 css속성명
+	
+	특이사항 : 
+	1. checkbox는 아래와 같은 필드마커가 생긴다
+		<input type="hidden" name="_checkes" value="on"/> 
+
+	2. true, false 타입 출력 방식이 있다.
+
+-------------------//
+User.java
+	public class User {
+		
+		private String[] checkes = {"data1","data3"};
+		private boolean smsAllow;
+		private boolean emailAllow;
+		
+		..getter, setter
+	}
+
+Code.java
+	public calss Code{
+		private String code;
+		private String label;
+		
+		..getter, setter
+	}
+
+TestController.java
+
+	public class TestController {
+		
+		@ModelAttribute("loginTypes")
+		protected List<String> basicData() throws Exception{
+			List<String> loginTypes = new ArrayList<String>();
+			
+			loginTypes.add("일반회원");
+			loginTypes.add("기업회원");
+			loginTypes.add("헤드헌터");
+			
+			return loginTypes;
+		}
+		
+		@RequestMapping(value = "/login.do")
+		public String loginView(@ModelAttribute User user,  ModelMap model) throws Exception{
+
+			user.setSmsAllow(true); // ** 여기 집중 **
+
+			return "test/loginForm";
+		}
+
+		@ModelAttribute("codeTypes")
+		protected List<Code> selectCodeData() throws Exception{
+			List<Code> codeList = new ArrayList<Code>();
+			
+			Code c = new Code();
+			c.setCode("data1");
+			c.setLabel("일반회원");
+			codeList.add(c);
+			
+			Code c1= new Code();
+			c1.setCode("data2");
+			c1.setLabel("기업회원");
+			codeList.add(c1);
+			
+			Code c2 = new Code();
+			c2.setCode("data3");
+			c2.setLabel("헤드헌터");
+			codeList.add(c2);
+			
+			return codeList;
+			
+		}
+	}
+
+
+-----------loginForm.jsp
+	<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+1. form:checkboxes
+
+	예제(1) ---------------
+
+	<form:form commandName="user" action="" method="POST">
+		<form:checkboxes path ="checkes" items="${loginTypes}" />
+	</form:form>
+		
+	출력 : 
+		<span>
+			<input id="checkes1" name="checkes" type="checkbox" value="일반회원"/>
+			<label for="checkes1">일반회원</label>
+		</span>
+		<span>
+			<input id="checkes2" name="checkes" type="checkbox" value="기업회원"/>
+			<label for="checkes2">기업회원</label>
+		</span>
+		<span>
+			<input id="checkes3" name="checkes" type="checkbox" value="헤드헌터"/>
+			<label for="checkes3">헤드헌터</label>
+		</span>
+		<input type="hidden" name="_checkes" value="on"/>
+
+	예제(2) ---------------
+
+	<form:form commandName="user" action="" method="POST">
+		<form:checkboxes path ="checkes" items="${codeTypes}" itemValue="code" itemLabel="label" />
+	</form:form>
+
+	출력 : 
+		<span>
+			<input id="checkes1" name="checkes" type="checkbox" value="data1" checked="checked"/>
+			<label for="checkes1">일반회원</label>
+		</span>
+		<span>
+			<input id="checkes2" name="checkes" type="checkbox" value="data2"/>
+			<label for="checkes2">기업회원</label>
+		</span>
+		<span>
+			<input id="checkes3" name="checkes" type="checkbox" value="data3" checked="checked"/>
+			<label for="checkes3">헤드헌터</label>
+		</span>
+		<input type="hidden" name="_checkes" value="on"/>
+
+	예제(3) ---------------
+	<%
+		/* HashMap 사용 , 순서대로 출력 되지 않는다 */
+		
+		Map<String,String> code = new HashMap<String,String>();
+		code.put("data1","일반회원");
+		code.put("data2","기업회원");
+		code.put("data3","헤드헌터");
+		
+		request.setAttribute("code", code);
+	%>
+
+	<form:form commandName="user">
+		form:checkboxes path="checkes" items="${code}"></form:checkboxes>
+	</form:form>
+
+	출력 : 
+		<span><input id="checkes1" name="checkes" type="checkbox" value="data3" checked="checked"/>
+		<label for="checkes1">헤드헌터</label></span>
+				
+		<span><input id="checkes2" name="checkes" type="checkbox" value="data2"/>
+		<label for="checkes2">기업회원</label></span>
+
+		<span><input id="checkes3" name="checkes" type="checkbox" value="data1" checked="checked"/>
+		<label for="checkes3">일반회원</label></span>
+		
+		
+
+	예제(4) ---------------
+	<%
+		/* LinkedHashMap 사용 , 순서대 출력 된다 */
+		
+		Map<String,String> code = new LinkedHashMap<String,String>();
+		code.put("data1","일반회원");
+		code.put("data2","기업회원");
+		code.put("data3","헤드헌터");
+		
+		request.setAttribute("code", code);
+	%>
+
+	<form:form commandName="user">
+		form:checkboxes path="checkes" items="${code}"></form:checkboxes>
+	</form:form>
+
+	출력 : 
+		<span><input id="checkes1" name="checkes" type="checkbox" value="data1" checked="checked"/>
+		<label for="checkes1">일반회원</label></span>
+		
+		<span><input id="checkes2" name="checkes" type="checkbox" value="data2"/>
+		<label for="checkes2">기업회원</label></span>
+
+		<span><input id="checkes3" name="checkes" type="checkbox" value="data3" checked="checked"/>
+		<label for="checkes3">헤드헌터</label></span>
+		
+
+2. form:checkbox
+
+	<form:form commandName="user" action="" method="POST">
+		<form:checkbox path="checkes" value="data1"  label="일반회원"/>
+		<form:checkbox path="checkes" value="data2"  label="기업회원"/>
+		<form:checkbox path="checkes" value="data3"  label="헤드헌터"/>
+	</form:form>
+
+	출력 : 
+		<input id="checkes1" name="checkes" type="checkbox" value="data1" checked="checked"/>
+		<label for="checkes1">일반회원</label>
+		<input type="hidden" name="_checkes" value="on"/>
+
+		<input id="checkes2" name="checkes" type="checkbox" value="data2"/>
+		<label for="checkes2">기업회원</label>
+		<input type="hidden" name="_checkes" value="on"/>
+
+		<input id="checkes3" name="checkes" type="checkbox" value="data3" checked="checked"/>
+		<label for="checkes3">헤드헌터</label>
+		<input type="hidden" name="_checkes" value="on"/>
+
+	-----------//
+	: User 도메인 클래스의 (boolean 타입)인 emailAllow, smsAllow  을 사용할 경우
+		value 속성은 적용되지 않는다 [value="true"] 고정
+	: boolean 타입 값이 true 일 경우 checked="checked" 속성 적용됨.
+
+	<form:form commandName="user" action="" method="POST">
+		<!-- value="data1" 무시 -->
+		<form:checkbox path="emailAllow" value="data1"  label="이메일 수신"/>
+		<form:checkbox path="smsAllow" label="문자 수신"/>
+	</form:form>
+	출력:
+		<input id="emailAllow1" name="emailAllow" type="checkbox" value="true"/>
+		<label for="emailAllow1">이메일 수신</label>
+		<input type="hidden" name="_emailAllow" value="on"/>
+
+		<input id="smsAllow1" name="smsAllow" type="checkbox" value="true"  checked="checked" />
+		<label for="smsAllow1">문자 수신</label>
+		<input type="hidden" name="_smsAllow" value="on"/>
+	

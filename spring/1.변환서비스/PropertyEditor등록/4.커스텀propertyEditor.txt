@@ -1,0 +1,168 @@
+1.커스텀propertyEditor.txt
+2.커스텀propertyEditor.txt 
+3.커스텀propertyEditor.txt 
+문서와 연결되는 4번째 문서다
+
+프로토타입 빈 프로퍼티에디터
+
+	빈 생성은 기본이 싱글톤이다.
+
+	프로퍼티에디터는 멀티스레드 환경에 사용하면 안 된다.
+	싱글톤 빈으로 사용하면 안되는 것이다(상태 값을 가지고 있으므로)
+	그래서 항상 new로 새로 생성한 것을 쓰는 것이다.
+
+	프로퍼티에디터에 DI를 받아서 구현하고 싶다면, 프로퍼티에디터도 빈으로 등록해야 된다.
+	위에 글처럼 싱글톤 빈은 위험하다.
+
+	그래서 프로토타입빈으로 등록하면 매번 새로운 오브젝트로 생성되고(멀티쓰레드 안전),
+	DI도 받을 수 있게 된다.
+	
+	DB접근 도메인모델 프로퍼티 값을 가져오는 service를,
+	프로퍼티에디터 내 DI 받는 방법을 알아본다. 
+
+	아래 예제는 
+	@ModelAttribute 모델의 도메인 [프로퍼티]에만 적용된다.
+	
+		test(User2 user){}	// (o) 도메인 모델의 속성일때 가능.
+		test(Code2 code){}	// (x) 직접 매핑 안됨.
+
+---------//
+servlet-context.xml
+	<annotation-driven />
+
+DB
+	ID	Name
+	1	해적섬
+	2	보물섬
+	3	장글섬
+	
+
+Code2.java
+	public class Code2 {
+		int id;
+		String name;
+		
+		//getter , setter..
+	}
+User2.java
+	public class User2 {
+		int id;
+		String name;
+		Code2 userType; // 여기에 매핑
+
+		//getter , setter..
+	}
+
+CodeService.java
+	public interface CodeService {
+		public Code2 selectCode2(int id) throws Exception;
+	}
+
+CodeServiceImpl.java
+	@Service
+	public class CodeServiceImpl implements CodeService {
+
+		@Inject
+		public CodeDAO codeDao;
+
+		public Code2 selectCode2(int id) throws Exception {
+			return codeDao.selectCode(id);
+		}
+
+	}
+
+CodeDAO.java
+	@Mapper
+	public interface CodeDAO {
+		public Code2 selectCode2(int id) throws Exception;
+	}
+
+mapper.xml
+	<select id="selectCode2" parameterType="int" resultType="Code2">
+	  	SELECT ID , NAME FROM CODE2
+	  	WHERE  ID = #{id}
+	</select>
+
+Code2PropertyEditor.java (프로퍼티에디터 구현, 다른 패키지도 가능함[대신 스캔대상 패키지가 되어야 함])
+	@Component //요기
+	@Scope("prototype") //요기
+	public class Code2PropertyEditor extends PropertyEditorSupport {
+		@Autowired
+		CodeService codeService; // DI 받는다
+
+		@Override
+		public String getAsText() {
+			Code2 code = (Code2)getValue();
+			int id = code.getId();
+			return String.valueOf(id);
+		}
+
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException   {
+			
+			int id = Integer.parseInt(text);
+			
+			Code2 code2 = null;
+			try {
+				code2 = this.codeService.selectCode2(id); //DB에서 오브젝트를 생성한다
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			setValue(code2);
+			
+		}
+		
+		
+	}
+TestController.java
+
+	import javax.inject.Provider;
+	..
+	public class TestController {
+		@Inject
+		Provider<Code2PropertyEditor> code2PropertyEditor; //Provider로 프로토타입 빈을 새로 받아온다.
+
+		@RequestMapping(value = "/", method = RequestMethod.GET)
+		public String test(User2 user2 , Code2 cd2) throws Exception {
+			
+			System.out.println("User2.id:"+user2.getId());
+			System.out.println("User2.name:"+user2.getName());
+			
+			Code2 code2Usertype = user2.getUserType();
+					
+			System.out.println("User2.usetType.Code2.id:"+code2Usertype.getId());
+			System.out.println("User2.usetType.Code2.name:"+code2Usertype.getName());
+			
+			System.out.println("==================Code2:직접");
+			System.out.println("Code2.id:"+code2.getId());
+			System.out.println("Code2.id:"+code2.getName());
+			
+			return "home";
+		}
+
+		@InitBinder
+		public void initBinder(WebDataBinder binder) {
+			binder.registerCustomEditor(Level.class, new LevelPropertyEditor());
+			binder.registerCustomEditor(int.class,"age", new MinMaxPropetyEditor(0,200));
+			binder.registerCustomEditor(Code2.class, code2PropertyEditor.get()); // 여기에 추가
+		}
+	}
+	
+---------//
+	
+	url: /?userType=2&code2=2
+
+	출력 : 
+		User2.id:0
+		User2.name:null
+		User2.usettype.Code2.id:2
+		User2.usettype.Code2.name:보물섬
+		==================Code2:직접
+		Code2.id:0
+		Code2.id:null
+	  	
+
+
+
+		

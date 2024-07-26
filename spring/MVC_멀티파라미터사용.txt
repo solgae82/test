@@ -1,0 +1,38 @@
+
+<input type="checkbox" id="allCheck" />
+<input type="checkbox" name="ids" value="1" />
+<input type="checkbox" name="ids" value="2" />
+<input type="checkbox" name="ids" value="3" />
+
+ids=1&ids=2&ids=3 로 전송된다
+
+-------------------
+
+// 멀티 파라미터는 컨트롤러에서  List로 받아라
+
+@RequestMapping(value = "/deleteMultiProc.do", method = { RequestMethod.POST })
+@ResponseBody
+public String deleteMultiTestProc( @RequestParam List<String> ids) throws Exception {
+		
+	cnt = testService.deleteMulti(ids);
+	return "OK";
+}
+
+// 서비스 코드 생략 (mapper.java랑 똑같음)
+
+-------mapper.java (mybatis)
+
+Integer deleteMulti(List<String> ids) throws Exception;
+
+-------SQL.xml 
+여기서 중요한 것은 parameterType="list" 였으니 collection="?" 에 전달할 변수명을 list로 해야한다
+
+
+<delete id="deleteMulti" parameterType="list">
+	<!-- delete 쿼리 -->
+	DELETE FROM BBS WHERE ID IN
+	
+	<foreach collection="list" item="id" index="idx" open="(" close=")" separator=",">
+		#{id}
+	</foreach>
+</delete>

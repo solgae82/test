@@ -1,0 +1,40 @@
+1회용 메시지만 전달하기 위한 클래스
+
+---------Controller.java
+	import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+	..
+	RequestMapping("doE")
+	public String doE(RedirectAttributes rttr ,  Model model) {
+
+		rttr.addFlashAttribute("msg", "저장되었습니다");
+		return "redirect:doF";
+	}
+
+	@RequestMapping("doF")
+	public String doF(@ModelAttribute("msg") String msg) {
+			
+		if(msg == null)logger.info("msg 는 null 이다");
+		if("".equals(msg))logger.info("msg 는 empty 이다");
+		
+		return "doF";
+	}
+
+---------doF.jsp
+	<h1>${msg}</h1>
+
+
+
+---------테스트 
+
+	url : /doE
+
+	처음 이동시 
+		Controller.java:
+
+		doF.jsp:
+			<h1>저장되었습니다</h1>
+	다시 새로고침(F5)
+		Controller.java:
+			msg 는 empty 이다
+		doF.jsp:
+			<h1></h1>
