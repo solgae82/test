@@ -1,0 +1,9 @@
+1. sql plus 실행> sqlplus /noglog
+
+2. 관리자로 연결SQL> conn /as sysdba
+
+3. 현재 포트확인SQL> select dbms_xdb.gethttpport() from dual;
+
+4. 포트변경 내장프로시져 실행SQL> exec dbms_xdb.sethttpport(9090);
+
+5. (바뀐) 포트확인SQL> select dbms_xdb.gethttpport() from dual;
