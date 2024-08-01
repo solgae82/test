@@ -30,6 +30,8 @@
 	update sys.props$ set value$='UTF8' where name='NLS_CHARACTERSET';
 	update sys.props$ set value$='UTF8' where name='NLS_NCHAR_CHARACTERSET';
 	update sys.props$ set value$='KOREAN_KOREA.UTF8' where name='NLS_LANGUAGE';
+	
+	commit;
 
 5. 오라클 재기동 후 다시 문자셋 확인
 

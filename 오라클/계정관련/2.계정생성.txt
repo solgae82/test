@@ -21,9 +21,9 @@
 		alter session set "_ORACLE_SCRIPT"=true; /* 오라클 12c 에서는 이거 붙이고 해야함 */
 
 		SQL> CREATE USER DONG2 IDENTIFIED BY "1234"
-		  2  DEFAULT TABLESPACE test
-		  3  TEMPORARY TABLESPACE testtemp
-		  4  ACCOUNT UNLOCK;
+		  DEFAULT TABLESPACE test
+		  TEMPORARY TABLESPACE testtemp
+		  ACCOUNT UNLOCK;
 계정 수정
 	alter user DONG2 identified by "123456"; //패스워드 변경
 계정 삭제
