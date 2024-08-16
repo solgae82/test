@@ -1,0 +1,21 @@
+1. JoinPoint
+	: AOP(aspect oriented programing)를 적용 대상 가능 메소드들
+	
+2. Pointcut
+	: joinpoint 메소들 중에 필터링하여 실제 aop를 적용할 메소드
+	
+3. Advice
+	: 횡단 관심 공통 코드들(독립된 클래스이 메소드)
+	
+4. Weaving(짜집기)
+	: pointcut 지정 메소드가 실행될때, Advice 메소드 코드가 삽입되는 과정.
+	삽입 방식 :
+		- compiletime weaving (컴파일타임에 짜집기 되는 방식)
+		- loadingtime weaving (로딩타임에 짜집기 되는 방식)
+		- runtime weaving (런타임에 짜집기 되는 방식)
+	※ 스프링에서는 runtime weaving 방식만 지원한다
+	
+5. Aspect 또는 Advisor
+	: pointcut 에 advice를 삽입하는 설정을 aspect라고 한다
+	<aop:aspect /> : 기본 설정 태그
+	<aop:advisor /> : aspect 태그가 아닌 방식으로 할때 이 태그로 설정한다(예: 트랜잭션등)
