@@ -1,5 +1,5 @@
 --------- I'm ~
-I'm kind of tired.
+I'm kind of tired. 
 I'm kind of excited.
 I'm kind of happy.
 I'm kind of nervous.
@@ -19,9 +19,9 @@ I'm about to be upset.
 
 I'm dying to see you.
 I'm dying to get one.
-I'm dying to give it a shot.
-I'm dying to taste that.
-I'm dying to see that movie.
+I'm dying to give it a shot.	(정말 한번 시도해 보고 싶어요)
+I'm dying to taste that.	(정말 그걸 맛보고 싶어요)
+I'm dying to see that movie.	(정말 그 영화 보고 싶어요)
 
 I'm okay with anything.
 I'm okay with the plan.

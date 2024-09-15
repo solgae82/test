@@ -1,0 +1,76 @@
+--------------------------------------------10M 공기총 결선사격 멘트
+영어 발음이 너무 우화!(?)하고 화려해서 대체 뭐라고 지껄이는 거야 하다가, 멘트 내용이 갑자기 궁금해지면서 며칠 동안 여러 경기영상 수십번 돌려 보며 분석. ㅋㅋ,  
+그러다가 사격연맹 소년체육대회의 어떤 여성이 하는 멘트까지 보게 되었는데 코리아식 발음이라 많이 이해하게 됨..
+그래서 어느 정도 대충 알게 되었는데..
+거의 알게 될 무렵 해당 멘트 문서를 찾게됨..니미
+어쩌다가 사격 결선 멘트 영어 공부하게 됨.
+
+start! (사격시작)
+sop! (사격정지)
+load! (실탄 장전) , d 발음을 거의 안 함. 그러더라고..
+unload!(실탄 제거)
+
+
+
+[ 아래는 결선 사격 영어 멘트 ]
+--------- 선수 입장
+Athletes to the line.
+Ladies and Gentlemen,  please welcome our Athletes!
+
+
+--------- 시사 사격 (영점 조절 하는 사격) 
+5 minutes preparation and sighting time, start
+(경기 방식 안내 설명 멘트)
+30 seconds! (시사사격 끝나기 30초 전)
+stop! unload!
+
+
+--------- 선수 소개 및 관중 인사 
+* 권총 종목일때
+ please lay down your pistols
+ and turn to face spectators.
+ (권총 종목은 자세 풀고 관중석으로 돌아서 마주보고 인사 소개함)
+ 
+* 소총 종목일때 
+ Athletes may remain in position
+ but turn heads and faces towards spectators!
+ (소총 종목은 특성상 자세 풀지 않고, 유지한 채로 선수 소개함 , 자기 소개 차례가 되면 고개 돌려서 관중에게 인사)
+
+* 또는
+	Insert safety flags! (안전기? 총구에 넣는 끈을 넣어서 안전 확보하는 행위)
+
+--------- 결선 사격 (시리즈사격[10발], 단발사격[14발])
+
+Take your positions.
+
+* (1시리즈 사격 ,  5발)
+For the first competition series, load! (5초후) start!
+stop! unload!
+ (시리즈 5발 사격 후  합계 순위 안내 멘트)
+ 
+ 
+* (2시리즈 사격, 5발)
+ For the next competition series, load! (5초후) start!
+ stop! unload!
+ (시리즈 10발 사격 후 합계 순위 안내 멘트)
+
+
+*(단발 사격, 1발씩 총 14발 사격)
+ For the (first/next)  competition shot, load! (5초후) start
+ stop! unload!
+
+ :단발 사격은 1발씩 쏠때마다 합계 안내 멘트 나옴, 
+ 짝수 발(2,4,6,8,10..)째마다 한명씩 탈락 시킴
+ [총 8명 이므로 , 8위 , 7위, 순으로 확정되며 탈락 됨.
+
+
+--------- 탈락될 선수가 동점일때, shoot-off 돌입
+There is a tie for the lowest ranking finalist to be eliminated.
+The next command is for (이름,패밀리네임(성)) and (이름 or 패밀리네임(성)) only.
+
+For the shoot-off shot, load! start!
+stop! unload!
+
+
+--------- 경기 마침
+The results are final.
