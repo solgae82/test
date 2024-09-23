@@ -1,36 +1,63 @@
 --------- I'm ~
+(나는 좀 ~ 해요)
 I'm kind of tired. 
 I'm kind of excited.
 I'm kind of happy.
 I'm kind of nervous.
 I'm kind of jealous.
 
+(나는 ~ 하러 왔어요)
 I'm here to talk to you.
 I'm here to study.
 I'm here to work.
 I'm here to help.
 I'm here to relax.
 
+(나는 ~ 하려던 참이였어요)
 I'm about to get going.
 I'm about to head out.
 I'm about to go to bed.
 I'm about to finish up.
 I'm about to be upset.
 
+(나는 정말 ~ 하고 싶어요)
 I'm dying to see you.
 I'm dying to get one.
 I'm dying to give it a shot.	(정말 한번 시도해 보고 싶어요)
 I'm dying to taste that.	(정말 그걸 맛보고 싶어요)
 I'm dying to see that movie.	(정말 그 영화 보고 싶어요)
 
+(나는 ~ 이 괜찮아유)
 I'm okay with anything.
 I'm okay with the plan.
 I'm okay with whatever you choose.
 I'm okay with being alone.
 I'm okay with how it turned out.
 
+(나는 ~ 할 준비 됐어요)
 I'm ready to go.
 I'm ready to order.
 I'm ready to start.
 I'm ready to go home.
 I'm ready to make a choice.
+
+(나는 ~ 을 잘해요)
+I'm good at tennis.
+I'm good at writing.
+I'm good at math.
+I'm good at directions.
+I'm good at figuring things out.
+
+(나는 ~ 중이에요)
+I'm on my way now.
+I'm on my way there.
+I'm on vacation.
+I'm on it.
+I'm on medicine.
+
+(나는 ~에 만족해요)
+I'm happy with my new job.
+I'm happy with my life.
+I'm happy with my choice.
+I'm happy with everything.
+I'm happy with where I live.
