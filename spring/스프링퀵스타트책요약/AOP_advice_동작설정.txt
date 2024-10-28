@@ -1,0 +1,287 @@
+1. before
+
+	: <aop:before /> 태그로 기술
+	: 비즈니스 메소드 실행전 동작
+			
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:before pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		public class LogAdvice {
+			public void printLog () {
+				System.out.println("[사전처리] 비즈니스 로직 수행 전 동작");
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println(vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음 =>");
+			
+			container.close();
+				
+		}
+	* 결과
+		[사전처리] 비즈니스 로직 수행 전 동작
+		보드에 자료 넣음 =>
+		
+2. after-returning
+
+	: <aop:after-returning /> 태그로 기술
+	: 비즈니스 메소드 실행 후 성공적으로 리턴하면 동작
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:after-returning pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		public class LogAdvice {
+			public void printLog () {
+				System.out.println("[returning 후 처리] 비즈니스 로직 수행 후 동작");
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println(vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음 =>");
+			
+			container.close();
+				
+		}
+	* 결과
+		보드에 자료 넣음 =>
+		[returning 후 처리] 비즈니스 로직 수행 후 동작
+		
+3. after-throwing
+
+	: <aop:after-throwing /> 태그로 기술
+	: 비즈니스 메소드 실행 중 예외가 발생하면 동작 (try~catch 블록의 catch 블록에 해당) 
+	: 예외 어드바이스가 먼저 실행 되고 난 후 발생한 예외 에러 출력 
+			
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:after-throwing pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		public class LogAdvice {
+			public void printLog () {
+				System.out.println("[예외 처리-After Throwing]  처리 동작");
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				
+				//강제로 exception  발생시키기
+				if(vo != null) {
+					throw new IllegalArgumentException("0번 글은 등록할 수 없습니다.");
+				}
+		
+				System.out.println(vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음 =>");
+			
+			container.close();
+				
+		}
+	* 결과
+		[예외 처리-After Throwing] 처리 동작 
+		Exception in thread "main" java.lang.IllegalArgumentException: 0번 글은 등록할 수 없습니다.
+		..
+		
+4. after
+
+	: <aop:after /> 태그로 기술
+	: 예외와 관계 없이, 무조건 실행 (try-catch 블록의 finally 블록에 해당)
+	: [after-returning , after-throwing] 보다 더 먼저 실행 됨.
+	
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			
+			<aop:aspect ref="log">
+	 			<aop:after-throwing pointcut-ref="allPointcut" method="exceptionLog" />
+	 		</aop:aspect>
+		
+			<aop:aspect ref="log">	 		
+				<aop:after pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		public class LogAdvice {
+			public void exceptionLog() {
+				System.out.println("[예외 처리-After Throwing] 처리 동작 ");
+			}
+			public void printLog () {
+				System.out.println("[사후 처리-after] 비즈니스 로직 수행 후 무조건 동작(returning, throwing 보다 먼저 동작)");
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				
+				//강제로 exception  발생시키기
+				if(vo != null) {
+					throw new IllegalArgumentException("0번 글은 등록할 수 없습니다.");
+				}
+		
+				System.out.println(vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음 =>");
+			
+			container.close();
+				
+		}
+	* 결과
+		[사후 처리-after] 비즈니스 로직 수행 후 무조건 동작(returning, throwing 보다 먼저 동작)
+		[예외 처리-After Throwing] 처리 동작 
+		Exception in thread "main" java.lang.IllegalArgumentException: 0번 글은 등록할 수 없습니다.
+		
+5. around
+	: <aop:around /> 태그로 기술
+	: 메소드 호출을 가로채 비즈니스 메소드 호출 전후에 처리할 로직을 삽입하는 방식.
+	: 어드바이스 메소드에서 처리 순서를 제어한다
+	: 아래 형식처럼  어드바이스 메소드 인자로 ProceedingJoinPoint 타입을 넣고,
+		1. 매개변수.proceed(); 를 호출하면 비즈니스 메소드가 실행되고, 
+		2. 비즈니스 메소드 실행 반환 값을 Object 받아서 리턴 하는 어드바이스 메소드를 구현해야 한다.
+		
+		import org.aspectj.lang.ProceedingJoinPoint;
+		..
+		public Object printLog (ProceedingJoinPoint p) throws Throwable{
+			Object returnObj = p.proceed(); /* 1. 비즈니스 메소드 실행 */
+			return returnObj;		/* 2. 비즈니스 메소드 실행 후 타입 반환 */
+		} 
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:around pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		import org.aspectj.lang.ProceedingJoinPoint;
+		
+		public class LogAdvice {
+			public Object printLog (ProceedingJoinPoint p) throws Throwable{
+				
+				System.out.println("[around-before] 비즈니스 메소드 실행 전 처리 로그");
+				Object returnObj = p.proceed();
+				System.out.println("[around-after] 비즈니스 메소드 실행 후 처리 로그");
+		
+				return returnObj;
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println(vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음 =>");
+			
+			container.close();
+				
+		}
+	* 결과
+		[around-before] 비즈니스 메소드 실행 전 처리 로그
+		보드에 자료 넣음 =>
+		[around-after] 비즈니스 메소드 실행 후 처리 로그
