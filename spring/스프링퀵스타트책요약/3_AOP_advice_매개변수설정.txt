@@ -1,0 +1,260 @@
+(2_AOP_advice_동작설정.txt 와 연결된 문서입니다)
+
+AOP advice 매개변수 설정
+
+	어드바이스 메소드 매개변수로 org.aspectj.lang.JoinPoint 를 넣을 수 있다
+	- JoinPint 메소드들
+		- Signature getSignature() 
+			: 호출한 비즈니스 메소드의 시그니처(리턴타입,이름,매개변수) 정보가 저장된 Signature 객체 리턴
+			Signature 객체
+				- getName() : 호출 비즈니스 메소드 이름 문자열 반환
+				- toLongString() : 호출 비즈니스 메소드(리턴타입,이름,매개변수,패키지경로) 문자열 반환
+				- toShortString() : 호출 비즈니스 메소드 시그니처를 축약한 문자열로 반환
+		- Object getTaget()
+			: 호출한 비즈니스 메소드를 포함하는 비즈니스 객체 리턴
+		- Object[] getArgs()
+			: 호출한 비즈니스 메소 매개변수 인자 목록을 Object[] 로 반환
+			
+	- around 어드바이스는 JoinPoint를 확장한 import org.aspectj.lang.ProceedingJoinPoint 객체를 사용한다.	
+	
+1. before
+
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:before pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		import org.aspectj.lang.JoinPoint; 
+		public class LogAdvice {
+			public void printLog (JoinPoint jp) {
+				String methodName = jp.getSignature().getName();
+				Object[] args = jp.getArgs();
+				
+				System.out.println("[before] 비즈니스 로직 수행 전 동작");
+				System.out.println("비즈니스메소드명=>" + methodName +" , 매개변수 내용:" + args[0].toString());
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println("insertBoard 실행: " + vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음");
+			
+			container.close();
+				
+		}
+	* 결과
+		[before] 비즈니스 로직 수행 전 동작
+		비즈니스메소드명=>insertBoard , 매개변수 내용:보드에 자료 넣음
+		insertBoard 실행: 보드에 자료 넣음
+		
+2. after-returning
+
+	: 비즈니스 메소드의 리턴 객체를 어드바이스 [바인딩 매개변수]로 받을 수 있다 (컨테이너가 매개변수로 넣어준다)
+	: 비즈니스 메소드가 리턴하는 객체를 받기 위해 어드바이스 메소드에 Object형 [바인딩 매개변수]를 추가한다.(리턴형 뭔지 모르니까 Object형으로)
+	: <after-returning />태그의 추가 속성인 returning="어드바이스 메소드 속성명" 을 맞춘다
+		(아래 처럼)
+		public void printLog (JoinPoint jp , Object returnObj) {} /*returnObj 매개변수는 비즈니스 메소드에서 리턴되는 객체*/
+		<aop:after-returning  returning="returnObj" .. /> 
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:after-returning pointcut-ref="allPointcut" method="printLog" returning="returnObj" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		import org.aspectj.lang.JoinPoint; 
+		public class LogAdvice {
+			public void printLog (JoinPoint jp , Object returnObj) {
+				String methodName = jp.getSignature().getName();
+				Object[] args = jp.getArgs();
+				
+				System.out.println("[after-returning 후 처리] 비즈니스 로직 수행 후 동작");
+				System.out.println("비즈니스메소드명=>" + methodName +" , 매개변수 내용:" + args[0].toString());
+				System.out.println("리턴내용:" + returnObj.toString());
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println("insertBoard 실행: " + vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음");
+			
+			container.close();
+				
+		}
+	* 결과
+		insertBoard 실행: 보드에 자료 넣음
+		[after-returning 후 처리] 비즈니스 로직 수행 후 동작
+		비즈니스메소드명=>insertBoard , 매개변수 내용:보드에 자료 넣음
+		리턴내용:보드에 자료 넣음
+
+3. after-throwing
+	
+	: 비즈니스 메소드의 예외 객체를 어드바이스 [바인딩 매개변수]로 받을 수 있다 (컨테이너가 매개변수로 넣어준다)
+	: 예외 객체를 받기 위해 어드바이스 메소드에 Exception형 [바인딩 매개변수]를 추가한다.(예외 타입이 뭔지 모르니까 Exception형으로)
+	: <after-throwing />태그의 추가 속성인 throwing="어드바이스 메소드 속성명" 을 맞춘다
+		(아래 처럼)
+		public void printLog (JoinPoint jp , Exception exceptObj) {} /* exceptObj 매개변수는 비즈니스 메소드에서 리턴되는 객체*/
+		<aop:after-throwing  throwing="exceptObj" .. /> 
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:after-throwing pointcut-ref="allPointcut" method="printLog" throwing="exceptObj" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		import org.aspectj.lang.JoinPoint; 
+		public class LogAdvice {
+			public void printLog (JoinPoint jp , Exception exceptObj) {
+				String methodName = jp.getSignature().getName();
+				Object[] args = jp.getArgs();
+				
+				System.out.println("[after-throwing 처리] 비즈니스 로직 수행 중 예외 동작");
+				System.out.println("비즈니스메소드명=>" + methodName +" , 매개변수 내용:" + args[0].toString());
+				System.out.println("예외 메시지 내용:" + exceptObj.getMessage());
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println("insertBoard 실행: " + vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음");
+			
+			container.close();
+				
+		}
+	* 결과
+		[after-throwing 처리] 비즈니스 로직 수행 중 예외 동작 
+		비즈니스메소드명=>insertBoard2 , 매개변수 내용:보드에 자료 넣음
+		예외 메시지 내용:0번 글은 등록할 수 없습니다.
+		Exception in thread "main" java.lang.IllegalArgumentException: 0번 글은 등록할 수 없습니다.
+		..
+		
+4. araound
+
+	: around 어드바이스는 JoinPoint를 확장한 import org.aspectj.lang.ProceedingJoinPoint 객체를 사용한다.
+	( JoinPoint 에서 proceed 메소드가 추가된 클래스)
+	
+	- context.xml
+		<!-- aop 설정 -->
+		<bean id="log" class="com.springbook.biz.common.LogAdvice"></bean>
+
+		<aop:config>
+			<aop:pointcut expression="execution(* com.springbook.biz..*Impl.*(..))" id="allPointcut"/>
+			<aop:aspect ref="log">	 		
+				<aop:around pointcut-ref="allPointcut" method="printLog" />
+			</aop:aspect>			
+
+		</aop:config>
+		 
+	- 어드바이스
+		import org.aspectj.lang.ProceedingJoinPoint; /* around 어드바이스 용 ProceedingJoinPoint 타입 사용 */  
+		
+		public class LogAdvice {
+		
+			public Object printLog (ProceedingJoinPoint p) throws Throwable{ 
+			
+				String methodName = jp.getSignature().getName();
+				Object[] args = jp.getArgs();
+				
+				StopWatch watch  = new StopWatch();
+				watch.start();
+				
+				System.out.println("[around] 비즈니스 메소드 실행 전 처리 로그");
+				
+				Object returnObj = p.proceed();
+				
+				watch.stop();
+				System.out.println("[around] 비즈니스 메소드 실행 후 처리 로그,처리시간:"+watch.getTotalTimeSeconds() + "초");
+
+				return returnObj; //비즈니스 메소드 리턴값 반환
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println("insertBoard 실행: " + vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음");
+			
+			container.close();
+				
+		}
+	* 결과
+		[around] 비즈니스 메소드 실행 전 처리 로그
+		insertBoard 실행: 보드에 자료 넣음
+		[around] 비즈니스 메소드 실행 후 처리 로그,처리시간:0.0초

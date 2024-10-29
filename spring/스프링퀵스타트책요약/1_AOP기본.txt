@@ -1,5 +1,5 @@
 1. JoinPoint
-	: AOP(aspect oriented programing)를 적용 대상 가능 메소드들
+	: AOP(aspect oriented programing)를 적용 대상 가능한 메소드들
 	
 2. Pointcut
 	: joinpoint 메소들 중에 필터링하여 실제 aop를 적용할 메소드
@@ -86,5 +86,5 @@
 			
 	- Around :
 		- <aop:around /> 태그로 기술
-		- 메소드 호출을 가로채 비즈니스 메소드 호출 전후에 처리할 로직을 삽입하는 방식.
+		- 어드바이스 메소드에서 비즈니스 메소드 호출을 가로채 호출 전후에 처리할 로직을 삽입하는 방식.
 		
