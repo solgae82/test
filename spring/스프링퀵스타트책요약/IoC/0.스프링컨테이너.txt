@@ -1,0 +1,9 @@
+스프링 컨테이너 종류
+
+	- BeanFactory : bean 생성 관리하는 가장 기본적인 컨테이너, 지연(lazy-loading) 로딩만 제공 , (쓸 일 거의 없음)
+	
+	- ApplicationContext : BeanFactory 상속, 트랜잭션 관리, 메시지 기반 다둑어 처리등 제공. 즉시 로딩(pre-loading) 기본제공
+		- 대부분의 스프링 프로젝튼는 ApplicationContext 를 확장한 컨테이너를 사용한다,
+		ApplicationContext 구현 컨테이너 
+			- GenericXmlApplicationContext : 파일 시스템이나 클래스 경로에 있는 XML 설정 파일을 로딩하여 구동하는 컨테이너
+			- XmlWebApplicationContext : 웹 기반 스프링 애플리케이션을 개발할 때 사용하는 컨테이너
