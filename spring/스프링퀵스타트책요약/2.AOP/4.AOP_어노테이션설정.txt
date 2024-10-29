@@ -1,0 +1,188 @@
+1. AOP 어노테이션
+	
+	@Before : 비즈니스 메소드 실행 전에 동작 
+	@AfterReturning : 비즈니스 메소드가 성공적으로 리턴되면 동작
+	@AfterThrowing : 비즈니스 메소드 실행 중 예외 발생시 동작(try~catch 블록의 catch 에 해당하는 기능)
+	@After : 비즈니스 메소드 실행 후 무조건 동작(try~catch~finally 블록의 finally 에 해당하는 기능)
+	@Around : 어드바이스에서 비즈니스 메소드를 호출하기 때문에 (전, 후)에 실행 로직을 설정할 수 어드바이스
+	
+2. AOP 어노테이션 설정 기본 틀
+
+	- context.xml
+		<!--  AOP 어노테이션 자동 인식하게 하기 -->
+	 	 <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	
+	- 어드바이스
+
+		import org.aspectj.lang.annotation.Aspect;
+		import org.aspectj.lang.annotation.Before;
+		import org.aspectj.lang.annotation.Pointcut;
+		import org.springframework.stereotype.Service;
+
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@Before("allPointcut()")
+			public void printLog() {
+				System.out.println("[before] 비즈니스 로직 수행 전 동작");
+			}
+		}
+		
+	- 서비스
+		@Service("boardService")
+		public class BoardService {
+			public void insertBoard(String vo) {
+				System.out.println("insertBoard 실행: " + vo);
+			}
+		}
+		
+	- 실행.java
+		public static void main(String[] args) {
+			//1. Spring 컨테이너 구동
+			AbstractApplicationContext container = new GenericXmlApplicationContext("applicationContext.xml");
+
+			// 2. Spring 컨테이너로부터 BoardSeviceImpl 객체를 Lookup 한다
+			BoardService boardService = (BoardService) container.getBean("boardService");
+				
+			boardService.insertBoard("보드에 자료 넣음");
+			
+			container.close();
+				
+		}
+		
+	* 결과
+		[before] 비즈니스 로직 수행 전 동작
+		insertBoard 실행: 보드에 자료 넣음
+
+3. 어드바이스 동작 시점별로 설정 해보기
+	
+	@Before 어드바이스
+
+		import org.aspectj.lang.JoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@Before("allPointcut()")
+			public void printLog(JoinPoint jp) {
+				System.out.println("[Before] 동작");
+			}
+		}
+		
+	@AfterReturning 어드바이스
+
+		: pointcut , returning 속성을 사용한다 (사용법은 xml 설정과 동일하다)
+		
+		import org.aspectj.lang.JoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@AfterReturning(pointcut = "allPointcut()", returning = "returnObj")
+			public void printLog(JoinPoint jp , Object returnObj) {
+				System.out.println("[AfterReturning] 동작");
+			}
+		}
+		
+	@AfterReturning 어드바이스
+
+		: pointcut , throwing 속성을 사용한다 (사용법은 xml 설정과 동일하다)
+		
+		import org.aspectj.lang.JoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@AfterThrowing(pointcut="allPointcut()" , throwing = "exceptObj")
+			public void printLog(JoinPoint jp , Exception exceptObj) {
+				System.out.println("[AfterThrowing] 동작");
+			}
+		}
+		
+	@After 어드바이스
+		
+		import org.aspectj.lang.JoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@After("allPointcut()")
+			public void printLog(JoinPoint jp) {
+				System.out.println("[After] 동작");
+			}
+		}
+	
+	@Around 어드바이스
+		
+		import org.aspectj.lang.ProceedingJoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+				
+			@Around("allPointcut()")
+			public Object printLog(ProceedingJoinPoint p)  throws Throwable{
+				
+				System.out.println("[around] 전 동작");
+				Object returnObj = p.proceed();
+				System.out.println("[around] 후 동작");
+				
+				return returnObj;
+			}
+		}
+
+4. 외부 Pointcut 참조하기
+
+	: Pointcut 을 매 클래스마다 설정하면 중복이 너무 심하다
+	: 그래서, Pointcut 설정을 Pointcut 설정 전용 클래스로 분리해서 설정하는 방식
+	
+	포인트컷 전용 클래스
+	
+		import org.aspectj.lang.annotation.Aspect;
+		import org.aspectj.lang.annotation.Pointcut;
+
+		@Aspect
+		public class PointcutCommon {
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.*(..))")
+			public void allPointcut() {}
+			
+			@Pointcut("execution(* com.springbook.biz..*Impl.get*(..))")
+			public void getPointcut() {}
+		}
+		
+	어드바이스 
+		import org.aspectj.lang.JoinPoint;
+		
+		@Service
+		@Aspect
+		public class LogAdvice {
+						
+			@Before("allPointcut()")
+			public void printLog(JoinPoint jp) {
+				System.out.println("[Before] 동작");
+			}
+		}
