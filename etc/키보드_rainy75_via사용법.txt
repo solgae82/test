@@ -1,0 +1,51 @@
+제품명 : rainy75 RGB Wob축 , 배터리 7000mAh
+색상 : 스노우문 블루
+기타 특징 : 304 스테인리스 스틸 아이스 크리스탈
+
+-------------
+
+준비물 : JSON 파일 , 키보드 usb 케이블
+	usb를 꽂고 설정하면 아래 이름의 json파일을 선택해야 한다. (RGB판이고 USB 꽂았으니  RGB판 + USB)
+	Rainy75文件包 > Rainy75-JSON文件 >Rainy 75【RGB版-USB有线用】.JSON
+
+설정 중 뭔가 팝업창이 뜨면 거기서 내 키보드 이름과 같은 것이나 , 기준 Design json 파일들을 선택해줘야 한다
+
+1. usb 케이블을 꽂는다
+	
+2. 사이트 접속
+
+	https://usevia.app/
+	
+	: Authorize Device 클릭 
+	
+3. setting 아이콘 클릭
+	Show Design tab 활성화 하면 Design 아이콘이 생성된다
+4. Design 아이콘 클릭
+	Rainy 75【RGB版-USB有线用】.JSON 
+	
+	위 파일을 끌어 놓기로 놓거나, Load Draft Definition > Load 버튼 으로 선택해서 로드 한다
+5. 이제 첫번째 아이콘인 Configure 클릭
+	
+	왼쪽 좌측 상단의 LAYER
+		0번이 윈두우 키보드의 일반 키 매핑 레이어
+		1번이 윈도우 키보드에서  Fn + 조합키 매핑 설정 레이어
+		2,3번은 아마도 MAC 관련 매핑인 듯 하다
+		
+	키보드 설정 화면에서 설정할 키를 선택하면 그 키가 깜빡인다(설정 모드).
+	그리고 나서 아래의 화면에서 내가 설정할 키를 찾아서 선택하면 그 키로 메인 키보드 화면의 설정 키가 바뀌게 된다
+		화면 좌측 첫번째 아이콘(KeyMap) 클릭
+			BASIC부터 ~ CUSTOM까지 여러 카테고리가 있다
+			
+6. 내가 설정한 키들의 설정값을 파일로 저장
+	Confirue > 하단 좌측 3번째 (SAVE + LOAD) 선택
+	
+	- Save Current Layout : 내가 설정한 구성을 json파일로 저장
+	- Load Save Layout : 내가 설정한 json파일을 적욜할때 쓰는 것 같다.
+	
+종료하는 법은 따로 없는 것 같다 그냥 웹브라우저 종료.
+
+--------- 현재 커스텀한 매핑 
+우측 Ctrl  : 한/영 전환 키
+fn + 우측 Ctrl : 한자 키
+fn + f12 : print 키
+fn + Delete : insert 키
