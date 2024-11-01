@@ -67,24 +67,34 @@
 		※ 빌드 디렉토리 설정
 			프로젝트 우클릭>Propeties>Java Build Path>Source : 하단 Default output folder 설정
 
-		※ 웹 플젝 실행 및 배포시
-			- 웹 플젝 기동시 실제 WAS에 배포 후 기동된다. 그러므로..
-			- 일반 자바프로그램과는 다르게 두번의 설정이 필요하다
-				1) 프로젝트 java build path에 추가하기 (기본)
-				2) Deployment Assembly 에 1)에서 설정한 path 추가하기
-				:설정 후 서버 실행하면 Deployment Assembly 에 설정한 대로 /WEB-INF/* 에 배포한 후 
-				그 구조대로 서버(톰캣 등)가 실행된다
-				
+		※ 웹 플젝 실행 및 배포시 외부 jar 포함하기
 			
-			- 웹 플젝은 일반 자바 플젝과 달리 , j2ee 구조로 배포가 되어야 하므로, 
-			Java Build Path 등에서 설정한 값들을 웹배포 디렉토리(/WEB-INF/*)에 매치시켜줘야 한다.
-			(웹 배포 디렉토리: /WEB-INF/classes, /WEB-INF/lib 등)
-			이렇게 매칭 시켜줘야 실제 배포시에 /WEB-INF/* 구조에 해당 class 및 라이브러리들이 배포된다
-
-			- 웹 배포 매칭 설정 하는 메뉴: 
-			프로젝트 우클릭 > properties > Deployment Assembly > 
-				(Web Deployment Assembly): Add > Java Build Path Entries > Next
+			- 웹 플젝 기동시 실제 WAS에 배포 후 기동된다. 그러므로..
+			일반 자바프로그램 컴파일 build path 설정 + web 배포디랙토리 설정도 필요하다
+			
+			- 웹 플젝에 외부 jar 설정하기 : 
+			1) 프로젝트 java build path에 추가하기
+				프로젝트 우클릭 > properties > Java Build Path 
+				Libraries 탭 > Add Jars > 해당 jar 선택 후 > OK
+				
+			2) Deployment Assembly 추가하기
+				프로젝트 우클릭 > properties > Deployment Assembly > 
+				
+				방법 1. (Web Deployment Assembly): Add > Java Build Path Entries > Next
 				java build path에서 추가한 자원(class디렉토리/jar등)을 선택 후 finsh
-
-			★★★ 실제 테스트 해보면 서버 기동 후 연결 되는 자원들은(classes/jar)등은 Deployment Assembly 해도 충분하다
-			추가 java 소스 작성시에 그 자원들이 혹시 필요할지도 모르니 두군데 연결하는 것으로 이해하자.
+				
+				방법 2. 디렉토리로 설정하기
+					: 매번 두번씩 설정 하기 귀찮으면 프로젝트내에 lib 디렉토리를 만들고 거기에 온갖 라이브러리.jar 넣은 후
+					그 디렉토리를 지정해 두면 편하다
+					
+					- (Web Deployment Assembly): Add > Folder > (플젝내부)lib 선택 > finish
+					: 탭 테이블에 추가된 행이 아래처럼 생성될 것이다
+						source 컬럼 : /lib
+						Deploy Path 컬럼 : /
+					아래처럼 Deploy Path를 변경한다(셀 클릭 후 입력하면 된다)
+						source 컬럼 : /lib
+						Deploy Path 컬럼 : WEB-INF/lib
+						
+				:설정 후 서버 실행하면 Deployment Assembly 에 설정한 대로 /WEB-INF/lib 에 내부 lib/*.jar 배포한 후 
+				서버(톰캣 등)가 실행된다
+			
