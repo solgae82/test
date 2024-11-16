@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>기본 템플릿 표현</h1>
+            <my></my>
+        </div>
+        
+        <script>
+
+            Vue.component('my',{
+                data : function(){return {greet:'Hi'}},
+                template: '<p>메시지: {{greet}}</p>'
+            });
+
+            new Vue({
+
+                el: '#app'
+                                
+            });
+        </script>
+    </body>
+</html>

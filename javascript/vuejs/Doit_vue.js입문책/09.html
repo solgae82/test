@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>네스티드(nested) 라우터</h1>
+            <a href="">홈</a> <a href="#/user">#/user</a> <a href="#/user/posts">#/user/posts</a> <a href="#/user/profile">#/user</a>
+            <router-view></router-view>
+        </div>
+        
+        <script>
+            var User ={
+                template:`
+                    <div>
+                        User Component
+                        <router-view></router-view>
+                    </div>
+                `
+            };
+            var UserProfile = {
+                template: '<p>User Profile</p>'
+            };
+            var UserPost = {
+                template: '<p>User Post component</p>'
+            };
+
+            var routes = [{
+                path : '/user',
+                component : User,
+                children : [
+                    {path : 'posts', component : UserPost},
+                    {path : 'profile', component : UserProfile}
+                ]
+            }];
+
+            var router = new VueRouter({routes});
+
+            var app = new Vue({router}).$mount('#app');
+            
+        </script>
+    </body>
+</html>

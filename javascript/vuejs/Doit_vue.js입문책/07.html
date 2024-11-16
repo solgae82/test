@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>같은 레벨 컴포넌트 간의 통신</h1>
+            <p>{{message}}</p>
+            <child-component v-on:show-log="printTxt"></child-component>
+        </div>
+        
+        <script>
+
+            //이벤트 버스 선언
+            var eventBus = new Vue();
+
+            Vue.component('child-component',{
+                template : '<button v-on:click="showLog">다른 컴 이벤트 쇼!</button>',
+                methods : {
+                    showLog: function(){
+                        eventBus.$emit('trigger', '안녕하쇼~!');
+                    }
+                }
+
+            });
+
+            new Vue({
+                el : '#app',
+                data : {message: '이벤트 버스를 통해 이벤트 설정 후 호출해서 전달'},
+                created : function(){
+                    //이벤트 설정
+                    eventBus.$on('trigger', function(value){
+
+                        alert('이벤트 버스에 설정된 이벤트 실행 : '+  value);
+                    });
+                }
+                
+            });
+            
+        </script>
+    </body>
+</html>

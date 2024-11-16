@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <style>
+            .textRed{color: red;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>자바스크립트 표현식</h1>
+            <p>{{message}}</p>
+            <p>{{message + '*.*'}}</p>
+            <p>{{message.split('').reverse().join('')}}</p>
+            <p>{{sum >= 100 ? 'true': 'false'}}</p>
+            
+        </div>
+        
+        <script>
+            var app =  new Vue({
+
+                el: '#app',
+                data:{
+                    message: 'Hello World!',
+                    sum : 99
+                }             
+            });
+        </script>
+    </body>
+</html>

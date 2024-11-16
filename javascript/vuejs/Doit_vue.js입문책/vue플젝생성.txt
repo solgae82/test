@@ -1,0 +1,25 @@
+1. node.js 설치
+2. vue-cli 설치
+
+    npm install -g vue-cli
+
+3. vue-cli 로 플젝 생성
+
+    - 플젝 템플릿이 여러가지 있는데 그 중 가장 기본 템플릿으로 생성한다
+    - 템플릿 종류
+        - webpack : 고급 웹팩 기능을 활용한 프로젝트 구성 방식 템플릿, 테스팅 문법 검사 등을 지원.
+        - webpack-simple : 웹팩 최소 기능을 활용한 프로젝트 구성 방식 템플릿, 빠른 화면 프로토타이핑 용
+        - browserify : 고급 browserify 기능을 활용한 프로젝트 구성 방식 템플릿,  테스팅 문법 검사 등을 지원.
+        - browserify-simple : browserify 최소 기능을 활용한 프로젝트 구성 방식 템플릿, 빠른 화면 프로토타이핑 용
+        - simple : 최소 뷰 기능만 들어간 HTML 파일 1개 생성하는 템플릿
+        - pwa : 웹팩 기반의 프로그래싱 웹 앱 기능을 지원하는 vue 프로젝트 템플릿.
+
+    vue init webpack-simple
+
+4. 생성된 템플릿 플젝 라이브러리 install
+    
+    npm install
+
+5. vue 템플릿 실행
+
+    npm run dev

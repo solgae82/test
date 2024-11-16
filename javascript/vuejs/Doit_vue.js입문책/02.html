@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>인스턴스 라이프 사이클</h1>
+            {{message}}
+        </div>
+        
+        <script>
+            
+            new Vue({
+                el : '#app',
+                data: {message:'8개의 라이프 사이클이 있다'},
+                beforeCreate : function(){
+                    console.log('beforeCreate');
+                },
+                created : function(){
+                    console.log('created');
+                },
+                beforeMount : function(){
+                    console.log('beforeMount');
+                },
+                mounted : function(){
+                    console.log('mounted');
+                    this.message = '8개';
+                },
+                beforeUpdate : function(){
+                    console.log('beforeUpdate');
+                },
+                updated : function(){
+                    console.log('updated');
+                   
+                },
+                beforeDestroy : function(){
+                    console.log('beforeDestroy');
+                },
+                beforeDestroyed : function(){
+                    console.log('beforeDestroyed');
+                },
+            });
+            
+        </script>
+    </body>
+</html>

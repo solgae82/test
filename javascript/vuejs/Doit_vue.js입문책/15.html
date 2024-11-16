@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <style>
+            .textRed{color: red;}
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>데이터 바인드: - v-bind:(html속성명)</h1>
+            <p v-bind:id="A">v-bind:id 바인드</p>
+            <p :class="B">v-bind:class 바인드</p>
+            <p :style="C">v-bind:style 바인드</p>
+            
+        </div>
+        
+        <script>
+            var app =  new Vue({
+
+                el: '#app',
+                data:{
+                    A: 'iptime',
+                    B: 'textRed',
+                    C: 'border: 1px solid blue'
+                }             
+            });
+        </script>
+    </body>
+</html>

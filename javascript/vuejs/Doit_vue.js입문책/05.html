@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>상위 컴포넌트 -&gt; 하위 컴포넌트로 데이터 전달</h1>
+            <child-component v-bind:props_data="message" ></child-component>
+        </div>
+        
+        <script>
+
+            Vue.component('child-component',{
+                props : ['props_data'],
+                template : '<p>{{props_data}}</p>'
+            });
+
+            new Vue({
+                el : '#app',
+                data : {message: 'props를 통해 하위 컴포넌트 데이터 바인딩 (p-data (x) -> pdata 형식으로 이름 설정해야함.)'}
+                
+            });
+            
+        </script>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <!-- <div id="app" v-once> -->
+        <div id="app">
+            <h1>데이터 변경 막기: - v-once</h1>
+            <p>{{message}}</p>
+            <button onclick="app.change()">onclick 변경</button>
+            <button v-on:click="change">v-on:click 변경</button>
+        </div>
+        
+        <script>
+            var app =  new Vue({
+
+                el: '#app',
+                data:{
+                    message: 'Hi there!'
+                },
+                methods:   {
+                   change :  function(){ this.message = '안녕';}
+                }             
+            });
+        </script>
+    </body>
+</html>

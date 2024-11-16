@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>뷰-js</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width-device-width, initial-scale=1.0"/>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>첫 출력</h1>
+            {{message}}
+        </div>
+        
+        <script>
+            
+            new Vue({
+                el : '#app',
+                data: {message:'Hello world!'}
+
+            });
+            
+        </script>
+    </body>
+</html>
