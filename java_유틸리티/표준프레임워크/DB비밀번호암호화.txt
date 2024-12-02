@@ -1,0 +1,260 @@
+
+오라클 패스워드를 암호화해서 셋팅하는 방법을 예로 든다
+
+src/main/resources/egovframework/egovProps/globals.properties
+	
+	# DB서버 타입(mysql, oracle, altibase, tibero, cubrid, maria, postgres) 
+	# - datasource 및 sqlMap 파일 지정에 사용됨
+
+	..
+
+	Globals.DbType = oracle  #여기에 DB 타입 설정
+
+	..
+	#oracle
+	Globals.oracle.DriverClassName=oracle.jdbc.driver.OracleDriver
+	Globals.oracle.Url=jdbc:oracle:thin:@192.168.0.5:1521:orcl
+	Globals.oracle.UserName = DONG2
+	Globals.oracle.Password = 123456 #암호화한 문자열을 입력하고 싶다
+
+
+src/main/resources/egovframework/spring/com/context-crypto.xml
+	..
+	<!-- oracle -->
+	<beans profile="oracle">
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		 
+		<property name="driverClassName" value="${Globals.oracle.DriverClassName}"/>
+		<property name="url" value="${Globals.oracle.Url}" />
+		<property name="username" value="${Globals.oracle.UserName}"/>
+		<property name="username" value="${Globals.oracle.Password}"/>
+
+		<!-- 암호화한 Globals.oracle.Password 를 decode 해서 삽입하고 싶다 -->
+		<!--
+		<property name="password" value="#{egovEnvCryptoService.getPassword()}"/>
+		-->
+		
+	</bean>
+	</beans>
+
+
+-------------------//
+위에 설정한 암호화 스트링을 만드는 방법이다.
+globals.properties 파일에 아래처럼 써 있다
+
+# KISA 검증 (2019년 11월) - 중요정보 암호화
+# Globals.mysql.Password 는 com01 을 암호화한 것으로 
+참조 URL : 
+https://www.egovframe.go.kr/wiki/doku.php?id=egovframework:rte2:fdl:crypto_simplify_v3_8 
+
+# Globals.mysql.Password = com01 처럼 평문을 사용하려면 context-crypto.xml 에서 initial="false" crypto="false" 로 설정하고, 
+# context-datasource.xml 에서 <property name="password" value="${Globals.mysql.Password}"/> 로 바꾸어 주어야 함
+
+
+기본은 암호화로 되어 있으니,
+암호화 방법을 알아보자
+
+1.context-crypto.xml
+
+	<!-- @ 이 부분은 없을 것이다 이 소스 추가, 
+		암호설정 후 삭제 해야 한다.
+	start-->
+ 	<bean name="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="useCodeAsDefaultMessage">
+			<value>true</value>
+		</property>
+		<property name="basenames">
+			<list>
+				<value>classpath:/egovframework/egovProps/globals</value>
+			</list>
+		</property>
+	</bean>
+	<!-- @ 이 부분은 없을 것이다 이 소스 추가, 
+		암호설정 후 삭제 해야 한다.
+	end-->
+
+	<!-- 
+	initial : globals.properties 연계 Url, UserName, Password 값 로드 여부(설정값 : true, false)
+	crypto : 계정 암호화 여부(설정값 : true, false)
+	algorithm : 계정 암호화 알고리즘
+	algorithmKey : 계정 암호화키 키
+	cryptoBlockSize : 계정 암호화키 블록사이즈
+	cryptoPropertyLocation : 설정파일 암복호화 경로 (선택) 기본값은 'classpath:/egovframework/egovProps/globals.properties'
+	-->
+	<egov-crypto:config id="egovCryptoConfig" 
+		initial="true"
+		crypto="true"
+		algorithm="SHA-256"
+		algorithmKey="egovframe"
+		algorithmKeyHash="여기에 값을 생성해 추가해야 한다"
+			cryptoBlockSize="1024"
+			cryptoPropertyLocation="classpath:/egovframework/egovProps/globals.properties"
+	/>
+
+
+	//******************* 
+	아래 클래스를 실행시켜서 위 context-crypto.xml 파일의
+	egov-crypto:config 태그의 algorithmKeyHash 속성에 값을 넣어야 한다
+
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+
+	import egovframework.rte.fdl.cryptography.EgovPasswordEncoder;
+
+	public class EgovEnvCryptoAlgorithmCreateTest {
+
+		private static final Logger LOGGER = LoggerFactory.getLogger(EgovEnvCryptoAlgorithmCreateTest.class);
+	 
+		//계정암호화키 키
+		public String algorithmKey = "egovframe"; // 속성 algorithmKey
+	 
+		//계정암호화 알고리즘(MD5, SHA-1, SHA-256)
+		public String algorithm = "SHA-256";	// 속성 algorithm
+	 
+		//계정암호화키 블럭사이즈
+		public int algorithmBlockSize = 1024; //요건 쓰지도 않는데 왜 있지?
+	 
+		public static void main(String[] args) {
+			EgovEnvCryptoAlgorithmCreateTest cryptoTest = new EgovEnvCryptoAlgorithmCreateTest();
+	 
+			EgovPasswordEncoder egovPasswordEncoder = new EgovPasswordEncoder();
+			egovPasswordEncoder.setAlgorithm(cryptoTest.algorithm);
+	 
+			LOGGER.error("------------------------------------------------------");
+			LOGGER.error("알고리즘(algorithm) : "+cryptoTest.algorithm);
+			LOGGER.error("알고리즘 키(algorithmKey) : "+cryptoTest.algorithmKey);
+			LOGGER.error("알고리즘 키 Hash(algorithmKeyHash) : "+egovPasswordEncoder.encryptPassword(cryptoTest.algorithmKey));
+			LOGGER.error("알고리즘 블럭사이즈(algorithmBlockSize)  :"+cryptoTest.algorithmBlockSize);
+	 
+		}
+	}
+	//*******************
+
+	출력값 : 
+		알고리즘(algorithm) : SHA-256
+		알고리즘 키(algorithmKey) : egovframe
+		알고리즘 키 Hash(algorithmKeyHash) : gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ=
+		알고리즘 블럭사이즈(algorithmBlockSize)  :1024	
+
+	Hash로 출력된 값을 
+	 
+	 	algorithmKeyHash="여기에 값을 생성해 추가해야 한다"
+
+		algorithmKeyHash="gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ="
+
+	처럼 셋팅해준다
+
+2. Globals.oracle.Password 값 생성하기
+	
+	아래 클래스를 실행해서 만든다
+
+	//*******************
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+	import org.springframework.context.ApplicationContext;
+	import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+	import egovframework.rte.fdl.cryptography.EgovEnvCryptoService;
+	import egovframework.rte.fdl.cryptography.impl.EgovEnvCryptoServiceImpl;
+
+	public class EgovEnvCryptoUserTest {
+		private static final Logger LOGGER = LoggerFactory.getLogger(EgovEnvCryptoUserTest.class);
+		 
+		public static void main(String[] args) {
+	 
+			String[] arrCryptoString = { 
+			"EGOV",						//데이터베이스 접속 계정 설정
+			"123456",					//데이터베이스 접속 패드워드 설정
+			"jdbc:oracle:thin:@192.168.0.5:1521:orcl",	//데이터베이스 접속 주소 설정
+			"oracle.jdbc.driver.OracleDriver"		//데이터베이스 드라이버
+		      };
+	 
+	 
+			String filePath = "C:\\eGovFrameDev-3.9.0-64bit\\workspace\\home2\\src\\main\\resources\\egovframework\\spring\\com\\context-crypto.xml";
+			String classPath = "/egovframework/spring/com/context-crypto.xml";
+			
+			LOGGER.error("------------------------------------------------------");		
+			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:"+classPath});
+			EgovEnvCryptoService cryptoService = context.getBean(EgovEnvCryptoServiceImpl.class);
+			LOGGER.error("------------------------------------------------------");
+	 
+			String label = "";
+			try {
+				for(int i=0; i < arrCryptoString.length; i++) {
+					swithc(i){
+						case 0:
+							label = "사용자 아이디";	break;
+						case 1:
+							label = "사용자 비밀번호";	break;
+						case 2:
+							label = "접속 주소";	break;
+						case 3:
+							label = "데이터 베이스 드라이버";	break;
+					}
+
+					LOGGER.error(label+" 원본(orignal):" + arrCryptoString[i]);
+					LOGGER.error(label+" 인코딩(encrypted):" + cryptoService.encrypt(arrCryptoString[i]));
+					LOGGER.error("------------------------------------------------------");
+				}
+				
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("["+e.getClass()+"] IllegalArgumentException : " + e.getMessage());
+			} catch (Exception e) {
+				LOGGER.error("["+e.getClass()+"] Exception : " + e.getMessage());
+			}
+	 
+		}
+	}
+
+	//*******************
+	출력 값 : 
+
+		------------------------------------------------------
+		사용자 아이디 원본(orignal):EGOV
+		사용자 아이디 인코딩(encrypted):WDTye%2BTlM%2FqJtWHLPtKWtQ%3D%3D
+		-----------------------------------------------------
+		사용자 비밀번호 원본(orignal):123456
+		사용자 비밀번호 인코딩(encrypted):udxa%2Fiw22em9Pgl87BdZ7A%3D%3D
+		-----------------------------------------------------
+		접속 주소 원본(orignal):jdbc:oracle:thin:@192.168.0.5:1521:orcl
+		접속 주소 인코딩(encrypted):cqkjh3mbf9CAazG%2FmqyBPzdAUa%2BNxyvdk4nGZJwHA%2FWEcwKVumzqstYJ9ZY6bI5%2B
+		-----------------------------------------------------
+		데이터 베이스 드라이버 원본(orignal):oracle.jdbc.driver.OracleDriver
+		데이터 베이스 드라이버 인코딩(encrypted):4Ny%2Fz7sfvkvEYZP1wOGdJ0n9RrDACWjJJR57y1tsuVY%3D
+		------------------------------------------------------
+
+	생성된 인코딩 비밀번호를 globals.properties 파일의 설정하려는 위치에 삽입한다
+
+		Globals.oracle.Password = udxa%2Fiw22em9Pgl87BdZ7A%3D%3D
+
+	context-crypto.xml
+		암호화 해서 넣었으니 암호화한 패스워를 디코딩해서 가져오는 소스로 바꿔야 한다
+		<property name="password" value="#{egovEnvCryptoService.getPassword()}"/>
+		
+		
+3. 마지막 (중요)
+
+위에서 암호 만들기 위해 넣었는 xml bean 소스를 삭제 해준다.
+context-crypto.xml
+	
+	-----------삭제
+	..
+	<!-- @ 이 부분은 없을 것이다 이 소스 추가, 
+		암호설정 후 삭제 해야 한다.
+	start-->
+ 	<bean name="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="useCodeAsDefaultMessage">
+			<value>true</value>
+		</property>
+		<property name="basenames">
+			<list>
+				<value>classpath:/egovframework/egovProps/globals</value>
+			</list>
+		</property>
+	</bean>
+	<!-- @ 이 부분은 없을 것이다 이 소스 추가, 
+		암호설정 후 삭제 해야 한다.
+	end-->
+	-----------삭제
+
+추가한 소스 삭제 후 기동해야 기동 된다.

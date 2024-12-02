@@ -1,0 +1,25 @@
+
+
+@RequestMapping(value = "/testProc.do")
+public String addTestProc(@RequestParam Map<String, Object> map, Model model) throws Exception {
+	
+	service.insert(map);
+	EgovMap egovMap = service.select(map);
+	service.update(map);
+	service.delete(map);
+}
+
+--------- mapper.java
+Integer insert(Map<String, Object> map) throws Exception;
+Integer select(Map<String, Object> map) throws Exception;
+Integer update(Map<String, Object> map) throws Exception;
+Integer delete(Map<String, Object> map) throws Exception;
+
+--------- sql.xml
+
+<insert id="insert" parameterType="map"></insert>
+<select id="select" parameterType="map" resultType="egovMap"></select>
+<update id="update" parameterType="map"></update>
+<delete id="delete" parameterType="map"></delete>
+
+
