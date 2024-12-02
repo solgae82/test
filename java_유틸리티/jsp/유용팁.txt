@@ -1,0 +1,62 @@
+컨텍스트 출력
+
+[JSP]
+	<%=request.getContextPath() %>
+	=> /root
+
+[EL]
+	${pageContext.request.contextPath}
+	=> /root
+
+[JSTL]
+	<c:url value='/' />
+	=> /root/
+
+
+---- 배열파라미터 검색하기
+	?cate=1&cate=2&cate=3
+	<c:set var="paramCate" value="${fn:join(paramValues.cate,'/')}" />
+	<c:if test="${fn:contains(paramCate , c.id)}"> checked</c:if>
+
+---- 날짜형식 출력
+	
+	${test.regDate} => 20211203102433
+
+	<fmt:parseDate value="${test.regDate}" var="regDateString" pattern="yyyyMMddHHmmss"/>
+	<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd HH:mm:ss"/> 2021-12-03 10:24:33 출력
+	<fmt:formatDate value="${regDateString}" pattern="yyyy-MM-dd"/> 2021-12-03 출력
+
+---- 강제개행
+	el에서는 \r\n 값을 표현 못하나 보다
+
+	<%
+		
+	pageContext.setAttribute("CR", "\r"); 
+	pageContext.setAttribute("LF", "\n"); 
+	pageContext.setAttribute("newLine", "\n");
+
+	//또는 컨트롤러에서 설정하던지
+
+	%>
+
+	//개행문자 <br />로 바꾸기
+	<c:out value='${fn:replace(test.description,newLine,"<br />") }' />
+
+	//개행 문자 삭제하기
+	<c:out value="${fn:replace(fn:replace(bbs.sbject, LF, ''), CR, '')}" />
+
+---- 글 내용 출력
+	<, > 태그 문자는 html escape 해주고, 개행 문자는 <br /> 넣어서 출력하기
+
+	<c:set var="des" value="${fn:replace(test.description,'<','&lt;') }" />
+	<c:set var="des" value="${fn:replace(des,'>','&gt;') }" />
+	<c:out value="${fn:replace(des,newLine,'<br />')}" escapeXml="false" />
+
+---- 카테고리 체크박스 검색시 
+
+	url : ?cate=1&cate=3
+	
+	cate 파라미터를 구분자로 붙여서 한줄 문자열로 만든다
+		<c:set var="paramCate" value="${fn:join(paramValues.cate,'/')}" />
+	문자열중 해당 체크박스 값이 있는지 검색해서 'checked' 속성 부여
+		<c:if test="${fn:contains(paramCate , c.id)}"> checked</c:if>

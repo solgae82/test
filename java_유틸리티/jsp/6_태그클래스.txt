@@ -1,0 +1,785 @@
+--------- 태그 클래스를 이용한 커스텀 액션 작성법
+	- 크게 보면 JSP 1.2 , JSP 2.0 이후 규격서가 있음. 1.2 버전은 거의 안씀. 고로 2.0 이후 버전으로만..
+	- SimpleTag 인터페이스를 구현해서 만들거나, SimpleTagSupport 클래스를 상속 받아서 만든다(상속 구현으로 하자고욤)
+
+--------- body-content 속성 (5_태그파일.txt 에서 일부 발췌)
+
+	- body-content 속성 : empty , scriptless , tagdependent
+	- empty : 없어야 된다
+		<util:line /> 또는 <util:line></util:line>
+
+	- scriptless : body 속에 스크립틀릿,표현식<%%>이 있으면 에러, EL, 표준액션은 에러 아님.
+		<util:line>여기가 body <%=num %> </util:line>  //에러
+
+	- tagdependent : body 속에 스크립트, el, 액션 요소가 있으면 문자열로 출력
+		<util:line>여기가 body <%=num %> ${num} </util:line>
+
+--------- (1) 기본 작성법
+
+	1. StartLineTag.java
+
+		- SimpleTagSupport 클래스를 상속해서 구현
+
+
+			package com.solgae.tag;
+
+			import java.io.IOException;
+
+			import javax.servlet.jsp.JspContext;
+			import javax.servlet.jsp.JspException;
+			import javax.servlet.jsp.JspWriter;
+			import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+			public class StarLineTag extends SimpleTagSupport {
+
+				@Override
+				public void doTag() throws JspException, IOException {
+					// TODO Auto-generated method stub
+					super.doTag();
+					
+					JspContext context = getJspContext();
+					JspWriter out = context.getOut();
+					
+					out.println("라인출력 ****** 라인출력 end");
+					
+					
+				}
+
+
+
+			}
+
+
+	2. line.tld
+		- /WEB-INF 안에 만들면됨. classes, lib, tags에 만들면 안됨...
+		- /WEB-INF/tld 디렉토리 만들고 넣었음
+
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_1.xsd" version="2.1">
+
+			<tlib-version>1.0</tlib-version>
+			<short-name>tool</short-name>
+			<tag>
+				<name>startLine</name> 
+				<tag-class>com.solgae.tag.StarLineTag</tag-class>
+				<body-content>empty</body-content>
+			</tag>
+		</taglib>
+
+	3. web.xml
+		<jsp-config>
+			<!-- 이전에 만든 EL용 정적메소드 커스텀 -->
+			<taglib>
+				<taglib-uri>/t/math-function.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/math-functions.tld</taglib-location>
+			</taglib>
+
+			<!-- 여기가 방금 만든 tld 파일 등록
+			<taglib>
+				<taglib-uri>/t/line.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/line.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. tagClass.jsp
+
+		web.xml 의 taglib-uri 값과 uri 속성 일치 시킴
+		<%@taglib prefix="t" uri="/t/line.tld" %>
+
+		또는
+
+		web.xml 의 taglib-location 값과 uri 속성 일치 시켜도 됨.
+		<%@taglib prefix="t" uri="/WEB-INF/tlds/line.tld" %>
+
+
+		결과 출력
+
+		<t:startLine/> //라인출력 ****** 라인출력 end
+
+
+--------- (1) 태그에 속성 넣기
+	1.StartLineTag.java
+		package com.solgae.tag;
+		..
+		public class StarLineTag extends SimpleTagSupport {
+
+			private String mColor; // color를 담을 멤버
+			private int mSize;	// size값을 담을 멤버
+			@Override
+			public void doTag() throws JspException, IOException {
+				// TODO Auto-generated method stub
+				super.doTag();
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				
+				for(int i=0; i<mSize; i++){
+					out.println("<p style=\"color:"+mColor+"\">*****</p>");
+				}
+				
+			}
+
+			public void setColor(String color) { // color 속성 메소드
+				this.mColor = color;
+			}
+
+			public void setSize(Integer size) { // size 속성 메소드
+				this.mSize = size.intValue();
+			}
+
+
+
+		}
+
+
+	2. line.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+			  <tlib-version>1.0</tlib-version>
+			  <short-name>tool</short-name>
+			  <tag>
+			    <name>startLine</name>
+			    <tag-class>com.solgae.tag.StarLineTag</tag-class>
+			    <body-content>empty</body-content>
+			    <attribute>
+				<name>size</name>
+				<type>java.lang.Integer</type>
+			    </attribute>
+			    <attribute>
+				<name>color</name>
+				<type>java.lang.String</type>
+			    </attribute>
+			  </tag>
+		</taglib>
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/tlds/line.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/line.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. tagClass.jsp 
+
+		<%@taglib prefix="t" uri="/tlds/line.tld" %>
+		<t:startLine size="3" color="red" />
+
+	5.결과
+		<p style="color:red">*****</p>
+		<p style="color:red">*****</p>
+		<p style="color:red">*****</p>
+
+--------- (2) 태그에 속성 넣기
+	- DynamicAttributes 인터페이스 .setDynamicAttribute 메소드 구현
+	- setDynamicAttribute 메소드 인수 
+		String uri = xml 네임스페이스 담김. 없으면 null(쓸일 없음)
+		String attrName = 태그 속성명
+		Object value = 속성값 Object로 받음
+
+	- 속성 갯수 만큼 setDynamicAttribute 메소드를 내부적으로 호출함.
+		size="11" color="red"  <- 속성이 두개 이므로 두번 호출
+
+	1.StartLineTag.java
+		package com.solgae.tag;
+		..
+		public class StarLineTag extends SimpleTagSupport  implements DynamicAttributes {
+
+			
+			private Map<String, Object> mAttr = new HashMap<String, Object>();
+			@Override
+			public void doTag() throws JspException, IOException {
+				// TODO Auto-generated method stub
+				super.doTag();
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				
+				int size = 0;
+				
+				String color = (String) mAttr.get("color");
+				String strSize = (String) mAttr.get("size");
+				
+				if(color == null) color = "";
+				if(strSize !=null) size = Integer.parseInt(strSize);
+				
+				for(int i=0; i < size; i++){
+					out.print("<p style=\"color:"+color+"\">*****</p>\n");
+				}
+							
+			}
+
+			/**
+			 *  동적 속성 메소드 , DynamicAttributes 구현 메소드
+			 */
+			
+			public void setDynamicAttribute(String uri, String attrName, Object value) throws JspException{
+				mAttr.put(attrName , value);
+			}
+
+
+
+		}
+
+
+	2. line.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+			  <tlib-version>1.0</tlib-version>
+			  <short-name>tool</short-name>
+			  <tag>
+				<name>startLine</name>
+				<tag-class>com.solgae.tag.StarLineTag</tag-class>
+				<body-content>empty</body-content>
+				<dynamic-attributes>true</dynamic-attributes>
+			  </tag>
+		</taglib>
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/line.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/line.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. tagClass.jsp 
+
+		<%@taglib prefix="t" uri="/t/line.tld" %>
+
+		<t:startLine /> //아무것도 출력 안함
+
+		<t:startLine size="3" />
+			-출력-
+			<p style="color:">*****</p>
+			<p style="color:">*****</p>
+			<p style="color:">*****</p>
+		<t:startLine size="3" color="red" />
+			-출력-
+			<p style="color:red">*****</p>
+			<p style="color:red">*****</p>
+			<p style="color:red">*****</p>
+
+
+--------- (3) 태그 본체 내용 출력 태그 만들기
+
+
+	1. TableTag.java
+		package com.solgae.tag;
+			..
+
+		public class TableTag extends SimpleTagSupport {
+
+			
+			@Override
+			public void doTag() throws JspException, IOException {
+				// TODO Auto-generated method stub
+				super.doTag();
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				
+				JspFragment body = getJspBody(); //요기
+				
+				out.println("<table border=\"1\" cellpadding=\"5\"><tr><td>");
+				body.invoke(out); //태그 본체내용 출력 
+				out.print("</td></tr></table>");
+				
+			}
+
+
+			
+
+		}
+
+	2. tableTag.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+			  <tlib-version>1.0</tlib-version>
+			  <short-name>tool</short-name>
+			  <tag>
+				<name>startTable</name>
+				<tag-class>com.solgae.tag.TableTag</tag-class>
+				<body-content>scriptless</body-content> // 요기, scriptless, tagdependent 사용해야 태그 body출력
+			  </tag>
+		</taglib>
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/tableTag.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/tableTag.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. tagClass.jsp 
+
+		<%@taglib prefix="t" uri="/t/tableTag.tld" %>
+
+		<t:startTable>
+			다음달부터 월급 오릅니다<br />
+			사원 여러분 감사합니다
+		</t:startTable>
+
+		- 출력 -
+			<table border="1" cellpadding="5"><tr><td>
+				다음달부터 월급 오릅니다<br />
+				 사원 여러분 감사합니다
+			</td></tr></table>
+
+--------- (4) 태그 본체 내용 일부 바꾸기
+
+
+	1. TableTag.java
+		package com.solgae.tag;
+			..
+
+		public class TableTag extends SimpleTagSupport {
+
+			String mNewWord; //속성 추가
+			String mOldWord; //속성 추가
+			
+			@Override
+			public void doTag() throws JspException, IOException {
+				// TODO Auto-generated method stub
+				super.doTag();
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				
+				JspFragment body = getJspBody(); //본체내용 
+				
+				
+				
+				StringWriter strWriter= new StringWriter();
+				body.invoke(strWriter); //태그 본체내용 출력
+				
+				if(mNewWord != null && mOldWord != null){
+					String strBody = strWriter.toString();
+					String strChangeBody = strBody.replaceAll(mOldWord, mNewWord);
+					
+					out.println("<table border=\"1\" cellpadding=\"5\"><tr><td>");
+					out.println(strChangeBody);
+					out.print("</td></tr></table>");
+				}
+				
+			}
+
+			public void setNewWord(String str){ //속성 추가
+				this.mNewWord = str;
+			}
+			
+			public void setOldWord(String str){ //속성 추가
+				this.mOldWord = str;
+				
+			}
+
+		}
+
+	2. tableTag.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+			  <tlib-version>1.0</tlib-version>
+			  <short-name>tool</short-name>
+			  <tag>
+				<name>startTable</name>
+				<tag-class>com.solgae.tag.TableTag</tag-class>
+				<body-content>scriptless</body-content>
+				<attribute>
+					<name>oldWord</name>  // 속성 추가
+					<type>java.lang.String</type>
+				</attribute>
+				<attribute>
+					<name>newWord</name> // 속성 추가
+					<type>java.lang.String</type>
+				</attribute>
+			  </tag>
+		</taglib>
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/tableTag.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/tableTag.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. tagClass.jsp 
+
+		<%@taglib prefix="t" uri="/t/tableTag.tld" %>
+
+		<t:startTable oldWord="직원" newWord="사원">
+			다음달부터 월급 오릅니다<br />
+			직원 여러분 감사합니다
+		</t:startTable>
+
+		- 출력 -
+			<table border="1" cellpadding="5"><tr><td>
+				다음달부터 월급 오릅니다<br />
+				 [사원] 여러분 감사합니다
+			</td></tr></table>
+
+--------- (5) 출력 변수를 제공하는 커스텀 태그 1
+
+
+	1. MinimumTag.java
+		package com.solgae.tag;
+
+		..
+
+		public class MinimumTag extends SimpleTagSupport {
+			
+			
+			private int num1, num2;
+			
+			public void setNum1(Integer num){
+				this.num1= num.intValue();
+			}
+			public void setNum2(Integer num){
+				this.num2= num.intValue();
+			}
+			@Override
+			public void doTag() throws JspException, IOException {
+				// TODO Auto-generated method stub
+				super.doTag();
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				
+				if(num1 < num2)
+					context.setAttribute("minimum",num1);
+				else
+					context.setAttribute("minimum", num2);
+
+			}
+
+
+		}
+
+	2. minimum.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+
+		  <tlib-version>1.0</tlib-version>
+		  <short-name>tool</short-name>
+		  <tag>
+		    <name>min</name>
+		    <tag-class>com.solgae.tag.MinimumTag</tag-class>
+		    <body-content>empty</body-content>
+		    <attribute>
+			<name>num1</name>
+			<type>java.lang.Integer</type>
+			<rtexprvalue>true</rtexprvalue>//값으로 el식을 쓸 것이므로 true
+		    </attribute>
+		    <attribute>
+			<name>num2</name>
+			<type>java.lang.Integer</type>
+			<rtexprvalue>true</rtexprvalue> //값으로 el식을 쓸 것이므로 true
+		    </attribute>
+		    
+		    <variable>
+			<name-given>minimum</name-given>
+			<variable-class>java.lang.Integer</variable-class>
+			<scope>AT_END</scope>
+		    </variable>
+		  </tag>
+		</taglib>
+
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/minimum.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/minimum.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. minimumClass.jsp?num1=20&num2=30 
+
+		<%@taglib prefix="compare" uri="/t/minimum.tld" %>
+
+		<compare:min  num1="${param.num1}" num2="${param.num2}" />
+		${minimum} // 20 출력
+
+
+--------- (6) 출력 변수를 제공하는 커스텀 태그 2 (개선된 버전)
+
+	1. MinimumTag.java
+		private int num1, num2;
+		String var; //요기 추가
+		
+		public void setNum1(Integer num){
+			this.num1= num.intValue();
+		}
+		public void setNum2(Integer num){
+			this.num2= num.intValue();
+		}
+		public void setVar(String str){ ////요기 추가
+			this.var = str;
+		}
+		@Override
+		public void doTag() throws JspException, IOException {
+			// TODO Auto-generated method stub
+			super.doTag();
+			
+			JspContext context = getJspContext();
+			JspWriter out = context.getOut();
+			
+			if(num1 < num2)
+				context.setAttribute(var,num1); //변수명을 var 속성값으로 하겠다는 것
+			else
+				context.setAttribute(var, num2);//변수명을 var 속성값으로 하겠다는 것
+
+		}
+
+	2. minimum.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+
+		  <tlib-version>1.0</tlib-version>
+		  <short-name>tool</short-name>
+		  <tag>
+		    <name>min</name>
+		    <tag-class>com.solgae.tag.MinimumTag</tag-class>
+		    <body-content>empty</body-content>
+		    
+		   
+		    
+		    <attribute>
+			<name>num1</name>
+			<type>java.lang.Integer</type>
+			<rtexprvalue>true</rtexprvalue>
+		    </attribute>
+		    <attribute>
+			<name>num2</name>
+			<type>java.lang.Integer</type>
+			<rtexprvalue>true</rtexprvalue>
+		    </attribute>
+		    
+		    <!-- 요기 추가 -->
+		    <attribute>
+			<name>var</name> //var 속성 추가
+			<type>java.lang.String</type>
+			<required>true</required>	//필수
+			<rtexprvalue>false</rtexprvalue> //스크립팅,표현식 못 쓴다.(String 만)
+		    </attribute>
+		    <!-- 요기 추가 end -->
+
+		    <variable>
+			<name-from-attribute>var</name-from-attribute> //요기 수정, name-given -> name-from-attribute
+			<variable-class>java.lang.Integer</variable-class>
+			<scope>AT_END</scope>
+		    </variable>
+		  </tag>
+		</taglib>
+
+
+
+
+	3. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/minimum.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/minimum.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. minimumClass.jsp?num1=20&num2=30 
+
+		<%@taglib prefix="compare" uri="/t/minimum.tld" %>
+
+		<compare:min var="new_minimum" num1="${param.num1}" num2="${param.num2}" />
+		${new_minimum} // 20 출력
+
+--------- (7) 차일드 커스텀 액션 1
+	
+
+	1. ListTag.java
+		package com.solgae.tag;
+		..
+		public class ListTag extends SimpleTagSupport {
+			public void doTag() throws JspException, IOException {
+				JspFragment body = getJspBody(); //본체 객체 가져와서
+				body.invoke(null); //그냥 출력
+			}
+		}
+
+	2.ItemTag.java
+		package com.solgae.tag;
+		..
+		public class ItemTag extends SimpleTagSupport {
+			public void doTag() throws JspException, IOException {
+				JspTag parent = getParent();
+				//부모 태그가 불려와졌는지 체크 , 없으면 에러
+				if(parent == null || !(parent instanceof ListTag)){
+					throw new JspException("The Parent is not ListTag");
+				}
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				JspFragment body = getJspBody();
+				
+				out.print("*");
+				body.invoke(null);
+				out.println("<br />");
+			}
+		}
+
+	3. child.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+
+		  <tlib-version>1.0</tlib-version>
+		  <short-name>tool</short-name>
+		  <tag>
+		    <name>list</name>
+		    <tag-class>com.solgae.tag.ListTag</tag-class>
+		    <body-content>scriptless</body-content>
+		  </tag>
+		  
+		  <tag>
+		    <name>item</name>
+		    <tag-class>com.solgae.tag.ItemTag</tag-class>
+		    <body-content>scriptless</body-content>
+		  </tag>
+		  
+		</taglib>
+
+	4. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/child.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/child.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	5. childTagClass.jsp
+		<%@taglib prefix="tool" uri="/t/child.tld" %>
+		<tool:list>
+			<tool:item>하루</tool:item>
+			<tool:item>이틀</tool:item>
+			<tool:item>사흘</tool:item>
+		</tool:list>
+
+		-출력-
+			*하루<br />
+			*이틀<br />
+			*사흘<br />
+
+
+--------- (8) 차일드 커스텀 액션 2 (개선된 방식)
+	
+	1. ListTag.java
+		package com.solgae.tag;
+		..
+		public class ListTag extends SimpleTagSupport {
+			//----- 추가
+			private char bullet; //블릿 기호를 담기 위한 변수
+	
+			public void setBullet(char bullet){ // Character 로 받아야 하는데 왜 char인지 모르겠음.
+				this.bullet = bullet;
+			}
+			
+			public char getBullet(){
+				return this.bullet;
+			}
+			//----- 추가 end
+			public void doTag() throws JspException, IOException {
+				JspFragment body = getJspBody(); //본체 객체 가져와서
+				body.invoke(null); //그냥 출력
+			}
+		}
+
+	2.ItemTag.java
+		package com.solgae.tag;
+		..
+		public class ItemTag extends SimpleTagSupport {
+			public void doTag() throws JspException, IOException {
+				JspTag parent = getParent();
+				//부모 태그가 불려와졌는지 체크 , 없으면 에러
+				if(parent == null || !(parent instanceof ListTag)){
+					throw new JspException("The Parent is not ListTag");
+				}
+				
+				JspContext context = getJspContext();
+				JspWriter out = context.getOut();
+				JspFragment body = getJspBody();
+				
+				//------ 추가 기호가 없다면 '0' .. '-' 디폴트
+				char bullet  = ((ListTag)parent).getBullet();
+				if(bullet == 0) bullet = '-'; 
+				//------ 추가
+
+				out.print("*");
+				body.invoke(null);
+				out.println("<br />");
+			}
+		}
+
+	3. child.tld
+		<?xml version="1.0" encoding="UTF-8"?>
+		<taglib xmlns="http://java.sun.com/xml/ns/javaee" version="2.1">
+
+		  <tlib-version>1.0</tlib-version>
+		  <short-name>tool</short-name>
+		  <tag>
+		    <name>list</name>
+		    <tag-class>com.solgae.tag.ListTag</tag-class>
+		    <body-content>scriptless</body-content>
+		     
+		     <!-- 속성 추가 -->
+		     <attribute>
+			<name>bullet</name>
+			<type>java.lang.Character</type>
+		    </attribute>
+
+		  </tag>
+		  
+		  <tag>
+		    <name>item</name>
+		    <tag-class>com.solgae.tag.ItemTag</tag-class>
+		    <body-content>scriptless</body-content>
+		  </tag>
+		  
+		</taglib>
+
+	4. web.xml
+		<jsp-config>
+			<taglib>
+				<taglib-uri>/t/child.tld</taglib-uri>
+				<taglib-location>/WEB-INF/tlds/child.tld</taglib-location>
+			</taglib>
+		</jsp-config>
+
+	4. childTagClass.jsp
+		<%@taglib prefix="tool" uri="/t/child.tld" %>
+		<tool:list>
+			<tool:item>하루</tool:item>
+			<tool:item>이틀</tool:item>
+			<tool:item>사흘</tool:item>
+		</tool:list>
+
+		-출력-
+			-하루<br />
+			-이틀<br />
+			-사흘<br />
+
+
+		<tool:list bullet="@">
+			<tool:item>하루</tool:item>
+			<tool:item>이틀</tool:item>
+			<tool:item>사흘</tool:item>
+		</tool:list>
+
+		-출력-
+			@하루<br />
+			@이틀<br />
+			@사흘<br />
+

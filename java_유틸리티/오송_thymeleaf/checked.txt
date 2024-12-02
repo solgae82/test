@@ -1,0 +1,22 @@
+thymeleaf 에서 파라미터 변수는 기본적으로 배열로 본다
+자바스크립트에서나 html도 마찬가지다
+
+아래 형식중 아무거나 골라 잡으시면 됨.
+
+<form>
+	<input type="radio" name="winter" value="1" th:checked="${#strings.equals(#strings.defaultString(param.winter,'-1'),'1')}?true:false">하늘<br/>
+	<input type="radio" name="winter" value="2" th:checked="${param.winter != null and #strings.equals(param.winter,'2')}?true:false">눈<br/>
+	<input type="radio" name="winter" value="3" th:checked="${param.winter != null and param.winter[0] =='3'}?true:false">비<br/>
+	<button>send</button>
+</form>
+
+그렇다면, chekbox도 같을 것이고,
+select  박스의  'selected' 도 저런 형식으로 쓰일 것임을 짐작할 수 있다.
+상위 폼 태그 안에 아래 코드를 넣으면 라디오 박스 선택 후 전송하면,
+선택박스 선택 위치가 바뀌게 될 것이다.
+
+<select>
+  	<option th:selected="${#strings.equals(#strings.defaultString(param.winter,'-1'),'1')}?true:false">하늘</option>
+  	<option th:selected="${param.winter != null and #strings.equals(param.winter,'2')}?true:false">눈</option>
+  	<option th:selected="${param.winter != null and param.winter[0] =='3'}?true:false">비</option>
+</select>
