@@ -1,0 +1,26 @@
+--------- v-show
+
+<script>
+export default{
+  data(){
+    return {
+       show : true
+    };
+  }
+
+}
+</script>
+
+<template>  
+ <p v-show="show">렌더링 :true</p>
+ <p v-show="!show">렌더링 :false</p>
+</template>
+
+<style>
+</style>
+
+--------- (출력)
+	<p>렌더링 :true</p>
+	<p style="display: none;">렌더링 :false</p>
+  
+: v-show 에 true 조건이면 출력, false 이면  style="display: none;" 를 속성에 설정한다

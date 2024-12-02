@@ -1,0 +1,64 @@
+------------------- # 개발 환경 셋팅
+
+1. node.js 설치
+	LTS 버전으로 설치
+	* npm 도 같이 설치 된다.
+	..
+	node -v  # 설치 버전 확인
+	
+2. Vue cli 설치
+	npm install -g @vue/cli
+	..
+	vue --version 으로 버전 확인
+3. visual studio code 설치
+	
+	Vue-Offcial 익스텐션 설치
+	
+4. 크롬 확장 프로그램 설치
+	
+	Vue.js devtools 설치
+	
+-------------------# npm 으로 vue 프로젝트 시작
+
+1. 프로젝트 디렉토리 생성
+ > mkdir vue-ex
+	
+2. vue-ex 디렉토리에 vue 프로젝트 구성 셋팅 
+
+ : 뷰 애플리케이션 구조 설정(디렉토리,설정파일 생성됨), 
+ : 필요한 패키지가 설치되는 것은 아님	
+	
+ > cd vue-ex  # 이동
+	
+ > npm create vue@latest 	
+	..
+	create-vue@3.10.3 
+	Ok to proceed? (y) y  #create-vue 패키지 설치
+	
+	
+	Project name :  '.' 이면 현재 폴더(vue-ex)를 의미
+	Package name : Project name 을 '.'  이라고 했을때 나오는 메뉴
+		- 현재 디렉토리와 같이 입력 'vue-ex' 
+		- Project name 을 예를 들어 'test' 라고 했다면, test 디렉토리가 생기고
+		Package name 자동으로 'test'  가 된다.
+	Add Typescript? : 타입스크립트 추가 여부(No / Yes)
+	Add JSX Support? : 뷰 기본 템플릿 이 아닌, JSX 추가 여부 (No / Yes)
+	Add Vue Router for Single Page Application development?
+		: Single Page Application을 만들기 위해 Vue Router 패키지를 추가 여부 (No / Yes)		
+	Add Pinia for state management? : 상태관리 패키지인 Pinia 추가 여부 (No / Yes)
+	Add Vitest for Unit Testing? : 유닛 테스트를 위한 Vitest 패키지 추가 여부 (No / Yes)
+	Add and End-to-End Testing Solution?: End-to-End 테스트를 위한 솔루션 추가 여부 (No / Yes)
+	Add ESLint for code quality? : 코드품질 ESLint 추가 여부 (No / Yes)
+	..
+	
+	Done. Now run:
+		npm install
+		npm run dev
+		
+3. vue 프로젝트 설치 (패키지등 설치됨)
+ : node_modules 디렉토리가 생기면서, 관련 패키지등이 설치됨.
+ 
+ > npm install
+ 
+4. vue 프로젝트 실행
+ > npm run dev

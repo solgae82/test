@@ -1,0 +1,23 @@
+---------- v-html
+<script>
+	export default{
+	  data(){
+	    return {
+	      content : '<h1>Head First!</h1>'
+	    };
+	  }
+
+	}
+</script>
+
+<template>	
+	<div>{{ contnet }}</div>
+	<div v-html="content"></div>
+</template>
+
+--------- (출력)
+	<div>&lt;h1&gt;Head First!&lt;/h1&gt;</div>
+	<div><h1>Head First!</h1></div>
+
+: 기본 출력은 html 엔티티로 출력되기 때문에, v-html 디렉티브를 이용하면 html 태그 데이터 그대로 출력한다
+		

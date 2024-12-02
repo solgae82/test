@@ -1,0 +1,50 @@
+--------- v-for
+<script>
+export default{
+  data(){
+    return {
+      fruits: ['apple','banana','orange'],
+      user : {name: 'dong', age: 20, gender: 'male'}
+    };
+  }
+
+}
+</script>
+
+<template>  
+ <ul>
+    <li v-for="data in fruits" :key="index">{{ data }}</li>
+ </ul>
+ <ul>
+    <li v-for="(data , index) in fruits" :key="index">[{{ index }}] = {{ data }}</li>
+ </ul>
+
+ <ul>
+    <li v-for="(value , key, index) in user" :key="index">[{{ index }}] = {{ key }}: {{ value }}</li>
+ </ul>
+</template>
+
+
+<style>
+
+</style>
+--------- (출력)
+	<ul>
+		<li>apple</li>
+		<li>banana</li>
+		<li>orange</li>
+	</ul>
+	<ul>
+		<li>[0] = apple</li>
+		<li>[1] = banana</li>
+		<li>[2] = orange</li>
+	</ul>
+	<ul>
+		<li>[0] = name: dong</li>
+		<li>[1] = age: 20</li>
+		<li>[2] = gender: male</li>
+	</ul>
+
+:v-for 는 배열 또는 객체 모두사용 가능하다 
+: ':key' 속성을 잊지마라
+: 객체 출력시 (value , key, index) 로 꼭 3개 인수로 받아야 한다.

@@ -1,0 +1,25 @@
+<script>
+export default{
+  data(){
+    return {
+       content : '<h1>Head First!</h1>'
+    };
+  }
+
+}
+</script>
+
+<template>
+   <div>{{ content }}</div>
+   <div v-pre>{{ content }}</div>
+</template>
+
+<style></style>
+
+--------- (출력)
+	<div>&lt;h1&gt;Head First!&lt;/h1&gt;</div>
+	<div>{{ content }}</div>
+	
+: v-pre 디렉티브가 붙은 태그는 vue가 컴파일을 하지 않는다
+
+	

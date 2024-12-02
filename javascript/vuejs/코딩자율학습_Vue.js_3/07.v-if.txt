@@ -1,0 +1,31 @@
+--------- v-if, v-if-else, v-else
+
+<script>
+export default{
+  data(){
+    return {
+      age : 12,
+      visible : true,
+      unvisible : false
+    };
+  }
+
+}
+</script>
+
+<template>  
+ <p v-if="visible">렌더링 1</p>
+ <p v-if="unvisible">렌더링 2</p>
+ <p v-if="age >= 19">19살 이상</p>
+ <p v-else-if="age >= 10 && age < 19">10살 이상 19살 미만</p>
+ <p v-else>10살 미만</p>
+</template>
+
+<style></style>
+
+--------- (출력)
+	<p>렌더링 1</p>
+	<!--v-if-->
+	<p>10살 이상 19살 미만</p>
+	
+: 조건문 분기 디렉티브

@@ -1,0 +1,49 @@
+Vue3 를 기준으로 요약
+
+템플릿 기본 구조
+	: SFC(single file component) 형식으로 작성하기 때문에 .vue 파일에 기술하며 시작한다
+
+	index.html
+	main.js
+	src/App.vue
+	
+SFC 파일의 <script> 태그에 사용 가능한 문법으로는 2가지가 있다고 함
+	- 옵션스(options API) 문법
+	- 컴포지션(composition API) 문법	
+
+데이터 보간 (text interpolation)
+	- 데이터 출력이나 표현등을 위해서는 콧수염(mustach syntax) 를 사용한다
+	- 변수 출력 뿐 아니라 , 간단한 자바스크립트 연산도 가능하다
+
+	{{ data }}
+	{{ age + 10 }} 
+ 
+
+App.vue 기본 스타일 (options API 문법)
+	<script>
+	export default{
+	  data(){
+	    return {
+	      name : 'chulsoo',
+	      age : 19,
+	    };
+	  }
+
+	}
+	</script>
+
+	<template>
+	  <p>{{ name }}</p>
+	  <p>{{ name.toUpperCase() }}..</p>
+	  <p>{{ age + 10 }}</p>
+	</template>
+
+	<style>
+
+	</style>
+
+
+	: 출력
+		<p>chulsoo</p>
+		<p>CHULSOO</p>
+		<p>29</p>

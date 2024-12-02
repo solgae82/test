@@ -1,0 +1,36 @@
+--------- v-bind
+<script>
+export default{
+  data(){
+    return {
+      className : 'red-color',
+      class : 'red-color'
+    };
+  }
+
+}
+</script>
+
+<template>  
+  <h2 class="{{ className }}">첫걸음</h2>
+  <h2 v-bind:class="className">첫걸음-1</h2>
+  <h2 :class="className">첫걸음-2</h2>
+  <h2 :class>첫걸음-3</h2>
+</template>
+
+<style>
+  .red-color{color: red}
+</style>
+
+--------- (출력)
+	<h2 class="{{ className }}">첫걸음</h2>
+	<h2 class="red-color">첫걸음-1</h2>
+	<h2 class="red-color">첫걸음-2</h2>
+	<h2 class="red-color">첫걸음-3</h2>
+	
+: <template> 안의 태그들은 일반 html과 같다고 생각하면 안된다. vue 문법에 따라 작성해야 한다.
+: <template> 안의 html 태그 속성에 텍스트를 연결하려면 v-bind를 써야한다
+: 'v-bind:속성' 축약형 => ':속성'
+	- vue 3.4이상 에선 한번 더 축약가능(속성 이름과 데이터 이름이 같으면)
+		ex) :class (class="class")
+	

@@ -1,0 +1,25 @@
+--------- v-text
+<script>
+export default{
+  data(){
+    return {
+      content : '<h1>Head First!</h1>'
+    };
+  }
+
+}
+</script>
+
+<template>  
+  <div v-text="content"></div>
+  <div>{{ content }}</div>
+</template>
+
+<style>
+</style>
+
+--------- (출력)
+	<div>&lt;h1&gt;Head First!&lt;/h1&gt;</div>
+	<div>&lt;h1&gt;Head First!&lt;/h1&gt;</div>
+	
+: v-text를 이용하면 html 엔티티로 출력하고, 기본 출력과 같다
