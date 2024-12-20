@@ -1,0 +1,25 @@
+<script>
+export default{
+  methods:{
+    clickHandler(event){
+      console.log(event.type); // click, dbclick
+      
+    },
+    keyUpHandler(event){
+      console.log(event, event.target.value, event.keyCode);
+      
+    }
+  }
+
+
+}
+</script>
+
+<template>  
+  <input type="text" v-on:keyup="keyUpHandler($event)" value="c" />
+  <button type="button" v-on:click="($event)=>clickHandler($event)">클릭</button>
+  <button type="button" @:dblclick="clickHandler">더블클릭</button>
+</template>
+
+<style>
+</style>
