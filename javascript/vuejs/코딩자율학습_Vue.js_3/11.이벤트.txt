@@ -1,12 +1,15 @@
 <script>
 export default{
   methods:{
-    clickHandler(event){
-      console.log(event.type); // click, dbclick
-      
+    enterHandler(event){ //, '()'빼고 enter 이벤트 호출했을때 첫번째 인자는 키보드이벤트 
+      console.log(event); // enterHandler => KeyboardEvent VS enterHandler() => undefined
     },
     keyUpHandler(event){
       console.log(event, event.target.value, event.keyCode);
+      
+    },
+    clickHandler(event){
+      console.log(event.type); // click, dbclick
       
     }
   }
@@ -16,10 +19,30 @@ export default{
 </script>
 
 <template>  
-  <input type="text" v-on:keyup="keyUpHandler($event)" value="c" />
+  <input type="text" v-on:keyup.enter="enterHandler" value="enter" /> <!--enter키 입력시 KeyboardEvent -->
+  <input type="text" v-on:keyup.enter="enterHandler()" value="enter" /> <!--enter키 입력시 undefined -->
+
+  <input type="text" v-on:keyup="keyUpHandler($event)" value="c" /> <!--명시적 이벤트 넘기기-->
+  
   <button type="button" v-on:click="($event)=>clickHandler($event)">클릭</button>
   <button type="button" @:dblclick="clickHandler">더블클릭</button>
 </template>
 
 <style>
 </style>
+
+------------
+이벤트 디렉티브
+	v-on: 또는  @:
+이벤트 디렉티브 형식 
+	v-on:이벤트.수식어=메소드 
+	또는 
+	@:이벤트.수식어=메소드
+
+이벤트 종류
+	click, dbclick, keyup 등등 (API 문서로 확인하자)
+	
+수식어 종류
+	이벤트 수식어, 키보드 입력 키 수식어, 시스템 입력 키 수식어, 특별 수식어, 마우스 버튼 수식어 등
+	(API 문서로 확인하자)
+	

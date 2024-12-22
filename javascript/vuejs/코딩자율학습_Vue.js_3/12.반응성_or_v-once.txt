@@ -1,0 +1,27 @@
+<script>
+export default{
+  data(){
+    return {
+      number : 0
+    };
+  },
+
+  methods:{
+    increasement(){
+      this.number++;
+    }
+    
+  }
+
+
+}
+</script>
+
+<template> 
+  <h3 v-once>{{ number }}</h3> <!-- 처음 한번만 반응하고 업데이트 하지 않는다-->
+  <h3>{{ number }}</h3> <!-- 기본 뷰 반응성, number값이 계속 증가한다-->
+  <button type="button" @:click="increasement">증가 클릭</button>
+</template>
+
+<style>
+</style>

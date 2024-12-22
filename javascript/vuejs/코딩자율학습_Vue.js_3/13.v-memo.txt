@@ -1,0 +1,39 @@
+<script>
+export default{
+  data(){
+    return {
+      name: '철수',
+      gender : '남자',
+      age : 20
+    };
+  },
+  methods:{
+    log(){
+      console.log(this.name, this.gender, this.age);
+    }
+  }
+}
+</script>
+
+<template> 
+  <div v-memo="[name,gender]">
+      <p>이름: {{ name }}</p>
+      <p>성별: {{ gender }}</p>
+      <p>나이: {{ age }}</p> <!-- 다시 렌더링 되지 않는다 -->
+  </div>
+  <button type="button" @:click="name='영희'">이름 변경</button>
+  <button type="button" @:click="gender='여자'">성별 변경</button>
+  <button type="button" @:click="age=30">나이 변경</button>
+  <button type="button" @:click="log">설정값 로그보기</button> 
+</template>
+
+<style>
+</style>
+
+---------
+Vue 3.2 이상에서만 쓸 수 있는 디렉티브
+v-memo 배열 속성에 설정된 데이터만 렌더링(반응)한다(조건 설정 렌더링)
+
+	v-memo="[조건데이터, 조건데이터]"
+	
+v-memo="[]" 와 v-once는 같은 결과를 낸다.
