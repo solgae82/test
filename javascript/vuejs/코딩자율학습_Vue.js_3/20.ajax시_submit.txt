@@ -1,0 +1,22 @@
+<script>
+export default{
+
+  methods:{
+    send(event){
+      event.preventDefault(); //기본 전송 중지
+      console.log(`ajax 전송 로직`);
+      
+    }
+  }
+}
+</script>
+
+<template> 
+  <form id="loginForm" @submit="send">
+    <input type="submit" value="전송" />
+  </form>  
+  
+</template>
+
+<style>
+</style>

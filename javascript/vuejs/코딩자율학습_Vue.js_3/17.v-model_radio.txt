@@ -1,0 +1,35 @@
+<script>
+export default{
+  data(){
+    return {
+       gender: '' /* male 로 설정하면 male값을 가진 radio 가 자동 체크된다 */
+      
+    };
+  },
+  methods:{
+    log(){
+      if(this.gender ==''){
+        console.log('선택된 성별이 없습니다');
+      }else{
+        console.log(`선택된 성별: ${this.gender}`); // male,female
+      }
+    }
+  }
+}
+</script>
+
+<template> 
+  <form id="loginForm">
+    
+    <label for="male">남성</label>
+    <input type="radio" name="gender" id="male" value="male" v-model="gender" />
+
+    <label for="female">여성</label>
+    <input type="radio" name="gender" id="female" value="female" v-model="gender" />
+
+    <button type="button" @:click="log">전송 로그보기</button> 
+  </form>  
+</template>
+
+<style>
+</style>

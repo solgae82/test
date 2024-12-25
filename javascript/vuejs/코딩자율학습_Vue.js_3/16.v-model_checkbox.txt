@@ -1,0 +1,72 @@
+---------- 체크 여부만 사용할때 (true / false)
+<script>
+export default{
+  data(){
+    return {
+      fruit: true
+      
+    };
+  },
+  methods:{
+    log(){
+      console.log(`fruit: ${this.fruit}`); // 체크: true, 미체크: false
+      
+    }
+  }
+}
+</script>
+
+<template> 
+  <form id="loginForm">
+    <label for="isChk">체크여부</label>
+    <input type="checkbox" name="isChk" id="isChk" v-model="fruit" />
+    <button type="button" @:click="log">전송 로그보기</button> 
+  </form>  
+</template>
+
+<style>
+</style>
+
+--------- 체크 값 접근
+<script>
+export default{
+  data(){
+    return {
+      fruits: [] /* 매치되는 값이 있으면 자동 체크된다 ex)['banana'] => value값이 'banana' 인것을 체크 */
+      
+    };
+  },
+  methods:{
+    log(){
+      // apple을 먼저 체크하고 banana를 체크했을 경우 
+      //체크 순서대로 배열에 담겨서 출력된다
+
+      console.log('갯수=>'+this.fruits.length); // 2
+      console.log(`fruits: ${this.fruits}`); // fruits: apple,banana 
+      console.log(this.fruits); //Proxy(Array) {0: 'apple', 1: 'banana'}
+      for(const k in this.fruits){
+        console.log(this.fruits[k]); 
+        /*
+         apple
+         banana
+         */
+      }
+    }
+  }
+}
+</script>
+
+<template> 
+  <form id="loginForm">
+    <label for="banana">바나나</label>
+    <input type="checkbox" name="fruits" id="banana" value="banana" v-model="fruits" />
+    
+    <label for="apple">애플</label>
+    <input type="checkbox" name="fruits" id="apple" value="apple" v-model="fruits" />
+
+    <button type="button" @:click="log">전송 로그보기</button> 
+  </form>  
+</template>
+
+<style>
+</style>

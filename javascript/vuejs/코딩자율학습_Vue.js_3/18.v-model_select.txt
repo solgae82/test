@@ -1,0 +1,38 @@
+<script>
+export default{
+  data(){
+    return {
+       selItem: 'B'  /* B 로 설정하면 B값을 가진 option  태그가 자동 체크된다 */
+      
+    };
+  },
+  methods:{
+    log(){
+      if(this.selItem ==''){
+        console.log('선택된 커피가 없습니다');
+      }else{
+        console.log(`선택된 커피: ${this.selItem} 커피`); // B
+      }
+    }
+  }
+}
+</script>
+
+<template> 
+  <form id="loginForm">
+    
+    <label for="selCoffe">커피선택: </label>
+    <select v-model="selItem" id="selCoffe">
+      <option value="">---선택해주세요---</option>
+      <option value="A">A커피</option>
+      <option value="B">B커피</option>
+      <option value="C">C커피</option>
+    </select>
+
+    <button type="button" @:click="log">전송 로그보기</button> 
+    <p>선택: {{ selItem }}</p>
+  </form>  
+</template>
+
+<style>
+</style>
