@@ -1,0 +1,33 @@
+<script>
+export default{
+
+  data(){
+      return{
+        inputStr : ''
+      }
+  },
+
+  watch:{
+    inputStr(newValue, oldValue){
+     
+      console.log(`변경된 값: ${newValue}, 이전 값: ${oldValue}`);
+      
+    }
+  }
+}
+</script>
+
+<template> 
+ <input type="text" v-model="inputStr" />
+</template>
+
+<style>
+</style>
+---------
+'abc' 입력했을때 출력 로그
+	변경된 값: a, 이전 값: 
+	변경된 값: ab, 이전 값: a
+	변경된 값: abc, 이전 값: ab
+
+테스트 결과처럼 데이터 속성이나 computed 식별자를 감시하다가 변경될시, 
+(새값, 이전값)을 인수를 넘겨줘서 내부 로직을 할 수 있게 한다.
