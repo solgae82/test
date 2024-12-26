@@ -79,6 +79,7 @@ export default{
   <button @click="count++">카운터 변경</button>
   <button @click="arr.push(3)">배열값 변경</button>
   <button @click="obj.age++">객체값 변경</button>
+  <button @click="obj ={name:'동이',age:30}">객체 변경</button>
  </template>
 <style>
 </style>
@@ -94,8 +95,11 @@ export default{
 	newValue, oldValue 값이 같은 이유
 	: arr, obj 가 다른 객체로 교체되지 않는 한, newValue와 oldValue는 같습니다.
         (둘 다 동일한 객체를 참고하고 있기 때문입니다!)
-	객체 자체가 변경되면 newValue와 oldValue가 제대로 표현됩니다
-	ex)
+	
+	
+	그래서 다음 [객체 변경] 버튼을 실행하면 , 
+	객체 자체가 변경되면서 newValue와 oldValue가 제대로 표현됩니다 
+	
 		<button @click="obj ={name:'동이',age:30}">객체 변경</button>
 		
 		출력: 
