@@ -12,13 +12,13 @@ export default{
 
   watch:{
     count(newValue, oldValue){
-      console.log(`count=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //기본 값 watch 로그만 작동한다
+      console.log(`count=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //기본값 속성은 기본 watch가 작동한다
     },
     arr(newValue, oldValue){
-      console.log(`arr=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //배열은 watch가 작동하지 않는다
+      console.log(`arr=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //배열값 속성은 기본 watch가 작동하지 않는다
     },
     obj(newValue, oldValue){
-     console.log(`obj=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //객체는 watch가 작동하지 않는다
+     console.log(`obj=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //객체값 속성은 기본 watch가 작동하지 않는다
    }
   }
 }

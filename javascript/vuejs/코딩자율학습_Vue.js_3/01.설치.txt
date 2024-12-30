@@ -56,9 +56,13 @@
 		npm run dev
 		
 3. vue 프로젝트 설치 (패키지등 설치됨)
- : node_modules 디렉토리가 생기면서, 관련 패키지등이 설치됨.
+ 
+ : (Project name 디렉토리로 이동하지 않았다면 이동하고)
+ 아래 명령으로 vue 프로젝트 설치
  
  > npm install
  
+ : (node_modules 디렉토리가 생기면서, 관련 패키지등이 설치됨)
+
 4. vue 프로젝트 실행
  > npm run dev
