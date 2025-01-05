@@ -1,0 +1,57 @@
+---------- 지역 컴포넌트
+FirstChild.vue 
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2> 
+		<p>내가 만든 첫번째 컴포넌트</p>
+	    </div>
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{
+	  components : {
+	    FirstChild
+	  }
+	}
+
+	</script>
+
+	<template>
+	  <div>
+	    <!-- root 컴포넌트는  style 태그 scoped 속성으로 인해 글자색이 orange 이다 -->	
+	    <h2>root 컴포넌트</h2> 
+	    <p>내가 만든 첫번째 컴포넌트</p>
+	  </div>
+	  <FirstChild />
+	</template>
+
+	<style scoped>	
+		h2,p{color: orange !important;}
+	</style>
+	
+--------- 전역 컴포넌트
+main.js
+	//import './assets/main.css'
+
+	import { createApp } from 'vue'
+	import App from './App.vue'
+	import FirstChild from '@/components/FirstChild.vue';
+
+	const app = createApp(App);
+	app.component('FirstChild', FirstChild); /* 전역 컴포넌트 등록 */
+	app.mount('#app');
+	
+App.vue
+	<script></script>
+
+	<template>	  
+	  <FirstChild />
+	</template>
+
+	<style></style>

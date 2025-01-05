@@ -1,0 +1,148 @@
+	<script>
+
+	export default{
+	  beforeCreate(){	//1.인스턴스가 초기화되고 데이터 및 이벤트 설정되긴 전 호출
+	    console.log('beforeCreate');
+	  },
+	  created(){		//2.인스턴스 생성된 직후 호출, 데이터와 이벤트가 설정되어 있지만, DOM 접근 불가
+	    console.log('created');
+	  },
+	  beforeMount(){	//3.인스턴스 마운트 되기 전에 호출,DOM 접근 가능
+	    console.log('beforeMount');
+	  },
+	  mounted(){		//4.인스턴스가 DOM에 마운트 된 후 호출
+	    console.log('mounted');
+	  },
+	  beforeUpdate(){	//5.데이터가 변경되어 DOM이 갱신되기 전에 호출
+	    console.log('beforeUpdate');
+	  },
+	  updated(){		//6.데이터가 변경되어 DOM이 갱신 후에 호출
+	    console.log('updated');
+	  },
+	  beforeUnmount(){	//7.마운트된 인스턴스가 제거되긴 전에 호출
+	    console.log('beforeUnmount');
+	  },
+	  unmounted(){		//8.마운트된 인스턴스가 제거된 후 호출
+	    console.log('unmounted');
+	  },
+
+	  data(){
+	    return{
+	      count: 1
+	    }
+	  },
+	  methods : {
+	    cnt(){
+	      console.log(':'+ (++this.count));
+	    }
+	  }
+
+	}
+
+	</script>
+
+	<template>
+	  <div>
+	    
+	    {{ count }}
+	    <button type="button" v-on:click="cnt">버튼</button>
+	  </div>
+	  
+	</template>
+
+	<style scoped>
+	h2,p{color: orange !important;}
+	</style>
+
+	---------
+	(컴포넌트 생성)
+	beforeCreate
+	created
+	beforeMount
+	mounted
+
+	(버튼 클릭 후) 
+	:2
+	beforeUpdate
+	updated
+
+-------------------// 서브 컴포넌트 체거 후 beforeUnmount, unmounted 로그 순서 보기
+FirstChild.vue
+	<script>
+	    export default{
+		beforeUnmount(){
+		    console.log('sub:beforeUnmount');
+		},
+		unmounted(){
+		    console.log('sub:unmounted');
+		}
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<p>내가 만든 첫번째 컴포넌트</p>
+	    </div>    
+	</template>
+	<style>
+	</style>
+
+App.vue
+
+	<script>
+		import FirstChild from './components/FirstChild.vue';
+
+		export default{
+		  components:{
+		    FirstChild
+		  },
+		  beforeCreate(){	//1.인스턴스가 초기화되고 데이터 및 이벤트 설정되긴 전 호출
+		    console.log('beforeCreate');
+		  },
+		  created(){		//2.인스턴스 생성된 직후 호출, 데이터와 이벤트가 설정되어 있지만, DOM 접근 불가
+		    console.log('created');
+		  },
+		  beforeMount(){	//3.인스턴스 마운트 되기 전에 호출,DOM 접근 가능
+		    console.log('beforeMount');
+		  },
+		  mounted(){		//4.인스턴스가 DOM에 마운트 된 후 호출
+		    console.log('mounted');
+		  },
+		  beforeUpdate(){	//5.데이터가 변경되어 DOM이 갱신되기 전에 호출
+		    console.log('beforeUpdate');
+		  },
+		  updated(){		//6.데이터가 변경되어 DOM이 갱신 후에 호출
+		    console.log('updated');
+		  },
+		  beforeUnmount(){	//7.마운트된 인스턴스가 제거되긴 전에 호출
+		    console.log('beforeUnmount');
+		  },
+		  unmounted(){		//8.마운트된 인스턴스가 제거된 후 호출
+		    console.log('unmounted');
+		  },
+		  data(){
+		    return{
+		      visible : true
+		    }
+		  }
+
+		}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <button type="button" v-on:click="visible = !visible">버튼</button>
+	  </div>
+	  <FirstChild v-if="visible" />
+	</template>
+
+	<style>
+	</style>
+	
+	-----------
+	(버튼클릭 후)
+	beforeUpdate
+	sub:beforeUnmount
+	sub:unmounted
+	updated
