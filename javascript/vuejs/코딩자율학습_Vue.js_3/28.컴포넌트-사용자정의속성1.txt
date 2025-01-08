@@ -1,0 +1,59 @@
+FirstChild.vue
+	<script>
+	    export default{
+		props:['name' , 'age','isHuman'],
+		created(){
+		    console.log("name 타입: "+typeof this.name + ', 값: '+this.name);
+		    console.log("age 타입: "+typeof this.age + ', 값: '+this.age);
+		    console.log("isHuman 타입: "+typeof this.isHuman + ", 값: "+this.isHuman);
+		    console.log('');
+		}
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<p>name : {{ name }} , {{ age }}</p>
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
+	
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <FirstChild name="동이" /><!--name 타입: string, 값: 동이-->
+	  <FirstChild :name="`동이2`" /> <!--name 타입: string, 값: 동이2-->
+	  
+	  <FirstChild age="18" /><!--age 타입: string, 값: 18-->
+	  <FirstChild :age="19" /> <!--age 타입: number, 값: 19-->
+	  
+	  <FirstChild :is-human="true" /><!-- isHuman 타입: boolean , 값 : true -->
+	  <FirstChild is-human="true" /><!-- isHuman 타입: string, 값 : 'true' -->
+	  <FirstChild is-human /><!-- isHuman 타입: boolean , 값 : true -->
+	</template>
+
+	<style>
+	</style>
+
+---------
+자바스크립트 props: 캐멀케이스
+속성명 : '-' 단어 연결 케밥케이스
+ex)
+	props:['isHuman']	
+	<FirstChild is-human />

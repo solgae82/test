@@ -1,0 +1,73 @@
+--------- 유효성 검사
+사용자 정의 속성의 타입으로 유효성 검사
+	: 로그로 경고 메시지가 나온다.
+	
+FirstChild.vue
+	<script>
+	    export default{
+		props:{
+		    name : {
+			type : [String, Boolean],
+			required : true,
+			validator: function(value){
+			    /* 유효성 검사 후 true/false 반환해야 함 */
+			    return value.length > 1; // false 반환하면 [Vue warn] 메시지 로그 콘솔에 찍힘.
+			},
+			//default : '없어' /* 기본값 설정,  */
+			default : function(){
+			    return '없다';
+			}
+		    },
+		    age : {
+			type: Number
+		    }
+
+		},
+		created(){
+		    console.log('name: '+typeof this.name  + ', 값: '+ this.name);
+		}
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<p>name : {{ name }} , {{ age }}</p>
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
+	
+App.vue
+
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <h1>h1 태그</h1>
+	  </div>
+	  <FirstChild :name="`동`" :age="18" /><!--name 타입: string, 값: 동-->
+	  <!--
+		콘솔로그 유효성 체크 경고 로그 :  
+		[Vue warn]: Invalid prop: custom validator check failed for prop "name". 
+		at <FirstChild name="동" age=18 > 
+		at <App>
+	  
+	  -->
+	  
+	</template>
+
+	<style>
+	</style>

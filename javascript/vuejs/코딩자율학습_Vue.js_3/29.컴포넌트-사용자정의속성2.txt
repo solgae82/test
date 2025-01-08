@@ -1,0 +1,51 @@
+--------- 유효성 검사
+사용자 정의 속성의 타입으로 유효성 검사
+	: 로그로 경고 메시지가 나온다.
+	
+FirstChild.vue
+	<script>
+	    export default{
+		props:{age:Number, isHuman: Boolean}
+		/*
+		2개 이상 타입 체크시에는 배열을 이용한다
+		props:{age:[String,Number], isHuman: Boolean}
+		*/
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>	
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
+	
+App.vue
+
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <h1>h1 태그</h1>
+	  </div>
+	  
+	  <FirstChild age="18" /><!--[Vue warn]: Invalid prop: type check failed for prop "age". Expected Number with value 18, got String with value "18"-->
+	  <FirstChild is-human="true" /><!-- [Vue warn]: Invalid prop: type check failed for prop "isHuman". Expected Boolean, got String with value "true" -->
+	  
+	</template>
+
+	<style>
+	</style>
