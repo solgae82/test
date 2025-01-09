@@ -1,0 +1,55 @@
+FirstChild.vue
+	<script>
+	    export default{
+		/** 허락된 이벤트만 실행, 허락되지 않은 이벤트라면 경로 로그가 찍힌다(실행은 된다) */
+		emits: ['print-hello']
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<button @click="$emit('print-hello')">클릭1</button>
+		<button @click="$emit('print-hello2', {name:'철수' , age: 20})">클릭2</button>
+		<button @click="$emit('print-hello2', '영희', 30)">클릭3</button>
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
+
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  },
+	  methods :{
+	    printHello(){
+	      alert('Hi');
+	    },
+	    printHello2(name, age){
+	      alert(`이름은 ${name}, 나이는 ${age} 입니다`);
+	    }
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <h1>h1 태그</h1>
+	  </div>
+	  <FirstChild @print-hello="printHello"  @print-hello2="(name, age)=> printHello2(name, age)"  />
+	  <FirstChild @print-hello2="({name, age})=> printHello2(name, age)"  />
+	  <FirstChild @print-hello2="(name, age)=> printHello2(name, age)"  />
+	  <FirstChild /> <!-- 아무 버튼도 실행 안됨-->
+	</template>
+
+	<style>
+	</style>
