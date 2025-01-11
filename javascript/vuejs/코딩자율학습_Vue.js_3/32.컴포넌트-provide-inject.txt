@@ -1,0 +1,79 @@
+main.js
+	//import './assets/main.css'
+
+	import { createApp } from 'vue'
+	import App from './App.vue'
+	import FirstChild from '@/components/FirstChild.vue';
+
+	const app = createApp(App);
+	//app.component('FirstChild', FirstChild); /* 전역 컴포넌트 등록 */
+	app.provide('rootData','Hi');
+	app.mount('#app');
+	//createApp(App).mount('#app')
+	
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  },
+	  inject :['rootData'],
+	  provide(){
+	    return{
+	      message : this.message,
+	      reverseMessage : this.reverseMessage
+	    }
+	  },
+	  data(){
+	    return{
+	      message: 'Hello, Vue JS!'
+	    }
+	  },
+	  computed : {
+	    reverseMessage(){
+	      return this.message.split('').reverse().join('');
+	    }
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <h1>h1 태그 , {{ rootData }}</h1> <!-- h1 태그 , Hi -->
+	  </div>
+	  
+	  <FirstChild /> 
+	</template>
+
+	<style>
+	</style>
+	
+FirstChild.vue
+	<script>
+	    export default{
+		//inject:['message' , 'reverseMessage','rootData']
+		inject : {
+		    message1 : {from: 'message'},
+		    reverseMessage2 : {from: 'reverseMessage' , default:'기본값'},
+		    rootData3 : {from: 'rootData'}
+		}
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<p>1.{{ message1 }}</p> <!-- 1.Hello, Vue JS! -->
+		<p>2.{{ reverseMessage2 }}</p><!-- 2.기본값  (2.!SJ euV ,olleH) -->
+		<p>3.{{ rootData3 }}</p><!-- 3.Hi -->
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>

@@ -1,0 +1,56 @@
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+	import {message , reverseMessage} from '@/keys.js';
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  },
+	  
+	  provide(){
+	    return{
+	      [message] : '하루살이'
+	      
+	    }
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	  <div>    
+	    <h1>h1 태그</h1>
+	  </div>
+	  
+	  <FirstChild /> 
+	</template>
+
+	<style>
+	</style>
+	
+FirstChild.vue
+
+	<script>
+	    import {message , reverseMessage} from '@/keys.js';
+	    export default{
+		
+		//inject : {message1 : message}
+		inject : {
+		    message1 : {from: message , default:'기본값'}
+		}
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<p>{{ message1 }}</p> <!-- 하루살이 -->
+		
+	    </div>    
+	</template>
+	<style>
+	    h2{color: blue;}
+	    p{color: green;}
+	</style>
