@@ -1,0 +1,83 @@
+--------- 부모 컴포넌트 데이터 바인딩
+FirstChild.vue
+	<script>
+	    export default{
+	       data(){
+		return {
+		    message : 'child',
+		    count: 0
+		}
+	       }
+	    }
+	</script>
+	<template>
+	    <div>		
+		<slot><span>서브 span</span></slot>		
+	    </div>    
+	</template>	
+
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{	 
+	  components : {
+	    FirstChild	    
+	  },
+	  data(){
+	      return {
+		  message : 'parent',
+		  count: 10
+	      }
+	  }	  
+	}
+	</script>
+
+	<template>	    
+	  <FirstChild>	    
+	    <p>{{ message }} , {{ count }}</p> <!-- parent , 10 -->
+	  </FirstChild>    
+	</template>
+
+	
+--------- 자식 컴포넌트 데이터 바인딩
+FirstChild.vue
+	<script>
+	    export default{
+	       data(){
+		return {
+		    message : 'child',
+		    count: 0
+		}
+	       }
+	    }
+	</script>
+	<template>
+	    <div>		
+		<slot><span>서브 span</span></slot> 
+		<p>{{ message }} , {{ count }}</p> <!-- child , 0 -->	
+	    </div>    
+	</template>
+
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{	 
+	  components : {
+		FirstChild	    
+	  },
+	  data(){
+	      return {
+		  message : 'parent',
+		  count: 10
+	      }
+	  }	  
+	}
+	</script>
+
+	<template>	    
+	  <FirstChild>	    
+	    <span>부모설정 slot</span>	    
+	  </FirstChild>    
+	</template>

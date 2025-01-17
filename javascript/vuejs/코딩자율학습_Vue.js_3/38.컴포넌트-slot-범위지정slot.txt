@@ -1,0 +1,130 @@
+--------- 기본 slot 범위지정 
+	FirstChild.vue
+		<script>
+		import { message } from '@/keys';
+
+		    export default{
+		       data(){
+			return {
+			    message : 'child',
+			    count: 0
+			}
+		       }
+		    }
+		</script>
+		<template>
+		    <div>
+			
+			<slot :msg="message" :cnt="count"></slot>
+			
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>
+
+
+	App.vue
+		<script>
+		import FirstChild from './components/FirstChild.vue';
+
+		export default{
+		 
+		  components : {
+		    FirstChild
+		    
+		  },
+		  data(){
+		      return {
+			  message : 'parent',
+			  count: 10
+		      }
+		  }
+		  
+		  
+		}
+
+		</script>
+
+		<template>
+		    
+		  <FirstChild v-slot="child">
+			<h3>자식데이터1 : {{ child.msg }} , {{ child.cnt }}</h3> <!-- 자식데이터 : child , 0 -->    
+		  </FirstChild>  
+		  <FirstChild v-slot="{msg, cnt}">
+			<h3>자식데이터2 : {{ msg }} , {{ cnt }}</h3> <!-- 자식데이터 : child , 0 -->    
+		  </FirstChild>    
+		  
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>
+		
+--------- slot 범위지정 확장
+	FirstChild.vue
+		<script>
+		import { message } from '@/keys';
+
+		    export default{
+		       data(){
+			return {
+			    message : 'child',
+			    count: 0
+			}
+		       }
+		    }
+		</script>
+
+		<template>
+		    <div>    
+			<slot name="header" :msg="message" :cnt="count"></slot>
+			<slot name="main" :msg="message" :cnt="count"></slot>
+			<slot name="footer"></slot>
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>	
+
+
+	App.vue
+		<script>
+		import FirstChild from './components/FirstChild.vue';
+
+		export default{
+		 
+		  components : {
+		    FirstChild
+		    
+		  },
+		  data(){
+		      return {
+			  message : 'parent',
+			  count: 10
+		      }
+		  }
+		  
+		  
+		}
+
+		</script>
+
+		<template>
+		  <FirstChild>
+		    <template v-slot:header="child">
+		      <h3>header : {{ child.msg }} , {{ child.cnt }}</h3> <!-- header : child , 0 -->
+		    </template>
+			
+		    <template #main="{msg , cnt}">
+		      <h3>main : {{ msg }} , {{ cnt }}</h3> <!-- main : child , 0 -->
+		    </template>
+		    <template #footer><span>하하</span></template>
+
+		  </FirstChild>  
+		      
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>

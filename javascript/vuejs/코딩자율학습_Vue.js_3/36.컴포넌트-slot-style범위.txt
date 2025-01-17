@@ -1,0 +1,72 @@
+--------- slot 아닌 기본 스타일
+: 기본 스타일은 부모에 설정된 style이 적용된다.
+
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 빨간색(red) -->
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>
+		
+: 부모 컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
+	
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style scoped> <!-- scoped 설정 -->
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 파란색(blue) -->
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>
+		
+: 하위컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
+	
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 파란색(blue) -->
+		    </div>    
+		</template>
+		<style scoped> <!-- scoped 설정 -->
+		    span{color: blue}
+		</style>

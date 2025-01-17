@@ -1,0 +1,109 @@
+--------- 기본 slot 
+기본 형식	
+	부모컴포넌트.vue
+	<template v-slot:header>
+	..
+	</template>
+	자식컴포넌트.vue
+	<slot name="header"></slot>
+	
+단축형 : 
+	v-slot:slot이름 = #slot이름
+	
+FirstChild.vue
+	<script>
+	    
+	    export default{
+		
+	    }
+	</script>
+	<template>
+	    <div>
+		<h2>서브 컴포넌트</h2>
+		<button type="button" class="btn"><slot>제출</slot></button>
+		<slot name="header"></slot>
+		<slot name="main"></slot>
+		<slot name="footer"><span style="color: red">기본값</span></slot>
+	    </div>    
+	</template>
+	<style>
+	</style>
+
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
+
+	export default{
+	 
+	  components : {
+	    FirstChild
+	  }
+	  
+	}
+
+	</script>
+
+	<template>
+	    
+	  <FirstChild>
+	    <template v-slot:header>
+		<h3>header</h3>
+	    </template>
+	    <template v-slot:main>
+		<h3>main</h3>
+	    </template>
+	    <template #footer>
+		<h3>footer</h3>
+	    </template>
+	    <!--span style="color: red">더블클릭</span -->  
+	  </FirstChild>    
+	</template>
+	  
+	<style>
+	</style>
+	
+--------- 동적 slot
+DynamicLayout.vue
+
+	<template>
+	    <h2>서브-header</h2>
+	    <slot name="header">
+		<h3>기본 header</h3>  <!-- <h3 style="color: red">app-header</h3> -->
+	    </slot>
+	    <slot name="main">
+		<h3>기본 main</h3>
+	    </slot>
+	    <slot name="footer">
+		<h3>기본 footer</h3>
+	    </slot>
+	</template>
+
+App.vue
+	<script>
+	import DynamicLayout from './components/DynamicLayout.vue';
+
+	export default{
+	 
+	  components : {
+	    DynamicLayout
+	  },
+	  data(){
+	    return{
+	      dynamicName : 'header'
+	    }
+	  }
+	  
+	}
+
+	</script>
+
+	<template>	    
+	  <DynamicLayout>
+	    <template #[dynamicName]>
+	      <h3 style="color: red">app-header</h3>
+	    </template>
+	  </DynamicLayout>    
+	</template>
+	  
+	<style>
+	</style>
