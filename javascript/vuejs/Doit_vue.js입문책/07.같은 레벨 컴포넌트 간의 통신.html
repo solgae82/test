@@ -11,7 +11,7 @@
         <div id="app">
             <h1>같은 레벨 컴포넌트 간의 통신</h1>
             <p>{{message}}</p>
-            <child-component v-on:show-log="printTxt"></child-component>
+            <child-component></child-component>
         </div>
         
         <script>
@@ -20,7 +20,7 @@
             var eventBus = new Vue();
 
             Vue.component('child-component',{
-                template : '<button v-on:click="showLog">다른 컴 이벤트 쇼!</button>',
+                template : '<button v-on:click="showLog">이벤트버스 호출!</button>',
                 methods : {
                     showLog: function(){
                         eventBus.$emit('trigger', '안녕하쇼~!');
