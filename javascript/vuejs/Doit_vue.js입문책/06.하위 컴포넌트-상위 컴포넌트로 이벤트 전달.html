@@ -20,7 +20,7 @@
                 template : '<button v-on:click="showLog">이벤트 쇼!</button>',
                 methods : {
                     showLog: function(){
-                        this.$emit('show-log');
+                        this.$emit('show-log','하나','둘');
                     }
                 }
 
@@ -30,8 +30,8 @@
                 el : '#app',
                 data : {message: '하위 컴포넌트 $emit("show") > v-on:show="printTxt" > 상위 컴포넌트 printTxt() 실행'},
                 methods:{
-                    printTxt : function(){
-                        alert('what!');
+                    printTxt : function(p1, p2){
+                       console.log(p1 +', '+ p2); // 하나, 둘
                     }
                 }
                 
