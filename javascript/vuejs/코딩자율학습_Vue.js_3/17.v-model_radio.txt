@@ -11,7 +11,7 @@ export default{
       if(this.gender ==''){
         console.log('선택된 성별이 없습니다');
       }else{
-        console.log(`선택된 성별: ${this.gender}`); // male,female
+        console.log(`선택된 성별: ${this.gender}`); // male 또는 female 또는 ''
       }
     }
   }

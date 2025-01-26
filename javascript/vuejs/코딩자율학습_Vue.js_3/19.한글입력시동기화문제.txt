@@ -12,8 +12,8 @@ export default{
 
     },
     imeSync(event){
-      //한글 입력시 v-model로는 정확한 sync가 맞지 않아서, keyup이벤트로 수도 동기화를 맞춘다 
-      this[event.target.id] = event.target.value; 
+      //한글 입력시 v-model로는 정확한 sync가 맞지 않아서, keyup이벤트로 수동으로 동기화를 맞춘다 
+      this.name = event.target.value; 
       
     }
 
@@ -35,7 +35,7 @@ export default{
 ---------
 한글이나 한자등 입력시 IME(input method editor) 동기화 문제가 발생해서,입력내용과 출력내용 동기화가 맞지 않게 된다.
 이를 극복하기 위해 keyup이벤트로 값을 수동으로 동기화 해주는 방법을 쓴다.
-전송버튼을 누르면 동기화가 된다.
+
 text, password, textarea 에 적용하면 된다.
 
 
