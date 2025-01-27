@@ -31,7 +31,16 @@ export default{
 <style scoped>
   /* scoped : 이 컴포넌트에만 적용 */
   
-  @import './assets/main.css'; /* 모든 컴포넌트에 css 적용 */
+  @import '@/assets/main.css'; /* 모든 컴포넌트에 css 적용 */
   
   h3{color: #ff2211; font-style: italic}
 </style>
+
+---------
+ @imprort '@상대경로' 의 '@'은 vite.config.js 의 설정에 alias로 되어 있다.
+ 쉽게 말하면 애플리케이션의 src 경로, root 경로라는 의미이다
+	
+	..
+	alias:{
+		'@': fileURLToPath(new URL('./src', import.meta.url))
+	}
