@@ -15,10 +15,12 @@ export default{
       console.log(`count=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //기본값 속성은 기본 watch가 작동한다
     },
     arr(newValue, oldValue){
-      console.log(`arr=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //배열값 속성은 기본 watch가 작동하지 않는다
+	//배열값 속성은 기본 watch가 작동하지 않는다 (호출 조차 되지 않는다)
+      console.log(`arr=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); 
     },
     obj(newValue, oldValue){
-     console.log(`obj=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); //객체값 속성은 기본 watch가 작동하지 않는다
+	//객체값 속성은 기본 watch가 작동하지 않는다 (호출 조차 되지 않는다)
+     console.log(`obj=>변경된 값: ${newValue}, 이전 값: ${oldValue}`); 
    }
   }
 }
@@ -97,8 +99,8 @@ export default{
         (둘 다 동일한 객체를 참고하고 있기 때문입니다!)
 	
 	
-	그래서 다음 [객체 변경] 버튼을 실행하면 , 
-	객체 자체가 변경되면서 newValue와 oldValue가 제대로 표현됩니다 
+	그래서 [객체 변경] 버튼을 실행하면 , 
+	객체 자체가 변경되면서 newValue와 oldValue가 새 객체와 이전 객체 로 콜백 받게 됩니다. 
 	
 		<button @click="obj ={name:'동이',age:30}">객체 변경</button>
 		
@@ -106,7 +108,7 @@ export default{
 		obj=>변경된 값: {"name":"동이","age":30}, 이전 값: {"name":"chulsu","age":20}
 	
 옵션 : 
-	deep : true/false => 계산 속성이 변경될 때마다 콜백함수 호출 여부
+	deep : true/false => 계산 속성이 변경될 때마다 깊은 watch 콜백함수 호출 여부
 	immediate: true/false => 초기 렌더링시 콜백 함수 호출 여부
 	flush : pre/sync/post =>콜백함수 실행타이밍, [pre:뷰 반영 전호출,sync:뷰반응과 동기 호출, post:뷰 반영 후 호출]
 	once : true/false => Vue3.4 이상에 추가된 속성, true면 한번만 watch 한다 
