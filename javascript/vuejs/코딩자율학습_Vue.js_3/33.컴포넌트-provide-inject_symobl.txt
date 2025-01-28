@@ -1,3 +1,11 @@
+provide 기능을 사용할때 데이터 키 이름이 중복 될 수 있다.
+데이터 키가 중복 되지 않게 Symbol을 사용해 데이터 키를 지정하는 방법이다
+---------
+
+keys.js
+	export const message = Symbol();
+	export const reverseMessage = Symbol();
+
 App.vue
 	<script>
 	import FirstChild from './components/FirstChild.vue';
@@ -37,7 +45,7 @@ FirstChild.vue
 	    import {message , reverseMessage} from '@/keys.js';
 	    export default{
 		
-		//inject : {message1 : message}
+		//inject : {message1 : message} /* <= 요것도 된다. */
 		inject : {
 		    message1 : {from: message , default:'기본값'}
 		}
