@@ -1,0 +1,83 @@
+1. 문자셋 변경 전 주의사항
+	- $ORACLE_HOME/product/버전/dbs/init.ora
+	- init.ora 안에 있는 parallel_server가 true일 경우, false로 변경해야 한다.
+	- parallel_server=true는 multi-instance database(OPS)환경에서 데이터베이스를 구동시키기위해 설정한 것이므로 
+	false로 변경한 후, 문자셋을 설정해야 오류가 발생하지 않는다.
+
+	SQL > show parameter parallel_server; # 파라미터 확인
+	
+	NAME				     TYPE	 VALUE
+	------------------------------------ ----------- ------------------------------
+	_parallel_server_idle_time	     integer	 30000
+	_parallel_server_sleep_time	     integer	 10
+	parallel_server 		     boolean	 FALSE # <-   요기 
+	parallel_server_instances	     integer	 1
+
+
+2. oracle 계정의 .bash_profile 의 변수 변경
+
+	vi .bash_profile
+	$ export NLS_LANG=KOREAN_KOREA.UTF8
+	:wq
+
+3. 현재 문자셋 확인하기 (sqlplus, sys 계정으로)
+
+	select * from nls_database_parameters where parameter like '%CHARACTERSET%';
+	select * from sys.props$ where name='NLS_LANGUAGE';
+
+
+4.문자셋 변경 하기
+	update sys.props$ set value$='UTF8' where name='NLS_CHARACTERSET';
+	update sys.props$ set value$='UTF8' where name='NLS_NCHAR_CHARACTERSET';
+	update sys.props$ set value$='KOREAN_KOREA.UTF8' where name='NLS_LANGUAGE';
+	
+	commit;
+
+5. 오라클 재기동 후 다시 문자셋 확인
+
+
+#####################################################################
+클라이언트 접속시 에러(ORA-06552 ORA-06553) 메시지가 나올때..
+#####################################################################
+
+1. 아래 쿼리를 sqlplus,  sys계정으로 실행해본다
+
+	SELECT DISTINCT (NLS_CHARSET_NAME (CHARSETID)) CHARACTERSET, DECODE (type#, 1, DECODE (CHARSETFORM, 1, 'VARCHAR2',2,'NVARCHAR2','UNKOWN'),9, DECODE (CHARSETFORM,1, 'VARCHAR',2, 'NCHAR VARYING','UNKOWN'),96, DECODE (CHARSETFORM,
+	1, 'CHAR',2, 'NCHAR','UNKOWN'),112, DECODE (CHARSETFORM,1, 'CLOB',2, 'NCLOB','UNKOWN')) types_used_in FROM SYS.col$ WHERE CHARSETFORM IN (1, 2) AND type# IN (1, 9, 96, 112);
+
+	- 실행해보면 TYPES_USED_IN 컬럼의 캐릭터셋을 보면 중복이 나올 것이다..(중복에러)
+	- 예를 들어 아래처럼
+ 
+
+	CHARACTERSET                            TYPES_USED_IN
+	-----------------------------------------------------
+	 AL16UTF16                               NCHAR
+	 AL16UTF16                               NVARCHAR2
+	 AL16UTF16                               NCLOB
+	 US7ASCII                                CHAR
+	 US7ASCII                                VARCHAR2 # <-요기
+	 WE8DEC                                  VARCHAR2 # <-요기
+	US7ASCII                                CLOB
+
+
+2. 아래 명령을 차례차례 해본다..그럼 해결 된다.
+
+	SHUTDOWN IMMEDIATE;
+	STARTUP MOUNT;
+	ALTER SYSTEM ENABLE RESTRICTED SESSION;
+	ALTER SYSTEM SET JOB_QUEUE_PROCESSES=0;
+	ALTER SYSTEM SET AQ_TM_PROCESSES=0;
+	ALTER DATABASE OPEN;
+	COL VALUE NEW_VALUE CHARSET
+	SELECT VALUE FROM NLS_DATABASE_PARAMETERS WHERE PARAMETER='NLS_CHARACTERSET';
+	COL VALUE NEW_VALUE NCHARSET
+	SELECT VALUE FROM NLS_DATABASE_PARAMETERS WHERE PARAMETER='NLS_NCHAR_CHARACTERSET';
+	ALTER DATABASE CHARACTER SET INTERNAL_USE &CHARSET;
+	ALTER DATABASE NATIONAL CHARACTER SET INTERNAL_USE &NCHARSET;
+	SHUTDOWN IMMEDIATE;
+	STARTUP;
+	-- yes, 2 times startup/shutdown . This is not a typo
+	SHUTDOWN IMMEDIATE;
+	STARTUP;
+
+3. 클라이언트 프로그램 다시 재시작 후 접속해보면 에러메시지가 사라졌음을 확인할 수 있다.
