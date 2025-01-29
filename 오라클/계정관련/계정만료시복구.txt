@@ -24,13 +24,14 @@ sys로 접속
 
 1. 오라클 암호기간 쿼리로 보기
 	SQL> SELECT RESOURCE_NAME, LIMIT FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT' AND RESOURCE_TYPE = 'PASSWORD';
+	
 	: 'PASSWORD_LIFE_TIME' 의 LIMIT을 보면 '180' 으로 되어 있을 것이다.
 
 	
 2. 오라클 암호기간 무제한으로 변경
 	SQL> alter profile default limit password_life_time UNLIMITED;
 	
-	다시 위의 쿼리로 암호기간을 조회해 보면 'UNLIMITED' 로 바뀌었을 것이다
+	:다시 위의 쿼리로 암호기간을 조회해 보면 'UNLIMITED' 로 바뀌었을 것이다
 	
 3. 암호기간이 무제한을 변경되었지만, 이미 제한이 걸렸을 경우에는 패스워드를 변경해줘야한다.
 	SQL> alter user DONG identified by "100you";

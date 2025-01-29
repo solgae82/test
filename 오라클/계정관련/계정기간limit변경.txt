@@ -11,6 +11,3 @@ alter user DONG2 identified by "123456"; //패스워드 변경
 
 -- 무제한으로 변경
 alter profile default limit PASSWORD_LIFE_TIME unlimited; -- 무제한 변경
-
-
-commit; 
