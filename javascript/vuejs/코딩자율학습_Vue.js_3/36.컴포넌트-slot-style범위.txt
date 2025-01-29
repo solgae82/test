@@ -1,72 +1,51 @@
---------- slot 아닌 기본 스타일
-: 기본 스타일은 부모에 설정된 style이 적용된다.
-
-	App.vue
-
-		<template>
-		    <span>부모 span</span> <!-- 빨간색(red) -->
-		</template>
-		  
-		<style>
-		span{color: red}
-		</style>
+slot 조각을 넘겨주는 곳에서 [데이터] 와 [스타일] 등이 결정된다
+----------
+FirstChild.vue
+	<script>
+	    
+	    export default{
+	    
+	       data(){
+			return {
+			    message : 'Hello'
+			}
+	       }
 		
-	FirstChild.vue
-
-		<template>
-		    <div>
-			<h2>서브 컴포넌트</h2>
-			<span>서브 span</span><br /> <!-- 빨간색(red) -->
-		    </div>    
-		</template>
-		<style>
-		    span{color: blue}
-		</style>
-		
-: 부모 컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
+	    }
+	</script>
+	<template>
+	    <slot></slot> <!-- <h3>범위 : 안녕</h3>(글자색 : red) -->
+	</template>
+	<style >
+	    h3{color: blue;}
+	</style>
 	
-	App.vue
+App.vue
+	<script>
+	import FirstChild from './components/FirstChild.vue';
 
-		<template>
-		    <span>부모 span</span> <!-- 빨간색(red) -->
-		</template>
-		  
-		<style scoped> <!-- scoped 설정 -->
-		span{color: red}
-		</style>
+
+	export default{
 		
-	FirstChild.vue
-
-		<template>
-		    <div>
-			<h2>서브 컴포넌트</h2>
-			<span>서브 span</span><br /> <!-- 파란색(blue) -->
-		    </div>    
-		</template>
-		<style>
-		    span{color: blue}
-		</style>
+		components : {
+			FirstChild
+		},
 		
-: 하위컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
-	
-	App.vue
-
-		<template>
-		    <span>부모 span</span> <!-- 빨간색(red) -->
-		</template>
-		  
-		<style>
-		span{color: red}
-		</style>
+		data(){
+			return{
+				message : '안녕'
+				
+			}
+		}
 		
-	FirstChild.vue
+	}
 
-		<template>
-		    <div>
-			<h2>서브 컴포넌트</h2>
-			<span>서브 span</span><br /> <!-- 파란색(blue) -->
-		    </div>    
-		</template>
-		<style scoped> <!-- scoped 설정 -->
-		    span{color: blue}
-		</style>
+	</script>
+
+	<template>
+		<FirstChild><h3>범위 : {{ message }}</h3></FirstChild> 
+	</template>
+
+	<style scoped>
+		h3{color: red;}
+	</style>

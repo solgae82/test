@@ -1,46 +1,121 @@
----------./assets/main.css
-h4{color: blue; font-weight: bolder}
+./assets/main.css
+	h4{color: blue; font-weight: bolder}
 
---------- App.vue
-<script>
-export default{
+App.vue
+	<script>
+	export default{
 
-  data(){
-      return{
-        count: 0,
-        redColor : 'red',
-        blackColor : '#000'
-      }
-  }
-}
-</script>
+	  data(){
+	      return{
+		count: 0,
+		redColor : 'red',
+		blackColor : '#000'
+	      }
+	  }
+	}
+	</script>
 
-<template> 
-  <!-- 인라인 스타일 -->
-  <h2 style="color: {{ redColor }}">html</h2>
-  <h2 v-bind:style="{color : blackColor}">{{  count }}</h2>
-  <h2 :style="{color : redColor, fontStyle: 'italic'}">한글</h2>
+	<template> 
+	  <!-- 인라인 스타일 -->
+	  <h2 style="color: {{ redColor }}">html</h2>
+	  <h2 v-bind:style="{color : blackColor}">{{  count }}</h2>
+	  <h2 :style="{color : redColor, fontStyle: 'italic'}">한글</h2>
 
-  <!-- 내부 스타일 -->
-  <h3>내부 스타일</h3>
-   
-  <!-- 외부 스타일-->
-  <h4>외부 스타일</h4>
-   
- </template>
-<style scoped>
-  /* scoped : 이 컴포넌트에만 적용 */
-  
-  @import '@/assets/main.css'; /* 모든 컴포넌트에 css 적용 */
-  
-  h3{color: #ff2211; font-style: italic}
-</style>
+	  <!-- 내부 스타일 -->
+	  <h3>내부 스타일</h3>
+	   
+	  <!-- 외부 스타일-->
+	  <h4>외부 스타일</h4>
+	   
+	 </template>
+	<style scoped>
+	  /* scoped : 이 컴포넌트에만 적용 */
+	  
+	  @import '@/assets/main.css'; /* 모든 컴포넌트에 css 적용 */
+	  
+	  h3{color: #ff2211; font-style: italic}
+	</style>
 
 ---------
- @imprort '@상대경로' 의 '@'은 vite.config.js 의 설정에 alias로 되어 있다.
- 쉽게 말하면 애플리케이션의 src 경로, root 경로라는 의미이다
+@imprort '@상대경로' 의 '@'은 vite.config.js 의 설정에 alias로 되어 있다.
+쉽게 말하면 애플리케이션의 src 경로, root 경로라는 의미이다
 	
 	..
 	alias:{
 		'@': fileURLToPath(new URL('./src', import.meta.url))
 	}
+	
+	
+--------- 부모 컴포넌트와 자식 컴포넌트 스타일 결정
+
+: 기본 스타일(scoped 없는)은 부모에 설정된 style이 적용된다.
+
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 빨간색(red) -->
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>
+		
+: 부모 컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
+	
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style scoped> <!-- scoped 설정 -->
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 파란색(blue) -->
+		    </div>    
+		</template>
+		<style>
+		    span{color: blue}
+		</style>
+		
+: 하위컴포넌트 style에 'scoped' 설정 -> 하위 컴포넌트는 본인 style을 적용한다
+	
+	App.vue
+
+		<template>
+		    <span>부모 span</span> <!-- 빨간색(red) -->
+		</template>
+		  
+		<style>
+		span{color: red}
+		</style>
+		
+	FirstChild.vue
+
+		<template>
+		    <div>
+			<h2>서브 컴포넌트</h2>
+			<span>서브 span</span><br /> <!-- 파란색(blue) -->
+		    </div>    
+		</template>
+		<style scoped> <!-- scoped 설정 -->
+		    span{color: blue}
+		</style>

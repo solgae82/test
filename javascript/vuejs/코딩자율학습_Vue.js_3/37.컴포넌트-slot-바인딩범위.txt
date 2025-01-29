@@ -1,4 +1,5 @@
---------- 부모 컴포넌트 데이터 바인딩
+slot 조각을 넘겨주는 곳에서 [데이터] 와 [스타일] 등이 결정된다
+--------- 
 FirstChild.vue
 	<script>
 	    export default{
@@ -12,7 +13,7 @@ FirstChild.vue
 	</script>
 	<template>
 	    <div>		
-		<slot><span>서브 span</span></slot>		
+		<slot><span>서브 span</span></slot>	<!-- <p>parent , 10</p> -->	
 	    </div>    
 	</template>	
 
@@ -36,48 +37,5 @@ App.vue
 	<template>	    
 	  <FirstChild>	    
 	    <p>{{ message }} , {{ count }}</p> <!-- parent , 10 -->
-	  </FirstChild>    
-	</template>
-
-	
---------- 자식 컴포넌트 데이터 바인딩
-FirstChild.vue
-	<script>
-	    export default{
-	       data(){
-		return {
-		    message : 'child',
-		    count: 0
-		}
-	       }
-	    }
-	</script>
-	<template>
-	    <div>		
-		<slot><span>서브 span</span></slot> 
-		<p>{{ message }} , {{ count }}</p> <!-- child , 0 -->	
-	    </div>    
-	</template>
-
-App.vue
-	<script>
-	import FirstChild from './components/FirstChild.vue';
-
-	export default{	 
-	  components : {
-		FirstChild	    
-	  },
-	  data(){
-	      return {
-		  message : 'parent',
-		  count: 10
-	      }
-	  }	  
-	}
-	</script>
-
-	<template>	    
-	  <FirstChild>	    
-	    <span>부모설정 slot</span>	    
 	  </FirstChild>    
 	</template>

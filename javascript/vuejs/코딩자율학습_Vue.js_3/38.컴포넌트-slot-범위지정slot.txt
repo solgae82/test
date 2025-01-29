@@ -1,8 +1,8 @@
 --------- 기본 slot 범위지정 
+
 	FirstChild.vue
 		<script>
-		import { message } from '@/keys';
-
+		
 		    export default{
 		       data(){
 			return {
@@ -19,10 +19,6 @@
 			
 		    </div>    
 		</template>
-		<style>
-		    span{color: blue}
-		</style>
-
 
 	App.vue
 		<script>
@@ -57,14 +53,12 @@
 		  
 		</template>
 		  
-		<style>
-		span{color: red}
-		</style>
 		
 --------- slot 범위지정 확장
+
 	FirstChild.vue
 		<script>
-		import { message } from '@/keys';
+		
 
 		    export default{
 		       data(){
@@ -83,10 +77,6 @@
 			<slot name="footer"></slot>
 		    </div>    
 		</template>
-		<style>
-		    span{color: blue}
-		</style>	
-
 
 	App.vue
 		<script>
@@ -124,7 +114,3 @@
 		  </FirstChild>  
 		      
 		</template>
-		  
-		<style>
-		span{color: red}
-		</style>
