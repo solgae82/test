@@ -6,7 +6,7 @@ sys,system 계정 접속 후 기동 가능하다
 1. 시동
 	su - oracle	#사용자 변경
 
-	sqlplus sys / as sysdba	#sys 계정으로 접속
+	sqlplus sys / as sysdba	
 	SQL>startup	# 오라클 인스턴스 기동
 	SQL>quit	# sqlplus 종료
 	

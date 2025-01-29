@@ -1,22 +1,36 @@
-SYSTEM 계정 만료 복구
+--------- SYSTEM 계정 만료 복구
 
-	ORA-28001 메시지 뜨면서 접속 안 될때.
+ORA-28001,ORA-28002  메시지 뜨면서 접속 안 될때.
 
-	sqlplus로 접속
+sqlplus로 접속
 
-		# SYS 계정으로 접속해야함
-		sqlplus /nolog
-		conn /as sysdba
+	# SYS 계정으로 접속해야함
+	sqlplus /nolog
+	conn /as sysdba
 
 
-		#계정상태 확인
-		SQL> select username,expiry_date,account_status from dba_users where username='SYSTEM';
+	#계정상태 확인
+	SQL> select username,expiry_date,account_status from dba_users where username='SYSTEM';
 
-		#계정 패스워드 변경
-		SQL> alter user SYSTEM identified by "100you";
-			
-			#계정 패스워드 변경했는데 'ora-28000 : the accout is locke' 일때..
-			alter user SYSTEM account unlock;
-		 
-		#시스템(전체) 패스워드 만료시간 무제한 설정
-		SQL> alter profile default limit password_life_time UNLIMITED;
+	#계정 패스워드 변경
+	SQL> alter user SYSTEM identified by "100you";
+		
+		#계정 패스워드 변경했는데 'ora-28000 : the accout is locke' 일때..
+		alter user SYSTEM account unlock;
+	 		
+--------- 시스템(전체) 패스워드 만료시간 무제한 설정
+
+sys로 접속
+
+1. 오라클 암호기간 쿼리로 보기
+	SQL> SELECT RESOURCE_NAME, LIMIT FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT' AND RESOURCE_TYPE = 'PASSWORD';
+	: 'PASSWORD_LIFE_TIME' 의 LIMIT을 보면 '180' 으로 되어 있을 것이다.
+
+	
+2. 오라클 암호기간 무제한으로 변경
+	SQL> alter profile default limit password_life_time UNLIMITED;
+	
+	다시 위의 쿼리로 암호기간을 조회해 보면 'UNLIMITED' 로 바뀌었을 것이다
+	
+3. 암호기간이 무제한을 변경되었지만, 이미 제한이 걸렸을 경우에는 패스워드를 변경해줘야한다.
+	SQL> alter user DONG identified by "100you";
