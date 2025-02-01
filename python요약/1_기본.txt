@@ -190,21 +190,48 @@
 		print('이번은','=>',s)
 		s +=1
 
-
 	for 제어변수 in 컬렉션:
 		명령
 
 	for 제어변수 in range(시작,끝,증가값):
 		명령
 
-#break, continue
-	for s in score:
+	match 제어
+	
+		http = 401
+		match http:
+		    
+		    case 400|500:
+			print('400 코드')
+		    case 401|501:
+			print('401 코드')
+		    case 404:
+			print('페이지 없다')
+		    case _:
+			print('그외 코드')
+
+		# 출력 : 401 코드
+
+	- break, continue
 		
-		if ... : break   #반복문 탈출
-		if ... : continu #반복문 처음으로 되돌아감
+		# 반복문에 사용되는 제어 키워드
 		
-		명령
+		score = [1,2,3]
+		for s in score:
+			명령..
+			if ... : break    #반복문 탈출
+			if ... : continue #반복문 처음으로 되돌아감
+	
+#pass 키워드
 
+	# pass문은 파이썬 코드에 아무것도 하지 않는다
+	# 예를 들어 if문을 작성하다가 실행 로직을 나중에 작성하고 싶을때 쓸 수 있다
 
+	for sport in['축구','야구','배구']: 
+	    
+	    if sport == '축구':
+		print('축구가 있습니다')
 
-
+	    if sport == '야구':
+		pass
+			

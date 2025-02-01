@@ -1,5 +1,5 @@
 제어문
-	if else elif for while break continue
+	if else elif for while break continue pass
 상수
 	True False None
 논리연산자
