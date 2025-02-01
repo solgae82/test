@@ -1,0 +1,31 @@
+
+c언어의 swich문 비슷한 역할이다. break문이 없다.
+---------
+http = 401
+match http:
+    
+    case 400|500:
+        print('400 코드')
+    case 401|501:
+        print('401 코드')
+    case 404:
+        print('페이지 없다')
+    case _:
+        print('그외 코드')
+
+# 출력: 401 코드
+
+point=(0,2)
+match point:
+    case(0,0):
+        print('원점 좌표')
+    case (x,0):
+        print(f'x 축 위의 점이며 x의 값은 {x}')
+    case (0,y):
+        print(f'y 축 위의 점이며 y의 값은 {y}')
+    case (x,y):
+        print(f'(x,y) => ({x},{y})')
+    case _:
+        print('오류: 2차원 좌표가 아님')
+
+# 출력 : y 축 위의 점이며 y의 값은 2
