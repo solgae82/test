@@ -8,11 +8,12 @@ java.util.function  패키지
 	위와 같은 패턴에서, 매개변수 숫자와, 매개변수 타입등만 변하게 된다.
 
 	그래서 함수형 인터페이스도 이런 형식에 맞춰 네이티브 차원에서 미리 정의된 것들이 있다.
-	java.util.function 패키지에 이런 준비된 함수형 인터페이스들이 있는데, 
-	매개변수가 2개 이상만 아니라면, 커스텀 함수형 인터페이스를 만들 필요 없이 
-	java.util.function 패키지 에 있는 함수형 인터페이스를 쓰면 된다.
-
-	(기본 : 이건 외우자)
+	java.util.function 패키지에 이런 준비된 함수형 인터페이스들이 있는데(엄청 많음), 
+	매개변수가 3개 이상만 아니라면, 커스텀 함수형 인터페이스를 만들 필요 없이 
+	java.util.function 패키지 에 있는 함수형 인터페이스를 쓰면 될 정도로 많다.
+	그러나 기본(5가지) 만 외우자
+	
+	(기본 4개 : 이건 외우자)
 		java.lang.Runable
 			void run() : 매개변수도 없고, 반환값도 없음.
 		
@@ -42,6 +43,7 @@ java.util.function  패키지
 	Function의 변형으로  UnaryOperator 와 BinaryOperator 가 있다.
 	매개변수 타입과 반환 타입이 같다는 점이 Function과 다르다
 
+	(기본 추가 1개 : UnaryOperator는 외우자)
 		java.util.function.UnaryOperator<T>
 			T apply(T t) : 매개변수가 한개 있고, 반환 타입도 매개변수 타입과 같다
 			
@@ -85,11 +87,12 @@ java.util.function  패키지
 	
 ---------
 요약
-	기본인
+	기본인 (5가지)
 		Supplier
 		Consumer
 		Function
 		Predicate
+		UnaryOperator
 		
 	만 외우면 된다
 	나머진 그것들의 확장일 뿐이다.
