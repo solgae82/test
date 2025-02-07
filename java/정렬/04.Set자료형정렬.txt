@@ -1,0 +1,27 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class TestApp {
+
+	public static void main(String[] args) {
+		
+		Set<String> set = new HashSet<String>();
+		
+		set.add("하루살이");
+		set.add("가두리");
+		set.add("중돌이");
+		
+		System.out.println(set);  // [가두리, 중돌이, 하루살이]
+		
+		List<String> list = new ArrayList<String>(set);		
+		
+		Collections.sort(list,(o1,o2)->o2.compareTo(o1));// 내림차순
+		
+		System.out.println(list); // [하루살이, 중돌이, 가두리]
+		
+	}
+
+}
