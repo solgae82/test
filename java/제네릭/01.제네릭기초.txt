@@ -1,0 +1,125 @@
+제네릭 용어
+	class Box<T>{}
+	
+	Box<T>  : 제네릭 클래스, 'T의 Box' 또는 'T Box'
+	T	: 제네릭 타입변수, 타입 매개변수
+	Box	: 원시 타입 (raw type)
+	
+	Box<String>은 컴파일 후 원시타입인 Box로 바뀐다. 즉. 제네릭 타입이 제거된다.
+
+제네릭 사용 버전
+	JDK 1.5 부터 가능
+	
+변수 대입
+	Box<String> bx = new Box<String>();
+	Box<String> bx = new Box<>(); // OK, JDK 1.7부터 생략 가능
+	
+기본
+	지네릭 클래스 선언 : 
+	class Box<T>{ // 지네릭 타입 T 선언
+		ArrayList<T> list = new ArrayList<T>();
+		void add(T item) {list.add(item);}
+		T get(int i) {return list.get(i);}
+	}
+	
+	
+	지네릭 클래스 타입 결정
+	Box<String> bx = new Box<String>();
+	
+	아래 처럼 변경 됨	
+	class Box<String>{ // 지네릭 타입 T 선언
+		ArrayList<String> list = new ArrayList<String>();
+		void add(String item) {list.add(item);}
+		String get(int i) {return list.get(i);}	
+	}
+	
+	
+	bx.add(new Object); //에러, String 타입만 가능
+	bx.add("ABC"); //OK
+	String item = bx.get(0); // ABC 반환, (String) 형변환 필요없음.
+	
+--------- : 아래와 같은 클래스가 있다고 가정하고 설명을 보자
+	
+	interface Eatable{}
+
+	class Fruit implements Eatable{
+		public String toString() {return "Fruit";}
+	}
+	class Apple extends Fruit{public String toString() {return "Apple";}}
+	class Grape extends Fruit{public String toString() {return "Grape";}}
+	class Toy{public String toString() {return "Toy";}}
+	
+	class Box<T>{}
+	class FruitBox<T extends Fruit & Eatable> extends Box{}
+	
+--------- : 
+
+제네릭 클래스 제작 및 사용시 기본 제한
+
+	1. 참조변수에 설정한 제네릭 타입변수와 대입하는 제네릭 타입은 같아야한다(일단 이렇게 생각하자)
+	: <String>=<String> , 같은 제네릭 타입형으로 선언하고 대입하자(일단 이렇게 생각하자)
+	
+		Box<String> bx = new Box<String>();  //OK
+		Box<String> bx1 = new Box<Integer>(); //에러
+		Box<Fruit> bx2 = new Box<Apple>(); //에러, 될 것 같지만 안된다. 기억해라
+			
+	2.부모-자식 관계의 제네릭 클래스끼리 대입은 가능하다
+	:Box<같은형> (부모 제네릭클래스) - FruitBox<부모형과 같아야한다> (자식 제네릭클래스)
+	
+		Box<Fruit> fruitBox = new FruitBox<Fruit>();
+	
+	3. 제네릭 클래스 제작시 static 멤버에 클래스 제네릭 타입변수를 사용할 수 없다 
+	: 클래스 제네릭 타입은 실행타임에 결정되므로, 인스턴스 변수로 사용하기 때문..
+	
+		class Box<T>{
+			/* static 멤버에 타입변수 T 지정 불가 */
+			//static T item: //에러
+			//static int compare(T ta, T t2){..} //에러
+			
+			T[] item; //OK , T타입 인스턴스 참조 변수는 가능
+			
+			T[] toArray{ //OK , T타입 인스턴스 메소드는 가능
+				// 에러, new T, 컴파일 시점에 정확한 형을 알아야한다.
+				//T[] arr = new T[item.length] 
+				
+			}
+		}
+		
+		: new 연산자는 컴파일 시점에 타입이 뭔지 정확히 알아야 한다. (T 사용 불가)
+		instanceof 연산자도 컴파일 시점에 타입이 뭔지 정확히 알아야 한다. (T 사용 불가)
+		[참고] Collections.toArray(T[] a) 를 뜯어서 보자
+	
+제네릭 키워드
+	<..> 안에 쓰는 키워드들
+	
+	제네릭 클래스 제작시 클래스 선언에 쓰는 것과
+	
+	제네릭 클래스 제작시 클래스 내부 static 메소드에 선언(제너릭 메소드)하는 것과,
+	
+	제네릭 클래스 제작시 클래스 내부 변수나 매개변수에 사용되는 것과,
+	
+	외부에서 제네릭 클래스 사용시 선언한는 참조변수에 쓰이는 키워드이다
+	
+	1. ? 키워드 
+		: 와일드 카드, '?' 만으로는 Object 타입이라는 의미다
+		(제네릭 참조변수에 쓰인다)
+		<?>, <? extends Fruit>, <? super FruitBox>
+		
+	2. extends 키워드 
+		: 클래스 ,추상클래스, 인터페이스 : 구현, 또는 상속했다는 뜻
+		(제네릭 참조변수, 또는 제네릭 선언(클래스,메소드)에 쓰인다)
+		Box<? extends Fruit> box = null; //참조변수 제한범위에 사용 가능
+		class FruitBox<T extends Fruit>{} //클래스 선언시 제한범위에 '사용가능
+		
+	3. super 키워드 
+		:  특정한 타입형의 조상이라는 뜻
+		(제네릭 참조 변수에 쓰인다)
+		Box<? super Fruit> box = null;
+		method(Box<? super Fruit> box){}
+		!! 제네릭 클래스 선언엔 안 쓰인다. 에러
+			class FruitBox<T super Apple> {} //선언 못함
+			
+	4. '&' 키워드
+		: & 로 연결한 클래스, 추상클래스, 인터페이스 등을 확장했거나, 구현한 클래스라는 의미
+		: <T extends Fruit & Eatable> (Eatable를 구현한 Fruit 포함 자손형만 가능)
+		
