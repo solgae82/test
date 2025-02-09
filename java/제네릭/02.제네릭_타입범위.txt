@@ -24,8 +24,7 @@
 	: 외부에서 제네릭 클래스 참조 변수로 선언에도 사용한다.
 	: 특정형을 사용하거나, '?' 를 사용한다.
 	: <?> 에서 '?'는 Object형라는 뜻
-	
-	(문법)
+
 	
 	
 	(제네릭 클래스 제작시 사용)
@@ -42,19 +41,22 @@
 			FruitBox<? extends T> f = null; // OK
 			
 			static void makeJuice1(FruitBox<Fruit> b) {
-				// Fruit 형만 가능
+				//FruitBox<? extends T> T 사용 못함. 
+				//왜냐. static에 instance 타입 매개변수 못 쓰니까
+				// <Fruit 형만 가능>
 			}
 			
 			static void makeJuice2(FruitBox<? extends Fruit> b) {
-				// Fruit 형과 그 자식형만 사용 가능
+				
+				// <Fruit 형과 그 자식형만 사용 가능>
 			}
 			
 			static void makeJuice2(FruitBox<? super Apple> b) {
-				// Fruit 형과 그 조상형만 사용 가능
+				// <Fruit 형과 그 조상형만 사용 가능>
 			}
 			
 			//인스턴스 메소드 
-			void makeInsJuice(Box<? extends T> b) {
+			void makeInsJuice(Box<? extends T> b) { //인스턴스 메소드는 클래스<T> 타입 사용 가능
 				T s = b.get(0);
 				System.out.println(s.toString());
 			}
@@ -94,17 +96,10 @@
 		Box<Toy> b3 = null;//ok
 		
 		//FruitBox<Toy> f= null; // 에러, 제한 범위
+		FruitBox<?> f = null; //ok
 		FruitBox<Fruit> f1= null; //
 		FruitBox<? extends Fruit> f2= new FruitBox<Apple>(); //ok
 		FruitBox<? super Apple> f3= new FruitBox<Fruit>();	//ok
 		FruitBox<? super Apple> f4= new FruitBox<Apple>();	//ok
 		//FruitBox<? super Apple> f5= new FruitBox<Grape>(); //에러 , 제한 범위
 		
-		
-		 
-	
-제네릭 메소드
-	제네릭_메소드.txt 참조
-	
-제네릭 타입의 형변환
-	제네릭_타입형변환.txt 참조

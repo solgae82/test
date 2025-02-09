@@ -38,7 +38,7 @@
 	bx.add("ABC"); //OK
 	String item = bx.get(0); // ABC 반환, (String) 형변환 필요없음.
 	
---------- : 아래와 같은 클래스가 있다고 가정하고 설명을 보자
+--------- : 아래와 같은 클래스가 있다고 가정하고 설명을 이어가 보자
 	
 	interface Eatable{}
 
@@ -64,12 +64,13 @@
 		Box<Fruit> bx2 = new Box<Apple>(); //에러, 될 것 같지만 안된다. 기억해라
 			
 	2.부모-자식 관계의 제네릭 클래스끼리 대입은 가능하다
-	:Box<같은형> (부모 제네릭클래스) - FruitBox<부모형과 같아야한다> (자식 제네릭클래스)
+	:Box<부모타입형> (부모 제네릭클래스) = FruitBox<부모타입형과 같아야한다> (자식 제네릭클래스)
 	
 		Box<Fruit> fruitBox = new FruitBox<Fruit>();
 	
 	3. 제네릭 클래스 제작시 static 멤버에 클래스 제네릭 타입변수를 사용할 수 없다 
-	: 클래스 제네릭 타입은 실행타임에 결정되므로, 인스턴스 변수로 사용하기 때문..
+	: 클래스 제네릭 타입<T>은 실행타임에 결정된다, 인스턴스 변수로 접근하는 방식이다.
+	: static 멤버는 실행타임에 전에 이미 타입이 결정되어 있어야 한다.
 	
 		class Box<T>{
 			/* static 멤버에 타입변수 T 지정 불가 */
@@ -89,37 +90,70 @@
 		instanceof 연산자도 컴파일 시점에 타입이 뭔지 정확히 알아야 한다. (T 사용 불가)
 		[참고] Collections.toArray(T[] a) 를 뜯어서 보자
 	
-제네릭 키워드
-	<..> 안에 쓰는 키워드들
+확장범위 제네릭 키워드
+	제네릭 타입 <..>  안에 쓰는 확장 범위 키워드들
 	
-	제네릭 클래스 제작시 클래스 선언에 쓰는 것과
-	
-	제네릭 클래스 제작시 클래스 내부 static 메소드에 선언(제너릭 메소드)하는 것과,
-	
-	제네릭 클래스 제작시 클래스 내부 변수나 매개변수에 사용되는 것과,
-	
-	외부에서 제네릭 클래스 사용시 선언한는 참조변수에 쓰이는 키워드이다
-	
-	1. ? 키워드 
+	? 키워드 
 		: 와일드 카드, '?' 만으로는 Object 타입이라는 의미다
-		(제네릭 참조변수에 쓰인다)
-		<?>, <? extends Fruit>, <? super FruitBox>
+			<?> 는 <? extends Object> 라는 의미
 		
-	2. extends 키워드 
+	extends 키워드 
 		: 클래스 ,추상클래스, 인터페이스 : 구현, 또는 상속했다는 뜻
-		(제네릭 참조변수, 또는 제네릭 선언(클래스,메소드)에 쓰인다)
-		Box<? extends Fruit> box = null; //참조변수 제한범위에 사용 가능
-		class FruitBox<T extends Fruit>{} //클래스 선언시 제한범위에 '사용가능
+			<? extends Fruit> // Apple, Grape, Fruit 가능
 		
-	3. super 키워드 
+	super 키워드 
 		:  특정한 타입형의 조상이라는 뜻
-		(제네릭 참조 변수에 쓰인다)
-		Box<? super Fruit> box = null;
-		method(Box<? super Fruit> box){}
-		!! 제네릭 클래스 선언엔 안 쓰인다. 에러
-			class FruitBox<T super Apple> {} //선언 못함
+			<? super Apple> // Apple, Fruit 가능 
+		
+		: 제네릭 클래스 선언엔 super 못 쓴다
+			class FruitBox<T super Apple> {} //에러(x), 선언 못함
 			
-	4. '&' 키워드
+	'&' 키워드
 		: & 로 연결한 클래스, 추상클래스, 인터페이스 등을 확장했거나, 구현한 클래스라는 의미
-		: <T extends Fruit & Eatable> (Eatable를 구현한 Fruit 포함 자손형만 가능)
+			<T extends Fruit & Eatable> //Eatable를 구현한 Fruit형과 Fruit 자손형만 가능
+		
+제네릭 쓰이는 패턴 (맛보기)
+	
+	1. 제네릭 클래스 선언에 쓰이는 패턴
+		class<T>
+		class<T extends Fruit>
+		//class<T super Fruit> , (x) 클래스 선언시에는 super 못 쓴다
+	
+	2. 제네릭 메소드 패턴
+		: 메소드를 제네릭 하게 쓰는 방식
+		: static , instanct 메소드 둘 다 쓸 수 있다.
+		class Test<T>{
+			//클래스 제네릭 Test<T> 의 'T' 와 
+			//메소드 제네릭<T extends Fruit> 의 'T'는 서로 다른 영역의 것이다
+			
+			//static 메소드 , 형이 미리 지정되어 있어야 한다 (Fruit)
+			static <T extends Fruit> int listSize2(List<T> list1 , List<T> list2) {}
+			
+			//인스턴스 메소드, 클래스<T> 를 쓸 수 있다.
+			<M extends Fruit> int listSize3(List<T> list1 , List<M> list2) {}
+			<M extends T> int listSize3(List<T> list1 , List<M> list2) {}
+		}
+		
+	3. 참조변수, 메소드 매개변수등에 쓰이는 패턴
+		
+		class GenTest<T>{
+			Box<?> b = null;
+			Box<? extends T> b = null;
+			Box<? super T> b1 = null;
+		}
+		
+		
+		Box<?> b = null;	//ok
+		Box<? extends Fruit> b1 = null;//ok
+		Box<? super Fruit> b2 = null;//ok
+		Box<Toy> b3 = null;//ok
+		
+		//FruitBox<Toy> f= null; // 에러, 제한 범위
+		FruitBox<?> f = null; //ok
+		FruitBox<Fruit> f1= null; //
+		FruitBox<? extends Fruit> f2= new FruitBox<Apple>(); //ok
+		FruitBox<? super Apple> f3= new FruitBox<Fruit>();	//ok
+		FruitBox<? super Apple> f4= new FruitBox<Apple>();	//ok
+		//FruitBox<? super Apple> f5= new FruitBox<Grape>(); //에러 , 제한 범위
+		
 		

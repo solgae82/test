@@ -7,7 +7,7 @@
 		//static 메소드 반환값 앞에 <T> 선언 (제네릭 메소드 선언)
 		static <T> String makeJuice(T f) {}
 		
-	(예제)-----------------:
+	(예제)-----------------:기본 설정
 	
 	interface Eatable{}
 
@@ -50,23 +50,26 @@
 	GenTest.makeJuice(new Toy()); //컴파일 에러
 	
 	-----------예제 3:
-	static  int listSize(List<? extends Fruit> list1 , List<? extends Fruit> list2) {
-			
-		return list1.size() + list2.size();
-	}
+	아래 같은 static 메소드 매개변수를 
 	
-	위를 아래로 바꿀 수 있다
+		static  int listSize(List<? extends Fruit> list1 , List<? extends Fruit> list2) {
+			return list1.size() + list2.size();
+		}
 	
-	static <T extends Fruit> int listSize2(List<T> list1 , List<T> list2) {
-		
-		return list1.size() + list2.size();
-	}
+	아래로 바꿀 수 있다
+	
+		static <T extends Fruit> int listSize2(List<T> list1 , List<T> list2) {	
+			return list1.size() + list2.size();
+		}
 	
 	코드가 짧아져서 가독성이 좋아졌다.
 	근데 차이가 약간 있다
 	
 	GenTest.listSize(List<Apple> list, List<Grape> list); 
-	서로 다른 타입 매개변수가 가능하지만,
+	서로 다른 타입 매개변수 타입이 가능하지만,
 	
 	GenTest.<Apple>listSize2(List<Apple> list, List<Apple> list); 
-	로 제네릭 메소드 <타입> 설정한 대로 같은 타입의 매개변수들만 사용가능하게 된다.
+	로 제네릭 메소드 <Apple> 설정한 대로 같은 <Apple>의 매개변수타입만 사용 된다.
+	
+	-----------예제 4:
+	
