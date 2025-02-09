@@ -1,0 +1,72 @@
+제네릭 메소드
+	: static 메서드에는 클래스타입매개변수를 사용할 수 없다
+	: 그러나 제너릭 메소드 타입매개변수를 선언해 사용하는 방법이 있다
+	: 제너릭 메소드에서 선언하는 제너릭 메소드 타입 매개변수는 그 메소드 내에서만 지역적으로 사용된다.
+	
+	형식:
+		//static 메소드 반환값 앞에 <T> 선언
+		static <T> String makeJuice(T f) {}
+		
+	(예제)-----------------:
+	
+	interface Eatable{}
+
+	class Fruit implements Eatable{
+		public String toString() {return "Fruit";}
+	}
+	class Apple extends Fruit{public String toString() {return "Apple";}}
+	class Grape extends Fruit{public String toString() {return "Grape";}}
+	class Toy{public String toString() {return "Toy";}}
+
+
+	-----------예제 1:
+	: GenTest<T> 과 스택틱 메소드 static <T> 의 타입은 서로 다른 것이다.
+	
+	class GenTest<T>{	
+		static <T> String makeJuice(T f) {		
+			return "주스:" + f.toString();
+		}
+	}
+	
+	GenTest.<Apple>makeJuice(new Apple()); //주스:Apple , (FM 정석 방법)
+	GenTest.makeJuice(new Apple()); // 주스:Apple , (생략,컴파일러 타입추론 가능)
+	
+	GenTest<Grape> apple = new GenTest<Grape>();
+	apple.makeJuice(new Apple());		// 주스:Apple
+	apple.<Apple>makeJuice(new Apple());	//주스:Apple
+	apple.<Apple>makeJuice(new Grape()); // 에러
+	
+	-----------예제 2:
+	class GenTest{
+		static <T extends Fruit> String makeJuice(T f) {
+			return "주스:" + f.toString();
+		}	
+	}
+	
+	GenTest.makeJuice(new Fruit());//주스:Fruit
+	GenTest.makeJuice(new Apple()); //주스:Apple
+	GenTest.<Grape>makeJuice(new Grape()); //주스:Grape
+	GenTest.<Apple>makeJuice(new Grape()); //컴파일 에러
+	GenTest.makeJuice(new Toy()); //컴파일 에러
+	
+	-----------예제 3:
+	static  int listSize(List<? extends Fruit> list1 , List<? extends Fruit> list2) {
+			
+		return list1.size() + list2.size();
+	}
+	
+	위를 아래로 바꿀 수 있다
+	
+	static <T extends Fruit> int listSize2(List<T> list1 , List<T> list2) {
+		
+		return list1.size() + list2.size();
+	}
+	
+	코드가 짧아져서 가독성이 좋아졌다.
+	근데 차이가 약간 있다
+	
+	GenTest.listSize(List<Apple> list, List<Grape> list); 
+	서로 다른 타입 매개변수가 가능하지만,
+	
+	GenTest.<Apple>listSize2(List<Apple> list, List<Apple> list); 
+	로 제네릭 메소드 <타입> 설정한 대로 같은 타입의 매개변수들만 사용가능하게 된다.
