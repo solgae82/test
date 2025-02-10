@@ -1,4 +1,4 @@
-제네릭 타입범위 테스트 기준 설정	
+예제 테스트 기준	
 	interface Eatable{}
 
 	class Fruit implements Eatable{
@@ -58,7 +58,7 @@
 			}
 			
 			static void makeJuice2(FruitBox<? super Apple> b) {
-				// <Fruit 형과 그 조상형만 사용 가능>
+				// <Apple 형과 그 조상형만 사용 가능>
 			}
 			
 			//인스턴스 메소드 

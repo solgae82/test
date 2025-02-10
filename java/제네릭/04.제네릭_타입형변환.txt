@@ -1,6 +1,5 @@
-
-
 제네릭 타입의 형변환
+
 	interface Eatable{}
 	class Fruit implements Eatable{
 		public String toString() {return "Fruit";}
@@ -13,20 +12,12 @@
 	class FruitBox<T extends Fruit & Eatable> extends Box<T>{}
 	class Box<T>{}
 
-	class  Test<T>{
-	private static final Test<?> EMPTY   = new Test<>();
-		public static<T> Test<T> empty() {
-			Test<T> t = (Test<T>) EMPTY;
-			return t;
-		}
-	}
+	//-------------------// 형변환 기본테스트 
 
-	//-------------------// 기본테스트 
-
-	Box box = null;
+	Box box = null; //raw 타입 선언
 	Box<Object> objBox = null;
 
-	box = (Box)objBox; //OK, 원시타입 경고 발생
+	box = (Box) objBox; //OK, 원시타입 경고 발생
 	objBox = (Box<Object>) box; //OK type safety 경고 발생
 
 	//Box<Object> objBox2  = new Box<String>(); //에러, 형변환 불가능
@@ -37,37 +28,63 @@
 
 	//역으로 대입도 가능하다
 	FruitBox<? extends Fruit> b4  = null;
-	FruitBox<Apple> appleBox = (FruitBox<Apple>)box; // OK type safety 경고 발생
+	FruitBox<Apple> appleBox = (FruitBox<Apple>)b4; // OK type safety 경고 발생
 
 
-	//-------------------//  Test<T> 구현 분석
-	/*
-	<?> 는 <? extends Object> 라는 뜻. 그러므로 대입하는 new <> 는 <Object> 이다
-	아래는 같은 의미
+	//-------------------//  Test<T> 클래스 구현 분석
+	:아래 클래스는 Optional 클래스 empty() 메소드를 copy한 것이다.
+	
+	class  Test<T>{
+		private static final Test<?> EMPTY   = new Test<>();
+		public static<T> Test<T> empty() {
+			Test<T> t = (Test<T>) EMPTY;
+			return t;
+		}
+	}
+		
+	1. private static final Test<?> EMPTY   = new Test<>(); 분석
+	:<?> 는 <? extends Object> 라는 뜻. 그러므로 대입하는 new Test<>() 는 Test<Object> 이다
+	아래는 같은 의미	
 
-	*/
+		// Test<Object> empty1 = new Test<Object>(); 라는 의미
+		Test<?> empty1 = new Test<>(); //OK, 
+		
+		//Test<Object> empty2 = new Test<Object>(); 라는 의미
+		Test<? extends Object> empty2 = new Test<>(); //OK, 
+		
+		//OK, Test<Object> empty3 = new Test<Object>(); 라는 의미
+		Test<? extends Object> empty3 = new Test<Object>(); 
 
-	Test<?> empty1 = new Test<>(); //OK,  Test<Object> empty1 = new Test<>Object(); 라는 의미
-	Test<? extends Object> empty2 = new Test<>(); //OK, Test<Object> empty2 = new Test<>Object(); 라는 의미
-	Test<? extends Object> empty3 = new Test<Object>(); //OK, Test<Object> empty3 = new Test<>Object(); 라는 의미
 
-
-	//Test<?> bank1 = new Test<?>(); // 에러 , 미확인 타입 객체 생성불가
-	Test<?> bank2 = new Test<Object>(); //OK , Test<Object> bank2 = new Test<Object>(); 라는 의미.
-	Test<?> bank3 = new Test<>();	// OK , Test<Object> bank3 = new Test<Object>() 라는 의미.
-	/**
-	* 결론은
-	* Test<?> empty1 = new Test<>(); 는
-	* Test<Object> empty1 = new Test<Object>(); 라는 의미
-	* 
-	* Test<Object> -> Test<T> 로는 형변환 불가하지만,
-	* Test<Object> -> Test<?> 로 형변환 후 -> Test<T>는 형변환 가능한다(경고 발생 하지만 ..)
-	* 그래서
-	* Test<?> EMPTY   = new Test<>() 로 받고 ,// Test<Object> EMPTY   = new Test<>(Object)
-	* Test<T> t = (Test<T>) EMPTY; 로 반환이 가능한 empty()가 구현된다.
-	*  
-	*/
-
+		//Test<?> bank1 = new Test<?>(); // 에러 , 미확인 타입 객체 생성불가
+		
+		//Test<Object> bank2 = new Test<Object>(); 라는 의미.
+		Test<?> bank2 = new Test<Object>(); //OK , 
+		
+		//Test<Object> bank3 = new Test<Object>() 라는 의미.
+		Test<?> bank3 = new Test<>();	// OK , 
+	
+	2. Test<T> t = (Test<T>) EMPTY; 분석
+	
+		Test<?> EMPTY = new Test<>(); 는
+		Test<Object> EMPTY = new Test<Object>(); 라는 의미
+		 
+		Test<Object> -> Test<T> 로는 형변환 불가하지만,
+		Test<Object> -> Test<?> 로 형변환 후 -> Test<T>는 형변환 가능하다(경고 발생 하지만 ..)
+		
+		그래서
+			Test<?> EMPTY  = new Test<>(); 
+		아래와 같으므로 
+			Test<Object> EMPTY   = new Test<Object>()
+	
+		empty() 메소드 구현의
+			Test<T> t = (Test<T>) EMPTY;
+			return t;
+	
+		아래와 같은 의미가 되는 것이다
+			Test<T> t = new Test<Object>(); 
+			return t;
+			
 	//-------------------// ? 포함 다른 제네릭 타입 형변환 
 	 
 	FruitBox<? extends Object> objBox1 = null;
