@@ -1,35 +1,44 @@
-제네릭 기준 설정	
-	interface Eatable{}
-
-	class Fruit implements Eatable{
-		public String toString() {return "Fruit";}
-	}
-	class Apple extends Fruit{public String toString() {return "Apple";}}
-	class Grape extends Fruit{public String toString() {return "Grape";}}
-	class Toy{public String toString() {return "Toy";}}
 	
-	class Box<T>{}
-	class FruitBox<T extends Fruit & Eatable> extends Box{}
-	
-제네릭 메소드
-	: static 메서드에는 클래스타입 매개변수를 사용할 수 없다
-	: 그러나 제너릭 메소드 타입매개변수를 선언해 사용하는 방법이 있다 (클래스 제네릭 타입과는 다른 것이다)
-	: 제너릭 메소드에서 선언하는 제너릭 메소드 타입 매개변수는 그 메소드 내에서만 지역적으로 사용된다.
+제네릭 메소드 기본
+	: 메소드 범위에 제네릭타입을 설정하는 방식
+	: static , instanct 메소드 둘 다 쓸 수 있다.
 	
 	형식:
-		//static 메소드 반환값 앞에 <T> 선언 (제네릭 메소드 선언)
 		class Test{
 			static <T> String makeJuice(T f) {return f.toString();}
+			<T> String makeJuice2(T f) {return f.toString();}
 		}
-		//제네릭 메소드 호출		
+		
+	static 제너릭 메서드 호출:
+					
 		Test.<Fruit>.makeJuice(new Apple()); // Apple 출력
 		
 		호출하면 아래처럼 결정되어서 호출됨.
-		static <Fruit> String makeJuice(Fruit f) {}
+		-> static <Fruit> String makeJuice(Fruit f) {..}
+		-> static String makeJuice(Fruit f) {..}
 		
-		그러므로 'Apple' 출력
+	인스턴스 제너릭 메서드 호출:
 		
-	(예제)-----------------:기본 설정
+		Test t  = new Test();
+		t.<Fruit>.makeJuice2(new Grape()); // Grape 출력
+		
+		호출하면 아래처럼 결정되어서 호출됨.
+		-> <Fruit> String makeJuice2(Fruit f) {..}
+		-> String makeJuice2(Fruit f) {..}
+		
+제네릭 메소드 주의사항
+	class Test<T>{
+		T type = b;
+		static <T> String makeJuice(T f) {return f.toString();}
+		<T> String makeJuice2(T f) {return f.toString();}
+	}
+	
+	: Test<T> 와 메소드의 <T>는 서로 다른 영역이다.
+	: 메소드의 T는 메소드 영역에서 재설정한 타입이고, 그 메소드 범위에만 영향을 준다.
+		
+제네릭 메소드 테스트 
+
+	-----------기본 설정:
 	
 	interface Eatable{}
 
