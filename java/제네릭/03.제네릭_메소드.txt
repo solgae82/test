@@ -1,3 +1,16 @@
+제네릭 기준 설정	
+	interface Eatable{}
+
+	class Fruit implements Eatable{
+		public String toString() {return "Fruit";}
+	}
+	class Apple extends Fruit{public String toString() {return "Apple";}}
+	class Grape extends Fruit{public String toString() {return "Grape";}}
+	class Toy{public String toString() {return "Toy";}}
+	
+	class Box<T>{}
+	class FruitBox<T extends Fruit & Eatable> extends Box{}
+	
 제네릭 메소드
 	: static 메서드에는 클래스타입 매개변수를 사용할 수 없다
 	: 그러나 제너릭 메소드 타입매개변수를 선언해 사용하는 방법이 있다 (클래스 제네릭 타입과는 다른 것이다)
@@ -5,7 +18,16 @@
 	
 	형식:
 		//static 메소드 반환값 앞에 <T> 선언 (제네릭 메소드 선언)
-		static <T> String makeJuice(T f) {}
+		class Test{
+			static <T> String makeJuice(T f) {return f.toString();}
+		}
+		//제네릭 메소드 호출		
+		Test.<Fruit>.makeJuice(new Apple()); // Apple 출력
+		
+		호출하면 아래처럼 결정되어서 호출됨.
+		static <Fruit> String makeJuice(Fruit f) {}
+		
+		그러므로 'Apple' 출력
 		
 	(예제)-----------------:기본 설정
 	
