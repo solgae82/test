@@ -40,7 +40,7 @@ export default{
 ---------
 기본값은 watch가 작동하지만, 배열 or 객체는 watch가 작동하지 않는다.
 
---------- 깊은 wathc 사용법
+--------- 깊은 watch 사용법
 <script>
 export default{
 
@@ -60,14 +60,14 @@ export default{
       handler(newValue, oldValue){
         console.log(`arr=>변경된 값: ${JSON.stringify(newValue)}, 이전 값: ${JSON.stringify(oldValue)}`); 
       },
-      deep: true, /* 계산 속성이 변경될 때마다 콜백함수 호출 여부 */
+      deep: true, /* 데이터 속성이 변경될 때마다 콜백함수 호출 여부 */
       immediate: true /*초기 렌더링시 콜백 함수 호출 여부 */
     },
     obj:{
       handler(newValue, oldValue){
         console.log(`obj=>변경된 값: ${JSON.stringify(newValue)}, 이전 값: ${JSON.stringify(oldValue)}`); 
       },
-      deep: true, /* 계산 속성이 변경될 때마다 콜백함수 호출 여부 */
+      deep: true, /* 데이터 속성이 변경될 때마다 콜백함수 호출 여부 */
       immediate: true /*초기 렌더링시 콜백 함수 호출 여부 */
     }
   }
@@ -108,7 +108,7 @@ export default{
 		obj=>변경된 값: {"name":"동이","age":30}, 이전 값: {"name":"chulsu","age":20}
 	
 옵션 : 
-	deep : true/false => 계산 속성이 변경될 때마다 깊은 watch 콜백함수 호출 여부
+	deep : true/false => 데이터 속성이 변경될 때마다 깊은 watch 콜백함수 호출 여부
 	immediate: true/false => 초기 렌더링시 콜백 함수 호출 여부
 	flush : pre/sync/post =>콜백함수 실행타이밍, [pre:뷰 반영 전호출,sync:뷰반응과 동기 호출, post:뷰 반영 후 호출]
 	once : true/false => Vue3.4 이상에 추가된 속성, true면 한번만 watch 한다 

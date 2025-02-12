@@ -19,6 +19,8 @@ export default{
 </script>
 
 <template> 
+  <!-- h2>{{ fullName() }}</h2 --> <!-- 에러, computed는 '()'로 호출하는 메소드가 아니다 -->
+  
   <h2>{{ fullName }}</h2>  <!--로그는 처음 한번만 출력된다, 의미는 한번만 호출한다는 것.-->
   <h2>{{ fullName }}</h2>
   <h2>{{ fullName }}</h2>

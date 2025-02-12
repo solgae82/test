@@ -1,0 +1,39 @@
+<script>
+export default{
+
+  data(){
+      return{
+        count: 0,
+        message : 'Hello'
+      }
+  },
+  methods:{
+    m(){return this.count;},
+    m1(num){return 'num: '+ num;}
+  },
+  computed:{
+      reversMessage : function(){ // 처음 한번만 실행된다
+          var reverse = this.message.split('').reverse().join('');
+          console.log('computed : ' + reverse); 
+          return reverse;
+      }
+  },
+}
+</script>
+
+<template> 
+<h1>methods 호출</h1>
+  <h3>{{ m }}</h3> <!-- function () { [native code] } -->
+  <h3>{{ m() }}</h3> <!-- 0 -->
+  <hr />
+  <h3>{{ m1 }}</h3><!-- function () { [native code] } -->
+  <h3>{{ m1() }}</h3> <!-- num: undefined -->
+  <h3>{{ m1(2) }}</h3> <!-- num: 2-->
+  <hr/>
+<h1>computed 호출</h1>
+  <!-- {{ reversMessage() }} 에러, ()으로 호출 못 한다, TypeError: $options.reversMessage is not a function -->
+  <h3>{{ reversMessage }}</h3> 
+</template>
+<style >
+ 
+</style>
