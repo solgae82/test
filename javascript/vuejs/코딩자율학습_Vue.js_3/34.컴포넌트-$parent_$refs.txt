@@ -1,8 +1,10 @@
 ---------
+컴포넌트 ref="참조명" 
+
 1. 부모컴포넌트 -> 자식 컴포넌트 접근
 	<FirstChild ref="childRef"/> 
 	this.$refs.childRef.[data, computed , methods] 
-2. 자식컴포넌터 -> 부모 컴포넌트 접근
+2. 자식컴포넌트 -> 부모 컴포넌트 접근
 	this.$parent.[data, computed , methods]
 	
 ※ 이런 접근 방법이 있다는 것만 알고 쓰지는 말아라
