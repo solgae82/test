@@ -1,0 +1,34 @@
+<script setup>
+import {reactive} from "vue";
+
+let count = reactive(20); // 에러 , value cannot be made reactive: 20
+const state  = reactive({cnt: 301});
+const arr = reactive([1,2]);
+
+console.log(count); // 20
+//console.log(state.cnt); // 301
+//console.log(arr); // [1,2]
+
+const increment = ()=>{
+  count++;
+  state.cnt++;
+  arr.push(20);
+  //값이 증가하고, html 출력값도 반응한다.
+  console.log(count , state.cnt, arr);
+}
+</script>
+
+<template> 
+  <p>{{ count }}</p><!-- 20 -->
+  <p>{{ state.cnt }}</p><!-- 301 -->
+  <p>{{ arr }}</p> <!-- [1,2] -->
+  <button @click="increment">증가</button>
+</template>
+<style >
+ 
+</style>
+
+--------- 결론
+ref() VS reactive()
+	기본자료형 : ref() , //.value로 꼭 접근해야 한다.
+	객체자료형 : reactive()

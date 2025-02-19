@@ -1,0 +1,56 @@
+<script setup>
+import {ref} from "vue";
+
+const count = ref(20);
+const state  = ref({cnt: 301});
+const arr = ref([1,2]);
+
+console.log(count.value); // 20
+console.log(state.value.cnt); // 301
+console.log(arr.value); // [1,2]
+
+const increment = ()=>{
+  count.value++;
+  state.value.cnt++;
+  arr.value.push(20);
+  //값이 증가하고, html 출력값도 반응한다.
+  console.log(count.value , state.value.cnt, arr.value);
+}
+</script>
+
+<template> 
+  <p>{{ count }}</p><!-- 20 -->
+  <p>{{ state.cnt }}</p><!-- 301 -->
+  <p>{{ arr }}</p> <!-- [1,2] -->
+  <button @click="increment">증가</button>
+</template>
+<style >
+ 
+</style>
+
+--------- dom 연결하기
+
+<script setup>
+import {ref} from "vue";
+
+let dom = ref(null); // dom 연결하기
+
+
+
+const print = ()=>{
+   console.log(dom.value);//<p>허허</p>
+   console.log(dom.value.innerHTML); //허허
+}
+</script>
+
+<template> 
+  <p ref="dom">허허</p>
+  <button @click="print">로그보기</button>
+</template>
+<style >
+ 
+</style>
+--------- 결론
+ref() VS reactive()
+	기본자료형 : ref() , //.value로 꼭 접근해야 한다.
+	객체자료형 : reactive()

@@ -1248,8 +1248,12 @@
 
 	//--------- (4) 객체 값 추가 + 업데이트
 	let obj = {p1:1, p2:2};
+	 
+	let obj1 = {...obj, p2:20, p3:30};
+        console.log(obj1); // {p1: 1, p2: 20, p1: 30}
+
 	let obj2 = {p2:20, p3:30, ...obj};
-	console.log(obj2); // {p2: 2, p3: 30, p1: 1}
+	console.log(obj2); // {p1: 1, p2: 2, p3: 30}
 
 	//--------- (5) 일반객체(이터레이션 구현) 
 	let obj = {

@@ -1,0 +1,38 @@
+<script setup>
+import {ref, reactive, computed} from "vue";
+
+const refCount = ref(2);
+const reactiveCount = reactive({count: 0});
+
+const refDoubleCount = computed(()=> refCount.value * 2);
+const reactiveDoubleCount = computed(()=> reactiveCount.count * 2);
+const t = computed( // 이렇게 할 수도 있다
+  {
+    get : ()=>{reactiveCount * 2},
+    set : (newValue)=>{reactiveCount = newValue;}
+  }
+);
+console.log(refCount.value); //2
+console.log(reactiveCount.count); //0
+console.log('computed===>',refDoubleCount.value); // 4 (value읽기 전용 , value값 강제 변경하면 경고에러남)
+console.log('computed===>',reactiveDoubleCount.value); // 0 (value읽기 전용 , value값 강제 변경하면 경고에러남)
+
+const cal = ()=>{
+  refCount.value++;       //computed에 사용되는 반응형 데이터를 변경하면 computed 값도 변경됨
+  reactiveCount.count++;  //computed에 사용되는 반응형 데이터를 변경하면 computed 값도 변경됨
+  //refDoubleCount.value++; //(App.vue:18 [Vue warn] Write operation failed: computed value is readonly)
+  console.log('computed===>',refDoubleCount.value); // 6 (value읽기 전용 , value값 강제 변경하면 경고에러남)
+  console.log('computed===>',reactiveDoubleCount.value); // 2 (value읽기 전용 , value값 강제 변경하면 경고에러남)
+};
+
+</script>
+
+<template> 
+  <p>{{ refDoubleCount }}</p> <!-- 4,6,8..-->
+  <p>{{ reactiveDoubleCount }}</p><!-- 0,2,4..-->
+  
+  <button @click="cal">계산</button>
+</template>
+<style >
+ 
+</style>
