@@ -1,0 +1,26 @@
+<script setup>
+import {ref, reactive, computed} from "vue";
+
+const count = ref(0);
+const state = reactive({count: 0, message: 'Hello'});
+
+const sum = computed(()=>count.value + state.count);
+
+/* 함수 사용법 */
+const increseCount = ()=>{count.value += 1;};
+const increseState = ()=>{state.count +=1;};
+
+</script>
+
+<template> 
+  <p>{{ sum }}</p>
+  <p>{{ count }}</p>
+  <p>{{ state.message}} : {{ state.count }}</p>
+  
+  <button @click="increseCount">count 증가</button>
+  <button @click="increseState">state.count 증가</button>
+
+</template>
+<style >
+ 
+</style>

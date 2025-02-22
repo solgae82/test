@@ -1,0 +1,70 @@
+--------- ref
+<script setup>
+import {ref, watch} from "vue";
+
+const count = ref(1);
+const state = ref({cnt : 2});
+
+watch(count, (newValue, oldValue)=>{
+  console.log(newValue, oldValue); // 2, 1
+});
+
+
+//deep:true 옵션 설정하면 변경 감지함. 하지만, newValue, oldValue 모두 같은 객체이다
+watch(state, (newValue, oldValue)=>{
+  console.log(newValue, oldValue); //  {cnt: 3} , {cnt: 3}
+},{deep:true});
+
+
+</script>
+
+<template> 
+  <p>count: {{ count }}</p>
+  <p>state.cnt: {{ state.cnt }}</p>
+  <button @click="count++">count증가</button>
+  <button @click="state.cnt++">state.cnt증가</button>
+</template>
+<style>
+ 
+</style>
+
+--------- reactive (객체)
+
+<script setup>
+import {ref, watch, reactive} from "vue";
+
+
+const state = reactive({cnt : 2});
+
+
+//newValue, oldValue 모두 같은 객체이다
+/*
+watch(state, (newValue, oldValue)=>{
+  console.log(newValue, oldValue); //  {cnt: 3} , {cnt: 3}
+});
+*/
+
+//감시할 값을 콜백함수 형태로 만들면, 객체 안의 특정값을 watch 할 수 있다
+watch(()=>state.cnt, (newValue, oldValue)=>{
+  console.log(newValue, oldValue); //  3 , 2
+});
+
+</script>
+
+<template> 
+  <p>state.cnt: {{ state.cnt }}</p>
+  <button @click="state.cnt++">state.cnt증가</button>
+</template>
+<style>
+ 
+</style>
+
+---------watch 옵션
+옵션스API와 같다
+watch 옵션 : 
+	deep : true/false => 데이터 속성이 변경될 때마다 깊은 watch 콜백함수 호출 여부
+	immediate: true/false => 초기 렌더링시 콜백 함수 호출 여부
+	flush : pre/sync/post =>콜백함수 실행타이밍, [pre:뷰 반영 전호출,sync:뷰반응과 동기 호출, post:뷰 반영 후 호출]
+	once : true/false => Vue3.4 이상에 추가된 속성, true면 한번만 watch 한다 
+	
+메모리 해제 : unwatch();

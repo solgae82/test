@@ -1,0 +1,40 @@
+--------- App.vue
+<script setup>
+import Child from "./components/Child.vue";
+import {ref , reactive , computed, provide}from "vue";
+
+const cnt = ref(11);
+const state = reactive({cnt: 2});
+
+provide('cnt',cnt); // cnt.value 를 하는 것과 같다
+provide('state',state);
+provide('obj',{cnt:4});
+
+</script>
+
+<template> 
+
+  <Child  />
+  
+</template>
+
+
+--------- Child.vue
+
+<script setup>
+import {inject} from "vue";
+
+const count = inject('cnt',0);
+const state = inject('state');
+const obj = inject('obj');
+</script>
+
+<template> 
+    <p>count : {{ count }}</p> <!-- 11 -->
+    <p>state.cnt : {{ state.cnt }}</p> <!-- 2 -->
+    <p>obj.cnt : {{ obj.cnt }}</p> <!-- 4 -->
+</template>
+
+---------
+하위 컴포넌트로 데이터를 전달하는 provide->inject
+provide(), inject() 로 주고 받을 수 있다.

@@ -1,0 +1,38 @@
+<script setup>
+import {ref, reactive, watchEffect} from "vue";
+
+const count = ref(1);
+const state = reactive({cnt : 2});
+
+//watchEffect 메소드 안에 데이터가 사용만 되면, 자동 watch
+watchEffect(()=>{
+  console.log(count.value); //2 ,3 , 4..
+});
+
+watchEffect(()=>{
+  console.log(state.cnt); // 3, 4, 5..
+});
+
+</script>
+
+<template> 
+  <p>count: {{ count }}</p>
+  <button @click="count++">count증가</button>
+  
+  <p>state.cnt: {{ state.cnt }}</p>
+  <button @click="state.cnt++">state.cnt증가</button>
+</template>
+<style>
+ 
+</style>
+--------- 정리
+watchEffect 메소드 안에 데이터가 사용만 되면, 자동 watch 된다
+watch 옵션을 주지 않으면 DOM 갱신 전에 watch 콜백 함수가 호출된다.(pre)
+
+watch 옵션 : (watch 기본 옵션 중에 flush만 사용할 수 있다) 
+	(x)deep : true/false => 데이터 속성이 변경될 때마다 깊은 watch 콜백함수 호출 여부
+	(x)immediate: true/false => 초기 렌더링시 콜백 함수 호출 여부
+	flush : pre/sync/post =>콜백함수 실행타이밍, [pre:뷰 반영 전호출,sync:뷰반응과 동기 호출, post:뷰 반영 후 호출]
+	(x)once : true/false => Vue3.4 이상에 추가된 속성, true면 한번만 watch 한다 
+	
+메모리 해제 : unwatchEffect();

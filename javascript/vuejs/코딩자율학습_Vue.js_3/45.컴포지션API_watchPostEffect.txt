@@ -1,0 +1,52 @@
+<script setup>
+import {ref, watch, watchEffect ,watchPostEffect} from "vue";
+
+const message = ref('');
+const messageParagraph = ref(null);
+
+watch(message, (newValue, oldValue)=>{
+  if(message.value){
+    console.log(`watch: ${messageParagraph.value.innerText}`);
+  }
+  
+});
+
+watchEffect(()=>{
+  if(message.value){
+    console.log(`watchEffect: ${messageParagraph.value.innerText}`);
+  }
+}); 
+
+watchPostEffect(()=>{
+  if(message.value){
+    console.log(`watchPostEffect: ${messageParagraph.value.innerText}`);
+  }
+});
+
+</script>
+
+<template> 
+  <div>
+    <input type="text" v-model="message" />
+    <p ref="messageParagraph">messageParagraph : {{ message }}</p>
+  </div>
+</template>
+<style>
+ 
+</style>
+--------
+watch 속성중 flush
+flush : pre/sync/post =>콜백함수 실행타이밍, [pre:뷰 반영 전호출,sync:뷰반응과 동기 호출, post:뷰 반영 후 호출]
+을 설정 하지 않고 쓰면 모두 pre (DOM 갱신 되기전에 콜백함수 호출)
+
+	watchPostEffect 는 flush = 'post' 설정 후 쓰는 것과 같다
+
+입력창에 'a' 입력 후 로그를 보면
+	watch: messageParagraph :
+	watchEffect: messageParagraph :
+	watchPostEffect: messageParagraph : a
+
+이 뜻은 watchPostEffect 만 DOM 갱신 후 message.value에 접근 가능하므로 로그 'a' 가 찍힌다.
+watch ,watchEffect 함수 마지막 인수에 {flush: 'post'} 옵션을 추가하면 똑같이 로그 'a'가 찍힌다.
+
+메모리 해제 : unwatchPostEffect();

@@ -1,0 +1,47 @@
+--------- App.vue
+
+<script setup>
+import Child from "./components/Child.vue";
+import {ref , reactive}from "vue";
+
+const cnt = ref(1);
+const state = reactive({cnt: 2});
+
+const countIncrement = (n1,n2,n3)=>{
+  cnt.value += (n1 + n2 + n3);
+};
+const stateCntIncrement = (arr)=>{
+  state.cnt += arr[0];
+};
+
+</script>
+
+<template> 
+  <p>cnt : {{ cnt }}</p>
+  <p>state.cnt : {{ state.cnt }}</p>
+  <hr />
+  <Child  @count-increment ="countIncrement" @state-count-increment="(arr)=>stateCntIncrement(arr)" />
+  
+</template>
+
+--------- Child.vue
+
+<script setup>
+import {defineEmits} from "vue";
+
+const emit = defineEmits(['count-increment', 'state-count-increment']);
+const countIncrement = ()=>{
+    emit('count-increment',10,20,30);
+};
+</script>
+
+<template> 
+  <button @click="countIncrement">count 증가</button>
+  <button @click="emit('state-count-increment',[50])">state.count 증가</button>
+</template>
+
+---------
+
+defineEmits 함수를 이용해서 emit 할 이름을 지정하고 
+상위 컴포넌트 속성명으로 사용해서 이벤트 전달 방식으로 
+데이터 및 함수 등을 연결 한다

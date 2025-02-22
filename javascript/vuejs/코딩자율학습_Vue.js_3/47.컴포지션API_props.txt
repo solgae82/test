@@ -1,0 +1,45 @@
+--------- App.vue
+<script setup>
+import Child from "./components/Child.vue";
+import {ref , reactive}from "vue";
+
+const cnt = ref(1);
+const obj = reactive({cnt: 2});
+
+const fnc = ()=>{
+  cnt.value++;
+  obj.cnt++;
+};
+</script>
+
+<template> 
+  <Child :count="cnt" :state="obj"  />
+  <button @click="fnc">증가</button>
+</template>
+
+--------- Child.vue
+
+<script setup>
+import {defineProps} from "vue";
+
+const props = defineProps({
+    count : Number,
+    //state : [Object , Array]
+    state : {
+        type: Object,
+        default(){
+            return {};
+        }
+    }
+});
+</script>
+
+<template> 
+  <div>
+    <p>count: {{ props.count }}</p>
+    <p>state.cnt: {{ props.state.cnt }}</p>
+  </div>
+</template>
+
+---------
+defineProps 함수로 props 데이터를 사용할 수 있다
