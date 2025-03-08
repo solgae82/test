@@ -1,0 +1,49 @@
+--------- src/view/UserViewHeader.vue
+
+	<template>
+	    <h2>User View - (header)</h2>
+	</template>
+	
+--------- src/view/UserView.vue
+
+	<template>
+	    <h3>UserView</h3>
+	</template>
+	
+--------- src/view/UserViewFooter.vue
+
+	<template>
+	    <h2>UserView - (footer)</h2>
+	</template>
+	
+--------- src/router/index.js
+	...
+	{
+            path : '/user',
+            name : 'user', 
+            components :{
+                header : ()=> import('@/view/UserViewHeader.vue'),
+                default : ()=> import('@/view/UserView.vue'),
+                footer : ()=> import('@/view/UserViewFooter.vue')
+            } 
+            
+        }
+	...
+	
+--------- App.vue
+	<div>
+		<RouterView name="header"/>
+		<RouterView /> <!-- name="default" 와 같다 -->
+		<RouterView name="footer"/>
+	</div>
+	
+--------- 출력
+
+ RouterView 태그에 name 속성이 없으면 name="default" 와 같다
+ 
+ (테스트)
+ url : /user
+ 
+	<h2>UserView - (header)</h2>
+	<h3>User View</h3>
+	<h2>UserView - (footer)</h2>

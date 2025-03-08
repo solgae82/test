@@ -1,0 +1,89 @@
+경로 :  /user/dong?name=doobap 
+
+--------- src/router/index.js
+{
+            path : '/user/:id', 
+            name : 'user',
+            component : ()=> import('@/view/UserView.vue')
+},
+	
+
+--------- UserView.vue (옵션스API)
+	<script>
+
+		export default{
+		    data(){
+			return {
+			    pId : '',
+			    qName : ''
+			}
+		    },
+
+		    beforeMount(){
+			this.pId = this.$route.params.id;
+			this.qName = this.$route.query.name;
+		    },
+		    updated(){ // 업데이트 후에 꼭 다시 설정해야 한다.
+			this.pId = this.$route.params.id;
+			this.qName = this.$route.query.name;
+		    }
+		   
+		}
+
+	</script>
+	<template>
+	    <h3>User : <span style="color: blue;font-size: 0.8em;">{{ $route.params.id }}?name={{ $route.query.name }}</span></h3>
+	    <h3>User : <span style="color: blue;font-size: 0.8em;">{{ pId }}?name={{ qName }}</span></h3>
+	</template>
+	
+	: 출력
+	<h3>User : dong?name=doobap</h3>
+	<h3>User : dong?name=doobap</h3>
+	
+--------- UserView.vue (컴포지션API)
+
+	<script setup>
+		import { onBeforeMount,  onBeforeUpdate,  ref } from 'vue';
+		import { useRoute } from 'vue-router';
+
+		const route = useRoute();
+
+		let pId =  ref('p');
+		let qName = ref('q');
+
+		onBeforeMount(()=>{
+		    pId = ref(route.params.id);
+		    qName = ref(route.query.name);		    
+		});
+
+		onBeforeUpdate(()=>{ // 완전 업데이트 전에 바꿔야 실시간으로 바뀐다. 
+		    pId = ref(route.params.id);
+		    qName = ref(route.query.name);
+		});
+
+	</script>
+	<template>
+	    <h3>User : {{ route.params.id }}?name={{ route.query.name }}</h3>
+	    <h3>User : {{ pId }}?name={{ qName }}</h3>
+	</template>
+
+	: 출력
+	<h3>User : dong?name=doobap</h3>
+	<h3>User : dong?name=doobap</h3>
+	
+---------
+ path 경로 중 ':id'로 설정한 부분이 동적 경로 설정
+	- $route.params.id 로 접근 가능
+	 
+	 /user/dong
+	 /user/lisa 
+	 
+	 .. 등 매칭
+	 
+	동적매개변수인 ':id' 는 단어 설정은 자유다. 대신 접근 할때는 바꾼 단어로 접근해야한다.
+	:age => $route.params.age
+	
+ path 경로 중 쿼리스트링 변수 접근
+	
+	$route.query.name
+ 

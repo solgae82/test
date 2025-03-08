@@ -1,0 +1,122 @@
+라우트 전환은 RouterLink 태그를 이용한 방식과,
+프로그래밍으로 전화하는 방식이 있다
+	RouterLink 전환 = 선언방식
+	프로그래밍 전환 = 프로그래밍 방식 탐색
+
+선언방식 : 
+	<RouterLink to="/about">About</RouterLink> 
+프로그래밍 전환 :
+	옵션스API : $router , 컴포지션API : useRouter() 
+	
+	이동 메소드 
+	.push(경로) : 현재 경로 교체 , history에 남는다
+	.replace(경로) : 현재 경로 교체, history에 남지 않는다.
+	.go(정수) : history 스택에서 정수로 지정한 만큼 이동
+	.back() : go(-1) 과 같다
+	.forward : go(1) 과 같다 
+
+
+--------- App.vue (옵션스API)
+<script>
+export default{
+    methods: {
+        home(){ this.$router.push('/');},
+        goAbout(){ this.$router.replace('/about');},
+        goBack(){ this.$router.go(-1);},
+        goForward(){ this.$router.go(1);}
+    }
+}
+</script>
+<template>
+    <h1>Home View</h1>
+    <nav>
+        <ul>
+            <li><a href="#" @click.prevent="home">홈</a></li>
+            <li><a href="#" @click.prevent="goAbout">About</a></li>
+            <li><a href="#" @click.prevent="goBack">이전 페이지</a></li> 
+            <li><a href="#" @click.prevent="goForward">앞 페이지</a></li>
+        </ul>
+        <!--
+        <ul>
+            <li><a href="#" @click.prevent="$router.push('/')">홈</a></li>
+            <li><a href="#" @click.prevent="$router.replace('/about')">About</a></li>
+            <li><a href="#" @click.prevent="$router.go(-1)">이전 페이지</a></li> 
+            <li><a href="#" @click.prevent="$router.go(1)">앞 페이지</a></li>
+        </ul>
+        -->
+    </nav>
+</template>
+
+--------- App.vue (컴포지션 API)
+<script setup>
+        import { useRouter } from 'vue-router';
+
+        const router = useRouter();
+
+        //컴포지션 뷰라우터 이동
+        const home = ()=>{ router.push('/')};
+        const goAbout = ()=>{ router.replace('/about');};
+        const goBack = ()=>{ router.go(-1);};
+        const goForward = ()=>{ router.go(1);};
+
+</script>
+<template>
+    <h1>Home View</h1>
+    <nav>
+        <!--
+        <ul>
+            <li><a href="#" @click.prevent="home">홈</a></li>
+            <li><a href="#" @click.prevent="goAbout">About</a></li>
+            <li><a href="#" @click.prevent="goBack">이전 페이지</a></li> 
+            <li><a href="#" @click.prevent="goForward">앞 페이지</a></li>
+        </ul>
+        -->
+        <ul>
+            <li><a href="#" @click.prevent="router.push('/')">홈</a></li>
+            <li><a href="#" @click.prevent="router.replace('/about')">About</a></li>
+            <li><a href="#" @click.prevent="router.go(-1)">이전 페이지</a></li> 
+            <li><a href="#" @click.prevent="router.go(1)">앞 페이지</a></li>
+        </ul>
+        
+    </nav>
+</template>
+
+-------------------
+뷰 라우터 이름으로 경로 설정 
+	
+	
+	------ src/router/index.js
+	{
+            path : '/user/:id',
+            name : 'user1', /* 이 속성명을 사용한다 */
+            component : ()=> import('@/view/UserView.vue')
+        },
+	
+	
+	- 선언 방식
+		: RouterLink 태그 속성 'to'를 ':to' (v-bind방식) 바꿔서 설정해서 사용한다.
+		{
+			name:뷰라우터명(name), //(필수) 
+			params:{동적매개변수명:'값'},
+			query:{파라미터명:'값'}
+		
+		}
+		
+		url 경로 : /user/dong
+		<RouterLink :to="{name:'user1', params:{id:'dong'}}">사용자</RouterLink>
+		
+		url 경로 : /user/dong?age=18
+		<RouterLink :to="{name:'user1', params:{id:'dong'}, query:{age:'18'}}">사용자</RouterLink>
+		
+	- 프로그래밍 방식
+	
+		(옵션스 API)
+			url 경로 : /user/dong?age=18
+			this.$router.push({name:'user1', params:{id:'dong'}, query:{name:'18'})
+		
+		(컴포지션 API)
+			url 경로 : /user/dong?age=18
+			
+			import { useRouter } from 'vue-router';
+			const router = useRouter();
+			router.push({name:'user1', params:{id:'dong'}, query:{name:'18'}});

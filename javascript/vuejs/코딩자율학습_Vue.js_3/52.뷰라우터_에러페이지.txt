@@ -1,0 +1,49 @@
+없는 페이지 접근시(예외처리 페이지)
+경로 /about1/not 으로 매칭 되지 않는 페이지일때  
+
+--------- src/router/index.js
+	{
+            path : '/:pathMach(.*)*',
+            name : 'not_found1',
+            component : ()=> import('@/view/NotfoundView.vue')
+        }
+	
+--------- NotfoundView.vue
+
+	<template>
+	    <h1>404  Not found</h1>
+	    <h3>path : {{ $route.params.pathMach }}</h3>
+	</template>
+	
+	: 출력
+	<h1>404 Not found</h1>
+	<h3>path : [ "about1","not" ]</h3>'
+	
+--------- 설명
+	
+		매치되지 않는 경로 : /about1/not
+		path : '/:pathMach(.*)*'
+	
+	마치 시스템에 정해진 함수 같지만, 사실은 정규표현패턴 설정이다. 
+	'pathMach' 가 아닌 다른 사용자 설정 이름(notPath 등)를 써도 된다.
+	위 패턴설정의 뜻은 매칭 되지 않는 모든 경로일때 라는 뜻이다.
+	
+	위와 같이 설정하면 
+		$route.params.pathMach 로 접근 세그먼트를 접근할 수 있다
+		
+	결과는 각 세그먼트 명이 배열 요소로 담겨지게 된다.
+	
+		매치되지 않는 경로 : /about1/not 
+		세그먼트 접근 : $route.params.pathMach => [ "about1","not" ]
+	
+	-----------
+	
+		매치하지 않는 접근경로 : /user-a/not
+		path: '/user-:userNot(.*)*'
+		
+		
+	정규표현식으로 'user-' 라는 명으로 경로가 시작하는 매치되 않은 path 라는 뜻이다.
+		
+		세그먼트 접근 : $route.params.userNot => [ "a", "not" ]
+	
+		

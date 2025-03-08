@@ -1,14 +1,14 @@
 ---------// App.vue
 
 <script setup>
-import Child from "./components/Child.vue";
-import {ref}from "vue";
+	import Child from "./components/Child.vue";
+	import {ref}from "vue";
 
-const showComponent = ref(true);
-const toggle = ()=>{
-  showComponent.value  = !showComponent.value;
-  console.log("토글: " +showComponent.value);
-};
+	const showComponent = ref(true);
+	const toggle = ()=>{
+	  showComponent.value  = !showComponent.value;
+	  console.log("토글: " +showComponent.value);
+	};
 
 </script>
 
@@ -24,29 +24,29 @@ const toggle = ()=>{
 ---------// Child.vue
 
 <script setup>
-import {ref, 
-  onBeforeMount,
-  onMounted,
-  onBeforeUpdate,
-  onUpdated,
-  onBeforeUnmount,
-  onUnmounted
+	import {ref, 
+	  onBeforeMount,
+	  onMounted,
+	  onBeforeUpdate,
+	  onUpdated,
+	  onBeforeUnmount,
+	  onUnmounted
 
-} from "vue";
+	} from "vue";
 
-const message = ref("Welcome to Vue 3!");
+	const message = ref("Welcome to Vue 3!");
 
-//3초 후 컴포넌트 업데이트
-setTimeout(()=>{
-  message.value = 'Change';
-},3000); 
+	//3초 후 컴포넌트 업데이트
+	setTimeout(()=>{
+	  message.value = 'Change';
+	},3000); 
 
-onBeforeMount(()=>{console.log("컴포넌트 마운트 전");});
-onMounted(()=>{console.log("컴포넌트 마운트 후");});
-onBeforeUpdate(()=>{console.log("컴포넌트 업데이트 전");});
-onUpdated(()=>{console.log("컴포넌트 업데이트 후");});
-onBeforeUnmount(()=>{console.log("컴포넌트 마운트 해제 전");});
-onUnmounted(()=>{console.log("컴포넌트 마운트 해제 후");});
+	onBeforeMount(()=>{console.log("컴포넌트 마운트 전");});
+	onMounted(()=>{console.log("컴포넌트 마운트 후");});
+	onBeforeUpdate(()=>{console.log("컴포넌트 업데이트 전");});
+	onUpdated(()=>{console.log("컴포넌트 업데이트 후");});
+	onBeforeUnmount(()=>{console.log("컴포넌트 마운트 해제 전");});
+	onUnmounted(()=>{console.log("컴포넌트 마운트 해제 후");});
 
 </script>
 
@@ -55,7 +55,3 @@ onUnmounted(()=>{console.log("컴포넌트 마운트 해제 후");});
     <p>{{ message }}</p>
   </div>
 </template>
-<style>
- 
-</style>
-

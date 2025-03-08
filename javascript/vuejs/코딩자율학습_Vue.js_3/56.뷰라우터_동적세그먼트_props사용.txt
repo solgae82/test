@@ -1,0 +1,91 @@
+url : /use/:id 일 경우
+동적 세그먼트 접근시 아래와 같이 접근할 수 있다
+		
+	(옵션스API)
+		$route.params.id
+	(컴포지션API)
+		import { useRoute } from 'vue-router';
+		const route = useRoute();
+		route.params.id
+이 방법 말고,
+뷰라우터 동적 세그먼트 값을 => 매칭되는 component에 props로 전달 하는 기능도 있다.
+해당 라우터의 속성 중 props : true 로 props 연결 On을 해주면 된다
+
+---------- (기본)
+
+	url : /user/dong 접근시
+	
+	- router/index.js : 
+		{
+		    path : '/user/:id',
+		    name : 'user', 
+		    component : () => import('@/view/UserView.vue'),
+		    props : true  // 동적 세그먼트를 컴포넌트 props와 연결
+		}
+	
+	- UserView.vue : 
+	
+		(옵션스API)
+		
+			<script>
+			  export default{
+			    props : ['id']
+			  }
+			</script>
+		
+		(옵션스API)
+			<script setup>
+				import {defineProps} from "vue";
+				const props = defineProps({
+				  id : String
+				});
+
+			</script>
+		
+		<template>
+		    <h3>User View</h3>
+		    <p>{{ id }}</p>  <!-- dong -->
+		</template>
+	
+--------- 라우터 뷰에 이름이 있을 경우
+	
+	url : /user/dong 접근시
+	
+	- router/index.js : 
+	
+		{
+		    path : '/user/:id',
+		    name : 'user',            
+		    components :{
+			header : ()=> import('@/view/UserViewHeader.vue'),
+			default : ()=> import('@/view/UserView.vue'),
+			footer : ()=> import('@/view/UserViewFooter.vue')
+		    },
+		    /* 동적 세그먼트 값을 전달 받을 컴포넌트의 props를 true 해준다.*/
+		    props :{header: false , default: true, footer: false} 
+		    
+		}
+		
+	- UserView.vue : 
+	
+		(옵션스API)
+		
+			<script>
+			  export default{
+			    props : ['id']
+			  }
+			</script>
+		
+		(옵션스API)
+			<script setup>
+				import {defineProps} from "vue";
+				const props = defineProps({
+				  id : String
+				});
+
+			</script>
+		
+		<template>
+		    <h3>User View</h3>
+		    <p>{{ id }}</p>  <!-- dong -->
+		</template>

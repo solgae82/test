@@ -1,0 +1,38 @@
+
+별칭으로 여러 url을 하나의 라우터로 사용할 수 있다
+
+--------- 기본
+
+	사용가능 url : / 또는 /home
+	{
+            path : '/',
+            name : 'home',
+            component : HomeView,
+            alias : '/home'
+        }
+
+
+	사용가능 url : / 또는 /home 또는 /root
+	{
+            path : '/',
+            name : 'home',
+            component : HomeView,
+            alias : ['/home' ,'/root']
+        }
+
+--------- 동적 경로 설정시 별칭
+
+동적 경로 매칭을 사용한 라우터에 별칭 사용하려면, 반드시 동적 세그먼트가 포함되어야 한다.
+
+(동적 세그먼트 :id = dong 일 경우) 
+
+	사용가능 url : /user/dong 또는 /u1/dong 또는 /u2/dong
+
+	{
+	    path : '/user/:id',
+	    name : 'user',            
+	    component :()=> import('@/view/UserView.vue'),
+	    alias : ['/u1/:id', '/u2/:id']
+	    
+	    
+	}

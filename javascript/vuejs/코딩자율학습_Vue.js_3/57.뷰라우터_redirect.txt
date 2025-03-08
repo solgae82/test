@@ -1,0 +1,32 @@
+--------- 기본
+url : /about  에서 /user  리다이렉트
+	{
+            path : '/about',
+            name : 'about',
+            component : ()=> import('@/view/AboutView.vue'), // 이건 있으나 마나,
+            redirect : '/user'
+            
+        },
+        {
+            path : '/user',
+            name : 'user',            
+            components :()=> import('@/view/UserView.vue')
+        }
+	
+--------- 동적 세그먼트 라우터끼리 redirect 할때
+
+url : /about/dong 에서  /user/dong  리다이렉트
+	{
+            path : '/about/:id',
+            name : 'about',
+            component : ()=> import('@/view/AboutView.vue'), // 이건 있으나 마나,
+            redirect : (to)=>{
+                return {name:'user', params:{id : to.params.id}}
+            }
+            
+        },
+        {
+            path : '/user/:id',
+            name : 'user',            
+            components :()=> import('@/view/UserView.vue')
+        }
