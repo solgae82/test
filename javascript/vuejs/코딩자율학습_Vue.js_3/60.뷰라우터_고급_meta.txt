@@ -1,0 +1,53 @@
+meta 속성의 객체에 라우트에 관한 데이터를 미리 지정할 수 있다
+
+	..
+	{
+            path : '/about',
+            name : 'about',
+            component : ()=> import('@/view/AboutView.vue'),
+            meta : {
+                title : '..대하여'
+            }
+            
+        },
+	..
+	
+위와 같이 설정된 'title' 데이터를 컴포넌트에서 끌어 올 수 있다.
+브라우저 탭 타이틀 제목을 바꾸는 예제를 보자
+
+---------// AboutView.vue
+	<script setup>
+	// 컴포지션 API 방식
+	import { onBeforeMount } from 'vue';
+	import { useRoute } from 'vue-router';
+	const route = useRoute();
+	onBeforeMount(()=>{
+	    document.title = route.meta.title;
+	});
+
+	/*
+	(옵션스 API 방식)
+	    export default{
+		beforeMount(){
+		    document.title = this.$route.meta.title;
+		}
+	    }
+	*/
+	</script>
+
+매번 컴포넌트마다 설정하는 방식보다,
+같은 방식을 라우트 전역 가드 방식으로 설정하면 한번만 설정하면 되므로 더 좋은 방식이다.
+
+---------// src/router/index.js
+
+	..
+	
+	//전역 가드
+	router.beforeEach((to, from, next)=>{
+	    
+	    console.log('전역:beforeEach');
+	    if(to.meta.title){
+		document.title = to.meta.title;
+	    }
+	    next(true);
+	});
