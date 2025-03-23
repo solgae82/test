@@ -1,0 +1,12 @@
+Numeric : 숫자형(정수 / 실수)
+Boolean : True / False
+Sequence : # 순서 있는 자료형
+	List : [1,2,3]
+	tuple : (0,1,2) #변경할 수 없음
+	문자열 : 'sky'
+	range : range(1,11) # 1 ~ 10
+	binary sequence 
+Set : {1,2,3} #순서없는 자료형
+dictionary : {"하늘" : 1, "땅" : 2}
+
+# Seqence , Set, Dictionary 는 Iterable이다 , 그러므로 list()를 사용할 수 있다.
