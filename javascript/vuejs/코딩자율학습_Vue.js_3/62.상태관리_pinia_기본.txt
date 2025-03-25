@@ -1,0 +1,256 @@
+상태관리란 :
+	컴포넌트 session 같은 개념
+pinia :
+	상태관리 하는 라이브러리(vue 공식)
+	
+pinia 용어 :
+	Store : 컴포넌트끼리 공유하는 저장소 개념인데, 구현 방법은 2개가 있다
+		option store : 옵션스 API 문법 같은 구현 방법
+		setup store : 컴포지션 API 문법 같은 구현 방법
+		
+	(state,getters,actions) : pinia에서 사용하는 추상 구현 용어
+	
+		Options Store :
+			state : 옵션스 API의 data() 같은 상태 변수 정의 하는 영역
+			getters : 옵션스 API의 computed 같은 개념.
+			actions : 옵션스 API의 methods 같은 개념.
+			
+		Setup Store :
+			ref,reactive : options store의 'state' 개념
+			computed : options store의 'getters' 개념
+			function : options store의 'actions' 개념
+		
+pinia 사용 :
+	옵션스 API 사용법 :
+		mapState() , mapActions() 로 저장소에서 사용할 값들을 내부 변수처럼 정의해서 사용.
+		'...' 스프레스 연산자를 사용해서 정의 한다
+		
+			- mapState() :  
+				사용할 state  변수들과 getters 의 함수들 정의.
+				옵션스 computed 영역에서 정의.
+			- mapActions() : 
+				사용할 actions 함수들을 정의.
+				옵션스 methods 영역에서 정의.
+		
+	컴포지션 API 사용법 :
+		특별한 사용 함수는 없다.
+		인스턴스 객체를 생성해서 그냥 접근하면 된다.
+		
+예제로 정리해 보자.
+
+--------- main.js
+
+	import { createApp } from 'vue'
+	import { createPinia } from 'pinia'
+	import App from './App.vue'
+	import router from './router/router'
+	const pinia = createPinia();
+
+
+	createApp(App).use(router).use(pinia).mount('#app')
+
+--------- src/router/router.js
+
+	import {createRouter , createWebHistory} from 'vue-router';
+	import HomeView from '@/components/HomeView.vue';
+
+	const router = createRouter({
+	    history : createWebHistory(import.meta.env.BASE_URL),
+	    routes : [
+		{
+		    path : '/',
+		    name : 'home',
+		    component : HomeView
+		},
+		{
+		    path : '/about',
+		    name : 'about',
+		    component : ()=>import('@/components/AboutView.vue')
+		}
+	    ]
+	});
+
+	export default router;
+	
+--------- src/stores/countOption.js
+
+	import { defineStore } from "pinia";
+	export const useCountOptionStore = defineStore('countOption',{
+
+	    //state (상태변수)
+	    state(){
+		return{
+		    num : 10,
+		    json :  null
+		};
+	    },
+
+	    //getters (commpted 같은 거)
+	    getters : {
+		doubleNum(state){
+		    return state.num * 2;
+		},
+
+		doubleNumPlusOne(){
+		    return this.doubleNum + 1;
+		}
+	    },
+
+	    //actions (methods 같은 거)
+	    actions : {
+		increment(){
+		    this.num++;
+		},
+
+		getJson(url){
+		    this.increment();
+		    fetch(url).then((response)=>response.json()).then((json)=>{this.json = json;});
+		    console.log(this.json);
+		}
+	    }
+	});
+	
+--------- src/stores/countSetup.js
+
+	import { defineStore } from "pinia";
+	import { computed, ref } from "vue";
+	export const useCountSetupStore = defineStore('countSetup',()=>{
+
+	    // (상태변수)
+	    const num = ref(10);
+	    const json = ref(null);
+
+	    // computed (computed 같은 거)
+	    const doubleNum = computed(()=>num.value * 2);
+	    const doubleNumPlusOne = computed(()=> doubleNum.value + 1);
+
+	    //function (methods 같은 거)
+	    const increment = ()=>{num.value++;};
+
+	    function getJson(url){
+		increment();
+		fetch(url).then((response)=>response.json()).then((jsonValue)=>{json.value = jsonValue; console.log(json.value);});    
+	    }
+
+	    return {
+		num,
+		json,
+		doubleNum,
+		doubleNumPlusOne,
+		increment,
+		getJson
+	    };
+	});
+	
+--------- App.vue
+
+	<script setup>
+	import { RouterLink } from 'vue-router';
+	import { RouterView } from 'vue-router';
+	</script>
+
+	<template>
+	    <nav>        
+		<RouterLink to="/">Home</RouterLink> / 
+		<RouterLink to="/about">About</RouterLink>  
+	    </nav>
+	    <RouterView />
+	</template>
+	
+--------- src/components/HomeView.vue (옵션스 API)
+
+	<script>
+	import { useCountOptionStore } from '@/stores/countOption';
+	import { useCountSetupStore } from '@/stores/countSetup';
+	import { mapActions, mapState } from 'pinia';
+
+	export default{
+	    computed :{
+
+		...mapState(useCountOptionStore, ['num','doubleNum','json']),
+		...mapState(useCountSetupStore, {
+		    myNum : 'num',
+		    myDouble : 'doubleNum',
+		    myJSON : 'json'
+		    
+		})
+	    },
+	    methods : {
+		...mapActions(useCountOptionStore, ['increment','getJson']),
+		...mapActions(useCountSetupStore, {
+		    myIcrement : 'increment',
+		    myGetJSON : 'getJson'
+		})
+	    }
+	}
+
+	</script>
+	<template>
+	    <h3>Home View</h3>
+	    
+	    <h4>options store</h4>
+	    <ul>
+		<li>num : {{ num }}</li>
+		<li>doubleNum : {{ doubleNum }}</li>
+		<li><button @click="increment">increment</button></li>
+		<li><button @click="getJson('https://jsonplaceholder.typicode.com/posts')">getJson</button></li>
+		<li>{{ json }}</li>
+	    </ul>
+
+	    <h4>setup store</h4>
+	    <ul>
+		<li>num : {{ myNum }}</li>
+		<li>doubleNum : {{ myDouble }}</li>
+		<li><button @click="myIcrement">increment</button></li>
+		<li><button @click="myGetJSON('https://jsonplaceholder.typicode.com/posts')">getJson</button></li>
+		<li>{{ myJSON }}</li>
+	    </ul>
+
+	</template>
+
+--------- src/components/AboutView.vue (컴포지션 API)
+
+	<script setup>
+	import { useCountOptionStore } from '@/stores/countOption';
+	import { useCountSetupStore } from '@/stores/countSetup';
+	const optionStore = useCountOptionStore();
+	const setupStore = useCountSetupStore();
+
+	//options store
+	console.log(optionStore.num);   // 10
+	console.log(optionStore.doubleNum); // 20
+	optionStore.increment();    
+	console.log(optionStore.num); // 11
+
+	//setup store
+	console.log(setupStore.num);   // 10
+	console.log(setupStore.doubleNum); // 20
+	setupStore.increment();    
+	console.log(setupStore.num); // 11
+
+	</script>
+	<template>
+	    <h3>About View</h3>
+	    <h4>options store</h4>
+	    <ul>
+		<li>num : {{ optionStore.num }}</li>
+		<li>doubleNum : {{ optionStore.doubleNum }}</li>
+		<li><button @click="optionStore.increment">increment</button></li>
+		<li><button @click="optionStore.getJson('https://jsonplaceholder.typicode.com/posts')">getJson</button></li>
+		<li>{{ optionStore.json }}</li>
+	    </ul>
+
+	    <h4>setup store</h4>
+	    <ul>
+		<li>num : {{ setupStore.num }}</li>
+		<li>doubleNum : {{ setupStore.doubleNum }}</li>
+		<li><button @click="setupStore.increment">increment</button></li>
+		<li><button @click="setupStore.getJson('https://jsonplaceholder.typicode.com/posts')">getJson</button></li>
+		<li>{{ setupStore.json }}</li>
+	    </ul>
+	</template>
+	
+--------- 정리
+
+	Home / About 링크를 번갈아 클릭해보자
+	설정된 값들이 서로 공유되는 것을 확인할 수 있다.(컴포넌트끼리 공유하는 session 같은 개념)
