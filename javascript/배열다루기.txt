@@ -1,0 +1,44 @@
+	// Array.isArray 배열인지 여부
+	const ar = [];
+	console.log(Array.isArray(ar)); // true , 배열인지 아닌지 true/false
+		
+	// filter
+        const arr = [-1, 0, 1, 2 ];
+        const re = arr.filter(i => i > 0); //true인 것만 새 배열에 담는다
+        console.log(re); //[1,2]
+		
+	// includes
+	const arr1 = [2,3,4,5,6];
+	console.log(arr1.includes(2));  // true (배열 요소 중 매개변수 값이 있으면 true)
+	
+	//reduce
+	let num = arr1.reduce((acc, curr)=>{
+		console.log(acc + ' , '+ curr);
+		/*
+			(초기값: 0 , 배열[0]값 : 2)
+			(배열[0]값 : 2, 배열[1]값 : 3)
+			..
+			0 , 2
+			2 , 3
+			5 , 4
+			9 , 5
+			14 , 6
+		*/
+		return acc + curr;
+	},0);
+	console.log('총합: '+num); // 총합: 20
+	
+	//splice(인덱스, 삭제갯수,넣거나 변경할 데이터)
+	const months = ["Jan", "March", "April", "June"];
+
+	months.splice(1, 0, "Feb"); //2번째에 'Feb' 껴넣기
+	console.log(months); //["Jan", "Feb", "March", "April", "June"]
+
+	months.splice(2, 1); // 2번재 자료 삭제
+	console.log(months); //["Jan", "Feb",  "April", "June"]
+
+	months.splice(2,0,'March');//3번째에 'March' 껴 넣기
+	console.log(months);//["Jan", "Feb", "March", "April", "June"]
+
+	months.splice((months.length - 1),1,'May');//마지막번째에 'May'로 업데이트
+	console.log(months);//["Jan", "Feb", "March", "April", "May"]

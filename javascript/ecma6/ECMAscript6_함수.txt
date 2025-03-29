@@ -49,12 +49,16 @@
 	   let add = (a,b) =>{return a + b;};
 	   console.log(add(2,4)); // 6
    
-   /* 2.화살표 함수 '블록 생략' : 한줄일 경우 가능, 리턴문은 할 수 없음. */
+   /* 2.화살표 함수 '블록 생략' : 한줄일 경우 가능, 기본이 return 생략된 리턴 구조,(리턴문 쓰면 에러). */
 	   
-	   let add2 = (a,b) => console.log( a + b);
+	   let add1 = (a,b) => a + b;
+	   console.log(add1(2,4)); // 6
+	   
+	   let add2 = (a,b) => console.log("더하기: "+ (a + b));
+	   console.log(add2(2,4)); //더하기: 6 , undefined (반환값이 없으므로)
 	   add2(2,4); // 6
 
-	   let add3 = (a,b) => return a+b; // return 사용불가
+	   // let add3 = (a,b) => return a+b; // return 사용불가
    
    /* 3.화살표함수 '단일인자일 경우 () 생략 가능' */
 
