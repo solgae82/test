@@ -1,0 +1,28 @@
+	#include <iostream>
+
+	/*
+		매크로함수 , 인라인 함수, 템플릿 사용 인라인 함수
+	*/
+	//#define SQUARE(x) ((x)*(x))
+
+	/*
+	inline int SQUARE(int x) {
+		return x * x;
+	}
+	*/
+
+	template <typename T>
+
+	inline T SQUARE(T x) {
+
+		return x * x;
+	}
+	/**
+	* 인라인 함수 사용하기
+	*/
+	int main(void) {
+
+		std::cout << SQUARE(5) << std::endl; // 25
+		std::cout << SQUARE(1.1) << std::endl; // 1.21
+		return 0;
+	}

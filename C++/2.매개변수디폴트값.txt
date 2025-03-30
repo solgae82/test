@@ -1,0 +1,47 @@
+	#include <iostream>
+
+	/*
+	* 매개변수 디폴트 값
+	*/
+	int MyFuncOne(int num = 7) {
+		return num + 1;
+	}
+
+	int Adder(int num1 = 1, int num2 = 2);
+
+	int main(void) {
+
+		std::cout << MyFuncOne() << std::endl;	// 8
+		std::cout << Adder() << std::endl;		// 3
+		std::cout << Adder(5) << std:: endl;	// 7
+		std::cout << Adder(3, 5) << std::endl;	// 8
+
+		return 0;
+	}
+
+	int Adder(int num1, int num2) {
+		return num1 + num2;
+	}
+	
+
+-------------------//
+: 디폴트 값은 뒤 매개변수 부터 채워야 한다
+
+	#include <iostream>
+
+	/*
+	매개변수 디폴트 값
+	*/
+	int BoxVolume(int length, int width = 1, int height = 1);
+
+	int main(void) {
+
+		std::cout << "(3,3,3): " << BoxVolume(3, 3, 3) << std::endl;// (3,3,3): 9
+		std::cout << "(5,5): " << BoxVolume(5, 5) << std::endl; // (5,5): 11
+		std::cout << "(7): " << BoxVolume(7) << std::endl;// (7): 9
+	}
+
+	int BoxVolume(int length, int width, int height) {
+
+		return length + width + height;
+	}
