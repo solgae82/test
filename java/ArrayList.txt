@@ -27,6 +27,7 @@ public class ListTest {
 		System.out.println("size:"+list.size()); //size:3
 		
 		//5.remove
+		//list.remove("둘"); //가능
 		list.remove(1);
 		System.out.println(list);//[하나, 둘라]
 		

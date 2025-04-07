@@ -30,7 +30,7 @@ public class MapTest {
 		System.out.println(map.size()); // 3
 				
 		//5.remove
-		map.remove("1");
+		map.remove("1"); // key가 1인 자료 삭제
 		System.out.println(map);//{2=둘, 3=셋}
 		
 		map.remove("2","두개"); 
@@ -60,7 +60,6 @@ public class MapTest {
 		
 		//10.keySet
 		Set<String> keySet = map.keySet();
-		Iterator<String> iterKey = keySet.iterator();
 		String key = null;
 		while(iterKey.hasNext()) {
 			key = iterKey.next();
@@ -71,7 +70,7 @@ public class MapTest {
 			iterKey=>셋
 			 */
 		}
-		
+		Iterator<String> iterKey = keySet.iterator();
 		for(String str : keySet) {
 			System.out.println("for key=>"+ str);
 			/*
@@ -82,9 +81,7 @@ public class MapTest {
 		}
 		
 		//11.entrySet
-		Set<Map.Entry<String, String>> entrySet = map.entrySet();
-		
-	
+		Set<Map.Entry<String, String>> entrySet = map.entrySet();	
 		for(Map.Entry<String, String> entry : entrySet) {
 			System.out.println("["+entry.getKey()+ "]=>" +entry.getValue());
 			/* 
@@ -95,7 +92,6 @@ public class MapTest {
 		}
 		
 		Iterator<Map.Entry<String, String>> iterEntry = entrySet.iterator();
-
 		String mKey = null;
 		String mValue = null;
 		Map.Entry<String, String> mEntry = null;
