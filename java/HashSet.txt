@@ -55,6 +55,12 @@ public class SetTest {
 			 */
 		}
 		
+		//8.forEach
+		set.forEach((v)->{System.out.println("forEach:" + v);});
+			/*
+			forEach:둘
+			forEach:하나  
+			 */
 		
 	}
 

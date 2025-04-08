@@ -104,7 +104,17 @@ public class ListTest {
 		int lastIndex = list.lastIndexOf("셋");
 		System.out.println("끝에서 역으로 검색(셋)위치:"+lastIndex); //처음부터 검색, 마지막(셋)위치:4
 				
+		//12.forEach
+		list.forEach((v)->{System.out.println("forEach():"+v);});
 		
+			/*
+			forEach():하나
+			forEach():둘
+			forEach():셋
+			forEach():넷
+			forEach():셋
+			forEach():-추가-
+			*/
 	}
 
 }

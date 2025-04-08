@@ -107,6 +107,16 @@ public class MapTest {
 			{3=>셋}
 			 */
 		}
+		
+		//12.forEach
+		map.forEach((key , value)->{
+			System.out.println(key +":" +  value);
+		});
+			/*
+			1:하나
+			2:둘
+			3:셋
+			*/
 	}
 
 }
