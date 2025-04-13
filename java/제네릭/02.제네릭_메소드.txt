@@ -108,30 +108,45 @@
 	: GenTest<T> 와 메소드의 <T>는 다른 것 , 
 	: 메소드 <T>는 메소드에서 타입을 설정해서 메소드 범위에 사용
 	: 메소드 <M extends T> 는 GenTest<T> 의 <T>를 물려받아서 확장한 M 타입이라는 뜻
+	변경 방식 : 
+		GenTest<T>{
+			<M extends T> String makeToString2(M f);
+		}
+		
+		GenTest<Fruit> f = new GenTest<Fruit>();
+		..
+		
 		GenTest<Fruit>{
-			-> <M extends Fruit> String makeToString2(M f);
-			최종 -> String makeToString2(Fruit f);
+			<M extends Fruit> String makeToString2(M f); //1차 변경
 		}
-	
-	class GenTest<T>{	
+		..
 		
-		<T> String makeToString(T f) {		
-			return "문자열:" + f.toString();
+		f.<Apple>makeToString2(new Apple());
+		
+		GenTest<Fruit>{
+			String makeToString2(Apple f); //최종 변경
+		}
+	
+	테스트 : 
+		class GenTest<T>{	
+			
+			<T> String makeToString(T f) {		
+				return "문자열:" + f.toString();
+			}
+			
+			<M extends T> String makeToString2(M f) {		
+				return "문자열:" + f.toString();
+			}
 		}
 		
-		<M extends T> String makeToString2(M f) {		
-			return "문자열:" + f.toString();
-		}
-	}
-	
-	GenTest<Toy> gen = new GenTest<Toy>();
-	gen.<Apple>makeJuice(new Apple()); // 문자열:Apple
-	// gen.<Apple>makeJuice2(new Apple()); //에러,  <M extends Toy> 인데 <Apple>을 설정했으니 
-	
-	GenTest<Fruit> gen = new GenTest<Fruit>();
-	gen.<Grape>makeJuice(new Grape()); // 문자열:Grape
-	gen.<Fruit>makeJuice2(new Fruit()); // 문자열:Fruit
-	gen.<Apple>makeJuice2(new Apple()); // 문자열:Apple
-	gen.<Grape>makeJuice2(new Grape()); // 문자열:Grape	
-	//gen.<Toy>makeJuice2(new Toy()); //에러, <M extends Fruit> 인데 <Toy>을 설정했으니
-	
+		GenTest<Toy> gen = new GenTest<Toy>();
+		gen.<Apple>makeToString(new Apple()); // 문자열:Apple
+		// gen.<Apple>makeToString2(new Apple()); //에러,  <M extends Toy> 인데 <Apple>을 설정했으니 
+		
+		GenTest<Fruit> gen = new GenTest<Fruit>();
+		gen.<Grape>makeToString(new Grape()); // 문자열:Grape
+		gen.<Fruit>makeToString2(new Fruit()); // 문자열:Fruit
+		gen.<Apple>makeToString2(new Apple()); // 문자열:Apple
+		gen.<Grape>makeToString2(new Grape()); // 문자열:Grape	
+		//gen.<Toy>makeToString2(new Toy()); //에러, <M extends Fruit> 인데 <Toy>을 설정했으니
+		
