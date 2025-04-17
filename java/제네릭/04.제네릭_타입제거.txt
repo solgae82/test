@@ -1,0 +1,34 @@
+컴파일러는 제네릭 타입을 이용해서 컴파일전 소스파일을 체크하고, 필요한 곳에 형변환등을 넣어준다
+컴파일 된 .class에는 제네릭 타입에 대한 정보가 없게된다.
+
+1. 제네릭 타입의 경계 제거
+	<T extends Fruit> => T = Fruit
+	<T> => Object
+		
+	변경 과정 : 
+		class Box<T extends Fruit>{
+			void add(T s){}
+		}
+
+		컴파일 후 아래처럼 변경
+		
+		class Box{
+			void add(Fruit s){}
+		}
+		
+2. 제네릭 타입 제거 후 타입이 일치하지 않으면, 형변환 추가
+	: 형변환 필요한 곳을 판단해서 임의로 형변화 추가 코드 삽입
+	예를 들어 list의 get은 Object 타입을 반환하므로 컴파일시 형변환 코드를 자동 추가해준다.
+	
+	변경 과정 : 
+		
+		T get (int i){ 
+			return list.get(i);
+		}
+		
+		컴파일 후 아래처럼 변경
+		
+		Fruit get (int i){ 
+			return (Fruit)list.get(i);
+		}
+		
