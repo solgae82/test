@@ -1,11 +1,30 @@
+	let array= ['I','go','home'];
+	
+	let push = array.push('why'); //뒤에 넣고,배열.length 반환 
+	console.log(array,', ',push);// ['I', 'go', 'home', 'why'], 4
+	
+	let pop = array.pop(); // why	
+	console.log(array,', ',pop);//['I', 'go', 'home'], why
+	
+	let shift = array.shift(); // I
+	console.log(array,', ', shift); //['go','home'], I
+	
+	let unshift = array.unshift('I');//맨 앞에 넣고,배열.length 반환
+	console.log(array,', ',unshift); // ['I','go','home'], 3
+	
+	// LIFO(last-in-first-out) , [push,pop]
+	// FIFO(first-in-first-out) , [push,shift]
+	
+	console.log(String(array)==='I,go,home');
+	
 	// Array.isArray 배열인지 여부
 	const ar = [];
 	console.log(Array.isArray(ar)); // true , 배열인지 아닌지 true/false
 		
 	// filter
-        const arr = [-1, 0, 1, 2 ];
-        const re = arr.filter(i => i > 0); //true인 것만 새 배열에 담는다
-        console.log(re); //[1,2]
+	const arr = [-1, 0, 1, 2 ];
+	const re = arr.filter(i => i > 0); //true인 것만 새 배열에 담는다
+	console.log(re); //[1,2]
 		
 	// includes
 	const arr1 = [2,3,4,5,6];
