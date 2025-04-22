@@ -65,7 +65,7 @@
 
 
 --  문자열 연결
-	select concat('korea',concat(' team ','fighting')) from dual;  //nkorea team fighting
+	select concat('korea',concat(' team ',' fighting')) from dual;  //korea team fighting
 	select 'korea' || ' team' from dual; // korea team
 
 
@@ -83,40 +83,56 @@
 			)
 
 		- trim 테스트
-		// 좌우 두칸 공백이 있는 문자열 ['공백공백__Oracle__공백공백']
+		기준 : 좌우 두칸 공백이 있는 문자열 ['공백공백__Oracle__공백공백']
 
-		select '[' || '  __Oracle__  ' || ']' as R from dual;						
+		select '[' || '  __Oracle__  ' || ']' as R from dual;		
 		결과:	[  __Oracle__  ]
 		:빈공백 양쪽에 연속 두개씩
-
-		select '[' || trim('  __Oracle__  ') || ']' as R from dual;					
+		
+		-------------
+		
+		select '[' || trim('  __Oracle__  ') || ']' as R from dual;	
 		결과:	[__Oracle__]
 		:빈공백 양쪽에 연속 두개씩인데 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(leading from '  __Oracle__  ') || ']' as R from dual;	
 		결과:	[__Oracle__  ]
 		:빈공백 양쪽에 연속 두개씩인데 왼쪽 공백만 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(trailing from '  __Oracle__  ') || ']' as R from dual;		
 		결과:	[  __Oracle__]
 		:빈공백 양쪽에 연속 두개씩인데 오른쪽 공백만 모두 삭제됨.
 
-		select '[' || trim(both from '  __Oracle__  ') || ']' as R from dual;		
+		-------------
+		
+		select '[' || trim(both from '  __Oracle__  ') || ']' as R from dual;	
 		결과	[__Oracle__]
 		:빈공백 양쪽에 연속 두개씩인데 양쪽 공백 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(leading '_' from '__Oracle__') || ']' as R from dual;	
 		결과:	[Oracle__]
 		:왼쪽 '_' 연속으로 이어진  문자 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(trailing '_' from '__Oracle__') || ']' as R from dual;	
 		결과:	[__Oracle]
 		:오른쪽 '_' 연속으로 이어진  문자 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(both '_' from '__Oracle__') || ']' as R from dual;		
 		결과:	[Oracle]
 		:양쪽 '_' 연속으로 이어진  문자 모두 삭제됨.
 
+		-------------
+		
 		select '[' || trim(both '_' from '_ __Oracle__ _') || ']' as R from dual;
 		결과: [ __Oracle__ ]
 		:양쪽 '_' 문자 한개씩만 삭제됨.(삭제대상 문자가 연속으로 이어지지 않았다면 한개만 제거되고 끝난다)
@@ -131,21 +147,31 @@
 		rtrim(문자열[,삭제할 문자집합])
 
 		- ltrim  테스트 ( rtrim  도 우측조합의 삭제일뿐  개념은 똑같다)
-		select '[' || ltrim('<__Oracle__>' , '<') || ']' as R from dual;	 
+		
+		select '[' || ltrim('<__Oracle__>' , '<') || ']' as R from dual; 
 		결과: [__Oracle__>]
 		
-		select '[' || ltrim('<__Oracle__>' , '_') || ']' as R from dual;	 
+		-------------
+		
+		select '[' || ltrim('<__Oracle__>' , '_') || ']' as R from dual; 
 		결과: [<__Oracle__>]
 		
-		select '[' || ltrim('<__Oracle__>' , '<_') || ']' as R from dual;	 
+		-------------
+		select '[' || ltrim('<__Oracle__>' , '<_') || ']' as R from dual;
 		결과: [Oracle__>]
 		
-		select '[' || ltrim('<__Oracle__>' , '_<') || ']' as R from dual;	 
+		-------------		
+		
+		select '[' || ltrim('<__Oracle__>' , '_<') || ']' as R from dual; 
 		결과: [Oracle__>]
 		
-		select '[' || ltrim('<_<Oracle__>' , '_<') || ']' as R from dual;	 
+		-------------
+		
+		select '[' || ltrim('<_<Oracle__>' , '_<') || ']' as R from dual; 
 		결과: [Oracle__>]
 
+		-------------
+		
 		select '[' || ltrim('<!_Oracle__!>' , '_<') || ']' as R from dual;
 		결과: [!_Oracle__!>]
 		: '_' 과 '<' 이 아닌 '!'문자에서 제거가 멈췄다. 
