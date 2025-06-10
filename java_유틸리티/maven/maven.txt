@@ -60,19 +60,20 @@
 			pom.xml
 
 메이븐 빌드 대략적인 기본
-	- 메이븐 명령은 option , goal, phase 조합으로 실행할 수 있다
-		mvn [options] [<goal(s)>] [<phase(s)>]
+	- 메이븐 명령은 option , 플러그인:goal, phase 조합으로 실행할 수 있다
+		mvn [options] 플러그인:[<goal(s)>] [<phase(s)>]
 
-	- 옵션(option)은 pom.xml이 없는 곳에서도 실행 가능.
-	- 골(goal)과 페이즈(phase)는 메이븐 기반 프로젝트 디렉토리에서 실행 가능.
+	- 옵션(options)은 pom.xml이 없는 곳에서도 실행 가능.
+	- 플러그인:골(goal)과 페이즈(phase)는 메이븐 기반 프로젝트 디렉토리에서 실행 가능.
 
 	- 사용가능 옵션 보기
 		mvn -help
+		
 	- '-D' 옵션은 인자를 전달하는 접두어이다
 	  ex)단위테스트 실행 정지
 	  	mvn -Dmaven.test.skip=true
 
-	- 페이즈 와 골을 조합하여 빌드를 진행한다
+	- 페이즈 와 플러긍인:골을 조합하여 빌드를 진행한다
 		mvn clean test : clean과 test페이즈를 실행
 		mvn clean compiler:compile : clean 페이즈 실행, compiler플러그인의 complile 골을 실행.
 		mvn -Dmaven.test.skip=true test : 옵션으로 단위테스트 실행 정지, test페이즈 실행.
@@ -80,56 +81,62 @@
 	- mvn test : 프로젝트 디렉토리에서 test 페이즈 명령어로 컴파일 및 테스트등의 빌드를 진행한다 
 
 메이븐 설정파일
-	setting.xml : 메이븐 빌드 툴 관련한 설정 파일
-			-MEVEN_HOME/conf/setting.xml 디렉토리에 기본 파일 위치
-			-사용자별로 다른 설정을 한다면 윈도우즈의 경우
-				USER_HOME/.m2/setting.xml 추가 설치 할 수 있다
+	- settings.xml : 메이븐 빌드 툴 관련한 설정 파일
+		
+		위치:	
+		1.MEVEN_HOME/conf/settings.xml 디렉토리에 기본 파일 위치
+		2.윈도우즈 사용자별로 다른 설정을 할 경우
+			USER_HOME/.m2/settings.xml 추가 설치 할 수 있다
+		3.프로젝트 디렉토리 root
+			플젝디렉토리/settings.xml
+		4.명령어로 지정
+			mvn -s 위치/settings.xml
+			
+		중요) 로컬저장소 위치 설정 : 
+		메이븐은 필요로 하는 의존관계 라이브러리, 플러그인등을 사용자 pc의 로컬 저장소에 다운로드 한다.
+		settings.xml > settings 태그 > localRepository 태그에 값을 설정할 수 있다.
+		
+			ex) <localRepository>D:\repo</localRepository>
 
-			로컬저장소 설정 : 
-			메이븐은 필요로 하는 의존관계 라이브러리, 플러그인등을 사용자 pc의 로컬 저장소에 다운로드 한다.
-			setting.xml > settings 태그 > localRepository 태그에 값을 설정할 수 있다.
-				ex) <localRepository>D:\repo</localRepository>
+			(설정된 값이 없다면 윈도우즈 기본 값은 MEVEN_HOME/.m2/repository 디렉토리이다)
 
-			설정된 값이 없다면 윈도우즈 기본 값은 MEVEN_HOME/.m2/repository 디렉토리이다
-
-	pom.xml	: 메이븐 기반 프로젝트 설정 파일. 생성한 프로젝트 디렉토리 바로 안에 있다
-
-pom.xml 
-	메이븐은 프로젝트 디렉토리 안의 pom.xml을 읽어들여 빌드를 진행한다.
-	다른 설정 파일로 빌드를 원할 경우 빌드시 -f , --file 옵션을 사용한다.
-
-		ex)mvn -f mypom.xml test 
+	- pom.xml: 메이븐 기반 프로젝트 설정 파일. 생성한 프로젝트 디렉토리 바로 안에 있다
 	
-	pom.xml 기본 카테고리 영역
-		-프로젝트 기본정보
-		-빌드설정
-		-프로젝트 관계 설정
-		-빌드환경
+		메이븐은 프로젝트 디렉토리 안의 pom.xml을 읽어들여 빌드를 진행한다.
+		다른 설정 파일로 빌드를 원할 경우 빌드시 -f , --file 옵션을 사용한다.
 
-	기본값 분석
-		<groupId>com.solgae</groupId>
-		<artifactId>myfirst</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<packaging>jar</packaging>
-		<name>myfirst</name>
-		<url>http://maven.apache.org</url>
-
-
-		- groupId : 프로젝트 생성 조직 고유 아이디
-
-		- artifactId : 프로젝트 식별 아이디 
-
-		- version : 프로젝트 버전명. 뒤에 접미사 'SNAPSHOT'은 메이븐 예약어이며,
-			'SNAPSHOT'이 붙으면 라이브러리를 다른 방식으로 관리한다.
+			ex)mvn -f mypom.xml test 
 		
-		- packaging : jar, war, ear, pom 등
-		
-		- name : 프로젝트 이름
-		
-		- url : 프로젝트 사이트가 있다면 site url등록.
+		pom.xml 기본 카테고리 영역
+			-프로젝트 기본정보
+			-빌드설정
+			-프로젝트 관계 설정
+			-빌드환경
 
-		메이븐을 중앙 저장소에 모든 프로젝트를 관리하기 때문에 이름 충돌이 없어야 한다.
-		'groupId' + 'artifactId' 아이디는 전세계적으로 유일해야 한다.
+		기본값 분석
+			<groupId>com.solgae</groupId>
+			<artifactId>myfirst</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<packaging>jar</packaging>
+			<name>myfirst</name>
+			<url>http://maven.apache.org</url>
+
+
+			- groupId : 프로젝트 생성 조직 고유 아이디
+
+			- artifactId : 프로젝트 식별 아이디 
+
+			- version : 프로젝트 버전명. 뒤에 접미사 'SNAPSHOT'은 메이븐 예약어이며,
+				'SNAPSHOT'이 붙으면 라이브러리를 다른 방식으로 관리한다.
+			
+			- packaging : jar, war, ear, pom 등
+			
+			- name : 프로젝트 이름
+			
+			- url : 프로젝트 사이트가 있다면 site url등록.
+
+			메이븐을 중앙 저장소에 모든 프로젝트를 관리하기 때문에 이름 충돌이 없어야 한다.
+			'groupId' + 'artifactId' 아이디는 전세계적으로 유일해야 한다.
 
 
 	최상위 pom.xml 설정파일
@@ -237,37 +244,36 @@ pom.xml
 	- 메이븐 라이프사이클	
 		
 		메이븐 라이프사이클은 크게 3가지로 나뉜다
-		-기본 라이프 사이클
-		-clean 라이프 사이클
-		-site 라이프 사이클
+		1.기본 라이프 사이클
+		2.clean 라이프 사이클
+		3.site 라이프 사이클
 		
 		메이븐의 기본페이즈에 연결되어 있는 플러그인은 메이븐 중앙저장소에서 자동 다운로드한다.
 		따라서 빌드할때 추가적인 설정을 하지 않아도 된다.
 
 		3가지 라이프사이클 별로 페이즈는 대략 다음과 같다
 
-			- 기본 라이프 사이클 페이즈
-			기본 라이프 사이클의 페이즈들은 순서대로 의존관계를 가지며, 특정 페이즈를 실행하면 의존관계에 있는 
-			페이즈를 실행하고 해당 실행 페이즈를 실행한다.
-			아래는 페이즈이 순서를 나타내며 서로 의존 관계로 연결되어 있다
-			mvn test 를 실행하면
-			process-resource -> compile -> test 페이즈 식으로 서론 의존관계 페이즈를 실행한다
+		1.기본 라이프 사이클 페이즈
+		기본 라이프 사이클의 페이즈들은 순서대로 의존관계를 가지며, 특정 페이즈를 실행하면 의존관계에 있는 
+		페이즈를 실행하고 해당 실행 페이즈를 실행한다.
+		아래는 페이즈이 순서를 나타내며 서로 의존 관계로 연결되어 있다
+		mvn test 를 실행하면
+		process-resource -> compile -> test 페이즈 식으로 서론 의존관계 페이즈를 실행한다
+		
 			
-				
-				1. mvn process-resource : 자원 복사
-				2. mvn compile : 소스 코드 컴파일
-				3. mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
-				4. mvn package : jar, war, ear 등으로 압축
-				5. mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
-				6. mvn deploy : 원격저장소에 압축파일 배포
-				
-			- clean 라이프 사이클 페이즈
-				mvn clean : 이전에 빌드한 산출물을 모두 삭제. target 디렉토리 모두 삭제
+			1. mvn process-resource : 자원 복사
+			2. mvn compile : 소스 코드 컴파일
+			3. mvn test : Junint 단위 테스트.테스트 실패하면 빌드도 실패(기본)
+			4. mvn package : jar, war, ear 등으로 압축
+			5. mvn install : 현재 빌드 로컬 저장소(pc)에 압축파일 배포
+			6. mvn deploy : 원격저장소에 압축파일 배포
+			
+		2.clean 라이프 사이클 페이즈
+			mvn clean : 이전에 빌드한 산출물을 모두 삭제. target 디렉토리 모두 삭제
 
-			- site 라이프 사이클 페이즈
-
-				mvn site : 빌드 후 문서 사이트 생성, target/site 디렉토리에 생성.
-				mvn site-deploy : 빌드 후 새성한 문서사이트를 서버에 배포.
+		3.site 라이프 사이클 페이즈
+			mvn site : 빌드 후 문서 사이트 생성, target/site 디렉토리에 생성.
+			mvn site-deploy : 빌드 후 새성한 문서사이트를 서버에 배포.
 
 		기본 라이프 사이클 페이즈 => 플러그인 (좀더 상세히 보기)
 		
