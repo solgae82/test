@@ -16,7 +16,7 @@
 	    case job
 		when 'MANAGER' then sal + 1
 		when 'SALESMAN' then sal + 2
-		when 'ANAYST' then sal + 3
+		when 'ANALYST' then sal + 3
 		else sal
 	    end as el
 	from emp;
