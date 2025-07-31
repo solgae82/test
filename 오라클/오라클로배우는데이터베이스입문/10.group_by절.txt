@@ -1,5 +1,7 @@
 형식 
 	select 
+	[다중행 함수(집계함수) 사용할 열]
+	[그룹할 열들]
 	from
 	where
 	group by [ 그룹할 열들] 
@@ -35,7 +37,7 @@
 	2850	MANAGER	30
 	950	CLERK		30
 
--- having절
+-- having 절
 
 	select avg(sal) , job , deptno from emp 
 	group by deptno , job
@@ -49,7 +51,7 @@
 	3000	ANALYST	20
 	2850	MANAGER	30
 
--- where  절 + having 절
+-- where 절 + having 절
 
 	select avg(sal) , job , deptno from emp 
 	where sal <=3000
