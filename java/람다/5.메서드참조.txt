@@ -1,4 +1,3 @@
-
 메서드 참조 : 
 	- 람다식이 하나의 메서드만 호출하는 경우에 사용할 수 있는 문법.
 	- 람다식 메서드 호출에 '::' 을 사용하는 간략화 문법
@@ -53,15 +52,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * 메서드 참조 방식
- * 람다식에 하나의 메서드만 호출할때 사용가능.
- * 
- * 컴파일러가 예측 가능한 메소드일때 축약형 '(static,instance)::메소드명'  형식 사용가능
- * 생성자 반환 코드도 줄임 가능
- *
- */
-
 class My2Class{
 	
 	private String name = "default";
@@ -90,10 +80,10 @@ public class LambdaMethodReferenceTest {
 				
 		// static 메서드 참조
 		Function<String, Integer> f1 = (String s)-> Integer.parseInt(s);
-		System.out.println("String->Integer변환:"+ f1.apply("34")); //String->Integer변환:34
+		System.out.println(f1.apply("34")); //34
 		
 		Function<String, Integer> f2 = Integer::parseInt; // 메서드 참조 방식
-		System.out.println("String->Integer변환(메서드참조):"+f2.apply("35")); //String->Integer변환(메서드참조):35
+		System.out.println(f2.apply("35")); //35
 		
 		List<String> list = Arrays.asList("하나","둘","셋","넷");
 		list.forEach(item->System.out.print(item+",")); //하나,둘,셋,넷,
@@ -103,42 +93,42 @@ public class LambdaMethodReferenceTest {
 		
 		// 매개변수 instance 메소드 참조
 		BiFunction<String, String, Boolean> f3 = (s1,s2)->s1.equals(s2);
-		System.out.println("String<->String비교:"+f3.apply("test1", "test2"));//String<->String비교:false
+		System.out.println(f3.apply("test1", "test2"));//false
 		
 		BiFunction<String, String, Boolean> f4 = String::equals; // 메서드 참조
-		System.out.println("String<->String비교(메서드참조)"+f4.apply("test1", "test1")); //String<->String비교(메서드참조)true
+		System.out.println(f4.apply("test1", "test1")); //true
 		
 		// 특정 객체 인스턴스 메서드 참조
 		My2Class obj = new My2Class();
 		obj.setName("dong");
 				
 		Function<String, Boolean> f5 = (s)-> obj.isName(s);
-		System.out.println("String비교:"+f5.apply("dong2")); // String비교:false
+		System.out.println(f5.apply("dong2")); // false
 		
 		Function<String, Boolean> f6 = obj::isName; // 외부 특정 메소드 참조
-		System.out.println("String비교(메서드참조):"+f6.apply("dong")); // String비교(메서드참조):true
+		System.out.println(f6.apply("dong")); // true
 		
 		obj.setName("test");
-		System.out.println("String비교/'test'이름변경(메서드참조):"+f6.apply("dong")); //String비교/'test'이름변경(메서드참조):false
+		System.out.println(f6.apply("dong")); //false
 		
 		
 		//생성자 , 메서드 참조
 		Supplier<My2Class> sup1 = () -> new My2Class();
 		My2Class my1 = sup1.get();
-		System.out.println("My2Class.getName():" + my1.getName()); // My2Class.getName():default
+		System.out.println(my1.getName()); // default
 		
 		Supplier<My2Class> sup2 = My2Class::new; //메서드 참조 , 위와 같다
 		My2Class my2 = sup2.get();
-		System.out.println("My2Class.getName():메서드참조:" + my2.getName()); //My2Class.getName():메서드참조:default
+		System.out.println(my2.getName()); //default
 		
 		//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
 		Function<String, My2Class> f7 = (s) -> new My2Class(s);
 		My2Class my2First = f7.apply("하늘");
-		System.out.println("My2Class.getName():"+my2First.getName()); //My2Class.getName():하늘
+		System.out.println(my2First.getName()); //하늘
 				
 		Function<String, My2Class> f8 = My2Class::new; //메서드 참조로 생성 반환 코드, 위와 같다 (생성자 호출에 String 매개변수가 있다고 가정하게 된다)
 		My2Class my2Second = f8.apply("땅"); //설정 후 생성
-		System.out.println("My2Class.getName():(생성자)메서드참조:"+my2Second.getName()); // My2Class.getName():(생성자)메서드참조:땅
+		System.out.println(my2Second.getName()); // 땅
 		
 		//배열객체 생성자
 		Function<Integer, int[]> f9 = size -> new int[size];
@@ -151,7 +141,7 @@ public class LambdaMethodReferenceTest {
 		Function<Integer, int[]> f10 = int[]::new; // 위와 같다. (요게 좀 직관적이지 못하다,Integer 가 배열 size로 사용됨을 추측할 수 있다)
 		int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
 		for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
-		System.out.println("int[]:메서드참조:"+ Arrays.toString(iArr2)); // int[]:메서드참조:[5, 6, 7]
+		System.out.println(Arrays.toString(iArr2)); // [5, 6, 7]
 		
 	}
 }
