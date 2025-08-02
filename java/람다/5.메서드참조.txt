@@ -25,11 +25,20 @@
 
 
 1 . 람다 표현식이 단 하나의 메서드만을 호출하는 경우
-		
-	System.out::print
-	Integer::parseInt
-	String::equals
-	인스턴스객체::메소드
+	
+	static 메서드 참조:
+		System.out::print
+		Integer::parseInt
+	
+	인스턴스 메서드 참조:
+		예) String::equals
+		BiFunction<String, String, Boolean> f3 = (s1,s2)->s1.equals(s2); //람다식
+		BiFunction<String, String, Boolean> f4 = String::equals; //인스턴스 메서드 참조
+	
+	특정객체 인스턴스 메서드 참조:		
+		My2Class obj = new My2Class();
+		Function<String, Boolean> f5 = (s)-> obj.isName(s); //람다식		
+		Function<String, Boolean> f6 = obj::isName; // 외부 특정객체 인스턴스 메소드 참조
 	
 2.  생성자 호출 메소드 참조 
 	- 생성자를 호출하는 람다식을 메소드 참조로 표현할 수 있다
@@ -97,7 +106,7 @@ public class LambdaMethodReferenceTest {
 		Function<String, Integer> f1 = (String s)-> Integer.parseInt(s);
 		System.out.println(f1.apply("34")); //34
 		
-		Function<String, Integer> f2 = Integer::parseInt; // 메서드 참조 방식
+		Function<String, Integer> f2 = Integer::parseInt; // 메서드 참조
 		System.out.println(f2.apply("35")); //35
 		
 		List<String> list = Arrays.asList("하나","둘","셋","넷");
@@ -110,7 +119,7 @@ public class LambdaMethodReferenceTest {
 		BiFunction<String, String, Boolean> f3 = (s1,s2)->s1.equals(s2);
 		System.out.println(f3.apply("test1", "test2"));//false
 		
-		BiFunction<String, String, Boolean> f4 = String::equals; // 메서드 참조
+		BiFunction<String, String, Boolean> f4 = String::equals; // (인스턴스)메서드 참조
 		System.out.println(f4.apply("test1", "test1")); //true
 		
 		// 특정 객체 인스턴스 메서드 참조
@@ -120,7 +129,7 @@ public class LambdaMethodReferenceTest {
 		Function<String, Boolean> f5 = (s)-> obj.isName(s);
 		System.out.println(f5.apply("dong2")); // false
 		
-		Function<String, Boolean> f6 = obj::isName; // 외부 특정 메소드 참조
+		Function<String, Boolean> f6 = obj::isName; // 외부 특정객체 인스턴스 메소드 참조
 		System.out.println(f6.apply("dong")); // true
 		
 		obj.setName("test");
