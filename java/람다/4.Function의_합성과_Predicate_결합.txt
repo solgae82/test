@@ -1,0 +1,58 @@
+java.util.function  패키지의 함수형 인터페이스에는 디폴트 메소드들과 static 메소드들이 있다
+대부분 함수형 인터페이스들을 서로 연결해서 새로운 기능의 함수가 되는 형태다
+
+다른 인터페이스 합성 사용법은 대동소이하므로, 
+대표적으로 Function 과 Predicate 를 살펴본다.
+
+Function 합성
+	
+	Function<String, Integer> f = (s) -> Integer.parseInt(s,16);
+	Function<Integer, String> g = (i) -> Integer.toBinaryString(i);
+	
+	// andThen() 
+	Function<String, String> h = f.andThen(g);
+	String ori = "FF";
+	System.out.println("Integer형->"+ f.apply(ori)); // 255
+	System.out.println("String형->" + g.apply(f.apply(ori))); // "11111111"
+	System.out.println(h.apply(ori)); // "FF" -> 255 -> "11111111"
+	
+	// compose()
+	Function<Integer,Integer> c = f.compose(g);
+	int n = 2;
+	System.out.println("String형->"+g.apply(n)); // "10"
+	System.out.println("Integer형->"+f.apply(g.apply(n))); // 16 
+	System.out.println(c.apply(n)); // 2 -> "10" -> 16 
+	
+	// Function.identity() , static 메소드
+	//Function<String, String> iden = x -> x; //아래와 같다
+	Function<String, String> iden = Function.identity();
+	System.out.println("항등함수->" + iden.apply("AAA")); // 항등함수->AAA
+	
+Predicate 합성
+
+	// and()
+	Predicate<Integer> p1 = i -> i > 100;
+	Predicate<Integer> q1 = i -> i <= 200;
+	Predicate<Integer> r1 = p1.and(q1); // i > 100 && i <= 200
+	System.out.println(r1.test(101)); // true
+	System.out.println(r1.test(201)); // false
+	
+	// or()
+	Predicate<Integer> p2 = i -> i <= 100;
+	Predicate<Integer> q2 = i -> i > 200;
+	Predicate<Integer> r2 = p2.or(q2); // i <= 100 || i > 200
+	System.out.println(r2.test(99)); // true
+	System.out.println(r2.test(150)); // false
+	System.out.println(r2.test(201)); // true
+	
+	// negate()
+	Predicate<Integer> p3 = i -> i <= 100;
+	Predicate<Integer> r3 = p3.negate(); // !(i <= 100)
+	System.out.println(r3.test(100)); // false
+	System.out.println(r3.test(101)); // true
+	
+	// Predicate.isEqual() , static 메소드
+	Predicate<String> p4 = Predicate.isEqual("test1");
+	boolean r4 =p4.test("test2");
+	System.out.println(r4); // false
+	
