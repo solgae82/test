@@ -99,6 +99,9 @@
 		    (deptno , sal) in (select deptno , max(sal) 
 					from emp
 					group by deptno); 
+					
+	서브쿼리 결과로 나온 행의 deptno , sal 의 값과 일치하는 것만  true.
+	각 결과 열의 값과 and연산으로 일치하는 행 (deptno=값 and sal=값)만 true.
 	
 인라인 뷰(inline view)
 	
