@@ -43,28 +43,27 @@ java.util.function  패키지
 	Function의 변형으로  UnaryOperator 와 BinaryOperator 가 있다.
 	매개변수 타입과 반환 타입이 같다는 점이 Function과 다르다
 
-	(기본 추가 1개 : UnaryOperator는 외우자)
+	(기본 추가 1개 : UnaryOperator도 외우자)
 		java.util.function.UnaryOperator<T>
 			T apply(T t) : 매개변수가 한개 있고, 반환 타입도 매개변수 타입과 같다
 			
 		java.util.function.BinaryOperator<T>
 			T apply(T t, T t) : 매개변수 두개(같은 타입) 있고, 반환타입도 매개변수 타입과 같다	
 
-	기본 function 대표 인터페이스는 위와 같고 ,
+---------- 기본형을 사용하는 함수형 인터페이스
+
 	대표인터페이스별로 기본자료형(래퍼클래스등)을 반환하거나 매개변수로 사용하는 확장된 함수형 인터페이스들이 있다.
 	대부분 인터페이스 명 앞에 기본자료형(래퍼클래스)명 관련 접두어가 붙는다
 	래퍼클래스<->기본자료형 변환은 비용이 많이 드는 작업이라서 이렇게 전용 함수형 인터페이스가 있다고 한다.
+	
+	Predicate 예로 들면,
+	
+		기본자료형 매개변수 입력 -> boolean(true/false) 반환
+			IntPredicate , DoublePredicate , LongPredicate 
 
-		예) Predicate 확장 변형 인터페이스 : IntPredicate , DoublePredicate , LongPredicate 
-
-	매우 많지만, 다 외울 필요는 없고 이런게 있다 정도만 알고 있으면 된다.
-	java 디렉토리/xxxTest.java 파일로 관련 인터페이스들을 모아 테스트를 해놨으니 참고하자
-
----------- 기본형을 사용하는 함수형 인터페이스
-
-	Function을 예로 들자면
+	Function을 예로 들면,
 		
-		객체형 매개변수 입력 + 기본자료형 반환
+		객체형 매개변수 입력 -> 기본자료형 반환
 			ToIntFunction<Double>
 			ToDoubleFunction<Integer>
 			ToLongFunction<Double>		
@@ -73,7 +72,7 @@ java.util.function  패키지
 			ToDoubleBiFunction<Integer, Double>
 			ToLongBiFunction<Integer, Double>
 			
-		기본자료형 매개변수 입력  + 기본자료형 반환
+		기본자료형 매개변수 입력  -> 기본자료형 반환
 			IntToDoubleFunction
 			IntToLongFunction
 			DoubleToIntFunction
