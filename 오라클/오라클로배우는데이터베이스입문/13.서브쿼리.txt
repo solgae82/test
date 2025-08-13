@@ -37,6 +37,8 @@
 		- '=' 연산을 하면 IN(..) 과 같다
 		
 		1000 = ANY (500, 1000, 2000) : ANY값에  열값과 같은 1000이 있으므로 True. 
+			- sal = ANY(500, 1000, 2000)으로 생각해보면,
+			ANY(500, 1000, 2000) 값 중 일치하는 sal 값 행 모두 출력
 		
 		1000 > ANY (500, 1000, 2000) : ANY값에 열값인 1000 보다 작은 500이 있으므로 true.
 			- sal > ANY(500, 1000, 2000)로 생각해보면, 
@@ -61,12 +63,17 @@
 		
 	
 	ALL 연산자
-		서브쿼리의 모든 결과가 조건식에 맞아 떨어져야만 true
+		- 서브쿼리의 모든 결과가 조건식에 맞아 떨어져야만 true
+		
 		select * from emp 
 		where sal < all(select sal from emp where deptno = 30);
-	
-		서브쿼리 결과(1600,1250,1250,2850,1500,950) 값들보다 작은 값, 
-		곧 950보다 작은 조건열의 행이 출력된다.
+		: 서브쿼리 결과(1600,1250,1250,2850,1500,950) 값들보다 작은 값, 
+		가장 작은 값이 950보다 작은 조건열의 행이 출력된다.
+		
+		select * from emp 
+		where sal > all(select sal from emp where deptno = 30);
+		: 서브쿼리 결과(1600,1250,1250,2850,1500,950) 값들보다 큰 값, 
+		가장 큰 값인 2850보다 큰 조건열의 행이 출력된다.
 
 	EXISTS 연산자
 		all or nothing
@@ -85,6 +92,7 @@
 		데이터 존재여부만 빠르게 판단해야 경우에 주로 쓰인다.
 			
 			/* 많이 쓰이는 데이터 존재여부 체크 쿼리 : 외워라 */
+			
 			select 1 as cnt from dual 
 			where exists(select dname from dept where deptno=50 );
 
@@ -128,11 +136,11 @@ with 절
 		where e10.deptno = d.deptno;
 
 상호연관 서브쿼리 (correlated subquery)
-	 메인쿼리 결과를 서브쿼리에서 쓰고 다시 돌려주는 방식
+	 메인쿼리 결과를 서브쿼리에서 쓰고 다시 돌려주는 방식. 세미조인이라고도 부른다
 	 성능저하의 원인. 쓰지 말아야 할 쿼리
 	 이런 방식도 된다는 것만 알면 됨.
 		
-		예) 메인쿼리 e1을 서브쿼리에서 조건식으로 쓰고 있다..
+		/* 메인쿼리 e1을 서브쿼리에서 조건식으로 쓰고 있다. */
 		select * from emp e1 
 		where sal > (select min(sal) from emp e2 
 			    where e1.deptno = e2.deptno)
