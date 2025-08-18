@@ -79,12 +79,12 @@
 		all or nothing
 		서브쿼리 결과가 한개라도 있으면 메인 쿼리 모두 출력, 없으면 출력 안함
 		만족하는 데이터가 있는지 없는지 검색할때 주로 사용된다.
-		count(*)로 존재여부를 체크하기 보단 이 방식이 효율이 더 좋다.
-		존재하면 바로 true 후 더 이상 세지 않고 반환 하는 듯..
 		
+		예를 들어 count(*)로 존재여부를 체크하기 보단 이 방식이 효율이 더 좋다.
+		존재하면 바로 true 후 더 이상 세지 않고 반환 하는 듯..	
 		
-		select * from emp 
-		where exists(select dname from dept where deptno=50);
+			select * from emp 
+			where exists(select dname from dept where deptno=50);
 
 		deptno=50 가 없으므로 아무것도 출력되지 않는다.
 
@@ -100,8 +100,7 @@
 		없으면 아무것도 반환하지 않는다. 
 		(속도 또한 존재 데이터 모두를 count 하는 방식이 아니므로 데이터가 많을 경우는 이 방식이 유리하다)
 
-다중열 서브쿼리
-	
+다중열 서브쿼리	
 	비교조건이 2개 이상인 서브쿼리
 	
 		select * from emp 
@@ -117,13 +116,72 @@
 	from 절에 사용하는 서브쿼리
 
 		select * 
-
 		from
 		    (select * from emp where deptno=10) e10 , 
 		    (select * from dept) d
 		where
 		    e10.deptno = d.deptno;
 
+중첩 서브쿼리
+	WHERE절에 사용하는 서브쿼리
+	
+	(단일행 중첩 서브쿼리)
+	select * from dept a 
+	where a.deptno = (select b.deptno from emp b where b.ename='SCOTT');
+	
+	(다중행 중첩 서브쿼리)
+	select * from emp 
+		where
+		    (deptno , sal) in (select deptno , max(sal) 
+					from emp
+					group by deptno);
+	
+상호연관 서브쿼리 (correlated subquery)
+	 메인쿼리 결과를 각 행마다 서브쿼리에서 쓰고 다시 돌려주는 방식.
+	 상호연관 서브쿼리는 메인 쿼리의 각 행마다 서브쿼리가 실행됩니다
+	 성능저하의 원인이 될 수도 있어서 자제해야할 서브 쿼리
+	 이런 방식도 된다는 것만 알면 됨.
+		
+		/* 메인쿼리 e1을 서브쿼리에서 조건식으로 쓰고 있다. */
+		select * from emp e1 
+		where sal > (select min(sal) from emp e2 
+			    where e1.deptno = e2.deptno)
+		order by deptno , sal;
+
+세미쿼리
+	메인쿼리 결과와 where절 서브쿼리 결과와 조인하는 형태
+	주로 IN(), EXISTS()를 사용해서 구현
+	세미조인은 서브쿼리의 결과와 메인 쿼리의 데이터를 비교하여 조건에 맞는 행만 반환합니다.
+	
+	세미 조인의 순서:
+		일반적으로 세미 조인은 서브쿼리가 먼저 실행되고, 
+		그 결과가 메인 쿼리에 적용되는 방식으로 동작합니다.	
+		즉, 서브쿼리에서 특정 조건에 맞는 데이터들을 먼저 찾은 후, 
+		그 결과를 사용하여 메인 쿼리의 데이터를 필터링하는 방식입니다.
+		
+		IN(), EXISTS()의 실행 순서:
+			- IN() 실행순서는 IN() 쿼리 -> 메인쿼리
+			- EXISTS() 실행순서는 메인쿼리 -> EXISTS()쿼리
+
+	예제)
+		select * from dept a 
+		where exists(
+		    select 1 from emp b
+		    where a.deptno = b.deptno 
+		    and 
+		    b.hiredate >= to_date('1987-01-01','YYYY-MM-DD')
+		);
+
+		/* 20 RESEARCH DALLAS */
+		
+스칼라 서브쿼리(scalar subquery)	
+	select 절의 컬럼 자리에 쓸 수 있는 서브쿼리
+	반드시 1개의 결과만 나와야 한다..꼭!
+
+		select e.* 
+		, (select max(sal) from emp where deptno= e.deptno) as dept_max
+		from emp e;
+		
 with 절
 	서브쿼리별로 별칭을 미리 지정해 놓고 쓸 수 있는 방식
 	with 별칭 as 서브쿼리 ..
@@ -134,22 +192,3 @@ with 절
 		select * 
 		from e10, d
 		where e10.deptno = d.deptno;
-
-상호연관 서브쿼리 (correlated subquery)
-	 메인쿼리 결과를 서브쿼리에서 쓰고 다시 돌려주는 방식. 세미조인이라고도 부른다
-	 성능저하의 원인. 쓰지 말아야 할 쿼리
-	 이런 방식도 된다는 것만 알면 됨.
-		
-		/* 메인쿼리 e1을 서브쿼리에서 조건식으로 쓰고 있다. */
-		select * from emp e1 
-		where sal > (select min(sal) from emp e2 
-			    where e1.deptno = e2.deptno)
-		order by deptno , sal;
-
-스칼라 서브쿼리(scalar subquery)	
-	select 절의 컬럼 자리에 쓸 수 있는 서브쿼리
-	반드시 1개의 결과만 나와야 한다..꼭!
-
-		select e.* 
-		, (select max(sal) from emp where deptno= e.deptno) as dept_max
-		from emp e;
