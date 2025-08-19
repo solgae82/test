@@ -43,3 +43,5 @@
 9. 집계함수
 	sum, avg, count , max, min
 
+10. 그룹화
+	group by , having
