@@ -1,34 +1,57 @@
 [sysdba에대하여.txt] 문서를 보고 이해했다면 
 다음과 같이 여러 접속방법이 있다는 것을 깨닫게 된다.
 
-#기동전 sqlplus 여러가지 접속법
 
-	sqlplus "/as sysdba" 
-	휴지 인스턴스에 접속되었습니다
-
-	또는
-
+관리자(sys) 권한으로 접속하기
+	----------- (1)
 	sqlplus
-	사용자명 입력: /as sysdba
-	휴지 인스턴스에 접속되었습니다
+	Enter user-name: sys / as sysdba
+	Enter password: 그냥 엔터(비밀번호 입력 안해도 됨)
+	SQL>
 
-	또는
+	----------- (2)
+	sqlplus
+	Enter user-name: / as sysdba
+	SQL>
 
+	----------- (3)
+	sqlplus "/ as sysdba"
+	SQL>
+
+	----------- (4)
+	sqlplus / as sysdba
+	SQL>
+
+	----------- (5)
 	sqlplus /nolog
-	SQL>  conn /as sysdba
-	휴지 인스턴스에 접속되었습니다
-
-	또는 
-
+	SQL>conn sys / as sysdba
+	Enter password:그냥 엔터(비밀번호 입력 안해도 됨)
+	Connected.
+	SQL>
+	
 	sqlplus /nolog
-	SQL>connect sys/password as sysdba
+	SQL>conn / as sysdba
+	Connected.
+	SQL>
+	
+	sqlplus /nolog
+	SQL>connect sys/password as sysdba #'password'는 안 넣거나 아무 글자나 넣어도 된다
+	Connected.
+	SQL>
 
-	그리고 시작
+기본사용자 권한으로 접속하기
+	----------- (1)
+	sqlplus
+	Enter user-name: donguser
+	Enter password: 
+	SQL>
 
-	SQL> startup
-	ORACLE 인스턴스가 시작되었습니다.
-
-
+	----------- (2)
+	sqlplus /nolog
+	SQL>conn donguser/oracle
+	Connected.
+	SQL>
+	
 # 기동후  sqlplus 로 계정 접속 여러방법들(각계정들 접속)
 	
 	sqlplus system/"1234" //system 계정접속
