@@ -1,0 +1,19 @@
+----------------------------------- instance 클라이언트로 설정하기
+	instance_client_와_Oracle_client_설치.txt  참조해서 설치
+
+
+---------------------------------------Toad 로 접속하기
+	토드 실행 후 로그인 창
+	
+	Add Login Record 추가
+	
+	User / Schema: 아이디 입력
+	Password: 비밀번호 입력
+	
+	TNS/Direct/LDAP 탭 중 TNS 선택
+	
+	Database: ora10 선택
+	
+	Test 또는 OK 버튼 클릭
+
+ 

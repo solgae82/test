@@ -1,0 +1,10 @@
+----------------------------------- instance 클라이언트로 설정하기
+	instance_client_와_Oracle_client_설치.txt  참조해서 설치
+
+
+---------------------------------------sqlplus 로 접속하기
+	cmd 콘솔 접속
+
+	sqlplus scott/tiger@ora10  # 접속
+
+	SQL> select * from dept; #쿼리 날려보기

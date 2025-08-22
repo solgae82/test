@@ -1,0 +1,37 @@
+----------------------------------- instance 클라이언트로 설정하기
+	instance_client_와_Oracle_client_설치.txt  참조해서 설치
+
+---------------------------------------navicat으로 접속하기
+	1. navicat 실행
+
+	2. 메뉴 > Tools> Options >  miscellaneous > OCI 
+
+	#  위에서 설정한 디렉토리의    oci.dll   과 sqlplus.exe 를 설정한다.
+
+	OCI Library  => C:\oracle\oci.dll
+	SQL*PLUS => D:\oracle\instantclient_11_2\sqlplus.exe
+
+
+	3. Connection > Oracle > General
+
+		----------------- 위에 설정한 Tns 사용시 
+			Connection  Name : oracle10 ( 맘대로 적으면 된다)
+			Connection Type : TNS
+			Net Service Name : ora10
+			User Name : SCOTT
+			Password : TIGER
+
+		-----------------  기본버전
+			Connection  Name : oracle10 ( 맘대로 적으면 된다)
+			Connection Type : Basic
+			Host Name /IP Address : 192.168.0.3
+			Port : 1521
+			Service Name/SID : ora10
+				- Service Name  을 체크하던지 ,  SID를 체크하던지..
+
+			User Name : SCOTT
+			Password : TIGER
+
+	OK!
+
+ 
