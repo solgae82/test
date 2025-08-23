@@ -1,0 +1,47 @@
+인터넷에 떠도는 글들로 대강 정리하였다
+정확하게 이건 뭐다 라는 느낌을 갖긴 어려운 듯하다.
+너무 깊게 빠지면 한도 끝도 없을 것같다. 
+그냥 되는 방법에만 집중하여야 한다.
+--------------------
+
+토드,오렌지,SQL Gate 등의 원격 접속용 프로그램들이 사용하는 오라클에서 제공하는 공식 접속 미들웨어 모듈이 있다
+오라클 클라이언트라고 하는데, 저 상용 원격 접속 프로그램들은 성능 좋은 오라클 클라이언트 모듈을 사용하는 것같다
+
+SQL*Net 
+	- Oracle Client 구현체와 DB가 서로 인터페이스 통신하는,
+	전반적인 네트워크 구성을 총칭 
+	
+	- 쉽게 말해 SQL*Net을 통해 원격 네트워크 접속을 하는 것이다
+	
+	- SQL*Net은 Oracle Net의 초기 명칭으로,
+	기술이 발전하면서 Oracle Net Services로 이름이 변경되었다.
+
+Client Driver 종류 
+	1. OCI (Oracle Call Interface) 
+		- C/C++ 기반
+		- OS 별로 별도 Client tool 이 필요함 
+	 	- 성능이 좋다
+
+	2. JDBC Thin Driver
+		- Java기반
+		- OCI에 비해 성능이 낮다
+		 
+	3. ODBC/JDBC
+		- ODBC 는 많이 안쓰는 추세이다 
+		- DataBase 마다 Driver가 다르니 (벤더종속적) DB 변경시 수정할게 많아짐 
+		- ODBC도 OCI 를 호출해서 수행을 함   
+
+
+Oracle Clinet 는 위 방식의 모든 Client 드라이버를 가지고 있다 
+토트, 오렌지 등에서는 Oracle Clinet 설치가 필요하다 (OCI로 방식으로 접속하는 듯)
+Oracle Clinet 를 경량화한 Oracle Instance Clinet 도 있다.
+
+설치시 환경변수가 중요해 보이는데, 툴마다 사용하는 필수 변수가 다른 듯 하다
+주로 설정하는 변수명은 
+	ORACL_HOME : 오라클 클라이언트 설치된 홈 경로
+	TNS_ADMIN : TNS 관련 파일이 있는 경로
+	NLS_LANG : 인코딩 설정 관련
+	PATH : 오라클 클라이언트 홈 추가
+	
+대부분의 오라클 툴은 oci.dll 을 설정해주면 직접 연결이 가능하지만
+토드의 경우 ORACLE_HOME 을 설정해주어야 접속이 가능하단다.
