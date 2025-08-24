@@ -45,3 +45,10 @@ Oracle Clinet 를 경량화한 Oracle Instance Clinet 도 있다.
 	
 대부분의 오라클 툴은 oci.dll 을 설정해주면 직접 연결이 가능하지만
 토드의 경우 ORACLE_HOME 을 설정해주어야 접속이 가능하단다.
+
+항상 고려해야하는 것이 원격 접속 프로그램과 Oracle Client는 서로 비트를 맞춰줘야 한다
+	64bit용 원격접속 프로그램이면, Oracle Client도 64bit용 으로
+	32bit용 원격접속 프로그램이면, Oracle Client도 32bit용 으로 다운로드 설정.
+	
+	예외적으로 64bit 원격접속 프로그램인데 내부적으로 32bit용 Oracle Client를 필요할때도 있다.
+	(문서를 잘 찾아보자)
