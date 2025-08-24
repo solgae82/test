@@ -1,0 +1,66 @@
+오라클 instance client 다운로드 페이지에 있는 설치관련 내용을 구글번역 해봤다
+
+-------------------32bit 경우 
+
+Microsoft Windows 32비트용 Instant Client 설치
+
+	Instant Client 패키지에 대한 자세한 내용은 Instant Client 홈페이지를 참조하세요.
+
+	클라이언트-서버 버전 상호 운용성은 문서 ID 207303.1에 자세히 설명되어 있습니다. 
+	예를 들어, Oracle Call Interface 18.3 및 12.2는 Oracle Database 11.2 이상에 연결할 수 있습니다. 
+	일부 도구에는 다른 제한 사항이 있을 수 있습니다.
+
+	플랫폼에 맞는 Instant Client 패키지를 다운로드하세요. 
+	모든 설치에는 Basic 또는 Basic Light 패키지가 필요합니다.
+	패키지의 압축을 C:\oracle\instantclient_12_2와 같은 단일 디렉터리에 풉니다.
+	이 디렉터리를 PATH 환경 변수에 추가합니다. 
+	여러 버전의 Oracle 라이브러리가 설치된 경우, 새 디렉터리가 경로에서 맨 앞에 오도록 합니다.
+
+	Microsoft에서 올바른 Visual Studio 재배포 가능 패키지를 다운로드하여 설치하세요. 
+		Instant Client 12.2에는 Visual Studio 2013 재배포 가능 패키지가 필요합니다. 
+		Instant Client 12.1에는 Visual Studio 2010 재배포 가능 패키지가 필요합니다.
+
+	tnsnames.ora, sqlnet.ora, ldap.ora 또는 oraaccess.xml과 같은 선택적 Oracle 구성 파일을 
+	Instant Client와 함께 배치하려면 C:\oracle\instantclient_12_2\network\admin 하위 디렉터리를 만드세요.
+	이 디렉터리는 이 Instant Client에 연결된 애플리케이션의 기본 Oracle 클라이언트 구성 디렉터리입니다.
+
+	또는 Oracle 클라이언트 구성 파일을 다른 액세스 가능한 디렉터리에 저장할 수 있습니다. 
+	그런 다음 환경 변수 TNS_ADMIN을 해당 디렉터리 이름으로 설정하세요.
+
+	애플리케이션을 시작하세요.
+	ODBC 사용자는 ODBC 설치 지침을 따라야 합니다.
+
+------------------- 64bit 경우
+
+Microsoft Windows 64비트용 Instant Client 설치
+	Instant Client 패키지에 대한 자세한 내용은 Instant Client 홈페이지를 참조하세요.
+
+	클라이언트-서버 버전 상호 운용성은 문서 ID 207303.1에 자세히 설명되어 있습니다. 
+	예를 들어, Oracle Call Interface 19, 18 및 12.2는 Oracle Database 11.2 이상에 연결할 수 있습니다. 
+	일부 도구에는 다른 제한 사항이 있을 수 있습니다.
+
+	플랫폼에 맞는 Instant Client 패키지를 다운로드하세요. 
+	모든 설치에는 Basic 또는 Basic Light 패키지가 필요합니다.
+	패키지의 압축을 C:\oracle\instantclient_19_3과 같은 단일 디렉터리에 풉니다.
+	이 디렉터리를 PATH 환경 변수에 추가합니다. 
+	여러 버전의 Oracle 라이브러리가 설치된 경우 새 디렉터리가 경로에서 맨 위에 있는지 확인하세요. 
+	터미널 창을 다시 시작하거나, 애플리케이션에서 새 PATH를 사용하는지 확인하세요.
+	
+	Microsoft에서 올바른 Visual Studio 재배포 가능 패키지를 다운로드하여 설치하세요. 
+		
+		Instant Client 23, 21, 19에는 Visual Studio 2015, 2017, 2019, 2022에 
+		공통으로 사용되는 최신 Microsoft Visual C++ 재배포 가능 패키지가 필요합니다. 
+		
+		Instant Client 18과 12.2에는 Visual Studio 2013 재배포 가능 패키지가 필요합니다. 
+		
+		Instant Client 12.1에는 Visual Studio 2010 재배포 가능 패키지가 필요합니다.
+	
+	tnsnames.ora, sqlnet.ora, ldap.ora 또는 oraaccess.xml과 같은 선택적 Oracle 구성 파일을 
+	Instant Client와 함께 배치하려면 C:\oracle\instantclient_19_3\network\admin과 같은 하위 디렉터리를 만드세요.
+	이 디렉터리는 이 Instant Client에 연결된 애플리케이션의 기본 Oracle 클라이언트 구성 디렉터리입니다.
+
+	또는 Oracle 클라이언트 구성 파일을 액세스 가능한 다른 디렉터리에 저장할 수 있습니다. 
+	그런 다음 환경 변수 TNS_ADMIN을 해당 디렉터리 이름으로 설정하세요.
+
+	애플리케이션을 시작하세요.
+	ODBC 사용자는 ODBC 설치 지침을 따라야 합니다.
