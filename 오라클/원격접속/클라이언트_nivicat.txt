@@ -8,8 +8,8 @@
 
 	#  위에서 설정한 디렉토리의    oci.dll   과 sqlplus.exe 를 설정한다.
 
-	OCI Library  => C:\oracle\oci.dll
-	SQL*PLUS => D:\oracle\instantclient_11_2\sqlplus.exe
+	OCI Library  => C:\oracle\11.2.0\client_1\oci.dll
+	SQL*PLUS => C:\oracle\11.2.0\client_1\sqlplus.exe
 
 
 	3. Connection > Oracle > General
