@@ -45,3 +45,10 @@
 
 10. 그룹화
 	group by , having
+
+11. 그룹화 함수
+	rollup, cube , grouping sets
+	grouping , grouping_id
+	pivot , unpivot
+	listagg
+	
