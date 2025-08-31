@@ -1,24 +1,25 @@
 
 테이블 복사 생성하기 (데이터 포함)
 	-테이블 구조 + 데이터까지 복사 된다
-	
-	create table dept_temp
+		create table dept_temp
 	as
 	select * from dept;
 
+	(index,sequence,제약조건등은 복사되지 않고, 순수 테이블 생성만 가능)
+	
+	-- 확인 --
 	select * from dept_temp;
-
-
+	
 테이블 복사 생성하기 (데이터 빼고)
 	- 테이블 구조 복사 만
 	create table dept_temp2
 	as
 	select * from dept where 1 <> 1;
-
+	
+	-- 확인 --
 
 	select * from dept_temp2;
 	/* 데이터는 없다 */
-	
 
 기본 데이터 삽입
 	insert into dept_temp(deptno , dname, loc)
@@ -33,11 +34,12 @@ NULL 값 명시적으로 삽입
 	values (70, 'web' , NULL);
 
 	insert into dept_temp (deptno , dname , loc) 
-	values (70, 'web' , ''); /* 이것도 NULL 처리로 입력된다 */
+	values (70, 'web' , ''); /* '' 도 NULL 처리로 입력된다 */
 
 
 NULL 값 묵시적으로 삽입
-	dname 컬럼을 빼고 넣기를 하면 기본 NULL 처리 상태로 행삽입 된다
+	dname 컬럼(기본 null허용)을 빼고 넣기를 하면 
+	기본 허용값인 NULL 상태로 행삽입 된다
 
 	insert into dept_temp (deptno , loc)
 	values ( 90 , 'Incheon');
@@ -51,7 +53,7 @@ NULL 값 묵시적으로 삽입
 	values ( 9999 , '심청이2' , 'manager', 9999 , to_date(sysdate,'YYYY-MM-DD') , 4000, null, 10);
 
 서브쿼리를 이용한 데이터 넣기(이관쿼리에 쓰임)
-	- values 절은 상용하지 않는다
+	- values 절은 사용하지 않는다(select 쿼리로 대체)
 	- 추가되는 테이블의 열개수와 서브쿼리 열개수가 일치해야 한다
 	- 추가되는 테이블의 열자료형과 서브쿼리 열자료형이 일치해야 한다
 
