@@ -1,0 +1,51 @@
+Comparator.reverseOrder()는 Comparable을 구현한 객체를 역순 정렬을 위한 
+새로운 Comparator 객체로 반환하는 정적(static) 메서드이고, 
+
+(Comparator)인스턴스.reversed()는 기존 Comparator 인스턴스 정렬 순서를 뒤집어 
+역순 Comparator 객체를 반환하는 인스턴스 메서드입니다.  
+
+1. Comparator.reverseOrder()
+	기능
+	: Comparable 구현 객체(Integer, String 등)의 자연스러운 순서(오름차순)를 
+	내림차순으로 반전한 Comparator를 반환하는 static 메서드 
+
+	(사용 예)
+	: Integer, String 등은 Comparable을 구현한 객체이다
+	: List나 Array를 역순으로 정렬할 때 사용합니다. 	
+	
+	List<Integer> numbers = Arrays.asList(3, 1, 4, 2); 
+	numbers.sort(Comparator.reverseOrder()); // [4, 3, 2, 1]
+	
+	:
+	위 예제는 Comparable 객체를 오름차순 구현한 Integer 객체를 
+	내림차순으로 정렬하기 위해 역순 Comparator를 
+	반환해서 sort 메서드의 인자로 주는 예제이다.
+ 
+	Comparator.reverseOrder() == Collections.reverseOrder() 과 같다
+	
+ 2. (Comparator)인스턴스.reversed()
+	기능
+	: 이미 정의된 Comparator 객체의 compare() 메서드에서 반환하는 순서를 뒤집은 
+	새로운 Comparator 객체를 반환하는 인스턴스 메서드 
+	
+	(사용 예)
+	: 기존의 Comparator를 역순으로 사용하고 싶을 때 사용합니다. 
+	
+	Comparator<String> stringComparator = Comparator.naturalOrder(); // 오름차순 Comparator 반환
+	Comparator<String> reversedStringComparator = stringComparator.reversed(); // 내림차순 Comparator 반환
+
+	List<String> names = Arrays.asList("Charlie", "Alice", "Bob");
+	names.sort(reversedStringComparator); // 내림차순 Comparator
+	names.forEach((s)->System.out.print(s+","));// ChaCharlie,Bob,Alice,
+
+핵심 차이점
+	reverseOrder()는 Comparable을 구현한 객체를 역순 정렬해야 할 때 사용하는 정적 메서드입니다.
+		- 정렬대상 객체가 Comparable 기본구현을 오름차순으로 했다면, 
+		내림차순으로 변경할 Comparator가 반환된다
+		
+		- 정렬대상 객체가 Comparable 기본구현을 내림차순으로 했다면, 
+		오름차순으로 변경할 Comparator가 반환된다
+	
+	reversed()는 이미 만들어진 Comparator 객체의 순서를 반대로 뒤집을 때 사용하는 인스턴스 메서드입니다. 
+		- Comparator 객체가 오름차순으로 되어있다면, 내림차순으로 바꾼 Comparator로 반환된다
+		- Comparator 객체가 내림차순으로 되어있다면, 오름차순으로 바꾼 Comparator로 반환된다

@@ -1,0 +1,54 @@
+- 스트림은 데이터 소스를 변경하지 않는다.
+- 스트림은 1회용이다.
+- 스트림의 작업은 내부 반복으로 처리한다.
+- 스트림 연산은 '중간연산' 과 '최종연산'으로 나뉜다
+
+	strStream.distinct().limit(5).sorted().count();
+	- 중간연산 : distinct().limit(5).sorted()
+	- 최종연산 : count()
+	
+	중간,최종연산 메서드 대략 정리
+		- 중간연산: distinct(),filiter().limit(),skip(),peek(),
+				sorted(),map(),flatMap()
+				
+		- 최종연산: forEatch(),count(),max(),min(),findAny(),findFirst()
+				allMatch(),noneMatch(),toArrary(),reduce(),collect()
+				
+	※ 핵심
+		중간연산 핵심은 map(), flatMap()
+		최종연산 핵심은 reduce(), collect()
+
+- 지연된 연산 : 최종연산이 수행되어야 비로소 스트림 요소들이 중간연산을 거쳐 최종연산에서 소모된다.
+
+- Stream<T>, (IntStream, LongStream, DoubleStream)
+	- Stream<T> 가 기본이다.
+	- 오토박싱&언박싱으로 인한 비효율을 줄이긴 위한 기본형을 다루는 스트림도 제공된다.
+	
+- 병렬 스트림
+	- 병렬처리: parallel() , 병렬처리 취소: seqential()
+	- 기본 상태는 병렬처리가 아니다.
+	- 병렬 처리를 지원한다. parallel() 호출만 하면 된다.
+	- parallel() 호출로 병렬처리된 스트림을 병렬 처리되지 않게 하려면 seqential()을 호출.
+	
+	int sum = strStream.parallel().mapToInt(s->length()).sum();
+	
+- 스트림 소스 생성 대상(대략)
+	컬렉션
+	배열
+	특정범위의 정수
+	임의의 수
+	람다식 iterator(), generater()
+	java.nio.file.Files
+	
+- 빈 
+	- 결과가 null 보다 비어있는 스트림이 낫다
+	
+	Stream emptyStream =  Stream.empty();// 빈스트림 생성
+	long count = emptyStream.count(); // 0
+
+- 스트림연결
+	
+	Stream<String> strStream3 = Stream.concat(strStream1 , strStream1);
+	
+	
+	

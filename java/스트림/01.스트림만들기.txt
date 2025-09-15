@@ -1,0 +1,76 @@
+스트림 생성 대상
+	컬렉션
+		List<Integer> list = Arrays.asList(1,2,3,4,5);	
+		Stream<Integer> intStream = list.stream();
+		intStream.forEach(System.out::print); // 12345
+		
+	배열
+		Stream<String> strStream = Stream.of("ab","cd","ef");
+		//Stream<String> strStream = Stream.of(new String[] {"ab","cd","ef"});
+		//Stream<String> strStream = Arrays.stream(new String[]{"ab","cd","ef"});
+		//Stream<String> strStream = Arrays.stream(new String[]{"ab","cd","ef"},0,3);
+		strStream.forEach(System.out::print); // abcdef
+		
+		IntStream intStream = IntStream.of(1,2,3);
+		//IntStream intStream = IntStream.of(new int[] {1,2,3});
+		//IntStream intStream = Arrays.stream(new int[] {1,2,3});
+		//IntStream intStream = Arrays.stream(new int[] {1,2,3},0,3);
+		intStream.forEach(System.out::print); // 123
+		
+	특정범위의 정수
+		IntStream intStream = IntStream.range(0, 5);
+		intStream.forEach(System.out::print); // 01234
+		
+		LongStream longStream = LongStream.rangeClosed(0, 5);
+		longStream.forEach(System.out::print); // 012345
+		
+	임의의 수
+		Random random = new Random();
+		
+		IntStream i= random.ints(); //무한 스트림 생성
+		LongStream lo = random.longs();//무한 스트림 생성
+		DoubleStream d= random.doubles();//무한 스트림 생성
+		
+		i.limit(5).forEach(System.out::println); //임의의 int값 5개 출력
+		lo.limit(5).forEach(System.out::println);//임의의 long값 5개 출력
+		d.limit(5).forEach(System.out::println);//임의의 double값 5개 출력
+		
+		IntStream i3 = random.ints(3); //임의숫자 스트림 3개 생성
+		i3.forEach(System.out::println);//임의의 int값 3개 출력
+
+		IntStream i4 = random.ints(3, 10); //3 ~ 10 미만의 범위  숫자 무한 스트림 생성
+		i4.limit(10).forEach(System.out::println); // 3 ~ 10 미만의 범위  랜덤숫자 10개 출력
+		
+		System.out.println();
+		IntStream i5 = random.ints(10, 3, 10); //3 ~ 10 미만의 범위  숫자 10개 스트림 생성
+		i5.forEach(System.out::println); //3 ~ 10 미만의 범위  숫자 10개 출력
+		
+	람다식 iterator(), generater()
+		- iterator() : 첫번째 인수 seed값 부터 시작해서, 
+		람다식에 의해 반환된 값을 다음 람다식 seed로 전달후 계산 반복.
+		
+		Stream<Integer> intStream = Stream.iterate(0,  n->n+2);// n+2 증가하는 무한 스트림 생성
+		intStream.limit(5).forEach(System.out::print); //02468
+		
+		
+		- generater() : seed값이 없고,람다식 반환된 값을 재활용 하지 않음
+		
+		Stream<Integer> intStream2 = Stream.generate(()->(int)(Math.random()*10));
+		intStream2.limit(5).forEach(System.out::println); // 0~9 랜덤 정수 5개 출력
+		
+	java.nio.file.Files
+	
+		Path path = Paths.get("D:\\a.txt");
+		Stream<String> stream = Files.lines(path);
+		stream.forEach(System.out::println);
+	
+	java.io.BufferedReader
+	
+		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in)); //선언
+		Stream<String> stream= bf.lines();
+	빈 스트림
+		- 결과가 null 보다 비어있는 스트림이 낫다
+		
+		Stream emptyStream =  Stream.empty();
+		long count = emptyStream.count(); // 0
+	
