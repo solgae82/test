@@ -217,3 +217,101 @@ peek
 	Stream<Integer> iStream2 = Stream.of(2,1,3,4);
 	IntStream intStream2 = iStream2.mapToInt(Integer::intValue);
 	intStream2.sorted().forEach(System.out::print); // 1234
+	
+flatMap
+	: Stream<String[]> => Stream<String> 으로 만들고 싶을 때 사용
+	
+	
+	----------- 예제 1
+		Stream<String[]> strArrStream = Stream.of(
+					new String[] {"abc","def","ghi"}
+					,new String[] {"ABC","DEF","GHI"}
+			);
+			
+		Stream<Stream<String>> stream = strArrStream.map(Arrays::stream);
+	
+	변환하려고 map을 사용했지만, 결과는 Stream<Stream<String>> 형태가 되었다
+	
+		stream.forEach(System.out::println);
+		/*
+			java.util.stream.ReferencePipeline$Head@4c873330
+			java.util.stream.ReferencePipeline$Head@119d7047
+			java.util.stream.ReferencePipeline$Head@3b07d329
+			java.util.stream.ReferencePipeline$Head@41629346
+		 */
+		
+	Stream<Stream<String>> 출력하기 위해서 아래 처럼 해야한다
+		stream.forEach(s->s.forEach(System.out::println));
+		/*
+			abc
+			def
+			ghi
+			ABC
+			DEF
+			GHI
+		 */
+		 
+	이럴때 flatMap() 메소드를 사용하면 Stream<String> 형태로 바로 변환해 사용할 수 있다
+		Stream<String> stream = strArrStream.flatMap(Arrays::stream);
+		stream.forEach(System.out::println);
+		/*
+		 	abc
+			def
+			ghi
+			ABC
+			DEF
+			GHI
+		 */
+		 
+	----------- 예제 2
+		String[] lineArr = {
+				"Belive or not It is true",
+				"Do or do not There is no try"};
+				
+		Stream<String> lineStream2 = Arrays.stream(lineArr);
+		Stream<String> strArrStream2 = lineStream2.flatMap(line->Stream.of(line.split(" +")));
+		strArrStream2.forEach(System.out::println);
+		/*
+			Belive
+			or
+			not
+			It
+			is
+			true
+			Do
+			or
+			do
+			not
+			There
+			is
+			no
+			try
+
+		 */
+
+	----------- 예제 3
+	: Stream<Stream<String>> => Stream<String> 으로 변환하기
+	
+		Stream<String[]> strArrStream = Stream.of(
+				new String[] {"abc","def","ghi"}
+				,new String[] {"ABC","DEF","GHI"}
+		);
+		
+		Stream<String> strStream1 = Stream.of("abc","def","ghi");
+		Stream<String> strStream2 = Stream.of("ABC","DEF","GHI");
+		
+		Stream<Stream<String>> strStreamString = Stream.of(strStream1,strStream2);
+		
+		// Stream<Stream<String>> => Stream<String> 으로 변환하기
+		Stream<String> strStream = strStreamString.map(s ->s.toArray(String[]::new))
+		.flatMap(Arrays::stream);
+		
+		strStream.forEach(System.out::println);
+		/*
+			abc
+			def
+			ghi
+			ABC
+			DEF
+			GHI
+		*/
