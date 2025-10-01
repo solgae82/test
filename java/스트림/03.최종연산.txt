@@ -1,0 +1,187 @@
+---- forEach()
+
+: 스크림 요소들을 최종 반복 소비한다
+: void forEach(Consumer<? super T> action);
+
+	Stream<String> strStrm = Stream.of("abc","def");
+	strStrm.forEach(System.out::println);
+	/*
+		abc
+		def
+	*/
+
+---- allMatch(), anyMatch(), noneMatch(), findFirst(), findAny() 
+
+: boolean allMatch(Predicate<? super T> predicate);
+: boolean anyMatch(Predicate<? super T> predicate);
+: boolean noneMatch(Predicate<? super T> predicate);
+: Optional<T> findFirst();
+: Optional<T> findAny();
+
+	Student[] students = {
+		new Student("우정환",1,50)
+		,new Student("김우진",3,70)
+		,new Student("장철완",2,70)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(students);
+	
+	// allMatch() : 모든 요소 중 조건이 모두 맞으면  true 반환
+	boolean bool = stuStrm.allMatch(s -> s.getTotalScore() >= 50); //모두 50점 이상이면  true
+	System.out.println(bool); // true
+	
+	// anyMatch() : 모든 요소 중  조건에 맞는 요소가 하나라도 있으면  true 반환
+	boolean bool = stuStrm.anyMatch(s -> s.getTotalScore() == 51); //51점 이 하나라도 있으면 true
+	System.out.println(bool); // false
+	
+	//noneMatch() : 모든 요소 중 조건이 모두 맞지 않으면  true 반환
+	boolean bool = stuStrm.noneMatch(s -> s.getTotalScore() == 51); //51점 이 하나도 없어야  true
+	System.out.println(bool); // true
+	
+	// findFirst(), findAny() : 필터링 후 조건에 맞는 첫번째 요소를 Optional<T>로 반환 
+	// 병렬스트림일땐 findAny() 사용
+	Optional<Student> st =  stuStrm.filter(s->s.getTotalScore() > 50).findFirst();
+	System.out.println(st.get().getName()); // 김우진
+	
+---- count() 
+
+: 스트림 요소 갯수 반환
+: long count();
+
+	Stream<String> strStrm = Stream.of("abc","ghi","def");	
+	long count = strStrm.count(); // 3
+	
+---- max(), min()
+
+: 정렬 후 min -> max 형태로 끝 요소를 Optional<T>로 반환한다
+: Optional<T> min(Comparator<? super T> comparator);
+: Optional<T> max(Comparator<? super T> comparator);
+
+	Stream<String> strStrm = Stream.of("abc","ghi","def");
+		
+	// 오름차순  정렬: abc,def,ghi
+	
+	//Optional<String> maxOpt = strStrm.max(Comparator.naturalOrder());
+	//System.out.println(maxOpt.get()); // ghi
+	
+	//Optional<String> minOpt= strStrm.min(Comparator.naturalOrder());
+	//System.out.println(minOpt.get()); // abc
+	
+	
+	// 내림차순 정렬 : ghi,def,abc
+	//Optional<String> maxOpt = strStrm.max(Comparator.reverseOrder());		 
+	//System.out.println(maxOpt.get()); // abc
+	
+	//Optional<String> minOpt = strStrm.min(Comparator.reverseOrder());
+	//System.out.println(minOpt.get()); // ghi
+	
+	
+	-----------  custom 객체
+	
+	class Student implements Comparable<Student>{
+		String name;
+		int ban;
+		int totalScore;
+		
+		public Student(String name, int ban, int totalScore) {
+			super();
+			this.name = name;
+			this.ban = ban;
+			this.totalScore = totalScore;
+		}
+		
+		// 총점 내림차순 기본
+		public int compareTo(Student o) {
+			
+			return o.totalScore - this.totalScore;
+		}
+		
+		..getter, setter
+	}
+	
+	
+	Student[] students = {
+			new Student("우정환",1,50)
+			,new Student("김우진",3,70)
+			,new Student("장철완",2,70)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(students);
+	
+	// 오름차순 정렬 : 김우진,우정환,장철완
+	
+	//Optional<Student> stuOpt = stuStrm.max(Comparator.comparing(Student::getName));
+	//System.out.println(stuOpt.get().getName()); //장철완
+	
+	//Optional<Student> stuOpt = stuStrm.min(Comparator.comparing(Student::getName));
+	//System.out.println(stuOpt.get().getName()); //김우진
+	
+	// 내림차순 정렬 : 장철완,우정환,김우진
+	
+	//Optional<Student> stuOpt = stuStrm.max(Comparator.comparing(Student::getName).reversed());
+	//System.out.println(stuOpt.get().getName()); // 김우진
+	
+	//Optional<Student> stuOpt = stuStrm.min(Comparator.comparing(Student::getName).reversed());
+	//System.out.println(stuOpt.get().getName()); // 장철완
+	
+---- reduce()
+
+: 모든 요소를 돌며 반복 연산 후 결과를 반환한다
+	
+	------ Stream<T> 예제
+	: Optional<T> reduce(BinaryOperator<T> accumulator);
+	: T reduce(T identity, BinaryOperator<T> accumulator);
+	: <U> U reduce(U identity,
+                 BiFunction<U, ? super T, U> accumulator,
+                 BinaryOperator<U> combiner);
+		 
+	Stream<String> strStrm = Stream.of("abc","ghi","def");
+		
+	//  최소값 출력
+	Optional<String> minStr = strStrm.reduce((s1,s2)->{
+			int r = s1.compareTo(s2);
+			return (r >= 1)?s2:(r < 0?s1:s2);
+		}
+	);
+	
+	System.out.println(minStr.get()); // abc
+	
+	strStrm = Stream.of("abc","ghi","def");
+	
+	// max값 출력
+	Optional<String> maxStr = strStrm.reduce((s1,s2)->{
+		int r = s1.compareTo(s2) * -1;
+		return (r >= 1)?s2:(r < 0 ?s1:s2);
+		}
+	);
+	System.out.println(maxStr.get()); // ghi
+	
+	------ IntStrem 예제
+	: OptionalInt reduce(IntBinaryOperator op);
+	: int reduce(int identity, IntBinaryOperator op);
+	
+	IntStream intStrm = IntStream.of(3,1,4,5,2);
+		
+	int count =intStrm.reduce(0,(a,b)->a + 1); //요소갯수 연산
+	System.out.println(count); // 5
+	
+	int sum =  intStrm.reduce(0,(a,b)-> a + b); // 총합 연산
+	System.out.println(sum); //15
+	
+	System.out.println(Integer.MAX_VALUE +"/"+Integer.MIN_VALUE); //2147483647/-2147483648
+	
+	int max = intStrm.reduce(Integer.MIN_VALUE , (a,b)-> a > b?a:b); //최대값 연산
+	System.out.println(max); // 5
+	
+	int min = intStrm.reduce(Integer.MAX_VALUE, (a , b)-> a < b ? a : b); //최소값 연산
+	System.out.println(min); // 1
+	
+	//초기값 없는 reduce
+	OptionalInt optMaxInt = intStrm.reduce((a,b)-> a > b?a:b); //최대값 연산
+	//OptionalInt optMaxInt = intStrm.reduce(Integer::min); // 같은 연산
+	System.out.println(optMaxInt.getAsInt()); // 5
+			
+	OptionalInt optMinInt = intStrm.reduce((a,b)-> a < b?a:b); // 최소값 연산
+	//OptionalInt optMinInt = intStrm.reduce(Integer::min); //같은 연산
+	System.out.println(optMinInt.getAsInt()); // 1
+	
