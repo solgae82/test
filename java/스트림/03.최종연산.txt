@@ -185,3 +185,10 @@
 	//OptionalInt optMinInt = intStrm.reduce(Integer::min); //같은 연산
 	System.out.println(optMinInt.getAsInt()); // 1
 	
+---- toArray()
+
+: 스트림 배열로 반환하기
+		
+	Object[] arrObj = stuStrm.toArray(); //ok
+	//Student[] arrStu = stuStrm.toArray(); //(x)
+	Student[] arrStu = stuStrm.toArray(Student[]::new); // 배열 생성자를 메서드 참조로 넣어 줘야 한다
