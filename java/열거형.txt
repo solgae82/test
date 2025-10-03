@@ -1,5 +1,41 @@
+C언어의 열거형은 값이 정수형 상수이지만, java의 열거형은 객체상수다 (C언어 열거형으로 착각하지 말자)
+
+	class Woker{
+		public static final Woker WALKING = new Woker();
+		public static final Woker RUNNING = new Woker();
+		public static final Woker TRACKING = new Woker();
+		public static final Woker HIKING = new Woker();
+	}
+
+위와 같은 자기 자신 상수형 객체 선언을 아래와 같이 선언한 거라 보면 된다.
+
+	enum Woker {WALKING, RUNNING, TRACKING, HIKING;}
+
+enum 자체가 클래스와 같으므로, 같은 이름의 클래스가 있다면 당연히 충돌난다.
+enum 도 클래스 이므로, 생성자, 메소드 , 멤버필드 , 추상메서드 등을 가질 수 있다
+enum 생성자는 암묵적인 private 이다. 즉 외부에서 호출 불가 
+
+상수객체 선언 위치도 중요하다.
+
+	enum Type {	
+		WALKING, RUNNING, TRACKING, HIKING; // 항상 맨 먼저 선언
+		Type(){} //생성자
+	}
+	
+아래는 enum 상수형객체가 위치가 잘못 되어서 컴파일 에러이다
+
+	enum Type {	
+		Type(){} //생성자 , 컴파일 에러 (x)
+		WALKING, RUNNING, TRACKING, HIKING; // 항상 맨 먼저 선언
+		
+	}
+
+상수만 정의된 java 파일의 상수 값이 바뀌면, 해당 상수를 참조하는 모든 소스들은 재컴파일 해야한다.
+열거형 정의된 java 파일의 상수 값이 바뀌면, 해당 열거형을 참조하는 모든 소스들은 재컴파일 할 필요없다.
+
 1. 열거형 선언하기
-	1) 하나의 java파일로 만들어서 선언하기
+
+	1) 하나의 java파일로 만들어서 enum 선언하기
 
 		<Type.java>
 		public enum Type {
@@ -36,10 +72,10 @@
 		}
 
 	-------------------//
-	열거된 순서에 따라 0 부터 순서값을 가짐. 차례대로 증가함.
+	열거된 순서에 따라 0 부터 순서값을 가짐(ordinal). 차례대로 증가함.
 	enum 열거형으로 지정된 상수는 대문자 사용.
-	마지막 끝에 세미콜론(;)을 붙이지 않음.
 	-------------------//
+	
 2. 기본 사용하기
 
 	<Shoes.java>
@@ -68,6 +104,7 @@
 
 
 3. 메소드
+
 	1) values() : 열거된 모든 원소를 배열에 담아 순서대로 반환
 
 		enum Type {
@@ -113,7 +150,6 @@
 	3) valueOf() : 매개변수로 주어진 String과 열거형에서 일치하는 이름을 갖는 원소를 반환
 		(주어진 String과 일치하는 원소가 없는 경우 IllegalArgumentException 예외 발생)
 
-
 		enum Type {
 		    WALKING, RUNNING, TRACKING, HIKING
 		}
@@ -140,7 +176,8 @@
 			ex) Enum.valueOf(Type.class, "WALKING");
 		-------------------//
 
-	4) name() : 호출된 값의 이름을 String으로 리턴. 
+	4) name() : 호출된 값의 이름을 String으로 리턴.
+	
 		enum Type {
 		    WALKING, RUNNING, TRACKING, HIKING
 		}
@@ -160,6 +197,7 @@
 		이름은? HIKING
 
 	5) compareTo() : 작으면 음수 , 같으면 0 , 크면 양수
+	
 		enum Direction {EAST, WEST, SOUTH, NORTH}
 
 		public class Shoes {
@@ -177,6 +215,7 @@
 		}
 
 	6) equals() : 같은지 비교
+	
 		enum Direction {EAST, WEST, SOUTH, NORTH}
 
 		public class Shoes {
@@ -191,7 +230,10 @@
 
 			}
 		}
+		
 4. 생성자 사용하기
+	: enum 생성자는 암묵적인 private 이다. 즉 외부에서 호출 불가
+	
 	enum Type {
 		WALKING("워킹화"), RUNNING("러닝화"), TRACKING("트래킹화"), HIKING("등산화");
 
@@ -222,10 +264,12 @@
 		등산화
 
 	-------------------//
-	생성자 상수는 선언 끝에 ;(세미콜론)을 붙여야한다.
+	생성자 상수는 선언 끝에 ;(세미콜론)을 꼭 붙여야한다.
 	-------------------//
 
 5. 상수객체 메서드 사용
+	: 추상메서드를 사용하면 상수 열거형 객체는 반드시 추상메서드를 구현해야 한다
+	
 	enum Type {
 		
 		BUS(100){
@@ -242,7 +286,7 @@
 		};
 		
 		abstract int fare(int distance); //abstract  선언
-		protected final int BASIC_FARE;	//protected 선언
+		protected final int BASIC_FARE;	//protected 선언해야 각 상수에서 접근가능
 		
 		private Type(int m) {
 			BASIC_FARE = m;
@@ -261,14 +305,17 @@
 				
 		}
 	}
+	
 6. 비교하기
+
 	== 연산자는 사용가능 , <, > 는 컴파일 에러(비교 불가능, 당연함 객체이므로)
 	compareTo , 또는 equals 메소드로 비교하자
 
 
 7. 조건문
-	if문 : Type.EAST 비교가능
-	switch문 : Type.EAST 하면 에러, EAST로 비교해야함.
+
+	- if문 : Type.EAST 비교가능
+	- switch문 : Type.EAST 하면 에러, EAST로 비교해야함.
 
 
 	enum Type {EAST, WEST, SOUTH, NORTH}
@@ -277,7 +324,7 @@
 		public static void main(String[] args) {
 			Type d1 = Type.EAST;
 			
-			switch(d1) {
+			switch(d1) { //이미 Type enum임을 알고 있으므로.. case문에는 enum 이름만 사용
 		
 				case EAST: //Type.EAST 이렇게 하면 에러..
 					System.out.println("EAST 다");	break;	//EAST 다
@@ -289,8 +336,7 @@
 					System.out.println("NORTH");	break;
 			}
 
-			if(d1 == Type.EAST){ // EAST로 비교 못함.
-
+			if(d1 == Type.EAST){ // EAST로 비교 못함(당연)
 				System.out.println("east 다"); //east 다
 			}else{
 				System.out.println("east 아니다");

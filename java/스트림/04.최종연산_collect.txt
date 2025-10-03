@@ -4,8 +4,24 @@ Collector 인터페이스로 구현해서 메서드 매개변수로 넣어서 �
 커스텀으로 구현해도 되고, sdk에서 제공하는 Collectors를 사용해도 된다
 Collector 를 구현한 java.util.Collectors 사용법을 살펴본다
 
----- Collectors: toList() , toSet() , toMap() ,toCollection()
+---- 예제 클래스
+class Student{
+	String name; //이름
+	int ban; //반
+	int totalScore;//점수
+	int num; //번호
+	
+	public Student(String name, int ban, int totalScore ,int num) {
+		this.name = name;
+		this.ban = ban;
+		this.totalScore = totalScore;
+		this.num = num;
+	}
+	..getter(), setter()
 
+}
+
+---- Collectors: toList() , toSet() , toMap() ,toCollection()
 : 스트림 => Collection, List, Set, Map 등으로 반환
 	
 	Student[] stuArr = {
@@ -25,20 +41,22 @@ Collector 를 구현한 java.util.Collectors 사용법을 살펴본다
 	//System.out.println(set); // [육중완, 김삼손, 이도형]
 	
 	// Map에 {"반번호-번호","이름"} 된 객체 만들기
-	//Map<String,String> map = stuStrm.collect(Collectors.toMap(s->s.getBan()+"-"+s.getNum(), s->s.getName()));
+	//Map<String,String> map = stuStrm.collect(
+	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), s->s.getName()));
 	//System.out.println(map); // {3-19=육중완, 2-3=이도형, 1-41=김삼손}
 	// p->p == Function.identity()
-	//Map<String,Student> map = stuStrm.collect(Collectors.toMap(s->s.getBan()+"-"+s.getNum(), Function.identity()));
+	//Map<String,Student> map = stuStrm.collect(
+	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), Function.identity()));
 	//System.out.println(map);
 	//{3-19=Student [name=육중완, ban=3, totalScore=90], 2-3=Student [name=이도형, ban=2, totalScore=80], 1-41=Student [name=김삼손, ban=1, totalScore=70]}
 	
 	// ArrayList에 이름 담기
 	//List<String> namesList =  stuStrm.map(Student::getName).collect(Collectors.toList());
-	//ArrayList<String> arrList = namesList.stream().collect(Collectors.toCollection(ArrayList::new));
+	//ArrayList<String> arrList = namesList.stream().collect(
+	Collectors.toCollection(ArrayList::new));
 	//System.out.println(arrList); // [이도형, 김삼손, 육중완]
 	
 ---- Collectors: counting(),summingInt(),averagingInt(),maxBy(),minBy(),summarizingInt()
-
 : 통계 설정 메소드들
 
 	Student[] stuArr = {
@@ -66,21 +84,25 @@ Collector 를 구현한 java.util.Collectors 사용법을 살펴본다
 	System.out.println(average); //80.0
 	
 	// maxBy(Comparator<? super T> comparator) : comparator 로 비교할 자료형을 넣어 그 중 max 값 해당 객체반환
-	Optional<Student> maxStu = stuStrm.collect(Collectors.maxBy(Comparator.comparingInt(Student::getTotalScore)));
+	Optional<Student> maxStu = stuStrm.collect(
+	Collectors.maxBy(Comparator.comparingInt(Student::getTotalScore)));
 	System.out.println(maxStu.get().getName()); //육중완
 
 	// minBy(Comparator<? super T> comparator) : comparator 로 비교할 자료형을 넣어 그 중 min 값 해당 객체반환
-	Optional<Student> minStu = stuStrm.collect(Collectors.minBy(Comparator.comparingInt(Student::getTotalScore)));
+	Optional<Student> minStu = stuStrm.collect(
+	Collectors.minBy(Comparator.comparingInt(Student::getTotalScore)));
 	System.out.println(minStu.get().getName()); //김삼손
 
 	//  : IntSummaryStatistics 형 요약통계형으로 반환
 	IntSummaryStatistics summary = stuStrm.mapToInt(Student::getTotalScore).summaryStatistics();
 	double avg = summary.getAverage(); //80.0
 	
-	IntSummaryStatistics summary = stuStrm.collect(Collectors.summarizingInt(Student::getTotalScore));
+	IntSummaryStatistics summary = stuStrm.collect(
+	Collectors.summarizingInt(Student::getTotalScore));
 	double avg = summary.getAverage(); //80.0
 	
 ---- Collectors: reducing()
+: reduce() 를 Collectors로 구현
 
 	IntStream intStream = IntStream.of(5,4,2,3,1);
 		
@@ -114,3 +136,160 @@ Collector 를 구현한 java.util.Collectors 사용법을 살펴본다
 	
 	Integer sum2 = stuStrm.collect(Collectors.reducing(0, Student::getTotalScore, Integer::sum));
 	System.out.println(sum2.intValue()); // 240
+	
+---- Collectors: joining()
+: 문자열 결합
+
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	//문자스트림 연결
+	String lineNames1 = stuStrm.map(Student::getName).collect(Collectors.joining());
+	System.out.println(lineNames1);//이도형김삼손육중완
+	
+	// "," 구분자로 연결
+	stuStrm = Stream.of(stuArr);
+	String lineNames2 = stuStrm.map(Student::getName).collect(Collectors.joining(","));
+	System.out.println(lineNames2);//이도형,김삼손,육중완
+	
+	// (구분자, 접두사, 접미사) 연결
+	stuStrm = Stream.of(stuArr);
+	String lineNames3 = stuStrm.map(Student::getName).collect(Collectors.joining(",","[","]"));
+	System.out.println(lineNames3);//[이도형,김삼손,육중완]
+	
+-------------------------------------------------
+Collectors. 그룹화
+-------------------------------------------------
+
+---- Collectors; partitioningBy()
+: true/false 로 스트림을 두가지 그룹으로 나눠서 연산한다
+
+	static Stream<Student> getStudents(){
+		
+		Stream<Student> stuStream = Stream.of(
+			new Student("나자바",true,1,1,300)
+			,new Student("김지미",false,1,1,250)
+			,new Student("김자바",true,1,1,200)
+			,new Student("이지미",false,1,2,150)
+			,new Student("남자바",true,1,2,100)
+			,new Student("안지미",false,1,2,50)
+			,new Student("황지미",false,1,3,100)
+			,new Student("강지미",false,1,3,150)
+			,new Student("이자바",true,1,3,200)
+			
+			,new Student("나자바",true,2,1,300)
+			,new Student("김지미",false,2,1,250)
+			,new Student("김자바",true,2,1,200)
+			,new Student("이지미",false,2,2,150)
+			,new Student("남자바",true,2,2,100)
+			,new Student("안지미",false,2,2,50)
+			,new Student("황지미",false,2,3,100)
+			,new Student("강지미",false,2,3,150)
+			,new Student("이자바",true,2,3,200)
+		);
+		return stuStream;
+	}
+	
+	......
+	
+	Stream<Student> stuStream = getStudents();
+		
+		
+	Map<Boolean, List<Student>> stuBySex= stuStream.collect(
+			Collectors.partitioningBy(Student::isMale));
+	
+	// 남학생 이름 모두 출력
+	List<Student> maleStudent = stuBySex.get(true);// 남학생
+	for(Student stu : maleStudent) {
+		System.out.println(stu.getName()); //남학생 이름 출력
+	}
+	
+	System.out.println();
+	
+	// 여학생 이름 모두 출력
+	List<Student> femaleStudent = stuBySex.get(false);// 여학생
+	for(Student stu : femaleStudent) {
+		System.out.println(stu.getName()); //여학생 이름 출력
+	}
+	
+	System.out.println();		
+	stuStream = getStudents();
+	
+	// 남,여 학생 수 출력
+	Map<Boolean, Long> countBySex = stuStream.collect(
+			Collectors.partitioningBy(Student::isMale , Collectors.counting()));
+	System.out.println("남학생 수=>"+countBySex.get(true)); //남학생 수=>8
+	System.out.println("여학생 수=>"+countBySex.get(false)); //여학생 수=>10
+	
+	System.out.println();
+	stuStream = getStudents();
+	
+	// 남,여 1등 뽑아내기 : Optional<Student> 반환
+	Map<Boolean, Optional<Student>> maxScoreStu =stuStream.collect(
+			Collectors.partitioningBy(
+					Student::isMale , Collectors.maxBy(Comparator.comparingInt(Student::getScore))
+			)
+	);
+	
+	System.out.println("남학생 1등=>"+maxScoreStu.get(true));
+	//남학생 1등=>Optional[Student [name=나자바, isMale=true, hak=1, ban=1, score=300]]
+	
+	System.out.println("여학생 1등=>"+maxScoreStu.get(false));
+	//여학생 1등=>Optional[Student [name=김지미, isMale=false, hak=1, ban=1, score=250]]
+	
+	System.out.println();
+	stuStream = getStudents();
+	
+	// 남,여 1등 뽑아내기 => Student 반환
+	Map<Boolean, Student> maxScoreStu2 =stuStream.collect(
+		Collectors.partitioningBy(
+			Student::isMale , 
+			Collectors.collectingAndThen(
+				Collectors.maxBy(
+					Comparator.comparingInt(Student::getScore)
+				),
+				Optional::get
+			)
+		)
+	);
+	
+	System.out.println("남학생 1등=>"+ maxScoreStu2.get(true));
+	// 남학생 1등=>Student [name=나자바, isMale=true, hak=1, ban=1, score=300]
+	
+	System.out.println("여학생 1등=>"+ maxScoreStu2.get(false));
+	//여학생 1등=>Student [name=김지미, isMale=false, hak=1, ban=1, score=250]
+	
+	System.out.println();			
+	stuStream = getStudents();
+	
+	// 남,여  성적이 150 이하 골라내기 (중첩으로 골라내기)
+	Map<Boolean,Map<Boolean, List<Student>>> failedStuBySex =stuStream.collect(
+		Collectors.partitioningBy(
+			Student::isMale, 
+			Collectors.partitioningBy(s->s.getScore() < 150)
+		)	
+	);
+	
+	List<Student> failedMaleStu = failedStuBySex.get(true).get(true); //남자이고 150점 이하
+	List<Student> failedFeMaleStu = failedStuBySex.get(false).get(true); //여자이고 150점 이하
+	
+	System.out.println(failedMaleStu);
+	/*
+	[Student [name=남자바, isMale=true, hak=1, ban=2, score=100], 
+	Student [name=남자바, isMale=true, hak=2, ban=2, score=100]]
+	*/
+	System.out.println(failedFeMaleStu);
+	/*
+	[Student [name=안지미, isMale=false, hak=1, ban=2, score=50], 
+	Student [name=황지미, isMale=false, hak=1, ban=3, score=100], 
+	Student [name=안지미, isMale=false, hak=2, ban=2, score=50], 
+	Student [name=황지미, isMale=false, hak=2, ban=3, score=100]]
+	*/
+
+---- Collectors; groupingBy()
+: 
