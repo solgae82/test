@@ -1,0 +1,334 @@
+Object 기초 메서드
+
+: 11개 의 메서드 중에 쓰레드 관련 메서드 빼고, 중요하게 알아야할 것만 정리해 보았다
+
+equals(Object o) 
+
+	: 객체 주소값 비교 true/false 반환  
+		
+	Object의 equals() 는 아래처럼 구현되어 있다
+	
+		public boolean equals(Object obj) {
+			return (this == obj);
+		}
+		
+	보다시피, 객체 주소값을 비교하게 되어있다.
+	
+	객체 주소가 아닌 값 비교를 하고 싶을때는 overriding 해야 한다.
+	!! equals 메소드를 overriding 할땐, hashCode() 메소드도 
+	같이 overriding 해야 한다.
+	
+	String 클래스는 equals(), hashCode()가 overriding 되어 있다.
+	그래서 값 비교 하는 로직으로 변경되어 있다.
+	소스를 한번 분석해 보면 좋다
+	
+hashCode()
+	
+	: 객체의 해시코드(hash code)를 반환하는 메소드
+	: 객체 주소를 int형으로 변환해서 반환한다 
+	: 객체의 지문이라고도 표현 한다
+
+	Object 소스를 보면 native 메소드로 되어있다
+		public native int hashCode();
+	
+	선언만 되어 있지 구현 소스를 볼 수 없다.(운영체제의 [c언어]메서드 라는 것)		
+	Object.hashCode()는 항상 새로운 값을 반환하게 되어있다.
+	그런데 같은 값을 출력하게 overriding 해야될 때가 있다.
+	
+	사용자가 만든 클래스를 객체로 만들어서 비교하려면 equals()를 overriding해야 한다.
+	그런데 equals()를 overriding 하면 반드시 hashCode()도 overriding 해야한다.
+	
+	왜냐하면, equals()가 true이면 두 객체의 해시코드도 같아야 하는 규칙 때문에,
+	equals()가 true이면, 같은 hash code 값을 반환하게 구현해야 한다	
+	
+	String 클래스는 이미 hashCode() 와 equals()가 overriding 되어 있다.
+	테스트 해보면 아래와 같다
+	
+		String str1 = "abc34";
+		String str2 = "abc";
+
+		System.out.println(str1.equals(str2)); //false
+		System.out.println(str1.hashCode()); //92597827
+		System.out.println(str2.hashCode()); //96354
+		
+		-------------
+		
+		String str1 = "abc";
+		String str2 = "abc";
+
+		System.out.println(str1.equals(str2)); //true
+		System.out.println(str1.hashCode()); //96354
+		System.out.println(str2.hashCode()); //96354	
+		
+	Collection 프레임웤의 hash가 들어가는 
+	hashMap,hashSet,hashTable 등은 중복값을 허용하지 않는데, 
+	이런 자료구조형은
+	객체 비교를 hashCode()로 1차 비교한 값이 true 이어야, 2차로 equals() 연산를 한다.
+	객체 내부 비교할 값을 포함한 연산 값이 일정하게 나오게 되면 1차 통과한 것으로 보고,
+	2차 equals() 연산을 해서 중복 여부를 판단 한다.
+	
+	이렇 듯 hash 구현 자료구조로 사용될 사용자 객체는 hashCode()와 equals()를 
+	재구현(overriding) 해야된다. 
+	(equals() true이면  hashCode() 값도 같게 구현)
+	
+	모든 객체 비교 구현은, 
+	hashCode() 연산과, equals() 연산 결과가 
+	논리적으로 맞는지 상호체크 해서 같은 객체인지 여부를 판단하게 구현하므로,
+	항상 hashCode() + equals() 는 같이 overriding 해야 한다.
+	
+	------- System.identityHashCode(Object o)
+	
+	오버라이딩한 hashCode() 값이 아닌, 
+	원래대로 Objcet.hashCode() 처럼 객체마다 다른 값을 출력하게 하고 싶다면 
+	System.identityHashCode(Object obj)를 사용한다
+		
+		-------- (일반객체)
+		Person p1 = new Person("홍길동",30);
+		Person p2 = new Person("홍길동",30);
+		
+		int nHash1 = System.identityHashCode(p1);
+		int nHash2 = System.identityHashCode(p2);
+		System.out.println(nHash1); // 2018699554
+		System.out.println(nHash2); // 1311053135
+		
+		-------- String (new 생성)
+		String str1 = new String("abc");
+		String str2 = new String("abc");
+		
+		int nHash1 = System.identityHashCode(str1);
+		int nHash2 = System.identityHashCode(str2);
+		System.out.println(nHash1); // 2018699554
+		System.out.println(nHash2); // 1311053135
+		
+		-------- String (리터럴)
+		
+		String str1 = "abc";
+		String str2 = "abc";
+		
+		int nHash1 = System.identityHashCode(str1);
+		int nHash2 = System.identityHashCode(str2);
+		System.out.println(nHash1); // 2018699554
+		System.out.println(nHash2); // 2018699554
+		
+		(자바의 문자열 리터럴은 "문자열 풀(String Pool)"이라는 
+		메모리 영역에 저장되어 동일한 문자열은 동일한 객체를 공유하게 되므로, 
+		겉보기에는 다른 객체처럼 보일지라도 실제로는 같은 객체를 가리켜 
+		System.identityHashCode() 값이 같게 나오는 것입니다.) 
+		
+	------ 중복 hash문제
+	
+	32bit , 64bit 운영체제(JVM) 에 따라서 중복 hash 값 문제가 있다
+		
+		public native int hashCode();
+	
+	보다시피 구현된 값은 int형으로 반환되는데 4byte 이다
+	32bit에서 주소체계는 int형과 같은 4byte라 겹칠 일이 없다
+	그런데 64bit에서는 주소체계가 8byte형인데 이 값을 강제로 int형(4byte)으로
+	축소 변환 하다보니, 중복되는 값이 나올 수도 있다는 문제가 있다.
+	
+	그러므로 hashCode() 만으로 객체 비교 및 유일성 여부를 판단하는 코드를 만들면 안된다는 것을 알 수 있다.	
+	
+	------ 심플 예제
+	import java.util.Objects;
+	
+	class Person{
+		String name;
+		int age;
+		public Person(String name, int age) {this.name = name; this.age=age;}
+		
+		public int hashCode(){
+			return Objects.hash(name, age);
+		}
+		public boolean equals(Object obj) {
+			if(obj==null || !(obj instanceof Person)) return false;
+			Person p = (Person) obj;
+			return (this.name.equals(p.name) && this.age == p.age);
+		}
+	}
+
+		Person p1 = new Person("ab",30);
+		Person p2 = new Person("ab",30);
+		
+		System.out.println(p1.equals(p2)); // true
+		System.out.println(p1.hashCode()); //97246
+		System.out.println(p2.hashCode()); //97246
+		
+	------ 
+	직접 구현하지 말고 IDE가 제공하는 코드 자동완성 기능을 사용해서 구현하자 !!
+	
+toString()
+
+	public String toString();
+	
+	:객체 정보 문자열로 출력
+	: IDE 코드 자동완성 기능을 사용하여 만들자(overriding)
+	
+	(Object 클래스)
+	public String toString() {
+		return getClass().getName() + "@" + Integer.toHexString(hashCode());
+	}
+	com.solgae.test.Person@640e35f1  //Object.toString() 기본 출력
+	
+	// 아래처럼 IDE 코드 자동완성 기능으로 생성한 코드를 쓰자 (디버깅시 좋다)
+	class Person{
+		String name;
+		int age;
+		public String toString() {
+			return "Person [name=" + name + ", age=" + age + "]";
+		}
+	}
+	
+	Person p1 = new Person("홍길동",30);
+	System.out.println(p1); // Person [name=홍길동, age=30]
+	
+---- clone()
+
+	: 객체 복제하는 기능
+	
+	protected native Object clone() throws CloneNotSupportedException;
+	
+	서브타입 clone 기능 구현 
+		1. Cloneable 구현 (구현 하지 않고, clone 호출하면 예외발생)
+		2. clone() 오버라이드, 접근제어자는 public 변경
+		3. super.clone() 호출, CloneNotSupportedException 처리
+		
+	구현 소스
+		class Person implements Cloneable{  //1.Cloneable 구현
+			..
+			
+			public Object clone() { // 2. clone() 오버라이드, 접근제어자는 public 변경
+				
+				Object obj = null;
+				try {
+					// 3.super.clone() 호출, CloneNotSupportedException 처리
+					obj = super.clone(); 
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+				return obj;
+			}
+		}
+	
+		.. 사용
+		
+		Person person1 = new Person();
+		Person person2  = (Person) person1.clone();
+		
+		
+	얕은 복사 ,깊은 복사
+		: 기본자료형은 데이터를 복사하여 새로 만들지만,
+		참조형 자료는 새로 생성한 객체가 아닌, 이전 참조형 주소값을 복사해서 공유한다
+		완벽한 복제가 아니라고 해서 , 이를 두고 얕은 복사라 한다
+		깊은 복사를 하려면 super.clone() 호출 이후 참조형 객체을 새로 생성하여 기존 값들을 복사 하여야 한다.
+	
+	------ 
+	
+	자바의 공변 반환 타입(Covariant Return Type)은 
+	서브클래스에서 오버라이드된 메서드가 슈퍼클래스의 동일한 메서드보다 
+	더 구체적인(서브타입인) 반환 타입을 반환할 수 있도록 허용하는 기능입니다. 
+	자바 1.5 버전부터 도입되었으며, 
+	오버라이딩 시 메서드 시그니처(매개변수, 이름, 반환 타입)가 모두 동일해야 하는 제약을 완화하여 
+	반환 타입만 서브클래스로 지정할 수 있게 합니다. 
+	
+	그래서 자바 1.5 버전부터는 
+	다음처럼 Objcet 반환타입을 서브 클래스(Person) 로 지정하여 반환하는 코드가 가능해진다
+		
+		class Person implements Cloneable{
+			public Person clone() throws CloneNotSupportedException{ 
+				return (Person) super.clone(); // 어차피 Person 객체를 복제하였였음.
+			}
+		}
+		
+		..
+		
+		Person person1 = new Person();
+		Person person2  = person1.clone(); //형변환 할 필요 없음
+	
+	------ 최종 예제 
+	class Point{
+		int x,y;
+		Point(int x , int y){this.x=x; this.y=y;}
+	}
+	class Person implements Cloneable{
+		String name;
+		int age;
+		Point point;
+		public Person(String name, int age , Point point) {this.name = name; this.age=age; this.point=point;}
+
+		public String toString() {
+			return "Person [name=" + name + ", age=" + age + ", point=" + point + "]";
+		}
+		
+		// 기본 클론 override (쓰진 않았지만, 기본이므로 구현 남겨둠)
+		public Person clone() {
+			
+			Person person = null;
+			try {
+				person = (Person) super.clone();
+				
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			return person;
+		}
+		
+		// 얕은 복사
+		public Person shallowClone() {
+			Person person = null;
+			try {
+				person = (Person) super.clone();
+				
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			return person;
+		}
+		
+		// 깊은 복사
+		public Person deepClone() {
+			Person person = null;
+			try {
+				person = (Person) super.clone();
+				person.point = new Point(this.point.x, this.point.y); //깊은 복사
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			return person;
+		}
+	}
+	
+	... 테스트 
+		
+	// 얕은 복사 (참조 자료형은 주소만 복사, 공유)
+	Person person1 = new Person("홍길동", 18 , new Point(1,2));
+	Person person2  = (Person) person1.shallowClone(); // 얕은 복사
+	
+	System.out.println(person1); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@7852e922]
+	System.out.println(person2); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@7852e922]
+	
+	person1.name= new String("장");
+	person1.age = 41;
+	person1.point.x = 3;
+	person1.point.y = 4;
+	
+	System.out.println(person1); // Person [name=장, age=41, point=com.solgae.jartest.Point@7852e922]
+	System.out.println(person2); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@7852e922]
+	System.out.println(person1.point.x +"/"+person2.point.x); // 3/3 (같은 point 객체이므로)
+	
+	//--------------------깊은 복사 (참조 자료형 새로 생성 후 데이터 복사)
+	
+	Person person3 = new Person("홍길동", 18 , new Point(1,2));
+	Person person4  = (Person) person3.deepClone(); // 얕은 복사
+	
+	System.out.println(person3); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@4e25154f]
+	System.out.println(person4); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@70dea4e]
+	
+	person3.name= new String("장");
+	person3.age = 41;
+	person3.point.x = 3;
+	person3.point.y = 4;
+	
+	System.out.println(person3); // Person [name=장, age=41, point=com.solgae.jartest.Point@4e25154f]
+	System.out.println(person4); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@70dea4e]
+	System.out.println(person3.point.x +"/"+person4.point.x); // 3/1 (다른 point 객체이므로)
+	
