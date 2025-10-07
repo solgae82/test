@@ -332,3 +332,36 @@ toString()
 	System.out.println(person4); // Person [name=홍길동, age=18, point=com.solgae.jartest.Point@70dea4e]
 	System.out.println(person3.point.x +"/"+person4.point.x); // 3/1 (다른 point 객체이므로)
 	
+	
+---- getClass()
+
+	: public final native Class<?> getClass();
+	: 자신의 Class 객체 반환
+	: Class 객체는 클래스당 1개만 존재한다
+	: 자신의 Class 객체를 사용(리플렉션API)해서 동적으로 해당 객체를 생성 및 조작할 수 있다
+		- 리플렉션API 사용 기술은 따로 정리
+		
+		
+	------ 간단한 생성 예제
+	class Person{}
+	
+	/*
+	 * .class는 클래스 리터럴을 참조하는 구문입니다. 
+	 * 예를 들어, String.class는 String 클래스의 Class 객체를 참조합니다. 
+	 * 이는 특정 클래스의 Class 객체를 얻기 위한 가장 간단한 방법입니다
+	 */
+	Class c1 = Person.class; // 1. 클래스 리터럴(.class)로 부터 얻기 
+			
+	Class c2 = new Person().getClass(); // 2. 생성된 객체로 부터 얻기
+	
+	try {
+		Class c3 = Class.forName("Person"); // 3. 클래스 이름으로 부터 얻기
+	} catch (ClassNotFoundException  e) {}
+	
+	// 생성한 Class 클래스로 관련 객체 생성 하기	
+	try {
+		// new Person과 같다
+		Person p1 = (Person) c1.newInstance(); // Class 인스턴스 객체로 부터  생성
+		Person p2 = Person.class.newInstance();  // 클래스 리터럴(.class) 로 부터 생성
+	} catch (InstantiationException e) {
+	} catch (IllegalAccessException e) {}
