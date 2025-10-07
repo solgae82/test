@@ -163,12 +163,18 @@ class Student{
 	System.out.println(lineNames3);//[이도형,김삼손,육중완]
 	
 -------------------------------------------------
-Collectors. 그룹화
+※ Collectors. 그룹화
 -------------------------------------------------
 
----- Collectors; partitioningBy()
+---- Collectors: partitioningBy()
 : true/false 로 스트림을 두가지 그룹으로 나눠서 연산한다
 
+	public static <T>
+	    Collector<T, ?, Map<Boolean, List<T>>> partitioningBy(Predicate<? super T> predicate) {
+		return partitioningBy(predicate, toList());
+	}
+
+	(예제)
 	static Stream<Student> getStudents(){
 		
 		Stream<Student> stuStream = Stream.of(
@@ -207,6 +213,16 @@ Collectors. 그룹화
 	List<Student> maleStudent = stuBySex.get(true);// 남학생
 	for(Student stu : maleStudent) {
 		System.out.println(stu.getName()); //남학생 이름 출력
+		/*
+		나자바
+		김자바
+		남자바
+		이자바
+		나자바
+		김자바
+		남자바
+		이자바
+		*/
 	}
 	
 	System.out.println();
@@ -215,6 +231,18 @@ Collectors. 그룹화
 	List<Student> femaleStudent = stuBySex.get(false);// 여학생
 	for(Student stu : femaleStudent) {
 		System.out.println(stu.getName()); //여학생 이름 출력
+		/*		
+		김지미
+		이지미
+		안지미
+		황지미
+		강지미
+		김지미
+		이지미
+		안지미
+		황지미
+		강지미
+		*/
 	}
 	
 	System.out.println();		
@@ -283,6 +311,7 @@ Collectors. 그룹화
 	[Student [name=남자바, isMale=true, hak=1, ban=2, score=100], 
 	Student [name=남자바, isMale=true, hak=2, ban=2, score=100]]
 	*/
+	
 	System.out.println(failedFeMaleStu);
 	/*
 	[Student [name=안지미, isMale=false, hak=1, ban=2, score=50], 
