@@ -1,5 +1,28 @@
 제네릭 타입의 형변환
 
+- <?> 의미
+
+	1. class Test<T>{} 일때
+		: Test<?> 는 Test<? extends Object> 와 같다
+	
+	2.  class Test<T extends Fruit>{} 일때
+		: Test<?> 는 Test<? extends Fruit> 와 같다
+	
+예를 들어 class Test<T>{} 일때,
+
+- raw 타입과 <> 지네릭 타입과 형변환 가능하다
+	Test <- 형변환 -> Test<String>
+	
+- 범위가 제한된 지네릭 타입 변수는 그 제한범위 지네릭 타입을 대입 받을 수 있다
+	Test<? extends Object> t1 = new Test<String>();
+	
+- 범위가 제한된 지네릭 타입은 범위에 한해 형변환 가능하다 (경고가 발생하지만 가능)
+	// Test<?> t1 = new Test<String>();
+	Test<? extends Object> t1 = new Test<String>();
+	Test<String> s = (Test<String>) t1;
+	
+1. 기본 예제 
+	
 	interface Eatable{}
 	class Fruit implements Eatable{
 		public String toString() {return "Fruit";}
@@ -9,84 +32,91 @@
 
 	class Toy{public String toString() {return "Toy";}}
 
-	class FruitBox<T extends Fruit & Eatable> extends Box<T>{}
 	class Box<T>{}
-
+	class FruitBox<T extends Fruit & Eatable> extends Box<T>{}
+	
+	class Test<T>{}
+	
 	//-------------------// 형변환 기본테스트 
 
+	//----- 1. raw 타입과 <> 지네릭 타입과 형변환
+	
 	Box box = null; //raw 타입 선언
 	Box<Object> objBox = null;
 
 	box = (Box) objBox; //OK, 원시타입 경고 발생
-	objBox = (Box<Object>) box; //OK type safety 경고 발생
+	
+	//OK, (type safety: Unchecked cast from Box to Box<Object>) 경고 발생
+	objBox = (Box<Object>) box; 
 
-	//Box<Object> objBox2  = new Box<String>(); //에러, 형변환 불가능
-
+	//----- 2. 범위 제한된 지네릭 변수에 범위에 해당하는 지네릭 타입 설정
+	
+	//Box<Object> objBox2  = new Box<String>(); //에러, 형변환 불가능(당연!)
+	
+	//범위가 제한된 지네릭 변수이면 대입 가능
+	Box<? extends Object> b0 = new Box<String>(); // Box<?> b0 = new Box<String>();
+	
 	FruitBox<? extends Fruit> b1 = new FruitBox<Fruit>();// OK
 	FruitBox<? extends Fruit> b2 = new FruitBox<Apple>();// OK
 	FruitBox<? extends Fruit> b3 = new FruitBox<Grape>();// OK
+	
+	FruitBox<?> b4 = new FruitBox<>(); // OK , FruitBox<? extends Fruit> b4 = new FruitBox<Fruit>();
+	FruitBox<? extends Fruit> b5 = new FruitBox<Apple>(); // Ok
+	
+	//---- 3. 제한된 지네릭 변수를 제한범위 내로 다운캐스팅 가능하다
+	FruitBox<? extends Fruit> b6  = null;
+	FruitBox<Apple> appleBox = (FruitBox<Apple>)b6; // OK, type safety 경고 발생
+	
+	Test<?> t1 = new Test<String>();// Test<? extends Object> t1 = new Test<String>();
+	Test<String> t2 = (Test<String>) t1;
 
-	//역으로 대입도 가능하다
-	FruitBox<? extends Fruit> b4  = null;
-	FruitBox<Apple> appleBox = (FruitBox<Apple>)b4; // OK type safety 경고 발생
-
-
-	//-------------------//  Test<T> 클래스 구현 분석
+2. Optional 클래스 분석
 	:아래 클래스는 Optional 클래스 empty() 메소드를 copy한 것이다.
 	
-	class  Test<T>{
-		private static final Test<?> EMPTY   = new Test<>();
-		public static<T> Test<T> empty() {
-			Test<T> t = (Test<T>) EMPTY;
+	class  Optional<T>{
+		private static final Optional<?> EMPTY   = new Optional<>();
+		private final T value;
+		..
+		public static<T> Optional<T> empty() {
+			Optional<T> t = (Optional<T>) EMPTY;
 			return t;
 		}
 	}
 		
-	1. private static final Test<?> EMPTY   = new Test<>(); 분석
-	:<?> 는 <? extends Object> 라는 뜻. 그러므로 대입하는 new Test<>() 는 Test<Object> 이다
-	아래는 같은 의미	
-
-		// Test<Object> empty1 = new Test<Object>(); 라는 의미
-		Test<?> empty1 = new Test<>(); //OK, 
+	1. private static final Optional<?> EMPTY   = new Optional<>(); 분석
+	:<?> 는 <? extends Object> 라는 뜻.  new Optional<>(); 는 Optional<Object> 이라는 뜻.
 		
-		//Test<Object> empty2 = new Test<Object>(); 라는 의미
-		Test<? extends Object> empty2 = new Test<>(); //OK, 
+		// Optional<? extends Object> empty1 = new Optional<Object>(); 라는 의미
+		//아래는 다 같은 의미
+		Optional<?> empty1 = new Optional<>(); //OK 
+		Optional<? extends Object> empty2 = new Optional<>(); //OK 
+		Optional<? extends Object> empty3 = new Optional<Object>(); //Ok 
 		
-		//OK, Test<Object> empty3 = new Test<Object>(); 라는 의미
-		Test<? extends Object> empty3 = new Test<Object>(); 
-
-
-		//Test<?> bank1 = new Test<?>(); // 에러 , 미확인 타입 객체 생성불가
-		
-		//Test<Object> bank2 = new Test<Object>(); 라는 의미.
-		Test<?> bank2 = new Test<Object>(); //OK , 
-		
-		//Test<Object> bank3 = new Test<Object>() 라는 의미.
-		Test<?> bank3 = new Test<>();	// OK , 
+		// Optional<? extends Object> bank1 = new Optional<? extends Object>(); 라는 의미, 에러
+		// Optional<?> bank1 = new Optional<?>(); // 문법에러 , 미확인 타입 객체 생성불가
 	
-	2. Test<T> t = (Test<T>) EMPTY; 분석
+	2. Optional<T> t = (Optional<T>) EMPTY; 분석
 	
-		Test<?> EMPTY = new Test<>(); 는
-		Test<Object> EMPTY = new Test<Object>(); 라는 의미
+		Optional<?> EMPTY = new Optional<>(); 는
+		Optional<? extends Object> EMPTY = new Optional<Object>(); 라는 의미
 		 
-		Test<Object> -> Test<T> 로는 형변환 불가하지만,
-		Test<Object> -> Test<?> 로 형변환 후 -> Test<T>는 형변환 가능하다(경고 발생 하지만 ..)
+		Optional<Object> -> Optional<T> 로는 형변환 불가하지만,
+		Optional<?> 는 -> Optional<T>는 형변환 가능하다(경고 발생 하지만 ..)
 		
 		그래서
-			Test<?> EMPTY  = new Test<>(); 
-		아래와 같으므로 
-			Test<Object> EMPTY   = new Test<Object>()
-	
-		empty() 메소드 구현의
-			Test<T> t = (Test<T>) EMPTY;
-			return t;
-	
-		아래와 같은 의미가 되는 것이다
-			Test<T> t = new Test<Object>(); 
-			return t;
+			Optional<?> EMPTY  = new Optional<>();
 			
-	//-------------------// ? 포함 다른 제네릭 타입 형변환 
-	 
+		아래와 같으므로 
+			Optional<? extends Object> EMPTY   = new Optional<Object>();
+	
+		EMPTY 변수형인 <? extends Object> 형은 <T> 형으로 변환 가능하다
+			Optional<T> t = (Optional<T>) EMPTY;
+			return t;
+	
+	
+3. 확정되지 않은 제한된 지네릭 형변환 
+	: 확정되지 않은 지네릭형으로 형변환 가능하지만, 사용하지 말자
+	
 	FruitBox<? extends Object> objBox1 = null;
 	FruitBox<? extends String> strBox1 = null;
 
