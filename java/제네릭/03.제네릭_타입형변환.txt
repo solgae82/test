@@ -7,19 +7,30 @@
 	
 	2.  class Test<T extends Fruit>{} 일때
 		: Test<?> 는 Test<? extends Fruit> 와 같다
+		
+- new 생성자<>() 의미
+	: 대입 변수 최고 조상형과 같다.
 	
+	1. class Test<T>{} 일때, 다음 두 선언은 같다.
+		Test<?> t = new Test<>();
+		Test<? extends Object> t = new Test<Object>();
+	
+	2. class Test<T extends Fruit>{} 일때, 다음 두 선언은 같다.
+		Test<? extends Fruit> t = new Test<>();
+		Test<? extends Fruit> t = new Test<Fruit>();
+		
 예를 들어 class Test<T>{} 일때,
 
-- raw 타입과 <> 지네릭 타입과 형변환 가능하다
-	Test <- 형변환 -> Test<String>
-	
-- 범위가 제한된 지네릭 타입 변수는 그 제한범위 지네릭 타입을 대입 받을 수 있다
-	Test<? extends Object> t1 = new Test<String>();
-	
-- 범위가 제한된 지네릭 타입은 범위에 한해 형변환 가능하다 (경고가 발생하지만 가능)
-	// Test<?> t1 = new Test<String>();
-	Test<? extends Object> t1 = new Test<String>();
-	Test<String> s = (Test<String>) t1;
+	- raw 타입과 <> 지네릭 타입과 형변환 가능하다
+		Test <- 형변환 -> Test<String>
+		
+	- 범위가 제한된 지네릭 타입 변수는 그 제한범위 지네릭 타입을 대입 받을 수 있다
+		Test<? extends Object> t1 = new Test<String>();
+		
+	- 범위가 제한된 지네릭 타입은 범위에 한해 형변환 가능하다 (경고가 발생하지만 가능)
+		// Test<?> t1 = new Test<String>();
+		Test<? extends Object> t1 = new Test<String>();
+		Test<String> s = (Test<String>) t1;
 	
 1. 기본 예제 
 	
@@ -117,9 +128,10 @@
 3. 확정되지 않은 제한된 지네릭 형변환 
 	: 확정되지 않은 지네릭형으로 형변환 가능하지만, 사용하지 말자
 	
-	FruitBox<? extends Object> objBox1 = null;
-	FruitBox<? extends String> strBox1 = null;
+	//FruitBox<T extends Fruit & Eatable> 제한에도 불구하고 조상형(Object) 지네릭 제한 변수에 담긴다
+	FruitBox<? extends Object> objBox = null; 
+	FruitBox<? extends Fruit> fruitBox = null;
 
-	objBox1 = (FruitBox<? extends Object>) strBox1; //OK, 미확정 타입 형변환 경고
-	strBox1 = (FruitBox<? extends String>) objBox1; //OK, 미확정 타입 형변환 경고
+	objBox = (FruitBox<? extends Object>) fruitBox; //OK, 미확정 타입 형변환 경고
+	fruitBox = (FruitBox<? extends Fruit>) objBox; //OK, 미확정 타입 형변환 경고
 	 
