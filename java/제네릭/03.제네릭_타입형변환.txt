@@ -21,25 +21,36 @@
 		
 예를 들어 class Test<T>{} 일때,
 
-	- raw 타입과 <> 지네릭 타입과 형변환 가능하다
+	1. raw 타입과 <> 지네릭 타입과 형변환 가능하다
 		Test <- 형변환 -> Test<String>
 		
-	- 범위가 제한된 지네릭 타입 변수는 그 제한범위 지네릭 타입을 대입 받을 수 있다
+	2. 범위가 제한된 지네릭 타입 변수는 그 제한범위 지네릭 타입을 대입 받을 수 있다
 		Test<? extends Object> t1 = new Test<String>();
 		
-	- 범위가 제한된 지네릭 타입은 범위에 한해 형변환 가능하다 (경고가 발생하지만 가능)
+	3. 범위가 제한된 지네릭 타입은 범위에 한해 형변환 가능하다 (경고가 발생하지만 가능)
 		// Test<?> t1 = new Test<String>();
 		Test<? extends Object> t1 = new Test<String>();
 		Test<String> s = (Test<String>) t1;
 	
-	- 와일드카드 사용된 지넥릭 타입끼리 형변환 (이건 설명하게 많다, 따로 설명)
+	4. <?> 를 거치면 다른 지네릭 타입으로 형변환 가능
+		Test<Object> a = null;
+		Test<?> b = null;
+		Test<String> c = null;
+		
+		//c = (Test<String>)a; // 형변환 불가
+		
+		//아래처럼 <?> 거쳐서 하면 가능 <?> == <? extends Object>
+		b = (Test<?>)a;
+		c = (Test<String>)b;
+		
+	※ 와일드카드 사용된 지넥릭 타입끼리 형변환 (이건 잘 이해가 되질 않아서 마지막에 테스트 정리했다)
 		Test<? extends Object> objTest = null;
 		Test<? extends String> strTest = null;
 		
 		strTest = (Test<? extends String>) objTest;
 		objTest  = (Test<? extends Object>) strTest;
 	
-1. 기본 예제 
+1. 기본  테스트 예제 
 	
 	interface Eatable{}
 	class Fruit implements Eatable{
@@ -87,6 +98,17 @@
 	
 	Test<?> t1 = new Test<String>();// Test<? extends Object> t1 = new Test<String>();
 	Test<String> t2 = (Test<String>) t1;
+	
+	//---- 4. <?> 를 거치면 다른 지네릭 타입으로 형변환 가능
+	Test<Object> a = null;
+	Test<?> b = null;
+	Test<String> c = null;
+	
+	//c = (Test<String>)a; // 형변환 불가
+	
+	//아래처럼 <?> 거쳐서 하면 가능 <?> == <? extends Object>
+	b = (Test<?>)a;
+	c = (Test<String>)b;
 
 2. Optional 클래스 분석
 	:아래 클래스는 Optional 클래스 empty() 메소드를 copy한 것이다.
@@ -132,8 +154,12 @@
 			return t;
 	
 	
-3. 와일드카드 사용된 지넥릭 타입끼리 형변환
-	: 확정되지 않은 지네릭형으로 경고가 나지만  형변환 가능, 조심히 분석해야할 토픽.
+3. ※ 와일드카드 사용된 제한된 범위 지넥릭 타입끼리 형변환
+	: 확정되지 않은 지네릭형으로 경고가 나지만  형변환 가능 
+	: 실제 깊이있게 구현하여 테스트 해보지 않아서 무슨 원리인지 모르겠다.
+	: 다양한 타입 설정 <? (extends,super) 타입>으로 형변환 테스트 해보면 상하 타입 관계 모두 선언 및 대입된다
+	: 아마도 상세구현 메소드 등이 있다면 컴파일 에러가 날 것같다.
+	: 그냥 이런게 된다는 느낌만 가지고 마무리 정리.
 	
 	class Test<T>{}
 	
@@ -146,14 +172,14 @@
 	----------- 제한된 지네릭 클래스일때
 	
 	class FruitBox<T extends Fruit & Eatable> extends Box<T>{}
-	// 제한에도 불구하고 조상형 FruitBox<? extends Object> 지네릭 제한 변수에 담긴다
 	
+	// 제한에도 불구하고 조상형 FruitBox<? extends Object> 지네릭 제한 변수를 선언할 수는 있다
 	FruitBox<? extends Object> objBox = null; 
 	FruitBox<? extends Fruit> fruitBox = null;
 	FruitBox<? extends Apple> appleBox = null;
 	
 	// Object <-> Fruit
-	objBox = (FruitBox<? extends Object>) fruitBox; 
+	objBox = (FruitBox<? extends Object>) fruitBox; //제한에도 불구하고 조상형 FruitBox<? extends Object> 형변환도 된다
 	fruitBox = (FruitBox<? extends Fruit>) objBox; 
 	
 	// Fruit <-> Apple
