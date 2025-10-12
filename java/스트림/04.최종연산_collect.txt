@@ -321,4 +321,384 @@ class Student{
 	*/
 
 ---- Collectors; groupingBy()
-: 
+: 스트림을 그룹핑하는데, 특정값 대상으로 하거나, 특정값의 특정 범위를 지정하여 나눈다.
+: groupingBy() 기본 반환은 List<T> 이다
+
+	(예제)
+	static Stream<Student> getStudents(){
+		
+		Stream<Student> stuStream = Stream.of(
+			new Student("나자바",true,1,1,300)
+			,new Student("김지미",false,1,1,250)
+			,new Student("김자바",true,1,1,200)
+			,new Student("이지미",false,1,2,150)
+			,new Student("남자바",true,1,2,100)
+			,new Student("안지미",false,1,2,50)
+			,new Student("황지미",false,1,3,100)
+			,new Student("강지미",false,1,3,150)
+			,new Student("이자바",true,1,3,200)
+			
+			,new Student("나자바",true,2,1,300)
+			,new Student("김지미",false,2,1,250)
+			,new Student("김자바",true,2,1,200)
+			,new Student("이지미",false,2,2,150)
+			,new Student("남자바",true,2,2,100)
+			,new Student("안지미",false,2,2,50)
+			,new Student("황지미",false,2,3,100)
+			,new Student("강지미",false,2,3,150)
+			,new Student("이자바",true,2,3,200)
+		);
+		return stuStream;
+	}
+	
+	......	
+
+	Stream<Student> stuStream = getStudents();
+		
+	System.out.println("1.학년을 기준으로 나눈다 (List에 담기), Map<Integer, List<Student>>");
+	// : 옵션 없는 값 지정은  옵션 Collectors.toList() 와 같다 
+	//Map<Integer, List<Student>> collect = stuStream.collect(Collectors.groupingBy(Student::getBan));
+	
+	// Map<학년, List<Student>>
+	Map<Integer, List<Student>> collect1 = stuStream.collect(
+		Collectors.groupingBy(
+			Student::getHak,
+			Collectors.toList()
+		)
+	);
+	
+	List<Student> list1 = collect1.get(1); //1학년 학생들
+	List<Student> list2 = collect1.get(2); //2학년 학생들
+	list1.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=1, ban=1, score=300]
+	[name=김지미, isMale=false, hak=1, ban=1, score=250]
+	[name=김자바, isMale=true, hak=1, ban=1, score=200]
+	[name=이지미, isMale=false, hak=1, ban=2, score=150]
+	[name=남자바, isMale=true, hak=1, ban=2, score=100]
+	[name=안지미, isMale=false, hak=1, ban=2, score=50]
+	[name=황지미, isMale=false, hak=1, ban=3, score=100]
+	[name=강지미, isMale=false, hak=1, ban=3, score=150]
+	[name=이자바, isMale=true, hak=1, ban=3, score=200]
+	 */
+	System.out.println();
+	list2.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=2, ban=1, score=300]
+	[name=김지미, isMale=false, hak=2, ban=1, score=250]
+	[name=김자바, isMale=true, hak=2, ban=1, score=200]
+	[name=이지미, isMale=false, hak=2, ban=2, score=150]
+	[name=남자바, isMale=true, hak=2, ban=2, score=100]
+	[name=안지미, isMale=false, hak=2, ban=2, score=50]
+	[name=황지미, isMale=false, hak=2, ban=3, score=100]
+	[name=강지미, isMale=false, hak=2, ban=3, score=150]
+	[name=이자바, isMale=true, hak=2, ban=3, score=200]
+	 */
+	
+	System.out.println("------------");		
+	System.out.println("2. 학년을 기준으로 나눈다 (Map에 담기) , Map<학년,Map<\"학년-이름\",학생>>");
+	stuStream = getStudents();
+	
+	//Map<학년, Map<"학년-반:이름", Student>>
+	Map<Integer, Map<String, Student>> map = stuStream.collect(
+		Collectors.groupingBy(
+			Student::getHak,
+			Collectors.toMap(
+				(s)->{return s.getHak()+"-"+s.getBan()+":"+s.getName();}, 
+				(s)->s)
+		)
+	);
+	
+	Map<String, Student> map1 = map.get(1); // 1학년 학생들
+	Map<String, Student> map2 = map.get(2); // 2학년 학생들
+	
+	map1.forEach((k,v)->System.out.println(k + " : "+ v));
+	/*
+	1-1:김자바 : [name=김자바, isMale=true, hak=1, ban=1, score=200]
+	1-2:이지미 : [name=이지미, isMale=false, hak=1, ban=2, score=150]
+	1-2:안지미 : [name=안지미, isMale=false, hak=1, ban=2, score=50]
+	1-3:강지미 : [name=강지미, isMale=false, hak=1, ban=3, score=150]
+	1-3:황지미 : [name=황지미, isMale=false, hak=1, ban=3, score=100]
+	1-1:김지미 : [name=김지미, isMale=false, hak=1, ban=1, score=250]
+	1-2:남자바 : [name=남자바, isMale=true, hak=1, ban=2, score=100]
+	1-3:이자바 : [name=이자바, isMale=true, hak=1, ban=3, score=200]
+	1-1:나자바 : [name=나자바, isMale=true, hak=1, ban=1, score=300]
+	 */
+	
+	System.out.println();
+	map2.forEach((k,v)->System.out.println(k + " : "+ v));
+	/*
+	2-1:김지미 : [name=김지미, isMale=false, hak=2, ban=1, score=250]
+	2-3:강지미 : [name=강지미, isMale=false, hak=2, ban=3, score=150]
+	2-2:남자바 : [name=남자바, isMale=true, hak=2, ban=2, score=100]
+	2-1:김자바 : [name=김자바, isMale=true, hak=2, ban=1, score=200]
+	2-3:이자바 : [name=이자바, isMale=true, hak=2, ban=3, score=200]
+	2-1:나자바 : [name=나자바, isMale=true, hak=2, ban=1, score=300]
+	2-3:황지미 : [name=황지미, isMale=false, hak=2, ban=3, score=100]
+	2-2:안지미 : [name=안지미, isMale=false, hak=2, ban=2, score=50]
+	2-2:이지미 : [name=이지미, isMale=false, hak=2, ban=2, score=150]
+	 */
+	
+	System.out.println("------------");
+	System.out.println("3. 학년을 기준으로 나눈다 (Set에 담기) , Map<학년,Set<학생>>");
+	stuStream = getStudents();
+	
+	// Map<학년, Set<Student>>
+	Map<Integer, Set<Student>> set = stuStream.collect(
+		Collectors.groupingBy(
+			Student::getHak, 
+			Collectors.toSet()
+		)
+	);
+	Set<Student> set1 = set.get(1); //1학년 학생들
+	Set<Student> set2 = set.get(2); //2학년 학생들
+	set1.forEach(System.out::println);
+	/*
+	 [name=이자바, isMale=true, hak=1, ban=3, score=200]
+	[name=김자바, isMale=true, hak=1, ban=1, score=200]
+	[name=강지미, isMale=false, hak=1, ban=3, score=150]
+	[name=이지미, isMale=false, hak=1, ban=2, score=150]
+	[name=황지미, isMale=false, hak=1, ban=3, score=100]
+	[name=남자바, isMale=true, hak=1, ban=2, score=100]
+	[name=김지미, isMale=false, hak=1, ban=1, score=250]
+	[name=나자바, isMale=true, hak=1, ban=1, score=300]
+	[name=안지미, isMale=false, hak=1, ban=2, score=50]
+	 */
+	System.out.println();
+	set2.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=2, ban=1, score=300]
+	[name=이지미, isMale=false, hak=2, ban=2, score=150]
+	[name=김자바, isMale=true, hak=2, ban=1, score=200]
+	[name=강지미, isMale=false, hak=2, ban=3, score=150]
+	[name=이자바, isMale=true, hak=2, ban=3, score=200]
+	[name=안지미, isMale=false, hak=2, ban=2, score=50]
+	[name=김지미, isMale=false, hak=2, ban=1, score=250]
+	[name=남자바, isMale=true, hak=2, ban=2, score=100]
+	[name=황지미, isMale=false, hak=2, ban=3, score=100]
+	 */
+	
+	 
+	System.out.println("------------");
+	System.out.println("4. 성적기준을 3등급(HIGH,MID,LOW)로 나눈다");
+	stuStream = getStudents();
+	
+	// Map<점수레벨, List<Student>>
+	Map<Student.Level, List<Student>> level = stuStream.collect(Collectors.groupingBy((s)->{
+		if(s.getScore() >= 200) { 		// 200점 이상
+			return Student.Level.HIGH;
+		}else if(s.getScore() >= 100) { // 200 미만 100점 이상
+			return Student.Level.MID;
+		}else {							// 100점 미만
+			return Student.Level.LOW; 
+		}
+	}));
+	
+	List<Student> highStus = level.get(Student.Level.HIGH);
+	highStus.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=1, ban=1, score=300]
+	[name=김지미, isMale=false, hak=1, ban=1, score=250]
+	[name=김자바, isMale=true, hak=1, ban=1, score=200]
+	[name=이자바, isMale=true, hak=1, ban=3, score=200]
+	[name=나자바, isMale=true, hak=2, ban=1, score=300]
+	[name=김지미, isMale=false, hak=2, ban=1, score=250]
+	[name=김자바, isMale=true, hak=2, ban=1, score=200]
+	[name=이자바, isMale=true, hak=2, ban=3, score=200] 
+	 */
+	
+	System.out.println();
+	
+	List<Student> midStus = level.get(Student.Level.MID);
+	midStus.forEach(System.out::println);
+	/*
+	[name=이지미, isMale=false, hak=1, ban=2, score=150]
+	[name=남자바, isMale=true, hak=1, ban=2, score=100]
+	[name=황지미, isMale=false, hak=1, ban=3, score=100]
+	[name=강지미, isMale=false, hak=1, ban=3, score=150]
+	[name=이지미, isMale=false, hak=2, ban=2, score=150]
+	[name=남자바, isMale=true, hak=2, ban=2, score=100]
+	[name=황지미, isMale=false, hak=2, ban=3, score=100]
+	[name=강지미, isMale=false, hak=2, ban=3, score=150]
+	 */
+	
+	System.out.println();
+	
+	List<Student> lowStus = level.get(Student.Level.LOW);
+	lowStus.forEach(System.out::println);
+	/*
+	[name=안지미, isMale=false, hak=1, ban=2, score=50]
+	[name=안지미, isMale=false, hak=2, ban=2, score=50]		
+	 */
+	
+	
+	System.out.println("------------");
+	System.out.println("5. 성적기준을 3등급(HIGH,MID,LOW)로 나누고 각 등급별로 학생수를 구한다");
+	stuStream = getStudents();
+	
+	Function<Student, Student.Level> levelFunc= (s)->{
+		if(s.getScore() >= 200) { 		// 200점 이상
+			return Student.Level.HIGH;
+		}else if(s.getScore() >= 100) { // 200 미만 100점 이상
+			return Student.Level.MID;
+		}else {							// 100점 미만
+			return Student.Level.LOW; 
+		}
+	};
+	
+	// Map<점수레벨, 학생수>
+	Map<Student.Level, Long> levelCnt = stuStream.collect(
+		Collectors.groupingBy(levelFunc,Collectors.counting())
+	);
+	 
+	System.out.println("200점 이상 학생수: "+levelCnt.get(Student.Level.HIGH)); // 200점 이상 학생수: 8
+	System.out.println("200점 미만 100점 이상 학생수: "+levelCnt.get(Student.Level.MID)); // 200점 미만 100점 이상 학생수: 8
+	System.out.println("100점 미만 학생수: "+levelCnt.get(Student.Level.LOW)); // 100점 미만 학생수: 2
+	
+	System.out.println("------------");		
+	System.out.println("6. 학년별 반별로 나눈다");
+	stuStream = getStudents();		
+	
+	// Map<학년, Map<반, List<Student>>>
+	Map<Integer, Map<Integer, List<Student>>> stuGroup = 
+		stuStream.collect(Collectors.groupingBy(
+				Student::getHak , 
+				Collectors.groupingBy(Student::getBan)));
+				
+	List<Student> stu1_1 = stuGroup.get(1).get(1); // 1학년 1반 학생들
+	List<Student> stu1_2 = stuGroup.get(1).get(2); // 1학년 2반 학생들
+	List<Student> stu2_1 = stuGroup.get(2).get(1); // 2학년 1반 학생들
+	List<Student> stu2_2 = stuGroup.get(2).get(2); // 2학년 2반 학생들
+
+	System.out.println("1학년 1반 학생들");
+	stu1_1.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=1, ban=1, score=300]
+	[name=김지미, isMale=false, hak=1, ban=1, score=250]
+	[name=김자바, isMale=true, hak=1, ban=1, score=200]
+	 */
+	
+	System.out.println();		
+	System.out.println("1학년 2반 학생들");
+	stu1_2.forEach(System.out::println);
+	/*
+	[name=이지미, isMale=false, hak=1, ban=2, score=150]
+	[name=남자바, isMale=true, hak=1, ban=2, score=100]
+	[name=안지미, isMale=false, hak=1, ban=2, score=50] 		
+	 */
+	
+	System.out.println();		
+	System.out.println("2학년 1반 학생들");
+	stu2_1.forEach(System.out::println);
+	/*
+	[name=나자바, isMale=true, hak=2, ban=1, score=300]
+	[name=김지미, isMale=false, hak=2, ban=1, score=250]
+	[name=김자바, isMale=true, hak=2, ban=1, score=200]
+	 */
+	
+	System.out.println();		
+	System.out.println("2학년 2반 학생들");
+	stu2_2.forEach(System.out::println);
+	/*
+	[name=이지미, isMale=false, hak=2, ban=2, score=150]
+	[name=남자바, isMale=true, hak=2, ban=2, score=100]
+	[name=안지미, isMale=false, hak=2, ban=2, score=50]
+	 */
+	
+	System.out.println("------------");		
+	System.out.println("6. 학년별 반별로 나눈 후 반별 최고 점수 학생을 뽑아낸다");
+	stuStream = getStudents();		
+	
+	// Map<학년, Map<반, 최고점수 학생>>
+	Map<Integer, Map<Integer, Student>> maxScoreStu = stuStream.collect(Collectors.groupingBy(
+		Student::getHak,
+		Collectors.groupingBy(
+			Student::getBan, 
+			Collectors.collectingAndThen(
+				Collectors.maxBy(Comparator.comparingInt(Student::getScore)),
+				Optional::get
+			)
+		)
+	));
+	
+	Student max1_1 = maxScoreStu.get(1).get(1); //1학년 1반 최고점수 학생
+	Student max1_2 = maxScoreStu.get(1).get(2); //1학년 2반 최고점수 학생
+	Student max1_3 = maxScoreStu.get(1).get(3); //1학년 3반 최고점수 학생
+	Student max2_1 = maxScoreStu.get(2).get(1); //2학년 1반 최고점수 학생
+	Student max2_2 = maxScoreStu.get(2).get(2); //2학년 2반 최고점수 학생
+	Student max2_3 = maxScoreStu.get(2).get(3); //2학년 3반 최고점수 학생
+	
+	System.out.println("1학년1반 최고점수: "+ max1_1);
+	System.out.println("1학년2반 최고점수: "+ max1_2);
+	System.out.println("1학년3반 최고점수: "+ max1_3);
+	System.out.println("2학년1반 최고점수: "+ max2_1);
+	System.out.println("2학년2반 최고점수: "+ max2_2);
+	System.out.println("2학년3반 최고점수: "+ max2_3);
+	
+	/*
+	1학년1반 최고점수: [name=나자바, isMale=true, hak=1, ban=1, score=300]
+	1학년2반 최고점수: [name=이지미, isMale=false, hak=1, ban=2, score=150]
+	1학년3반 최고점수: [name=이자바, isMale=true, hak=1, ban=3, score=200]
+	2학년1반 최고점수: [name=나자바, isMale=true, hak=2, ban=1, score=300]
+	2학년2반 최고점수: [name=이지미, isMale=false, hak=2, ban=2, score=150]
+	2학년3반 최고점수: [name=이자바, isMale=true, hak=2, ban=3, score=200]
+	 */
+	
+	
+	System.out.println("------------");		
+	System.out.println("7. 학년별 반별로 나눈 후 반별 점수기준(HIGH,MID,LOW) 분포도를 알아낸다");
+	stuStream = getStudents();		
+	
+	// Map<학년, Map<반, Set<Student.Level>>>
+	// HIGH,MID,LOW 종류별로 분포도를 알 수 있다. 예를 들어 1-1반은 HIGH 레벨뿐이다.
+	Map<Integer, Map<Integer, Set<Student.Level>>> stuLevel = stuStream.collect(Collectors.groupingBy(
+		Student::getHak,
+		Collectors.groupingBy(
+			Student::getBan, 
+			Collectors.mapping(
+				(s)->{
+					if(s.getScore() >= 200) {
+						return Student.Level.HIGH;
+					}else if(s.getScore() >= 100){
+						return Student.Level.MID;
+					}else {
+						return Student.Level.LOW;
+					}
+				}, 
+				Collectors.toSet()
+			)
+		)
+			
+	));
+	
+	Set<Student.Level> stuLevel_1_1 = stuLevel.get(1).get(1); // 1학년 1반 
+	stuLevel_1_1.forEach((s)->System.out.println("1-1반:"+s));
+	
+	Set<Student.Level> stuLevel_1_2 = stuLevel.get(1).get(2); // 1학년 2반 
+	stuLevel_1_2.forEach((s)->System.out.println("1-2반:"+s));
+	
+	Set<Student.Level> stuLevel_1_3 = stuLevel.get(1).get(3); // 1학년 3반 
+	stuLevel_1_3.forEach((s)->System.out.println("1-3반:"+s));
+	
+	Set<Student.Level> stuLevel_2_1 = stuLevel.get(2).get(1); // 2학년 1반 
+	stuLevel_2_1.forEach((s)->System.out.println("2-1반:"+s));
+	
+	Set<Student.Level> stuLevel_2_2 = stuLevel.get(2).get(2); // 2학년 2반 
+	stuLevel_2_2.forEach((s)->System.out.println("2-2반:"+s));
+	
+	Set<Student.Level> stuLevel_2_3 = stuLevel.get(2).get(3); // 2학년 3반 
+	stuLevel_2_3.forEach((s)->System.out.println("2-3반:"+s));
+	
+	/*
+	1-1반:HIGH
+	1-2반:MID
+	1-2반:LOW
+	1-3반:HIGH
+	1-3반:MID
+	2-1반:HIGH
+	2-2반:MID
+	2-2반:LOW
+	2-3반:HIGH
+	2-3반:MID
+	 */
+
