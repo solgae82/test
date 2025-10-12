@@ -9,25 +9,34 @@
 ------기본 사용법
 
 	// of(), ofNullable() 로 생성, of() 생성시 null일때 예외발생.
-	String nullStr = null; // 
+	String nullStr = null;  
 	//Optional<String> optval = Optional.of(str); // NullpointerException
 	Optional<String> optNull = Optional.ofNullable(nullStr);
+	
+	//isPresent() :  null이면 false 아니면 true
 	System.out.println(optNull.isPresent()); // false
 	
+	String strPresent = "abc";
+	if(Optional.ofNullable(strPresent).isPresent()) {
+		System.out.println("자료있다"); 
+	}else {
+		System.out.println("자료없다"); 
+	}
+		
 	//초기화
 	Optional<String> optInit = null; //이렇게 초기화 하기 보단 아래처럼 empty()로 초기화해야 여러 이점을 누릴 수 있다.
 	Optional<String> optInit1 = Optional.<String>empty();
 	System.out.println(optInit1.isPresent()); // false
 	
 	//get() : 반환 메서드
-	String str = "abc"; // null 또는  "abc" 설정시 
+	String str = "abc";  
 	Optional<String> optVal = Optional.ofNullable(str);
 	System.out.println(optVal.get()); // abc , null일때는  NoSuchElementException 발생
 	
 	// orElse() : 반환 메서드
-	System.out.println(optVal.orElse("없음")); //abc, null일때는 "없음" 반환
+	System.out.println(optVal.orElse(new String("없음"))); //abc, null일때는 대체 설정객체인 "없음" 반환
 		
-	// orElseGet() : 반환 메서드
+	// orElseGet() : 반환 메서드 , Supplier 람다식 가능
 	String initStr = optVal.orElseGet(String::new); // null일때 , "" 로 초기화된 String 반환
 	if(initStr.equals("")) System.out.println("빈 String"); // ""일때 , 빈 String 
 	System.out.println(optVal.orElseGet(()->new String("빈String"))); //abc, null일때 "빈String"
@@ -37,26 +46,19 @@
 		
 	//Stream 처럼 filter(), map(), flatMap()을 사용할수 있다	
 	
-	String nStr = ""; // null 또는 "" 에러가 발생하지 않는다.
-	
-	//Integer::parseInt 숫자형 문자가 아닌 자료가 들어가면 NumberFormatException
+	// 아래예제는 null 또는 ""는 에러가 발생하지 않고 -1반환. 문자면 NumberFormatException 발생
+	//Integer.parseInt(null); //NumberFormatException
+	//Integer.parseInt(""); //NumberFormatException
+		
+	String nStr = "";  	
 	int result = Optional.ofNullable(nStr).filter(x->x.length() > 0)
 	.map(Integer::parseInt).orElse(-1);
 	System.out.println(result); // -1	
 			
-	//isPresent() :  null이면 false 아니면 true
+	//ifPresent() : 값이 있으면  Consumer<? super T> 실행, 없으면 아무일도 일어나지 않는다.
+	Optional.ofNullable(null).ifPresent((s)->System.out.println("s=>"+s)); // null이면 아무일도 안 일어난다
+	Optional.ofNullable("").ifPresent((s)->System.out.println("s=>"+s)); // s=>
 	
-	//String strPresent = null;
-	String strPresent = "abc";
-	if(Optional.ofNullable(strPresent).isPresent()) {
-		System.out.println("자료있다"); 
-	}else {
-		System.out.println("자료없다"); 
-	}
-	
-	//ifPresent
-	Optional.ofNullable(strPresent).ifPresent(System.out::println); // data, null이면 아무일도 안 일어난다
-
 --------- map() VS flatMap()
 	
 	Optional<String> strOpt = Optional.of("abc");
@@ -68,7 +70,7 @@
 	//String result2 = strOptStr.flatMap(s->s).get(); // abc
 	Optional<String> strOpt1 = strOptStr.flatMap(s->s);
 	String result2 = strOpt1.get();
-	System.out.println(result2);
+	System.out.println(result2); // abc
 	
 	// map 반환형은 반드시 Optional<R>형 이어야한다
 	// map 메소드는 자동으로 Optional<R>을 감싸 준다. 굳이 Optional.of()등을 써야할 필요가 없다.
