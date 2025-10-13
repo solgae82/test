@@ -110,7 +110,7 @@ class Student{
 	
 ---- Collectors: reducing()
 
-: reduce() 를 Collectors로 구현
+: 최종연산 reduce() 기능을 Collectors로 구현
 
 	IntStream intStream = IntStream.of(5,4,2,3,1);
 		
@@ -171,24 +171,113 @@ class Student{
 	String lineNames3 = stuStrm.map(Student::getName).collect(Collectors.joining(",","[","]"));
 	System.out.println(lineNames3);//[이도형,김삼손,육중완]
 
----- Collectors: collectingAndThen()
-
-: 수집 후 두번재 인수로 변환한다
 
 ---- Collectors: mapping()
 
-: 데이터를 변환 후 두번째 집합요소에 담는다
+: 데이터를 변환 후 두번째 집합요소에 담아 반환
 
-Collectors.mapping(
-				(s)->{
-					if(s.getScore() >= 200) {
-						return Student.Level.HIGH;
-					}else if(s.getScore() >= 100){
-						return Student.Level.MID;
-					}else {
-						return Student.Level.LOW;
-					}
-				}, 
-				Collectors.toSet()
-			)
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
 
+	Stream<Student> stuStrm = Stream.of(stuArr);
+
+	List<String> list = stuStrm.collect(Collectors.mapping((s)->{
+		if(s.getTotalScore() >= 90) { 
+			return s.getName() + ": A";
+		}else if(s.getTotalScore() >= 80){
+			return s.getName() + ": B";
+		}else if(s.getTotalScore() >= 70){
+			return s.getName() + ": C";
+		}else {
+			return s.getName() + ": 과락";
+		}
+	}, Collectors.toList()));
+
+	System.out.println(list); // [이도형: B, 김삼손: C, 육중완: A]
+
+---- Collectors: collectingAndThen()
+
+: 스트림(Stream)의 요소를 수집한 후, 다음 인수에 수집결과를 최종적으로 한 번 더 변환하는데 사용
+: 빛을 발휘할 분야는 (분할 및 그룹핑) 후 다시 재 collect 할때이다 (그룹화 부분 사용예제를 참고하라)
+
+	-----------
+	: 총합계 점수가 1등인 학생 뽑아내기 과 꼴등인 학생 뽑아내기
+	
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	//1등 뽑아내기
+	Student maxStu = stuStrm
+	.collect(Collectors.collectingAndThen(
+		Collectors.maxBy(Comparator.comparingInt(Student::getTotalScore)),
+		Optional::get /* maxBy 에서 반환하는 Optional을 벗겨내서 Student를 반환한다 */
+	));
+
+	System.out.println("1등=>"+maxStu); // 1등=>[name=육중완, ban=3, totalScore=90, num=19]
+		
+	// 꼴등 뽑아내기
+        stuStrm = Stream.of(stuArr);
+		
+	Optional<Student> minStu = stuStrm
+	.collect(Collectors.collectingAndThen(
+		Collectors.minBy(Comparator.comparingInt(Student::getTotalScore)),
+		s->s /* Optional 벗겨내기 싫으면 그냥 반환하면 된다. Optional<Student> */
+	));
+
+	if(minStu.isPresent()) {
+		System.out.println("꼴등=>"+minStu.get()); // 꼴등=>[name=김삼손, ban=1, totalScore=70, num=41]
+	}else {
+		System.out.println("학생이 없어유");
+	}
+	
+	----------- 	
+	: 리스트 집계 후 학생별 (총합계 - 50) 수정한 리스트 반환하기 
+	
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	
+	List<Student> collect = stuStrm
+	.collect(Collectors.collectingAndThen(
+		Collectors.toList(),
+		(list)->{				
+			for(Student stu :list) {
+				stu.setTotalScore(stu.getTotalScore()-50);
+			}
+			return list;				
+		}
+	));
+
+	
+	collect.forEach(System.out::println);
+	/*
+	[name=이도형, ban=2, totalScore=30, num=3]
+	[name=김삼손, ban=1, totalScore=20, num=41]
+	[name=육중완, ban=3, totalScore=40, num=19]
+	*/
+	
+	-----------
+	:수정 불가능한 리스트 만들기
+	
+	List<String> fruitList = Stream.of("Apple", "Banana", "Cherry")
+	.collect(Collectors.collectingAndThen(
+		Collectors.toList(),
+		Collections::unmodifiableList
+	));
+
+        System.out.println(fruitList); // [Apple, Banana, Cherry]
+        
+        // fruitList.add("Grape"); // UnsupportedOperationException 발생
