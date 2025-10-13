@@ -200,8 +200,8 @@ class Student{
 
 ---- Collectors: collectingAndThen()
 
-: 스트림(Stream)의 요소를 수집한 후, 다음 인수에 수집결과를 최종적으로 한 번 더 변환하는데 사용
-: 빛을 발휘할 분야는 (분할 및 그룹핑) 후 다시 재 collect 할때이다 (그룹화 부분 사용예제를 참고하라)
+: 첫번째 스트림(Stream)의 요소를 수집한 후, 다음 인수에 수집결과를 최종적으로 한 번 더 변환하는데 사용
+: 빛을 발휘할 분야는 (분할 및 그룹핑) 후 다시 재 collect() 할때이다 (그룹화 부분 사용예제를 참고하라)
 
 	-----------
 	: 총합계 점수가 1등인 학생 뽑아내기 과 꼴등인 학생 뽑아내기
@@ -250,19 +250,19 @@ class Student{
 	Stream<Student> stuStrm = Stream.of(stuArr);
 	
 	
-	List<Student> collect = stuStrm
+	List<Student> updateList = stuStrm
 	.collect(Collectors.collectingAndThen(
 		Collectors.toList(),
-		(list)->{				
-			for(Student stu :list) {
+		(list)->{ //List<Student> 리스트 자체를 반환				
+			for(Student stu :list) { // 다시 돌려서 resetting 
 				stu.setTotalScore(stu.getTotalScore()-50);
 			}
-			return list;				
+			return list; 	// List<Student> 다시 반환		
 		}
 	));
 
 	
-	collect.forEach(System.out::println);
+	updateList.forEach(System.out::println);
 	/*
 	[name=이도형, ban=2, totalScore=30, num=3]
 	[name=김삼손, ban=1, totalScore=20, num=41]
