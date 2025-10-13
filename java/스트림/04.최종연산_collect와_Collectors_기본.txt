@@ -1,0 +1,194 @@
+reduce()와 비슷한 collect()는 스트림 요소 수집에 대한 방법을 
+Collector 인터페이스로 구현해서 
+	collect(Collector구현체 [예:Collectors])
+메서드 매개변수로 넣어서 사용한다
+그래서 collect() 의 사용법 주인공은 Collector 사용법이 주를 이룬다
+
+Collector는 커스텀으로 구현해도 사용해도 되고, 
+sdk에서 제공하는 java.util.Collectors 를 사용해도 된다
+
+Collector 를 구현한 java.util.Collectors 사용법을 살펴본다
+
+(이하 예제 클래스)
+class Student{
+	String name; //이름
+	int ban; //반
+	int totalScore;//점수
+	int num; //번호
+	
+	public Student(String name, int ban, int totalScore ,int num) {
+		this.name = name;
+		this.ban = ban;
+		this.totalScore = totalScore;
+		this.num = num;
+	}
+	..getter(), setter(), toString()등
+
+}
+
+---- Collectors: toList() , toSet() , toMap() ,toCollection()
+
+: 스트림 => Collection, List, Set, Map 등으로 반환
+	
+	Student[] stuArr = {
+			new Student("이도형",2,80,3)
+			,new Student("김삼손",1,70,41)
+			,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	// List에 이름 담기
+	//List<String> list =  stuStrm.map(Student::getName).collect(Collectors.toList());
+	//System.out.println(list); // [이도형, 김삼손, 육중완]
+	
+	// Set에 이름 담기
+	//Set<String> set = stuStrm.map(Student::getName).collect(Collectors.toSet());
+	//System.out.println(set); // [육중완, 김삼손, 이도형]
+	
+	// Map에 {"반번호-번호","이름"} 된 객체 만들기
+	//Map<String,String> map = stuStrm.collect(
+	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), s->s.getName()));
+	//System.out.println(map); // {3-19=육중완, 2-3=이도형, 1-41=김삼손}
+	// p->p == Function.identity()
+	//Map<String,Student> map = stuStrm.collect(
+	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), Function.identity()));
+	//System.out.println(map);
+	//{3-19=Student [name=육중완, ban=3, totalScore=90], 2-3=Student [name=이도형, ban=2, totalScore=80], 1-41=Student [name=김삼손, ban=1, totalScore=70]}
+	
+	// ArrayList에 이름 담기
+	//List<String> namesList =  stuStrm.map(Student::getName).collect(Collectors.toList());
+	//ArrayList<String> arrList = namesList.stream().collect(
+	Collectors.toCollection(ArrayList::new));
+	//System.out.println(arrList); // [이도형, 김삼손, 육중완]
+	
+---- Collectors: counting(),summingInt(),averagingInt(),maxBy(),minBy(),summarizingInt()
+
+: 통계 설정 메소드들
+
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	// counting() : 요소 갯수
+	long cnt = stuStrm.count(); // 3
+	long cnt =  stuStrm.collect(Collectors.counting()); // 3
+	
+	// summingInt() : int 총합
+	long total = stuStrm.mapToInt(Student::getTotalScore).sum(); // 240
+	long total = stuStrm.collect(Collectors.summingInt(Student::getTotalScore)); // 240
+	
+	// averagingInt() : int 평균
+	OptionalDouble average = stuStrm.mapToInt(Student::getTotalScore).average();
+	System.out.println(average.getAsDouble()); //80.0
+	
+	// averagingInt(int): int 평균 ,averagingLong(long):long 평균, averagingDouble(double): double 평균
+	double average = stuStrm.collect(Collectors.averagingInt(Student::getTotalScore));
+	System.out.println(average); //80.0
+	
+	// maxBy(Comparator<? super T> comparator) : comparator 로 비교할 자료형을 넣어 그 중 max 값 해당 객체반환
+	Optional<Student> maxStu = stuStrm.collect(
+	Collectors.maxBy(Comparator.comparingInt(Student::getTotalScore)));
+	System.out.println(maxStu.get().getName()); //육중완
+
+	// minBy(Comparator<? super T> comparator) : comparator 로 비교할 자료형을 넣어 그 중 min 값 해당 객체반환
+	Optional<Student> minStu = stuStrm.collect(
+	Collectors.minBy(Comparator.comparingInt(Student::getTotalScore)));
+	System.out.println(minStu.get().getName()); //김삼손
+
+	//  : IntSummaryStatistics 형 요약통계형으로 반환
+	IntSummaryStatistics summary = stuStrm.mapToInt(Student::getTotalScore).summaryStatistics();
+	double avg = summary.getAverage(); //80.0
+	
+	IntSummaryStatistics summary = stuStrm.collect(
+	Collectors.summarizingInt(Student::getTotalScore));
+	double avg = summary.getAverage(); //80.0
+	
+---- Collectors: reducing()
+
+: reduce() 를 Collectors로 구현
+
+	IntStream intStream = IntStream.of(5,4,2,3,1);
+		
+	// 최대값
+	//OptionalInt max = intStream.reduce(Integer::max);
+	//System.out.println(max.getAsInt()); // 5
+	
+	//Optional<Integer> optMax = intStream.boxed().collect(Collectors.reducing(Integer::max));
+	//System.out.println(optMax.get()); // 5
+	
+	// 총합
+	//int sum = intStream.reduce(0,(a,b)-> a + b); //15
+	//int sum = intStream.reduce(0, Integer::sum); // 15
+	//Integer sum = intStream.boxed().collect(Collectors.reducing(0, (a,b)-> a + b));
+	//System.out.println(sum.intValue()); //15
+	Integer sum = intStream.boxed().collect(Collectors.reducing(0, Integer::sum));
+	System.out.println(sum.intValue()); // 15
+	
+	-----------//Stream<T>
+	
+	Student[] stuArr = {
+			new Student("이도형",2,80,3)
+			,new Student("김삼손",1,70,41)
+			,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	//Integer sum1 = stuStrm.map(Student::getTotalScore).reduce(0, Integer::sum);
+	//System.out.println(sum1.intValue()); // 240
+	
+	Integer sum2 = stuStrm.collect(Collectors.reducing(0, Student::getTotalScore, Integer::sum));
+	System.out.println(sum2.intValue()); // 240
+	
+---- Collectors: joining()
+
+: 문자열 결합
+
+	Student[] stuArr = {
+		new Student("이도형",2,80,3)
+		,new Student("김삼손",1,70,41)
+		,new Student("육중완",3,90,19)
+	};
+	
+	Stream<Student> stuStrm = Stream.of(stuArr);
+	
+	//문자스트림 연결
+	String lineNames1 = stuStrm.map(Student::getName).collect(Collectors.joining());
+	System.out.println(lineNames1);//이도형김삼손육중완
+	
+	// "," 구분자로 연결
+	stuStrm = Stream.of(stuArr);
+	String lineNames2 = stuStrm.map(Student::getName).collect(Collectors.joining(","));
+	System.out.println(lineNames2);//이도형,김삼손,육중완
+	
+	// (구분자, 접두사, 접미사) 연결
+	stuStrm = Stream.of(stuArr);
+	String lineNames3 = stuStrm.map(Student::getName).collect(Collectors.joining(",","[","]"));
+	System.out.println(lineNames3);//[이도형,김삼손,육중완]
+
+---- Collectors: collectingAndThen()
+
+: 수집 후 두번재 인수로 변환한다
+
+---- Collectors: mapping()
+
+: 데이터를 변환 후 두번째 집합요소에 담는다
+
+Collectors.mapping(
+				(s)->{
+					if(s.getScore() >= 200) {
+						return Student.Level.HIGH;
+					}else if(s.getScore() >= 100){
+						return Student.Level.MID;
+					}else {
+						return Student.Level.LOW;
+					}
+				}, 
+				Collectors.toSet()
+			)
+
