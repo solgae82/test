@@ -60,6 +60,17 @@ public class MapTest {
 		
 		//10.keySet
 		Set<String> keySet = map.keySet();
+		
+		for(String str : keySet) {
+			System.out.println("for key=>"+ str);
+			/*
+			for key=>1
+			for key=>2
+			for key=>3
+			 */
+		}
+		
+		Iterator<String> iterKey = keySet.iterator();
 		String key = null;
 		while(iterKey.hasNext()) {
 			key = iterKey.next();
@@ -68,15 +79,6 @@ public class MapTest {
 			iterKey=>하나
 			iterKey=>둘
 			iterKey=>셋
-			 */
-		}
-		Iterator<String> iterKey = keySet.iterator();
-		for(String str : keySet) {
-			System.out.println("for key=>"+ str);
-			/*
-			for key=>1
-			for key=>2
-			for key=>3
 			 */
 		}
 		
@@ -108,15 +110,25 @@ public class MapTest {
 			 */
 		}
 		
-		//12.forEach
-		map.forEach((key , value)->{
-			System.out.println(key +":" +  value);
+		//12.values
+		Collection<String> values = map.values();
+		for(String v : values) { System.out.println("values=>" + v); }
+			/*
+			values=>하나
+			values=>둘
+			values=>셋
+			 */
+		
+		//13.forEach
+		map.forEach((key1 , value)->{
+			System.out.println(key1 +":" +  value);
 		});
 			/*
 			1:하나
 			2:둘
 			3:셋
 			*/
+		
 	}
 
 }
