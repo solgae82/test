@@ -47,6 +47,11 @@ public class ListTest {
 		
 		System.out.println(list);//[하나, 둘, 셋, 넷, 셋, -추가-]
 		
+		list.add(1,"끼워넣기");
+		System.out.println(list);//[하나, 끼워넣기, 둘, 셋, 넷, 셋, -추가-]
+		list.remove("끼워넣기");
+		System.out.println(list);//[하나, 둘, 셋, 넷, 셋, -추가-]
+		
 		//8.contains
 		if(list.contains("하나")) System.out.println("존재해");//존재해
 				
