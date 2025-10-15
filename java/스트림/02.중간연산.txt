@@ -204,8 +204,8 @@ peek
 	iStream.sorted().forEach(System.out::print); //1234567
 	
 	// CharSequence -> IntStream (ASCII)
-	IntStream chrStream = "12345".chars(); //49,50,51,52,53 (문자->ASCII 변환.[ex: 1->49])
-	//'0'아스키코드 10진수로 48
+	IntStream chrStream = "12345".chars(); //49,50,51,52,53 (문자->ASCII 변환.[ex: '1'->49])
+	// char ='0' : 10진수로 48 이다. 그러므로 49-48=1 ..
 	chrStream.map(ch -> ch-'0').forEach(System.out::print); // 12345
 	 
 	// Stream<String> -> IntStream
@@ -219,6 +219,11 @@ peek
 	intStream2.sorted().forEach(System.out::print); // 1234
 	
 flatMap
+	:<R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
+	:IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper);
+	:LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper);
+	:DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper);
+	
 	: Stream<String[]> => Stream<String> 으로 만들고 싶을 때 사용
 	
 	

@@ -187,6 +187,8 @@
 	
 ---- toArray()
 
+:Object[] toArray();
+:<A> A[] toArray(IntFunction<A[]> generator);
 : 스트림 배열로 반환하기
 		
 	Object[] arrObj = stuStrm.toArray(); //ok
