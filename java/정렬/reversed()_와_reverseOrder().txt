@@ -21,7 +21,7 @@ Comparator.reverseOrder()는 Comparable을 구현한 객체를 역순 정렬을 
 	내림차순으로 정렬하기 위해 역순 Comparator를 
 	반환해서 sort 메서드의 인자로 주는 예제이다.
  
-	Comparator.reverseOrder() == Collections.reverseOrder() 과 같다
+	※ Comparator.reverseOrder() == Collections.reverseOrder() 과 같다
 	
  2. (Comparator)인스턴스.reversed()
 	기능

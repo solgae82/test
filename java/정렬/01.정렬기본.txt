@@ -2,7 +2,7 @@
 객체 정렬 조건
 
 	기본적으로 객체로 만들어야 한다, 기본형은 사용 할 수 없다.
-	리스트 또는 배열 형태로 만들어야 한다
+	Collection 하위타입인 리스트등 또는 배열 형태로 만들어야 한다
 	
 	배열형은 
 		Arrays.sort()를 이용
@@ -12,10 +12,25 @@
 		
 	Set형은 List 로 만들어서 
 		Collections.sort() 이용
+		
+일반객체와 Comparable 구현객체
+
+	Comparable 구현 안된 객체형 배열이나, 리스트는 기본정렬 메소드를 사용할 수 있다.
 	
+		class A impelments Compatable{String name; ..}
+		A[] arr = {new A("a"),new A("c"),new A("b")};
+		Collections.sort(arr); //구현한 기본정렬로 정렬
+		
+	Comparable 구현 안된 객체형 배열이나, 리스트를 	기본정렬 메소드를 사용하면,	런타임 에러가 난다
+		
+		class A{String name; ..}
+		A[] arr = {new A("a"),new A("c"),new A("b")};
+		Collections.sort(arr); // (x)java.lang.ClassCastException
+		
 sort메소드 인수 형식
 
 	public static <T> void Collections.sort(List<T> list, Comparator<? super T> c)
+	
 	public static <T> Arrays.sort(T[] a, Comparator<? super T> c)
 	
 Comparator 기본 구현
@@ -28,13 +43,13 @@ Comparator 기본 구현
 			(오름차순)
 			A < B : 오른쪽이 크면 -1
 			A = B : 같으면 0
-			A > B : 왼쪽이 크면 1
+			A > B : 왼쪽이 크면 1 (A B 순서 변경)
 			
 			:내림차순은 비교객체를 바꾸거나, '<','>' 비교 연산자만 바꿔서 둘 중 하나로 지정
 			(내림차순)
 			B > A : 왼쪽이 크면 -1
 			A = B : 같으면 0 
-			B < A : 오른쪽이 크면 1
+			B < A : 오른쪽이 크면 1 (A B 순서 변경)
 		
 	예제)
 		new Comparator<Integer>() { 
@@ -53,33 +68,40 @@ Comparator 기본 구현
 			}
 		}
 	
-compare 메소드 구현 도우미 메소드들
+compare 메소드 구현 도우미 메소드들	
 	
-	숫자객체배열,리스트:
-		Arrays.sort(intArr, new Comparator<Integer>() {
-			public int compare(Integer o1, Integer o2) {
-				return Integer.compare(o1,o2); // 오름차순
-				//return Integer.compare(o2,o1); // 내림차순
-			}			
-		});
-	
-	문자열배열,리스트:
+	Collection,리스트:
 		Collections.sort(list, new Comparator<String>() {
 			public int compare(String o1, String o2) {
 				return o1.compareTo(o2); //오름차순
 				//return o2.compareTo(o1); //내림차순
 			}
 		});
+	
+	객체배열:
+		Arrays.sort(intArr, new Comparator<Integer>() {
+			public int compare(Integer o1, Integer o2) {
+				
+				//---------- 기본
+				return o1.compareTo(o2); //오름차순
+				//return o2.compareTo(o1); //내림차순
+				
+				//---------- Integer특화 메소드
+				return Integer.compare(o1,o2); // 오름차순
+				//return Integer.compare(o2,o1); // 내림차순
+			}			
+		});
 		
 람다식으로 축약해서 구현하기
 	
-	문자열배열,리스트:
+	Collection,리스트:
 		Collections.sort(list,(o1,o2)->o1.getName().compareTo(o2.getName())); //오름차순
 		Collections.sort(list,(o1,o2)->o2.getName().compareTo(o1.getName())); //내림차순
 
-	숫자배열,리스트:
+	객체배열:
 		Arrays.sort(intArr, (o1,o2)-> o1.compareTo(o2)); //오름차순
 		Arrays.sort(intArr, (o1,o2)-> o2.compareTo(o1)); //내림차순
 
+		//Integer,(Double,Long) 특화 메소드
 		Arrays.sort(intArr, (o1,o2)-> Integer.compare(o1, o2));//오름차순
 		Arrays.sort(intArr, (o1,o2)-> Integer.compare(o2, o1));//내림차순

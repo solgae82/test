@@ -1,0 +1,145 @@
+자바객체배열, 또는 리스트 자료형등의 정렬을 위해서는 
+
+java.lang.Comparable<T> 인터페이스 
+	public int compareTo(T o);
+	
+java.util.Comparator<T> @FunctionalInterface 인터페이스 
+	int compare(T o1, T o2);
+
+두 인터페이스를 구현하는 방법을 통해 정렬하는 형식을 취한다.
+정렬 프로토콜의 java 구현방법이라 할 수 있을 것같다.
+
+정렬 방법 경우의 수는 다음과 같다
+
+1. 객체에 Comparable를 구현하여 정렬 메소드에 사용하는 방법
+	
+	// arr <= Comparable 구현객체;
+	
+	Arrays.sort(arr); //기본구현 정렬로 정렬
+	Arrays.sort(arr , Comparator.compare 구현(오름차순,내림차순));
+
+2. 객체가 Comparable 구현이 안 되어 있을때 객체 정렬 방법
+
+	// arr <= Comparable 구현 안된 일반객체;
+	
+	Arrays.sort(arr); //에러(기본구현 정렬이 없으므로 사용 못함)
+	Arrays.sort(arr , Comparator.compare 구현(오름차순,내림차순));
+
+객체에 Comparable 구현한 기본구현 정렬이 있건 없건 간에,
+sort() 메소드 두번째 인수의 Comparator.compare 구현은 수동 정렬하는 것이다.
+
+정렬 프로토콜이라고 생각한 이유는 다른 언어에서도 비슷한 사용방법을 취하기 때문이다
+표준 정렬 방법론이 있고, 각 언어별로 그 언어에 맞게 구현하고, 사용법은 동일하기 때문. 
+(iterator 나 정규표현식 같은 형식)
+
+String 객체나, 기본형 래퍼 객체들은 기본적으로 Comparable 구현되어있다.
+그래서 기본정렬 Arrays.sort(arr) 하면 정렬이 되었던 것이다
+
+Comparable 구현 안된 일반객체는 기본정렬이 구현 안되어 있기 때문에,
+Arrays.sort(arr) 하면 런타임 에러 난다. 
+그래서 반드시 Arrays.sort(arr, Comparator.compare 구현) 으로 수동 정렬해야한다.
+
+
+구현 및 사용법 살펴보자
+
+=======================================
+
+----1. 정렬한 객체에 Comparable를 구현하여 정렬 메소드에 사용하는 방법
+
+Comparable 인터페이스 원본을 보면 간단하다. 
+
+	public interface Comparable<T> {
+		public int compareTo(T o);
+	}
+
+정렬할 객체에 implements 한 후 compareTo()를 구현한다
+
+	class Person implements Comparable<Person>{
+	
+		public String name;
+		
+		public Person(String name) {
+			super();
+			this.name = name;
+		}
+		
+		public String toString() {
+			return "[" + name + "]";
+		}
+
+		//인터페이스 구현, 아래 구현은 String 기본 오름차순
+		public int compareTo(Person o) {		
+			return this.name.compareTo(o.name);
+		}
+		
+	}
+	
+사용법은 다음과 같다
+	
+	Person[] arr = {
+	new Person("ab"), 
+	new Person("ef"), 
+	new Person("cd")};
+		
+	// 1.기본구현 출력		
+	Arrays.sort(arr); 
+	for(Person s : arr) {System.out.print(s);} //[ab][cd][ef]
+	
+	// 2.내림차순 정렬
+	Arrays.sort(arr, new Comparator<Person>() {
+		public int compare(Person o1, Person o2) {
+			return o1.name.compareTo(o2.name) * -1;
+		}
+	});
+	
+	for(Person s : arr) {System.out.print(s);} //[ef][cd][ab]
+	
+	// 3. 오름차순 정렬
+	Arrays.sort(arr, (s1,s2)->{return s1.name.compareTo(s2.name);});
+	
+	for(Person s : arr) {System.out.print(s);} //[ab][cd][ef]
+	
+----2. 정렬한 객체가 Comparable 구현이 안 되어 있을때 객체 정렬 방법
+
+	class Person{ //일반 객체
+	
+		public String name;
+		
+		public Person(String name) {
+			super();
+			this.name = name;
+		}
+		
+		public String toString() {
+			return "[" + name + "]";
+		}
+	}
+	...
+	
+	Person[] arr = {
+	new Person("ab"), 
+	new Person("ef"), 
+	new Person("cd")};
+		
+	// 1. java.lang.Comparable 구현 객체가 아니라서 런타임 에러
+	//Arrays.sort(arr); //  java.lang.ClassCastException
+	
+	//기본배열순서로 출력
+	for(Person s : arr) {System.out.print(s);} //[ab][ef][cd]
+	
+	// 2. 내림차순 정렬
+	Arrays.sort(arr, new Comparator<Person>() {
+		public int compare(Person o1, Person o2) {	
+			return o1.name.compareTo(o2.name) * -1;
+		}
+	});
+	
+	for(Person s : arr) {System.out.print(s);} //[ef][cd][ab]
+	
+	// 3. 오름차순 정렬 (람다식)
+	Arrays.sort(arr, (s1,s2)->{return s1.name.compareTo(s2.name);});
+	
+	for(Person s : arr) {System.out.print(s);} //[ab][cd][ef]
+	
+
+
