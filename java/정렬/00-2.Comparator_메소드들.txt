@@ -1,6 +1,8 @@
 
 ------------------- java.util.Comparator<T> 기타 메소드들 분석 
 
+각종 집한 클래스들의 sort() 메소드 안에 들어가는 형식은 java.util.Comparator<T> 형을 쓴다
+
 소스를 보면 아래와 같은 함수형인터페이스 형식이다
 람다식을 사용할 수 있다는 뜻.
 
@@ -20,4 +22,125 @@ static 메소드는 Comparator<T> 형을 반환하는 패턴이고,
 그 반환된 Comparator<T>객체형에 default 메소드를 사용할 수 있는 형태다.
 
 =======================================
+(예제 기준)
+	class Person{
+		String name;
+		int age;
+		
+		public Person(String name, int age) {
+			super();
+			this.name = name;
+			this.age = age;
+		}
 
+		public String toString() {
+			return "[" + name + "," + age + "]";
+		}
+		
+		.. getter, setter
+		
+	}
+	
+	List<Person> list = new ArrayList<Person>();
+	list.add(new Person("하늘이",32));
+	list.add(new Person("마중삼",35));
+	list.add(new Person("종달새",33));
+	list.add(new Person("종달새",31));
+	
+1. 기본 사용방식
+	
+	// 나이로 오름차순 (익명 클래스)
+	list.sort(new Comparator<Person>() {
+		@Override
+		public int compare(Person o1, Person o2) {
+			int comp = 
+			Integer.valueOf(o1.getAge()).compareTo(Integer.valueOf(o2.getAge()));
+			return comp;
+		}
+	});
+	
+	System.out.println(list);
+	//[[종달새,31], [하늘이,32], [종달새,33], [마중삼,35]]
+	
+	// 나이 내림차순 (람다식)
+	list.sort((s1,s2)->(s1.getAge() - s2.getAge()) * -1);
+	
+	System.out.println(list); 
+	//[[마중삼,35], [종달새,33], [하늘이,32], [종달새,31]]
+	
+2. comparing() : static 메소드
+
+	매개변수 1개 짜리와, 2개 짜리가 있다
+
+	매개변수 1개는 
+	객체의 특정 멤버(Comparable형)형을 선택 후 그 멤버 자료형 기준 오름차순 정렬하는 Comparator반환
+
+	매개변수 2개는 
+	첫번째 매개변수는 객체의 멤버(Comparable형)형을 선택 후 그 멤버 자료형 기준으로,
+	두번째 매개변수인 Comparator로 구현한 기능(오름차순,내림차순)으로 한 Comparator반환
+	
+	정렬한 멤버 자료형은 Comparable이 구현된 자료형이어야한다.
+	(String, Integer..등등 웬만한 자료형은 거의 Comparable 되어 있다)
+	
+	int 형등 기본자료형도 자동으로 오토박싱 되는 듯 하다. 그러므로 정렬 가능하게 된다
+	(이건 그냥 느낌, 실제로 해보면 기본자료형도 정렬된다)
+
+	구현 소스를 보면  아래와 같다
+	
+	public static <T, U extends Comparable<? super U>> Comparator<T> comparing(
+            Function<? super T, ? extends U> keyExtractor)
+	{
+		Objects.requireNonNull(keyExtractor);
+		return (Comparator<T> & Serializable)
+		    (c1, c2) -> keyExtractor.apply(c1).compareTo(keyExtractor.apply(c2));
+	}
+	    
+	public static <T, U> Comparator<T> comparing(
+            Function<? super T, ? extends U> keyExtractor,
+            Comparator<? super U> keyComparator)
+	{
+		Objects.requireNonNull(keyExtractor);
+		Objects.requireNonNull(keyComparator);
+		return (Comparator<T> & Serializable)
+		    (c1, c2) -> keyComparator.compare(keyExtractor.apply(c1),
+						      keyExtractor.apply(c2));
+	}
+	
+	인터넷 검색으로는 정확한 느낌이 안 와서 그냥 소스 분석해 보았다. 좃도 어렵다 ㅋ
+	예제를 보자
+	
+	//------------------- 인수 한개
+	// 이름 오름차순 1 
+	list.sort(Comparator.comparing(Person::getName));
+	System.out.println(list); //[[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	// 이름 오름차순 2
+	list.sort(Comparator.comparing(s->s.getName()));
+	System.out.println(list); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	// 이름 오름차순 3
+	list.sort(Comparator.comparing(s->((Person) s).getName()));
+	System.out.println(list);// [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	//------------------인수 두개
+	
+	// 이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 람다식인 오름차순으로 정렬
+	list.sort(Comparator.comparing(Person::getName, new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
+		}
+	}));
+	System.out.println(list); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	//이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 람다식인 내림차순으로 정렬
+	list.sort(Comparator.comparing(Person::getName, (s1,s2)->s2.compareTo(s1)));
+	
+	System.out.println(list);// [[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]
+	
+- reversed() : defualt 메서드
+	: default Comparator<T> reversed()
+	
+	//이름으로 오름차순 후 역순 정렬
+	list.sort(Comparator.comparing(Person::getName).reversed());
+	System.out.println(list); //[[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]

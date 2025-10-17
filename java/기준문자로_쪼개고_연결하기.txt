@@ -1,0 +1,40 @@
+
+기준 문자로 연결하기
+	String.join("-", arr)
+	StringJoiner("-")
+	
+기준 문자로 쪼개기
+	str.split(",")
+	Scanner(str).useDelimiter(",");
+	StringTokenizer(str,",");
+	
+===================
+
+String[] arr = {"a","b","c"};
+		
+// 기준문자로 연결하기
+String join = String.join("-", arr);
+System.out.println(join); // a-b-c
+
+//java.util.StringJoiner
+StringJoiner strJoiner = new StringJoiner("-");
+strJoiner.add("a");
+strJoiner.add("b");
+strJoiner.add("c");
+System.out.println(strJoiner.toString()); // a-b-c
+
+//------- 기준 문자로 쪼개기
+String str = "100,200,300";
+
+String[] split = str.split(",");
+System.out.println(Arrays.toString(split)); // [100, 200, 300]
+
+// java.uitil.Scanner
+Scanner sc2 = new Scanner(str).useDelimiter(",");
+while(sc2.hasNext())System.out.print(sc2.next()+","); // 100,200,300,
+
+System.out.println();
+
+// java.util.StringTokenizer
+StringTokenizer token = new StringTokenizer(str, ",");
+while(token.hasMoreElements()) System.out.print(token.nextToken()+"-"); // 100-200-300-
