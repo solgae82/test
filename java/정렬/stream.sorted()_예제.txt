@@ -1,0 +1,42 @@
+자바의 정석 책에 있는 예제를 테스트해 보았다.
+책으로는 도대체 이해가 안 가다가, Comparator + Comparable 정리를 하고 나니 이제야 이해가 된다
+
+아래 예제에서는 모두 주석을 풀었지만, Stream 이므로 한번실행에 하나만 실행할 수 있다.
+테스트시에는 sorted() 행 모두 주석 처리하고 테스트 실행할 줄만 주석 풀고 실행하자
+
+String.CASE_INSENSITIVE_ORDER 는 
+대소문 구분자 없이 오름차순 비교 Comparator 가 상수로 선언 되어있다
+ 
+	public static final Comparator<String> CASE_INSENSITIVE_ORDER
+                       new CaseInsensitiveComparator();
+		       
+===================
+
+//String은 Comparable 구현되어 있고, 기본정렬이 오름차순이다
+Stream<String> stream = Stream.of("dd","aaa","CC","cc","b");
+
+//기본정렬 (오름차순)
+stream.sorted().forEach(System.out::print); // CCaaabccdd
+stream.sorted(Comparator.naturalOrder()).forEach(System.out::print); // CCaaabccdd
+stream.sorted(String::compareTo).forEach(System.out::print); // CCaaabccdd
+stream.sorted((s1,s2)->s1.compareTo(s2)).forEach(System.out::print); // CCaaabccdd
+
+//역순 정렬  (내림차순)
+stream.sorted(Comparator.reverseOrder()).forEach(System.out::print); // ddccbaaaCC
+stream.sorted(Comparator.<String>naturalOrder().reversed()).forEach(System.out::print); // ddccbaaaCC
+
+//대소문자 구분없이 없이 기본정렬(오름차순)
+stream.sorted(String.CASE_INSENSITIVE_ORDER).forEach(System.out::print);// aaabCCccdd
+
+//대소문자 구분없이 역순정렬(내림차순)
+stream.sorted(String.CASE_INSENSITIVE_ORDER.reversed()).forEach(System.out::print); // ddCCccbaaa
+
+//길이순 오름차순 정렬
+stream.sorted(Comparator.comparing(String::length)).forEach(System.out::print); // bddCCccaaa
+
+//길이순 오름차순 정렬 (no 오토박싱)
+stream.sorted(Comparator.comparingInt(String::length)).forEach(System.out::print); // bddCCccaaa
+
+//길이순 내림차순 정렬(no 오토박싱)
+stream.sorted(Comparator.comparingInt(String::length).reversed())
+.forEach(System.out::print);//aaaddCCccb

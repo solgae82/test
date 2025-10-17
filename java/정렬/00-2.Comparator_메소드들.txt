@@ -1,13 +1,9 @@
 
 ------------------- java.util.Comparator<T> 기타 메소드들 분석 
 
-각종 집한 클래스들의 sort() 메소드 안에 들어가는 형식은 java.util.Comparator<T> 형을 쓴다
+sdk 제공 집합 클래스들의 sort() 메소드 안에 들어가는 형식은 java.util.Comparator<T> 형을 쓴다
 
 소스를 보면 아래와 같은 함수형인터페이스 형식이다
-람다식을 사용할 수 있다는 뜻.
-
-구현할 메소드는 compare 하나뿐이다
-그 외에 default 메소드와 static 메소드가 있다.
 	
 	@FunctionalInterface
 	public interface Comparator<T> {
@@ -15,15 +11,77 @@
 
 		..default 메소드들과 static 메소드들
 	}
-	
-	
-static 메소드는 Comparator<T> 형을 반환하는 패턴이고,
 
-그 반환된 Comparator<T>객체형에 default 메소드를 사용할 수 있는 형태다.
+람다식을 사용할 수 있다는 뜻.
+
+구현할 메소드는 compare 하나뿐이다
+그 외에 default 메소드와 static 메소드가 있다.
+
+static 메소드와 default 메소드 모두 Comparator<T> 형을 반환한다,
+
+그 반환된 Comparator<T> 인스턴스에 default 메소드를 사용할 수 있는 형태다.
+	
+default 메서드 (지네릭 메서드 선언은 삭제했음)
+
+	default Comparator<T> reversed();
+	
+	default Comparator<T> thenComparing(Comparator<? super T> other);
+	default Comparator<T> thenComparing(Function<? super T, ? extends U> keyExtractor,
+						Comparator<? super U> keyComparator);
+	default Comparator<T> thenComparing(Function<? super T, ? extends U> keyExtractor);
+	
+	default Comparator<T> thenComparingInt(ToIntFunction<? super T> keyExtractor);
+	default Comparator<T> thenComparingLong(ToLongFunction<? super T> keyExtractor);
+	default Comparator<T> thenComparingDouble(ToDoubleFunction<? super T> keyExtractor);
+
+static 메서드 (지네릭 메서드 선언은 삭제했음)
+
+	public static Comparator<T> reverseOrder()
+	public static Comparator<T> naturalOrder()
+	
+	public static Comparator<T> nullsFirst(Comparator<? super T> comparator)
+	public static Comparator<T> nullsLast(Comparator<? super T> comparator)
+	
+	public static Comparator<T> comparing(Function<? super T, ? extends U> keyExtractor,
+						Comparator<? super U> keyComparator)
+	public static Comparator<T> comparing(Function<? super T, ? extends U> keyExtractor)
+	public static Comparator<T> comparingInt(ToIntFunction<? super T> keyExtractor)
+	public static Comparator<T> comparingLong(ToLongFunction<? super T> keyExtractor)
+	public static Comparator<T> comparingDouble(ToDoubleFunction<? super T> keyExtractor)
+
+
+이 중 대표적인 메서드만 이해하면 확장 메서드 사용법도 자연히 알게 될 것이다
+
+	comparing()
+	thenComparing()
+	
+	reversed()
+	
+	reverseOrder()
+	naturalOrder()
+	
+	nullsFirst()
+	nullsLast()
+
+------------------- 잊지말자
+
+Comparable 구현된 객체형만 정렬이 가능하다.
+
+Comparator 설정할 객체도 당연히 Comparable 구현된 객체형이어야 한다.
+
+일반객체라도 멤버가 Comparable 타입이면 멤버 기준으로 정렬 가능하다.
+(String, Integer등 왠만한 타입은 모두 Comparable 타입이다)
+
+------------------- 잊지말자 END
+
+
+예제를 살펴보자 
 
 =======================================
-(예제 기준)
-	class Person{
+
+(예제 기준 : Comparable 구현 안된 일반 객체, 내부 Comparable 구현된 멤버로 정렬가능)
+	
+	class Person{ 
 		String name;
 		int age;
 		
@@ -41,16 +99,16 @@ static 메소드는 Comparator<T> 형을 반환하는 패턴이고,
 		
 	}
 	
-	List<Person> list = new ArrayList<Person>();
-	list.add(new Person("하늘이",32));
-	list.add(new Person("마중삼",35));
-	list.add(new Person("종달새",33));
-	list.add(new Person("종달새",31));
+	List<Person> personList = new ArrayList<Person>();
+	personList.add(new Person("하늘이",32));
+	personList.add(new Person("마중삼",35));
+	personList.add(new Person("종달새",33));
+	personList.add(new Person("종달새",31));
 	
 1. 기본 사용방식
 	
 	// 나이로 오름차순 (익명 클래스)
-	list.sort(new Comparator<Person>() {
+	personList.sort(new Comparator<Person>() {
 		@Override
 		public int compare(Person o1, Person o2) {
 			int comp = 
@@ -59,30 +117,57 @@ static 메소드는 Comparator<T> 형을 반환하는 패턴이고,
 		}
 	});
 	
-	System.out.println(list);
+	System.out.println(personList);
 	//[[종달새,31], [하늘이,32], [종달새,33], [마중삼,35]]
 	
 	// 나이 내림차순 (람다식)
-	list.sort((s1,s2)->(s1.getAge() - s2.getAge()) * -1);
+	personList.sort((s1,s2)->(s1.getAge() - s2.getAge()) * -1);
 	
-	System.out.println(list); 
+	System.out.println(personList); 
 	//[[마중삼,35], [종달새,33], [하늘이,32], [종달새,31]]
 	
-2. comparing() : static 메소드
+- comparing() : static 메소드
 
-	매개변수 1개 짜리와, 2개 짜리가 있다
-
-	매개변수 1개는 
-	객체의 특정 멤버(Comparable형)형을 선택 후 그 멤버 자료형 기준 오름차순 정렬하는 Comparator반환
-
-	매개변수 2개는 
-	첫번째 매개변수는 객체의 멤버(Comparable형)형을 선택 후 그 멤버 자료형 기준으로,
-	두번째 매개변수인 Comparator로 구현한 기능(오름차순,내림차순)으로 한 Comparator반환
+	: Comparable 구현된 객체를 비교하는 Comparator를 반환한다
+	: 요소객체가 Comparable 구현되어 있거나, 
+	구현 안되어 있더라도, 요소객체 내부에 Comparable 구현된 멤버자료형이 있어야한다.
+	: 매개변수 1개 짜리와, 2개 짜리가 있다
 	
-	정렬한 멤버 자료형은 Comparable이 구현된 자료형이어야한다.
+		public static <T, U extends Comparable<? super U>> Comparator<T> comparing(
+			Function<? super T, ? extends U> keyExtractor)
+			
+		public static <T, U> Comparator<T> comparing(
+		    Function<? super T, ? extends U> keyExtractor,
+		    Comparator<? super U> keyComparator)
+		    
+	: 첫번째 인자는 Comparable 구현된 객체형을 리턴하는 Function 형을 넣는다
+		- s->s 나 항등함수, 또는 객체 멤버등을 반환하는 정렬한 객체를 지정한다
+		- 첫번째 인자만 있는 메소드의 경우 반화된 Comparable 타입 요소객체에 구현된 
+		기본정렬로 정렬될 것이다
+		
+		// String 은 Comparable 구현된 객체다
+		List<String> strList = Arrays.asList("bb","aa","cc");
+		
+		strList.sort(Comparator.comparing(s->s)); //그냥 반환만 하면 기본정렬된다
+		System.out.println(strList); // [aa, bb, cc]
+		
+		strList.sort(Comparator.comparing(Function.identity())); // s->s 와 같은 뜻
+		System.out.println(strList); // [aa, bb, cc]
+		
+	: 두번째 인자는 첫번째 인자인 Function 반환형 기준으로, 다시 수동 정렬 Comparator 구현체를 넣는다
+		personList.sort(Comparator.comparing(
+				Person::getName, 
+				/* getName()->String형->s1,s2 은 String*/
+				(s1,s2)->s2.compareTo(s1) 
+			)
+		);
+	
+	정렬할 기준 자료형은 Comparable이 구현된 자료형이어야한다.(잊지 말자)
 	(String, Integer..등등 웬만한 자료형은 거의 Comparable 되어 있다)
 	
-	int 형등 기본자료형도 자동으로 오토박싱 되는 듯 하다. 그러므로 정렬 가능하게 된다
+	int,long,double 기본자료형도 자동으로 오토박싱 되는 듯 하다.
+	아마도 래퍼클래스가 있는 타입들은 자동 오토박싱이 되겠지.
+	래퍼클래스는 Comprable 구현되었을테니 정렬이 가능할 것이고.
 	(이건 그냥 느낌, 실제로 해보면 기본자료형도 정렬된다)
 
 	구현 소스를 보면  아래와 같다
@@ -106,41 +191,228 @@ static 메소드는 Comparator<T> 형을 반환하는 패턴이고,
 						      keyExtractor.apply(c2));
 	}
 	
-	인터넷 검색으로는 정확한 느낌이 안 와서 그냥 소스 분석해 보았다. 좃도 어렵다 ㅋ
-	예제를 보자
+	인터넷 검색으로는 정확한 느낌이 안 와서 그냥 소스 분석해 보았다. x같이 어렵다 ㅋ
+	
+	
+	예제로 파악해 보자
 	
 	//------------------- 인수 한개
-	// 이름 오름차순 1 
-	list.sort(Comparator.comparing(Person::getName));
-	System.out.println(list); //[[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	// 이름 오름차순 1 (기본정렬로 정렬됨)
+	personList.sort(Comparator.comparing(Person::getName)); //String형은 Comparable 형
+	System.out.println(personList); //[[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
 	
 	// 이름 오름차순 2
-	list.sort(Comparator.comparing(s->s.getName()));
-	System.out.println(list); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	personList.sort(Comparator.comparing(s->s.getName()));
+	System.out.println(personList); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
 	
 	// 이름 오름차순 3
-	list.sort(Comparator.comparing(s->((Person) s).getName()));
-	System.out.println(list);// [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	personList.sort(Comparator.comparing(s->((Person) s).getName()));
+	System.out.println(personList);// [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
 	
 	//------------------인수 두개
 	
-	// 이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 람다식인 오름차순으로 정렬
-	list.sort(Comparator.comparing(Person::getName, new Comparator<String>() {
+	// 이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 익명객체 오름차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName, new Comparator<String>() {
 		@Override
 		public int compare(String o1, String o2) {
 			return o1.compareTo(o2);
 		}
 	}));
-	System.out.println(list); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	System.out.println(personList); // [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
 	
-	//이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 람다식인 내림차순으로 정렬
-	list.sort(Comparator.comparing(Person::getName, (s1,s2)->s2.compareTo(s1)));
+	//이름 자료형 선택 후 그 이름(String) 기준으로  두번째 인수 Comparator 람다식 내림차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName, (s1,s2)->s2.compareTo(s1)));
 	
-	System.out.println(list);// [[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]
+	System.out.println(personList);// [[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]
+	
+- comparingInt() , comparingLong(), comparingDouble() : static 메소드
+	
+	: 정렬대상 타입이 기본형일때 오토박싱을 통한 성능저하 때문에 만들어진 기본형 정렬 comparing()들 
+	: 오름차순만 된다
+	
+	사용법은 comparingInt()만 살펴보자
+	
+	---------------------
+	: public static <T> Comparator<T> comparingInt(ToIntFunction<? super T> keyExtractor)
+	
+	// 같은 의미 구현, 같은 결과
+	Collections.sort(personList,Comparator.comparingInt(s->s.getAge())); 
+	System.out.println(personList);// [[종달새,31], [하늘이,32], [종달새,33], [마중삼,35]]
+	
+	Collections.sort(personList,Comparator.comparingInt(Person::getAge));
+	System.out.println(personList);// [[종달새,31], [하늘이,32], [종달새,33], [마중삼,35]]
+
+- thenComparing() : default 메소드
+
+	: 반환된 Comparator 인스턴스에 다시 comparing 비교연산, 정렬규칙 추가 기능
+	: 오름차순만 된다
+	: 3개의 overloading 버전이 있다
+	
+	---------------------1.	
+	: default <U extends Comparable<? super U>> 
+	Comparator<T> thenComparing(Function<? super T, ? extends U> keyExtractor);
+	
+	//이름 오름차순 정렬, 같은 데이터일 경우 나이 오름차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName).thenComparing(Person::getAge));
+	System.out.println(personList);// [[마중삼,35], [종달새,31], [종달새,33], [하늘이,32]]
+	
+	---------------------2.
+	:default Comparator<T> thenComparing(Comparator<? super T> other);
+	
+	//이름 오름차순 정렬, 같은 데이터일 경우 나이 오름차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName).thenComparing(
+		(s1,s2)->Integer.compare(
+			Integer.valueOf(s1.getAge()), 
+			Integer.valueOf(s2.getAge())
+		)
+		
+	));
+	System.out.println(personList);// [[마중삼,35], [종달새,31], [종달새,33], [하늘이,32]]
+	
+	---------------------3. 
+	:default <U> Comparator<T> thenComparing(Function<? super T, ? extends U> keyExtractor,
+						Comparator<? super U> keyComparator);
+	
+	//이름 오름차순 정렬, 이름이 같은 데이터일 경우 나이 내림차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName).thenComparing(
+		Person::getAge,
+		/* getAge() -> Integer-> s1,s2는 Integer */
+		(s1,s2)-> Integer.compare(s2,s1) // 역순 정렬
+			
+	));
+	System.out.println(personList);// [[마중삼,35], [종달새,33], [종달새,31], [하늘이,32]]
+	
+	
+- thenComparingInt(), thenComparingLong() , thenComparingDouble() : default 메소드
+	
+	: 반환된 Comparator 인스턴스에 다시 comparing 비교연산, 정렬규칙 추가 기능
+	: 정렬대상 타입이 기본형일때 오토박싱을 통한 성능저하 때문에 만들어진 기본형 thenComparing()들
+	: 오름차순만 된다.
+	
+	사용법은 thenComparingInt() 살펴본다
+	
+	---------------------
+	:default Comparator<T> thenComparingInt(ToIntFunction<? super T> keyExtractor);
+	
+	//이름 오름차순 정렬, 이름이 같은 데이터일 경우 나이 내림차순으로 정렬
+	personList.sort(Comparator.comparing(Person::getName).thenComparingInt(Person::getAge));
+	System.out.println(personList); // [[마중삼,35], [종달새,31], [종달새,33], [하늘이,32]]
 	
 - reversed() : defualt 메서드
+
 	: default Comparator<T> reversed()
+	: 반환된 Comparator 정렬을 다시 역순으로 뒤집어 정렬한다
+	
+	---------------------
 	
 	//이름으로 오름차순 후 역순 정렬
-	list.sort(Comparator.comparing(Person::getName).reversed());
-	System.out.println(list); //[[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]
+	personList.sort(Comparator.comparing(Person::getName).reversed());
+	System.out.println(personList); //[[하늘이,32], [종달새,33], [종달새,31], [마중삼,35]]
+
+
+- naturalOrder() , reverseOrder() : static 메소드
+
+	: Comparable 구현 객체에만 사용할 수 있다, 구현 안된 객체형에 sort() 인수로 사용하면 바로 컴파일 에러!!
+	
+	--------------------- Comparable 구현 안된 객체에 사용시 컴파일 에러
+	: personList 자료형은 Person이고 Comparable 구현 안된 객체
+	
+		//personList.sort(Comparator.naturalOrder()); // 요소가 Comparable 이 아니라서 컴파일 안됨.
+		//personList.sort(Comparator.reverseOrder()); // 요소가 Comparable 이 아니라서 컴파일 안됨.
+	
+		// Comparable 구현된 내부 객체 대상으로 하면 OK
+		personList.sort(Comparator.comparing(s->s.getName(), Comparator.naturalOrder())); //OK
+		personList.sort(Comparator.comparing(s->s.getName(), Comparator.reverseOrder())); //OK
+		
+	: naturalOrder() 은 Comparable 기본구현정렬 방식으로 정렬한다
+	: reverseOrder() 은 Comparable 기본구현정렬 역순 방식으로 정렬한다		
+	: String 및 기본형래퍼형등 왠만한 객체들을 보면 Comparable 오름차순이 기본정렬로 구현되어있다(관례이다, 따르자)
+	: 메소드 선언부를 살펴보면 아래와 같다
+		public static <T extends Comparable<? super T>> Comparator<T> naturalOrder(); 
+		
+		public static <T extends Comparable<? super T>> Comparator<T> reverseOrder() {
+			return Collections.reverseOrder();
+		}
+	: Comparator.reverseOrder() 와 Collections.reverseOrder() 둘은 같다
+	
+	예제를 살펴보자
+	---------------------
+	// String 은 Comparable 구현된 객체다, 오름차순이 기본구현이다
+		
+	List<String> strList = Arrays.asList("bb","aa","cc");
+	
+	//오름차순(기본구현 정렬), 아래 5개 설정은 모두 의미가 같다. 같은  Comparator를 반환한다
+			
+	strList.sort(new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
+		}
+		
+	});
+	System.out.println("오름차순1=>"+strList); // 오름차순1=>[aa, bb, cc]
+	
+	strList.sort(Comparator.comparing(s->s)); //기본 반환은 기본정렬
+	System.out.println("오름차순2=>"+strList); // 오름차순2=>[aa, bb, cc]
+	
+	//Function.identity() == s->s 와 같다
+	strList.sort(Comparator.comparing(Function.identity()));
+	System.out.println("오름차순3=>"+strList); // 오름차순3=>[aa, bb, cc]
+	
+	strList.sort(Comparator.comparing(s->s, Comparator.naturalOrder()));
+	System.out.println("오름차순4=>"+strList); // 오름차순4=>[aa, bb, cc]
+	
+	strList.sort(Comparator.naturalOrder()); 
+	System.out.println("오름차순5=>"+strList); // 오름차순5=>[aa, bb, cc]
+	
+	
+	//내림차순(기본구현 정렬 역순), 아래 5개 설정은 모두 의미가 같다. 같은  Comparator를 반환한다
+	
+	strList.sort(new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			return o2.compareTo(o1);
+		}
+		
+	});
+	System.out.println("내림차순1=>"+strList); // 내림차순1=>[cc, bb, aa]
+	
+	strList.sort(Comparator.comparing(s->s, (s1,s2)->s2.compareTo(s1)));
+	System.out.println("내림차순2=>"+strList);// 내림차순2=>[cc, bb, aa]
+	
+	//Function.identity() == s->s 와 같다
+	strList.sort(Comparator.comparing(Function.identity(), (s1,s2)->s2.compareTo(s1))); 
+	System.out.println("내림차순3=>"+strList);// 내림차순3=>[cc, bb, aa]
+	
+	strList.sort(Comparator.comparing(s->s, Comparator.reverseOrder()));
+	System.out.println("내림차순4=>"+strList); // 내림차순4=>[cc, bb, aa]
+	
+	strList.sort(Comparator.reverseOrder()); 
+	System.out.println("내림차순5=>"+strList); // 내림차순5=>[cc, bb, aa]
+	
+	
+- nullsFirst(), nullsLast()
+
+	: sort() 요소에 null 객체가 있으면 NullPointerException 에러가 난다
+	: NullPointerException을 막아주고 정렬해주는 헬퍼 메소드
+	: nullsFirst() 는 정렬순서와 관계없이 맨 마지막으로 추가한다
+	: nullsLast() 는 정렬순서와 관계없이 맨 마지막으로 추가한다 
+	
+	---------------------
+	
+	List<String> nullList = Arrays.asList("B",null, "A","C",null);
+		
+	//nullList.sort(Comparator.naturalOrder()); // NullPointerException
+	
+	nullList.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
+	System.out.println(nullList); // [null, null, A, B, C]
+	
+	nullList.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+	System.out.println(nullList); // [A, B, C, null, null]
+	
+	nullList.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
+	System.out.println(nullList); // [null, null, C, B, A]
+	
+	nullList.sort(Comparator.nullsLast(Comparator.reverseOrder()));
+	System.out.println(nullList); // [C, B, A, null, null]
