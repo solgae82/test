@@ -20,26 +20,40 @@ java.util.function  패키지
 		java.util.function.Supplier<T> 
 			T get() : 매개변수는 없고, 반환값만 있음.
 			
+			람다식 : ()->T형반환
+			
 		java.util.function.Consumer<T>
 			void accept(T t) : 매개변수가 한개 있고, 반환값 없음
+			
+			람다식 : (t)-> t 소비 후 반환값 없음
 		
 		java.util.function.Function<T,R>
 			R apply(T t) : 매개변수가 한개 있고, 반환값 있음
 
+			람다식 : (t)-> t 와 연산 후 R형 반환
+			
 		java.util.function.Predicate<T>
 			boolean test(T t) : 매개변수 한개 있고, boolean형 반환 (조건식 표현)
+			
+			람다식 : (t)-> t 연산 후 boolean형 반환
 		
 	매개변수가 한개 이상이면, Bi 라는 접두사가 붙는 함수형 인터페이스가 있다.
 
 		java.util.function.BiConsumer<T,U>
 			void accept(T t , U u) : 매개변수 두개 있고, 반환값 없음.
 			
+			람다식 : (t , u)-> t,u 연산 후 반환값 없음
+			
 		java.util.function.BiFunction<T,U,R>
 			R apply(T t , U u) : 매개변수 두개 있고, 반환값 있음
+			
+			람다식 : (t , u)-> t, u 연산 후 R형 반환
 			
 		java.util.function.BiPredicate<T,U>
 			boolean test(T t , U u) : 매개변수 두개 있고, boolean형 반환 (조건식 표현)
 		
+			람다식 : (t , u)-> t, u 연산 후 boolean형 반환
+			
 	Function의 변형으로  UnaryOperator 와 BinaryOperator 가 있다.
 	매개변수 타입과 반환 타입이 같다는 점이 Function과 다르다
 
@@ -47,9 +61,13 @@ java.util.function  패키지
 		java.util.function.UnaryOperator<T>
 			T apply(T t) : 매개변수가 한개 있고, 반환 타입도 매개변수 타입과 같다
 			
+			람다식 : (t)-> t 연산 후 T형 반환
+			
 		java.util.function.BinaryOperator<T>
-			T apply(T t, T t) : 매개변수 두개(같은 타입) 있고, 반환타입도 매개변수 타입과 같다	
+			T apply(T t1, T t2) : 매개변수 두개(같은 타입) 있고, 반환타입도 매개변수 타입과 같다	
 
+			람다식 : (t1, t2)-> t1,t2 연산 후 T형 반환
+			
 ---------- 기본형을 사용하는 함수형 인터페이스
 
 	대표인터페이스별로 기본자료형(래퍼클래스등)을 반환하거나 매개변수로 사용하는 확장된 함수형 인터페이스들이 있다.
@@ -87,11 +105,11 @@ java.util.function  패키지
 ---------
 요약
 	기본인 (5가지)
-		Supplier
-		Consumer
-		Function
-		Predicate
-		UnaryOperator
+		Supplier<T>		()-> T 반환
+		Consumer<T>		(T t)-> t 소비,반환값 없음
+		Function<T,R>		(T t)-> t 연산 후 R형 반환
+		Predicate<T>		(T t)-> t 연산 후 boolean형 반환
+		UnaryOperator<T>	(T t)-> t 연산 후 T형 반환
 		
 	만 외우면 된다
 	나머진 그것들의 확장일 뿐이다.
