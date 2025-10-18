@@ -96,74 +96,73 @@ class My2Class{
 
 		
 }
-public class LambdaMethodReferenceTest {
 
-	public static void main(String[] args) {
-				
-		// static 메서드 참조
-		Function<String, Integer> f1 = (String s)-> Integer.parseInt(s);
-		System.out.println(f1.apply("34")); //34
-		
-		Function<String, Integer> f2 = Integer::parseInt; // 메서드 참조
-		System.out.println(f2.apply("35")); //35
-		
-		List<String> list = Arrays.asList("하나","둘","셋","넷");
-		list.forEach(item->System.out.print(item+",")); //하나,둘,셋,넷,
-		System.out.println();
-		list.forEach(System.out::print); //하나둘셋넷
-		System.out.println();
-		
-		// 매개변수 instance 메소드 참조
-		BiFunction<String, String, Boolean> f3 = (s1,s2)->s1.equals(s2);
-		System.out.println(f3.apply("test1", "test2"));//false
-		
-		BiFunction<String, String, Boolean> f4 = String::equals; // (인스턴스)메서드 참조
-		System.out.println(f4.apply("test1", "test1")); //true
-		
-		// 특정 객체 인스턴스 메서드 참조
-		My2Class obj = new My2Class();
-		obj.setName("dong");
-				
-		Function<String, Boolean> f5 = (s)-> obj.isName(s);
-		System.out.println(f5.apply("dong2")); // false
-		
-		Function<String, Boolean> f6 = obj::isName; // 외부 특정객체 인스턴스 메소드 참조
-		System.out.println(f6.apply("dong")); // true
-		
-		obj.setName("test");
-		System.out.println(f6.apply("dong")); //false
-		
-		
-		//생성자 , 메서드 참조
-		Supplier<My2Class> sup1 = () -> new My2Class();
-		My2Class my1 = sup1.get();
-		System.out.println(my1.getName()); // default
-		
-		Supplier<My2Class> sup2 = My2Class::new; //메서드 참조
-		My2Class my2 = sup2.get();
-		System.out.println(my2.getName()); //default
-		
-		//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
-		Function<String, My2Class> f7 = (s) -> new My2Class(s);
-		My2Class my2First = f7.apply("하늘");
-		System.out.println(my2First.getName()); //하늘
-				
-		Function<String, My2Class> f8 = My2Class::new; //메서드 참조
-		My2Class my2Second = f8.apply("땅"); //설정 후 생성
-		System.out.println(my2Second.getName()); // 땅
-		
-		//배열객체 생성자
-		Function<Integer, int[]> f9 = size -> new int[size];
-		int[] iArr1 = f9.apply(3);
-		iArr1[0]= 3;
-		iArr1[1]= 4;
-		iArr1[2]= 5;
-		System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
-		
-		Function<Integer, int[]> f10 = int[]::new; // 메서드 참조.
-		int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
-		for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
-		System.out.println(Arrays.toString(iArr2)); // [5, 6, 7]
-		
-	}
+
+public static void main(String[] args) {
+			
+	// static 메서드 참조
+	Function<String, Integer> f1 = (String s)-> Integer.parseInt(s);
+	System.out.println(f1.apply("34")); //34
+	
+	Function<String, Integer> f2 = Integer::parseInt; // 메서드 참조
+	System.out.println(f2.apply("35")); //35
+	
+	List<String> list = Arrays.asList("하나","둘","셋","넷");
+	list.forEach(item->System.out.print(item+",")); //하나,둘,셋,넷,
+	System.out.println();
+	list.forEach(System.out::print); //하나둘셋넷
+	System.out.println();
+	
+	// 매개변수 instance 메소드 참조
+	BiFunction<String, String, Boolean> f3 = (s1,s2)->s1.equals(s2);
+	System.out.println(f3.apply("test1", "test2"));//false
+	
+	BiFunction<String, String, Boolean> f4 = String::equals; // (인스턴스)메서드 참조
+	System.out.println(f4.apply("test1", "test1")); //true
+	
+	// 특정 객체 인스턴스 메서드 참조
+	My2Class obj = new My2Class();
+	obj.setName("dong");
+			
+	Function<String, Boolean> f5 = (s)-> obj.isName(s);
+	System.out.println(f5.apply("dong2")); // false
+	
+	Function<String, Boolean> f6 = obj::isName; // 외부 특정객체 인스턴스 메소드 참조
+	System.out.println(f6.apply("dong")); // true
+	
+	obj.setName("test");
+	System.out.println(f6.apply("dong")); //false
+	
+	
+	//생성자 , 메서드 참조
+	Supplier<My2Class> sup1 = () -> new My2Class();
+	My2Class my1 = sup1.get();
+	System.out.println(my1.getName()); // default
+	
+	Supplier<My2Class> sup2 = My2Class::new; //메서드 참조
+	My2Class my2 = sup2.get();
+	System.out.println(my2.getName()); //default
+	
+	//매개변수가 있는 생성자 반환이라면, 매개변수에 맞는 함수형 인터페이스를 사용하면 된다.
+	Function<String, My2Class> f7 = (s) -> new My2Class(s);
+	My2Class my2First = f7.apply("하늘");
+	System.out.println(my2First.getName()); //하늘
+			
+	Function<String, My2Class> f8 = My2Class::new; //메서드 참조
+	My2Class my2Second = f8.apply("땅"); //설정 후 생성
+	System.out.println(my2Second.getName()); // 땅
+	
+	//배열객체 생성자
+	Function<Integer, int[]> f9 = size -> new int[size];
+	int[] iArr1 = f9.apply(3);
+	iArr1[0]= 3;
+	iArr1[1]= 4;
+	iArr1[2]= 5;
+	System.out.println("int[]:"+Arrays.toString(iArr1)); // [3, 4, 5]
+	
+	Function<Integer, int[]> f10 = int[]::new; // 메서드 참조.
+	int[] iArr2 = f10.apply(3); 	// 배열 사이즈 3개 생성
+	for(int i=0; i<iArr2.length; i++) { iArr2[i] = (5+i);}
+	System.out.println(Arrays.toString(iArr2)); // [5, 6, 7]
+	
 }

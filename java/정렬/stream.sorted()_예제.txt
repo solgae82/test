@@ -17,13 +17,18 @@ Stream<String> stream = Stream.of("dd","aaa","CC","cc","b");
 
 //기본정렬 (오름차순)
 stream.sorted().forEach(System.out::print); // CCaaabccdd
+
 stream.sorted(Comparator.naturalOrder()).forEach(System.out::print); // CCaaabccdd
+
 stream.sorted(String::compareTo).forEach(System.out::print); // CCaaabccdd
+
 stream.sorted((s1,s2)->s1.compareTo(s2)).forEach(System.out::print); // CCaaabccdd
 
 //역순 정렬  (내림차순)
 stream.sorted(Comparator.reverseOrder()).forEach(System.out::print); // ddccbaaaCC
-stream.sorted(Comparator.<String>naturalOrder().reversed()).forEach(System.out::print); // ddccbaaaCC
+
+stream.sorted(Comparator.<String>naturalOrder().reversed())
+.forEach(System.out::print); // ddccbaaaCC
 
 //대소문자 구분없이 없이 기본정렬(오름차순)
 stream.sorted(String.CASE_INSENSITIVE_ORDER).forEach(System.out::print);// aaabCCccdd
