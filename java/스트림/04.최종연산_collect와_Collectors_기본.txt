@@ -57,18 +57,20 @@ class Student{
 	
 	// Map에 {"반번호-번호","이름"} 된 객체 만들기
 	//Map<String,String> map = stuStrm.collect(
-	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), s->s.getName()));
+		Collectors.toMap(s->s.getBan()+"-"+s.getNum(), s->s.getName()));
 	//System.out.println(map); // {3-19=육중완, 2-3=이도형, 1-41=김삼손}
+	
 	// p->p == Function.identity()
 	//Map<String,Student> map = stuStrm.collect(
-	Collectors.toMap(s->s.getBan()+"-"+s.getNum(), Function.identity()));
+		Collectors.toMap(s->s.getBan()+"-"+s.getNum(), Function.identity()));
 	//System.out.println(map);
 	//{3-19=Student [name=육중완, ban=3, totalScore=90], 2-3=Student [name=이도형, ban=2, totalScore=80], 1-41=Student [name=김삼손, ban=1, totalScore=70]}
 	
 	// ArrayList에 이름 담기
 	//List<String> namesList =  stuStrm.map(Student::getName).collect(Collectors.toList());
+	
 	//ArrayList<String> arrList = namesList.stream().collect(
-	Collectors.toCollection(ArrayList::new));
+		Collectors.toCollection(ArrayList::new));
 	//System.out.println(arrList); // [이도형, 김삼손, 육중완]
 	
 ---- Collectors: counting(),summingInt(),averagingInt(),maxBy(),minBy(),summarizingInt()
