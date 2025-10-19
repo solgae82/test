@@ -1,0 +1,92 @@
+(구글 AI요약)
+
+자바 커스텀 Collector의 characteristics는 
+스트림의 collect() 연산을 최적화하기 위한 힌트를 제공하는 불변(Immutable) 특성 집합입니다. 
+
+이 특성들은 스트림이 병렬로 처리될 때 컬렉터가 어떻게 동작해야 하는지, 
+그리고 최종 결과물을 어떻게 처리해야 하는지를 JVM에 알려줍니다. 
+
+Collector.Characteristics는 다음과 같은 세 가지 열거형(enum) 값으로 구성됩니다: 
+
+1. UNORDERED
+	설명: 컬렉션 연산이 입력 요소의 순서를 유지하지 않아도 된다는 것을 나타냅니다.
+
+	최적화: 이 특성을 설정하면 스트림 소스의 순서에 상관없이 병렬 연산을 더 효율적으로 수행할 수 있습니다. 
+		예를 들어, Set으로 수집하는 컬렉터는 UNORDERED 특성을 가질 수 있습니다.
+
+	사용 예시: collect(Collectors.toSet())과 같이 최종 결과가 순서에 영향을 받지 않는 경우에 사용됩니다. 
+
+2. CONCURRENT
+
+	설명: 컬렉터의 accumulator 함수가 여러 스레드에서 동시에 동일한 결과 컨테이너에 접근할 수 있도록 지원한다는 것을 나타냅니다. 
+		즉, thread-safe한 컬렉션을 사용합니다.
+
+	최적화: 병렬 스트림에서 여러 스레드가 분리된 컨테이너를 만들고 병합(merge)하는 대신, 
+		하나의 공유 컨테이너에 동시에 누적할 수 있게 되어 병합 단계의 비용을 줄일 수 있습니다.
+
+	주의사항: CONCURRENT 특성을 사용하려면 결과 컨테이너가 스레드에 안전해야 합니다. 
+		또한, 소스가 정렬되어 있지 않거나 UNORDERED 특성이 함께 설정된 경우에만 병렬 처리가 가능합니다. 
+
+3. IDENTITY_FINISH
+
+	설명: 컬렉터의 누적자(A) 타입과 최종 결과(R) 타입이 같고, finisher 함수가 항등 함수(identity function)라는 것을 나타냅니다. 
+		즉, 누적 단계의 결과물이 최종 결과이므로 별도의 변환 작업이 필요 없습니다.
+
+	최적화: finisher 단계가 생략되므로 성능상의 이점을 얻을 수 있습니다.
+
+	사용 예시: toList()와 같이 누적 컨테이너(List)가 최종 결과물이 되는 경우에 사용됩니다. 
+
+=====================================================
+
+커스텀 Collector에서 characteristics 사용하기 ===========
+
+=====================================================
+
+	사용자 정의 Collector를 구현할 때, 
+	Collector 인터페이스의 characteristics() 메서드에서 위 특성들을 포함하는 불변 Set을 반환해야 합니다. 
+
+	Collector.of() 팩토리 메서드를 사용하면 특성을 쉽게 지정할 수 있습니다. 
+
+	예시: 누적자가 ArrayList이고 최종 결과도 List인 커스텀 toList 컬렉터의 경우: 
+
+	import java.util.*;
+	import java.util.stream.*;
+	import java.util.function.*;
+
+	public class ToListCollector<T> implements Collector<T, List<T>, List<T>> {
+
+	    @Override
+	    public Supplier<List<T>> supplier() {
+		return ArrayList::new;
+	    }
+
+	    @Override
+	    public BiConsumer<List<T>, T> accumulator() {
+		return List::add;
+	    }
+
+	    @Override
+	    public BinaryOperator<List<T>> combiner() {
+		return (list1, list2) -> {
+		    list1.addAll(list2);
+		    return list1;
+		};
+	    }
+
+	    @Override
+	    public Function<List<T>, List<T>> finisher() {
+		return Function.identity(); // 누적 결과가 최종 결과와 같으므로 항등 함수 반환
+	    }
+
+	    @Override
+	    public Set<Characteristics> characteristics() {
+		return Collections.unmodifiableSet(EnumSet.of(
+		    Characteristics.IDENTITY_FINISH,
+		    Characteristics.CONCURRENT // 병렬 처리를 위해 CONCURRENT 추가
+		));
+	    }
+	}
+
+
+	위 코드에서는 IDENTITY_FINISH와 CONCURRENT 특성을 지정하여 
+	List 누적 과정에서 추가 변환이 필요 없고 병렬 처리가 가능함을 명시합니다.
