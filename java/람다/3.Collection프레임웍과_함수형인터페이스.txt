@@ -7,9 +7,9 @@
  * Iterable <- Collection <- List ,set   : 부모 <- 자식 상속관계 
  */
 		
-Collection<Integer> collection = new ConcurrentLinkedDeque<Integer>();
-for(int i=1; i<=10; i++) {collection.add(i);}
-System.out.println(collection); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+	Collection<Integer> collection = new ConcurrentLinkedDeque<Integer>();
+	for(int i=1; i<=10; i++) {collection.add(i);}
+	System.out.println(collection); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 /*
 * Collection.removeIf : 조건에 맞는 요소를 삭제
@@ -17,8 +17,8 @@ System.out.println(collection); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 * 	- boolean removeIf(Predicate<? super E> filter)
 */
 
-collection.removeIf(element->(element % 2 == 0)); // 짝수는 제거
-System.out.println(collection); // [1, 3, 5, 7, 9]
+	collection.removeIf(element->(element % 2 == 0)); // 짝수는 제거
+	System.out.println(collection); // [1, 3, 5, 7, 9]
 
 /*
  * Iterable.forEach : 모든 요소에 작업 action 수행
@@ -26,9 +26,9 @@ System.out.println(collection); // [1, 3, 5, 7, 9]
  * 	- void forEach(Consumer<? super T> action)
  */
 
-List<String> cL = new ArrayList<String>();
-collection.forEach(e-> cL.add("z:" +e));
-System.out.println(cL); // [z:1, z:3, z:5, z:7, z:9]
+	List<String> cL = new ArrayList<String>();
+	collection.forEach(e-> cL.add("z:" +e));
+	System.out.println(cL); // [z:1, z:3, z:5, z:7, z:9]
 		
 /*
  * List.replaceAll : 모든 요소를 변환하여 대체
@@ -36,11 +36,11 @@ System.out.println(cL); // [z:1, z:3, z:5, z:7, z:9]
  * 	- void replaceAll(UnaryOperator<E> operator)
  */
 
-List<String> list = Arrays.asList("AA","BB","CC");
-System.out.println(list); //[AA, BB, CC]
-  
-list.replaceAll(s -> "소문자:" + s.toLowerCase());
-System.out.println(list); //[소문자:aa, 소문자:bb, 소문자:cc]
+	List<String> list = Arrays.asList("AA","BB","CC");
+	System.out.println(list); //[AA, BB, CC]
+	  
+	list.replaceAll(s -> "소문자:" + s.toLowerCase());
+	System.out.println(list); //[소문자:aa, 소문자:bb, 소문자:cc]
 
 //-----------------------------------------------Map 테스트
 
@@ -55,10 +55,6 @@ System.out.println();
  * Map.replaceAll
  */
 
-Map<String , Integer> map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
 
 /*
  * Map.compute : 키 값에  해당하는  함수 작업을 수행 반환 (key, 값 반환 함수),결국 추가,삭제,업데이트 메서드 역할 
@@ -68,22 +64,27 @@ System.out.println(map); //{first=1, second=2}
  * : 값도 null 일수 있으니 체크하는게 좋겠다
  * : null을 반환하면, 해당키가 있다면 삭제, 없다면 아무일도 안 일어난다
  */
-Integer r1= map.compute("first", (k,v)->{return null;}); // first 삭제
-System.out.println(map+",반환값=>"+ r1); // {second=2},반환값=>null
+	Map<String , Integer> map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
 
-Integer r2 = map.compute("first", (k,v)->{return 1;}); // first 추가
-System.out.println(map +",반환값=>"+ r2); //{first=1, second=2},반환값=>1
+	Integer r1= map.compute("first", (k,v)->{return null;}); // first 삭제
+	System.out.println(map+",반환값=>"+ r1); // {second=2},반환값=>null
 
-//map.compute("third", (k,v)->{return v + 30;}); // v==null NPE 발생
+	Integer r2 = map.compute("first", (k,v)->{return 1;}); // first 추가
+	System.out.println(map +",반환값=>"+ r2); //{first=1, second=2},반환값=>1
 
-Integer n1=map.compute("third", (k,v)-> null); // 없는 third 키값 삭제, 어차피 없으므로 아무일도 없다
-System.out.println(map + ",반환값=>"+n1); // {first=1, second=2},반환값=>null
+	//map.compute("third", (k,v)->{return v + 30;}); // v==null NPE 발생
 
-Integer r3 = map.compute("third", (k,v)-> 30); // third 추가
-System.out.println(map + ",반환값=>"+r3); // {third=30, first=1, second=2},반환값=>30
+	Integer n1=map.compute("third", (k,v)-> null); // 없는 third 키값 삭제, 어차피 없으므로 아무일도 없다
+	System.out.println(map + ",반환값=>"+n1); // {first=1, second=2},반환값=>null
 
-Integer r4 = map.compute("third", (k,v)-> 3); // third 업데이트
-System.out.println(map + ",반환값=>"+r4); // {third=3, first=1, second=2},반환값=>3
+	Integer r3 = map.compute("third", (k,v)-> 30); // third 추가
+	System.out.println(map + ",반환값=>"+r3); // {third=30, first=1, second=2},반환값=>30
+
+	Integer r4 = map.compute("third", (k,v)-> 3); // third 업데이트
+	System.out.println(map + ",반환값=>"+r4); // {third=3, first=1, second=2},반환값=>3
 
 /*
  * Map.computeIfAbsent : 키가 없다면 함수 작업 수행 반환 (key, 값 반환 함수) , 결국 추가 기능 메서드 역할
@@ -92,48 +93,49 @@ System.out.println(map + ",반환값=>"+r4); // {third=3, first=1, second=2},반
  * : 값이 null이면 추가 되지 않는다
  */
 
-System.out.println();
+	System.out.println();
 
-map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
+	map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
 
-// first 키값은 있으므로 함수는 실행하지 않고, first값만 반환
-Integer a1= map.computeIfAbsent("first", (k)->{return null;});
-System.out.println(map + ",반환값=>"+a1); //{first=1, second=2},반환값=>1
+	// first 키값은 있으므로 함수는 실행하지 않고, first값만 반환
+	Integer a1= map.computeIfAbsent("first", (k)->{return null;});
+	System.out.println(map + ",반환값=>"+a1); //{first=1, second=2},반환값=>1
 
-// third 키값은 없으므로 함수를 실행, 그러나 반환값이 null 이기에 추가되지 않는다
-Integer a2= map.computeIfAbsent("third", (k)->{return null;});
-System.out.println(map + ",반환값=>"+a2); // {first=1, second=2},반환값=>null
+	// third 키값은 없으므로 함수를 실행, 그러나 반환값이 null 이기에 추가되지 않는다
+	Integer a2= map.computeIfAbsent("third", (k)->{return null;});
+	System.out.println(map + ",반환값=>"+a2); // {first=1, second=2},반환값=>null
 
-// third 키값이 없으므로 함수 실행, 값 3 반환하고,  map에 추가됨
-Integer a3= map.computeIfAbsent("third", (k)->3);
-System.out.println(map + ",반환값=>"+a3); // {third=3, first=1, second=2},반환값=>3
+	// third 키값이 없으므로 함수 실행, 값 3 반환하고,  map에 추가됨
+	Integer a3= map.computeIfAbsent("third", (k)->3);
+	System.out.println(map + ",반환값=>"+a3); // {third=3, first=1, second=2},반환값=>3
 
 		
 /* 
  * Map.computeIfPresent : 키가 존재하면 함수 작업 수행 바환 (key, 값반환함수), 결국 업데이트, 삭제 기능 메서드 역할
  * 	-V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) 
  */
-System.out.println();
 
-map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
+	System.out.println();
 
-// first 키값은 있으므로 함수 실행 , 그러나 null을 반환하므로 해당 키 삭제, 후 null반환
-Integer p1= map.computeIfPresent("first", (k,v)->{return null;});
-System.out.println(map + ",반환값=>"+p1); // {second=2},반환값=>null
+	map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
 
-// first 키값이 사라졌으므로 함수 실행 안함 , null 반환 
-Integer p2= map.computeIfPresent("first", (k,v)->{return v + 10;});
-System.out.println(map + ",반환값=>"+p2);
+	// first 키값은 있으므로 함수 실행 , 그러나 null을 반환하므로 해당 키 삭제, 후 null반환
+	Integer p1= map.computeIfPresent("first", (k,v)->{return null;});
+	System.out.println(map + ",반환값=>"+p1); // {second=2},반환값=>null
 
-// second 키값은 있으므로 함수 실행, 실행한 값 업데이트 후 반환
-Integer p3= map.computeIfPresent("second", (k,v)->{return v + 10;});
-System.out.println(map + ",반환값=>"+p3); // {second=12},반환값=>12
+	// first 키값이 사라졌으므로 함수 실행 안함 , null 반환 
+	Integer p2= map.computeIfPresent("first", (k,v)->{return v + 10;});
+	System.out.println(map + ",반환값=>"+p2);
+
+	// second 키값은 있으므로 함수 실행, 실행한 값 업데이트 후 반환
+	Integer p3= map.computeIfPresent("second", (k,v)->{return v + 10;});
+	System.out.println(map + ",반환값=>"+p3); // {second=12},반환값=>12
 
 /*
  * Map.merge :(key , 값 , merge함수)로   추가, 삭제, 변경 기능 메서드 역할
@@ -142,53 +144,54 @@ System.out.println(map + ",반환값=>"+p3); // {second=12},반환값=>12
  *  : key값, 설정값, (기존값, 설정값)-> merge 연산 후 반환
  *  : 3번째 함수에서 null을 반환하면 해당 키 삭제의 의미
  */
-System.out.println();
 
-map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
+	System.out.println();
 
-// 존재하는 second 키값에  두번째 설정값을 기준으로 3번재 함수 실행해서 업데이트 후 업데이트 반환값 반환
-Integer m1 = map.merge("second", 20, (oldVal,newVal)->{return (oldVal + newVal);});
-System.out.println(map +",반환값=>"+m1); // {first=1, second=22},반환값=>22
+	map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
 
-// 존재하는 second 키값에 null 값 반환은 삭제의 의미, 해당키 삭제 후 null 반환
-Integer m2 = map.merge("second", 20, (oldVal,newVal)->{return null;});
-System.out.println(map +",반환값=>"+m2); // {first=1},반환값=>null
+	// 존재하는 second 키값에  두번째 설정값을 기준으로 3번재 함수 실행해서 업데이트 후 업데이트 반환값 반환
+	Integer m1 = map.merge("second", 20, (oldVal,newVal)->{return (oldVal + newVal);});
+	System.out.println(map +",반환값=>"+m1); // {first=1, second=22},반환값=>22
 
-//second 키값은 존재하지 않으므로 <"second", 20> 추가, 3번째 함수는 실행하지 않음.
-Integer m3 = map.merge("second", 20, (oldVal,newVal)->{return newVal - 18;});
-System.out.println(map +",반환값=>"+m3); // {first=1, second=20},반환값=>20
+	// 존재하는 second 키값에 null 값 반환은 삭제의 의미, 해당키 삭제 후 null 반환
+	Integer m2 = map.merge("second", 20, (oldVal,newVal)->{return null;});
+	System.out.println(map +",반환값=>"+m2); // {first=1},반환값=>null
 
-// 두번째 값 요소에 null을 넣으면 NullPointerException 에러 
-// Integer m4 = map.merge("second", null , (oldVal,newVal)->2); // NPE
+	//second 키값은 존재하지 않으므로 <"second", 20> 추가, 3번째 함수는 실행하지 않음.
+	Integer m3 = map.merge("second", 20, (oldVal,newVal)->{return newVal - 18;});
+	System.out.println(map +",반환값=>"+m3); // {first=1, second=20},반환값=>20
 
+	// 두번째 값 요소에 null을 넣으면 NullPointerException 에러 
+	// Integer m4 = map.merge("second", null , (oldVal,newVal)->2); // NPE
 
 /*
  * Map.forEach : 모든 요소에 작업 action 수행
  * 	- default void forEach(BiConsumer<? super K, ? super V> action)
  */
-System.out.println();
 
-map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
+	System.out.println();
 
-map.forEach((k,v)->System.out.print("<"+ k + ":" + v +">"));//<first:1><second:2>
+	map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
+
+	map.forEach((k,v)->System.out.print("<"+ k + ":" + v +">"));//<first:1><second:2>
 
 
-/*
- * Map.replaceAll : 모든 요소에 변경 작업 수행
- * 	- default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function)
- */
-System.out.println();
+	/*
+	 * Map.replaceAll : 모든 요소에 변경 작업 수행
+	 * 	- default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function)
+	 */
+	System.out.println();
 
-map = new HashMap<>();
-map.put("first", 1);
-map.put("second", 2);		
-System.out.println(map); //{first=1, second=2}
+	map = new HashMap<>();
+	map.put("first", 1);
+	map.put("second", 2);		
+	System.out.println(map); //{first=1, second=2}
 
-map.replaceAll((k,v)-> ("second".equals(k))?(v * 10):v); //key가 "second" 인것만 곱하기 10
-System.out.println(map); //{first=1, second=20}
+	map.replaceAll((k,v)-> ("second".equals(k))?(v * 10):v); //key가 "second" 인것만 곱하기 10
+	System.out.println(map); //{first=1, second=20}
