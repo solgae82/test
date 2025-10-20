@@ -1,41 +1,46 @@
 컬렉션 프레임웍의 인터페이스에 다수의 defualt 메서드가 추가 되었는데, 그 중의 일부는 함수형 인터페이스를 사용한다.
 자주 사용하게 될(또는 분석하게 될) 함수형 인터페이스 테스트이다.
 
--------------------------------------------------//
+-------------------------------------------------//Collection,List 테스트
 
 /*
  * Iterable <- Collection <- List ,set   : 부모 <- 자식 상속관계 
  */
 		
+	System.out.println("------------Collection 기본셋팅");
+
 	Collection<Integer> collection = new ConcurrentLinkedDeque<Integer>();
 	for(int i=1; i<=10; i++) {collection.add(i);}
 	System.out.println(collection); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 /*
 * Collection.removeIf : 조건에 맞는 요소를 삭제
-* 	
 * 	- boolean removeIf(Predicate<? super E> filter)
 */
+	
+	System.out.println("------------Collection.removeIf()");
 
 	collection.removeIf(element->(element % 2 == 0)); // 짝수는 제거
 	System.out.println(collection); // [1, 3, 5, 7, 9]
 
 /*
- * Iterable.forEach : 모든 요소에 작업 action 수행
- * 
+ * Iterable.forEach : 모든 요소에 소비 작업 action 수행
  * 	- void forEach(Consumer<? super T> action)
  */
 
+	System.out.println("------------Iterable.forEach()");
+	
 	List<String> cL = new ArrayList<String>();
 	collection.forEach(e-> cL.add("z:" +e));
 	System.out.println(cL); // [z:1, z:3, z:5, z:7, z:9]
 		
 /*
- * List.replaceAll : 모든 요소를 변환하여 대체
- * 	
+ * List.replaceAll : 모든 요소를 변환하여 대체 반환
  * 	- void replaceAll(UnaryOperator<E> operator)
  */
 
+	System.out.println("------------List.replaceAll()");
+	
 	List<String> list = Arrays.asList("AA","BB","CC");
 	System.out.println(list); //[AA, BB, CC]
 	  
@@ -43,8 +48,6 @@
 	System.out.println(list); //[소문자:aa, 소문자:bb, 소문자:cc]
 
 //-----------------------------------------------Map 테스트
-
-System.out.println();
 
 /**
  * Map.compute
@@ -62,8 +65,12 @@ System.out.println();
  * 
  * : 키가 없을 수 있으니 항상 null 체크를 하면 좋겠다
  * : 값도 null 일수 있으니 체크하는게 좋겠다
- * : null을 반환하면, 해당키가 있다면 삭제, 없다면 아무일도 안 일어난다
+ * : 해당키가 존재하는데 null 반환하면 삭제, 해당키가 없다면 아무일도 안 일어난다
  */
+	
+	
+	System.out.println("------------Map.compute()");
+	
 	Map<String , Integer> map = new HashMap<>();
 	map.put("first", 1);
 	map.put("second", 2);		
@@ -93,7 +100,7 @@ System.out.println();
  * : 값이 null이면 추가 되지 않는다
  */
 
-	System.out.println();
+	System.out.println("------------Map.computeIfAbsent()");
 
 	map = new HashMap<>();
 	map.put("first", 1);
@@ -104,7 +111,7 @@ System.out.println();
 	Integer a1= map.computeIfAbsent("first", (k)->{return null;});
 	System.out.println(map + ",반환값=>"+a1); //{first=1, second=2},반환값=>1
 
-	// third 키값은 없으므로 함수를 실행, 그러나 반환값이 null 이기에 추가되지 않는다
+	// third 키값은 없으므로 함수를 실행, 그러나 반환값이 null 이면  추가되지 않는다
 	Integer a2= map.computeIfAbsent("third", (k)->{return null;});
 	System.out.println(map + ",반환값=>"+a2); // {first=1, second=2},반환값=>null
 
@@ -114,11 +121,11 @@ System.out.println();
 
 		
 /* 
- * Map.computeIfPresent : 키가 존재하면 함수 작업 수행 바환 (key, 값반환함수), 결국 업데이트, 삭제 기능 메서드 역할
+ * Map.computeIfPresent : 키가 존재하면 함수 작업 수행 반환 (key, 값반환함수), 결국 업데이트, 삭제 기능 메서드 역할
  * 	-V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) 
  */
 
-	System.out.println();
+	System.out.println("------------Map.computeIfPresent()");
 
 	map = new HashMap<>();
 	map.put("first", 1);
@@ -131,7 +138,7 @@ System.out.println();
 
 	// first 키값이 사라졌으므로 함수 실행 안함 , null 반환 
 	Integer p2= map.computeIfPresent("first", (k,v)->{return v + 10;});
-	System.out.println(map + ",반환값=>"+p2);
+	System.out.println(map + ",반환값=>"+p2);// {second=2},반환값=>null
 
 	// second 키값은 있으므로 함수 실행, 실행한 값 업데이트 후 반환
 	Integer p3= map.computeIfPresent("second", (k,v)->{return v + 10;});
@@ -145,14 +152,14 @@ System.out.println();
  *  : 3번째 함수에서 null을 반환하면 해당 키 삭제의 의미
  */
 
-	System.out.println();
+	System.out.println("------------Map.merge()");
 
 	map = new HashMap<>();
 	map.put("first", 1);
 	map.put("second", 2);		
 	System.out.println(map); //{first=1, second=2}
 
-	// 존재하는 second 키값에  두번째 설정값을 기준으로 3번재 함수 실행해서 업데이트 후 업데이트 반환값 반환
+	// 존재하는 second 키값에  두번째 설정값을 기준으로 3번째 함수 실행해서 값 업데이트 후 업데이트 값 반환
 	Integer m1 = map.merge("second", 20, (oldVal,newVal)->{return (oldVal + newVal);});
 	System.out.println(map +",반환값=>"+m1); // {first=1, second=22},반환값=>22
 
@@ -172,7 +179,7 @@ System.out.println();
  * 	- default void forEach(BiConsumer<? super K, ? super V> action)
  */
 
-	System.out.println();
+	System.out.println("------------Map.forEach()");
 
 	map = new HashMap<>();
 	map.put("first", 1);
@@ -180,13 +187,15 @@ System.out.println();
 	System.out.println(map); //{first=1, second=2}
 
 	map.forEach((k,v)->System.out.print("<"+ k + ":" + v +">"));//<first:1><second:2>
-
-
-	/*
-	 * Map.replaceAll : 모든 요소에 변경 작업 수행
-	 * 	- default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function)
-	 */
+	
 	System.out.println();
+
+/*
+ * Map.replaceAll : 모든 요소에 변경 작업 수행
+ * 	- default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function)
+ */
+	
+	System.out.println("------------Map.replaceAll()");
 
 	map = new HashMap<>();
 	map.put("first", 1);
