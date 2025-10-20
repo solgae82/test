@@ -5,13 +5,23 @@ AJAX 통신시 브라우저는 같은 출처가 아니면 브라우저는 값은
 여러 문서 중 가장 설명이 잘 되어있는 MDN 문서로 이해하자
 	https://developer.mozilla.org/ko/docs/Web/HTTP/CORS
 
+하지만, 저 MDN URL 문서를 먼저 보면 뭔 소린지 감이 잘 안 올거다
+이미 테스트로 정리한 코드 문서인 
+	
+	cors_서블릿테스트.txt
+	
+문서를 먼저 보고 감을 익힌 뒤 MDN 문서를 보는 것이 이해가 더 나을 것이다.
+또는 챕터별로 번갈아 보는 것도 좋을 듯.
+
+(혹시 문서가 사라질까? 두려움에 'mdn_cors_capture.png'로 통째로 웹페이지를 캡쳐해뒀다)
+
 ----------------------------- 문서 내용 중 놓치기 쉬운 포인트
 
 Access-Control-Allow-Origin
 	서버가 "*" 와일드카드 대신에 하나의 origin을 지정하는 경우, 
 	서버는 Vary 응답 헤더에 Origin 을 포함해야 합니다. 
 	이 origin은 화이트 리스트의 일부로 요청 origin에 따라 동적으로 변경될 수 있습니다. 
-	서버 응답이 Origin 요청 헤더에 따라 다르다는것을 클라이언트에 알려줍니다.
+	서버 응답이 Origin 요청 헤더에 따라 다르다는 것을 클라이언트에 알려줍니다.
 
 Preflighted requests
 	1차 request(preflight) 후 
@@ -38,5 +48,8 @@ Preflighted requests 와 리다이렉트
 	3. simple request & credential(자격증명포함)
 	4. preflight request & credential(자격증명포함)
 
-응답 헤더값 중 '*' 값은 Access-Control-Allow-Origin 에만 가능하다([credential/자격증명포함]이면 사용 못함)
-(블로그등에는 다른 응답헤더에도 막 쓰던데 그렇게 하지 말자)
+응답 헤더값 중 '*' 값은 Access-Control-Allow-Origin 에만 가능하다
+(이 마저도 [credential/자격증명포함]이면 사용 못함, 정확한 출처 도메인을 기입해야함.)
+
+블로그등에는 다른 응답헤더에도 '*' 막 쓰던데 그렇게 하지 말자
+(좃도 제대로 공부 안하고 대충 정리한 듯..)
