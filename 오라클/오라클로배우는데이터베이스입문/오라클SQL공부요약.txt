@@ -52,3 +52,16 @@
 	pivot , unpivot
 	listagg
 	
+12. 조인
+
+13. 서브쿼리
+
+14. INSERT 문
+
+15. UPDATE 문
+
+16. MERGE INTO 문
+
+17. DELETE 문
+
+	
