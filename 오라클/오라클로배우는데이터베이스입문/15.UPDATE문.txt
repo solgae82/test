@@ -1,0 +1,22 @@
+
+// 부서 테이블 복사해서 테스트 하기
+create table dept2 
+as select * from dept;
+
+
+// 기본 업데이트
+update dept2 set dname='DATABASE'; // 모두 바꾸기
+
+
+// where 절로 업데이트 제한
+update dept2 set dname='DATABASE' where deptno=40;
+
+
+// 복수 열 스칼라 서브쿼리 업데이트 가능( 서로 같은 자료형이어야 함)
+update dept2 set (dname,loc)=(select dname,loc from dept where deptno=40)
+where deptno =40;
+
+
+// where 절 서브쿼리 업데이트 가능
+update dept2 set loc='SEOUL'
+where deptno = (select deptno from dept2 where dname='OPERATIONS');

@@ -1,0 +1,41 @@
+
+-- emp 테이블 카피본 만들어 테스트
+	
+	create table emp_temp2
+	as select * from emp;
+
+	select * from emp_temp2;
+
+-- emp_temp2 모두 삭제
+	
+	delete from emp_temp2; 
+
+	rollback; -- 다시 롤백
+
+-- job 'MANAGER' 인 것만 삭제
+	
+	delete from emp_temp2 where job='MANAGER';
+
+	select * from emp_temp2; -- 삭제 조회
+
+	select * from salgrade; -- 급여등급 테이블 조회
+
+	GRADE	LOSAL	HISAL
+	---------------------
+	1	700	1200
+	2	1201	1400
+	3	1401	2000
+	4	2001	3000
+	5	3001	9999 
+
+-- 서브쿼리 사용 삭제 
+-- 급여 3등급이고, 부서=30 , emp.SAL=1401~2000 범위인 직원 삭제
+	
+	delete from emp_temp2
+	where empno IN(
+	    select E.empno from emp_temp2 E, SALGRADE S
+	    where 
+		S.GRADE = 3 AND DEPTNO = 30
+		AND
+		E.SAL BETWEEN S.LOSAL AND S.HISAL
+	    )
