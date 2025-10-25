@@ -1,4 +1,5 @@
 1. 기초
+
 	is null, is not null
 	escape
 	in
@@ -6,6 +7,7 @@
 	not , != , <> ^=
 
 2. 문자열
+
 	upper, lower, initcap
 	length, lengthb
 	substr
@@ -14,12 +16,15 @@
 	lpad, rpad
 	concat , ||
 	trim, ltrim, rtrim
+	
 3. 숫자
+
 	round, trunc
 	ceil, floor
 	mod
 
 4. 날짜
+
 	sysdate
 	add_months
 	months_between
@@ -28,6 +33,7 @@
 	round , trunc
 
 5. 형변환
+
 	to_char
 	to_date
 	to_number
@@ -41,12 +47,15 @@
 8. case
 
 9. 집계함수
+
 	sum, avg, count , max, min
 
 10. 그룹화
+
 	group by , having
 
 11. 그룹화 함수
+
 	rollup, cube , grouping sets
 	grouping , grouping_id
 	pivot , unpivot
@@ -65,5 +74,9 @@
 17. DELETE 문
 
 18. 트랜잭션, 세션, Lock
-	TCL - COMMIT, ROLLBACK
-19. 데이터 정의어
+
+	TCL - commit, rollback, savepoint
+
+19. 데이터 정의어 (DDL)
+
+	create, alter, drop, rename, truncate
