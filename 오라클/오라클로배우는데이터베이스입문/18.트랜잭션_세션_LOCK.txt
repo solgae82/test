@@ -1,0 +1,72 @@
+
+1. 트랙잭션 (Transaction)
+	- 더 이상 분할할 수 없는 최소단위
+	- 한개 이상의 조작 명령어(DML)로 이루어진 기능 한개
+	- TCL 로 제어 한다
+	
+	- TCL (Transaction Control Launguage):
+		COMMIT : 
+			- 현재 트랜잭션에 데이터 조작어로 변경된 작업 영구히 반영하는 명령어
+			- insert,update,delete 확정  
+		ROLLBACK : 
+			- 현재 트랜잭션에 데이터 조작어로 변경된 수행작업 취소하는 명령어  
+			- insert,update,delete 취소, 이전 데이터로 돌아감
+	
+		SAVEPOINT : 
+			- ROLLBACK 취소후 돌아갈 지점을 지정하는 명령어
+			- ROLLBACK TO (savepoint 지점) 형식으로 지정
+			- savepoint 다음으로 수행된 DML 취소됨
+
+	(트랜잭션 예제)				
+	
+	트랜잭션 시작
+		insert..
+		update..
+		delete..
+		
+		COMMIT; -- 트랜잭션 작업확정, 트랜잭션 종료 후 새 트랜잰션 시작
+		
+	새 트랜잭션 시작
+	
+		insert..
+		update..
+		delete..
+		
+		ROLLBACK; -- 트랜잭션 작업취소, 트랜잭션 종료 후 새 트랜잰션 시작
+
+	새 트랜잭션 시작 
+
+		insert..
+		update..
+		delete..
+		
+		SAVEPOINT A;
+
+		insert.. (rollback 취소)
+		update.. (rollback 취소)
+		
+		ROLLBACK TO A;
+
+
+	※ DDL 과 DCL 를 수행하면 자동 COMMIT 효과가 있어서 현재 트랜잭션 종료 후 새 트랜잭션이 시작한다 
+	
+2. 세션 (Session)
+
+	- 세션안에 여러 트랜잭션이 존재한다
+	
+	- 한 세션의 DML 조작 후  COMMIT 또는 ROLLBACK 하기 전엔 조작 전 데이터 상태가 
+	다른 세션에서 조회되는 특성을 '읽기 일관성'(read consistency) 이라고 한다
+
+	- 한 세션에서 DML 조작 작업 수행했을때 ROLLBACK을 대비해, 데이터베이스 시스템은 
+	변경 전 데이터를 언두 세그먼트(undo segment)에 따로 저장해둔다
+
+3. LOCK (잠금)
+
+	- 한 세션에서 조작중인 데이터(테이블)에 트랜잭션이 완료(COMMIT,ROLLBACK) 되기 전 까지는 
+	다른 세션에서 조작 명령어를 사용할 수 없는 상태가 된다. 즉 데이터가 잠금(LOCK) 상태가 되게 된다.
+
+	- 한 세션에서 데이터 조작이 완료될 때까지 다른 세션에서 해당 데이터 조작을 기다리는 현상을 
+	HANG 이라고 한다.
+
+	- LOCK 종류로는 테이블의 조작한 행에만 LOCK이 걸리는 '행 레벨 락'(row level lock) 과
+	테이블 전체가 LOCK이 걸리는 '테이블 레벨 락' (table level lock) 이 있다.

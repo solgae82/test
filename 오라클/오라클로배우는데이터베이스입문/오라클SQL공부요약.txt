@@ -64,4 +64,6 @@
 
 17. DELETE 문
 
-	
+18. 트랜잭션, 세션, Lock
+	TCL - COMMIT, ROLLBACK
+19. 데이터 정의어
