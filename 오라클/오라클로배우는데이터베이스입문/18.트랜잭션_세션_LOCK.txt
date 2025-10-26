@@ -70,3 +70,13 @@
 
 	- LOCK 종류로는 테이블의 조작한 행에만 LOCK이 걸리는 '행 레벨 락'(row level lock) 과
 	테이블 전체가 LOCK이 걸리는 '테이블 레벨 락' (table level lock) 이 있다.
+
+		- 만약 where 절이 있는 특정 행에만 update문을 실행했다면 
+		commit&rollback 하기 전까지는 row leve lock 상태가 된다.
+			
+			예) update dept set loc='jeonju' where deptno=30;
+
+		- 만약 where 절이 없는 테이블 전체에 영향을 끼치는 조작 명령어를 실행했다면
+		table level lock 상태가 된다.
+		
+			예) delete from dept;
