@@ -34,8 +34,8 @@
 	let num = arr1.reduce((acc, curr)=>{
 		console.log(acc + ' , '+ curr);
 		/*
-			(초기값: 0 , 배열[0]값 : 2)
-			(배열[0]값 : 2, 배열[1]값 : 3)
+			초기값: 0 , 배열[0]값 : 2
+			누적값(acc+curr) : 2, 배열[1]값 : 3
 			..
 			0 , 2
 			2 , 3
@@ -47,14 +47,14 @@
 	},0);
 	console.log('총합: '+num); // 총합: 20
 	
-	//splice(인덱스, 삭제갯수,넣거나 변경할 데이터)
+	//splice(index, 삭제갯수, index에 넣거나 변경할 데이터)
 	const months = ["Jan", "March", "April", "June"];
 
 	months.splice(1, 0, "Feb"); //2번째에 'Feb' 껴넣기
 	console.log(months); //["Jan", "Feb", "March", "April", "June"]
 
-	months.splice(2, 1); // 2번재 자료 삭제
-	console.log(months); //["Jan", "Feb",  "April", "June"]
+	months.splice(2, 1); // 3번째 자료 삭제
+	console.log(months); //["Jan", "Feb", "April", "June"]
 
 	months.splice(2,0,'March');//3번째에 'March' 껴 넣기
 	console.log(months);//["Jan", "Feb", "March", "April", "June"]
