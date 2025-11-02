@@ -1,0 +1,129 @@
+브라우저 요청(request) 시나리오는 총 4개가 있다
+
+1. simple request
+
+	client 요청 헤더:
+		Origin: https://foo.example
+		
+	server 응답 헤더에:
+	
+		(모든 출처를 허용한다는 * 반환)
+		
+		Access-Control-Allow-Origin: *
+		
+	또는 
+		(특정 출처[=도메인] 반드시 지정하여 반환)
+		
+		Access-Control-Allow-Origin: https://foo.example
+		
+	※ 자격 증명이 포함된 요청에 응답할 때, 
+	서버는 Access-Control-Allow-Origin 헤더의 값으로 "*" 와일드카드를 지정하는 대신 
+	특정 출처를 반드시 지정해야 합니다.
+	
+	: 이렇게 요청 -> 응답을 주고 받으면 브라우저는 Access-Control-Allow-Origin 값을 보고
+	블록 처리 할 것인지 허용할 것인지 판단한다.
+	
+2. preflight request
+
+	: 브라우저와 서버가 요청-응답을 2번한다
+	
+	1차 client 요청 헤더 (preflight) : 
+		OPTIONS /web/cors?cors_mode=preflighted HTTP/1.1
+		Origin: http://localhost:3000
+		Access-Control-Request-Headers: sport
+		Access-Control-Request-Method: GET
+		
+	1차 server 응답 헤더 (preflight) :
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Methods: POST, GET, OPTIONS
+		Access-Control-Allow-Headers: SPORT, Content-Type
+		Access-Control-Max-Age: 3600
+		
+	2차 client 요청 헤더 :
+		GET /web/cors?cors_mode=preflighted HTTP/1.1
+		Origin: http://localhost:3000
+		
+	2차 server 요청 헤더 : 
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Content-Type: text/html;charset=utf-8
+		..
+		
+	: 설정이 많다. 하지만 자세히 보면 이해가 된다. 
+	요청할때 
+		내 출처(Origin) 가 어디고, 
+		Method 는 'GET' 사용할 것이고
+		Header에 'SPORT' 라는 커스텀 헤더를 쓸것이다 
+	응답으로	
+		허락할 Origin 은 : 'http://localhost:3000'
+		허락할 Method 는 : 'POST, GET, OPTIONS'
+		허락할 Header 는 : 'SPORT, Content-Type'
+		허락할 캐시시간은 : 1시간(3600초)
+		
+	브라우저는 1차 요청-응답을 통해 요청값과 허락된 값을 비교해서 매치값이 없으면 블록처리,
+	허락 범위에 있다면 블록 처리 하지 않는다
+	
+	2차 요청 부터는 본 메시지만으로 소통한다
+	1시간 동안 1차 요청은 하지 않고 2차 요청으로만 소통
+		
+3. simple request & credential(자격증명포함)
+
+	: simple request + Cookie를 사용할때 요청 방법
+	
+	client 요청 헤더 :
+		GET /web/cors?cors_mode=simple%20%2B%20credential HTTP/1.1
+		Cookie: test=1
+		Origin: http://localhost:3000
+		
+	server 응답 헤더 : 
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Credentials: true
+		Content-Type: text/html;charset=utf-8
+	
+	: 기본 Origin <-> Access-Control-Allow-Origin  요청 응답  체크와,
+	요청에 Cookie 헤더를 쓰고, 응답으로 Cookie 허락을 명시한 
+	Access-Control-Allow-Credentials: true
+	을 반환하면, 브라우저는 블록 처리하지 않는다.
+	
+	
+4. preflight request & credential(자격증명포함)
+
+	: 브라우저와 서버가 요청-응답을 2번한다
+	: + Cookie 사용 포함
+	
+	1차 client 요청 헤더 (preflight) : 
+		OPTIONS /web/cors?cors_mode=preflighted%20%2B%20credential HTTP/1.1
+		Origin: http://localhost:3000
+		Access-Control-Request-Headers: sport
+		Access-Control-Request-Method: GET
+		
+	1차 server 응답 헤더 (preflight) :
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Methods: POST, GET, OPTIONS
+		Access-Control-Allow-Headers: SPORT, Content-Type
+		Access-Control-Max-Age: 1
+		Access-Control-Allow-Credentials: true
+		
+	2차 client 요청 헤더 :
+		GET /web/cors?cors_mode=preflighted%20%2B%20credential HTTP/1.1
+		Origin: http://localhost:3000
+		Cookie: test=1
+		
+	2차 server 요청 헤더 : 
+		HTTP/1.1 200
+		Access-Control-Allow-Origin: http://localhost:3000
+		Access-Control-Allow-Credentials: true
+		Content-Type: text/html;charset=utf-8
+		
+	: 1차 응답에 Access-Control-Allow-Credentials: true 를 받으면
+	브라우저가 2차 요청에 Cookie를 탑재하는 것을 볼 수 있다.
+
+===================
+
+위 내용은 MDN 문서를 보고 하나씩 테스트해본 결과를 요약한 것이다
+
+여러 문서 중 가장 설명이 잘 되어있는 MDN 문서로 이해하자
+	https://developer.mozilla.org/ko/docs/Web/HTTP/CORS

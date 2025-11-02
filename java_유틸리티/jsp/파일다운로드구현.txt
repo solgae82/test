@@ -10,7 +10,7 @@
         
 	fileName = URLDecoder.decode(fileName,"UTF-8"); //원본명 변환
 
-    StringBuilder stb = new StringBuilder();
+	StringBuilder stb = new StringBuilder();
 
 	String fileDirectoryPath = pageContext.getServletContext().getRealPath("/") + "download";
     
