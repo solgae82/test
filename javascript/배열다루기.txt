@@ -1,3 +1,7 @@
+/*-------------------------------------------------------------------
+요소 추가 , 제거 기본 메서드(push,pop,shift,unshift)
+---------------------------------------------------------------------*/
+
 	let array= ['I','go','home'];
 	
 	let push = array.push('why'); //뒤에 넣고,배열.length 반환 
@@ -13,29 +17,229 @@
 	console.log(array,', ',unshift); // ['I','go','home'], 3
 	
 	// LIFO(last-in-first-out) , [push,pop]
-	// FIFO(first-in-first-out) , [push,shift]
-	
-	console.log(String(array)==='I,go,home'); // true
-	
-	// Array.isArray 배열인지 여부
-	const ar = [];
-	console.log(Array.isArray(ar)); // true , 배열인지 아닌지 true/false
+	// FIFO(first-in-first-out) , [push,shift]	
 		
-	// filter
-	const arr = [-1, 0, 1, 2 ];
-	const re = arr.filter(i => i > 0); //true인 것만 새 배열에 담는다
-	console.log(re); //[1,2]
-		
-	// includes
-	const arr1 = [2,3,4,5,6];
-	console.log(arr1.includes(2));  // true (배열 요소 중 매개변수 값이 있으면 true)
+	//----- splice(index, 삭제갯수, index에 넣거나 변경할 데이터) : 잘라서 접착하기, 원본 변형
+	const months = ["Jan", "March", "April", "June"];
+
+	console.log(months.splice(2));// ["April","June"]
+
+	let sp1= months.splice(1, 0, "Feb"); //2번째에 'Feb' 껴넣기
+	console.log(months,',sp1=>', sp1); //["Jan", "Feb", "March", "April", "June"],sp1=>[]
+
+	let sp2 = months.splice(2, 1); // 3번째 자료 삭제
+	console.log(months,',sp2=>',sp2); //["Jan", "Feb", "April", "June"],sp2=>['March']
+
+	let sp3 = months.splice(2,0,'March');//3번째에 'March' 껴 넣기
+	console.log(months,',sp3=>',sp3);//["Jan", "Feb", "March", "April", "June"],sp3=>[]
+
+	let sp4 = months.splice((months.length - 2),2,'May');//마지막 2개 삭제후 'May'삽입
+	console.log(months,',sp4=>',sp4);//["Jan", "Feb", "March", "May"],sp4=>["April","June"]
+
 	
-	//reduce
-	let num = arr1.reduce((acc, curr)=>{
+	//----- slice(start,end) : 일부분 복사, 원본 변형 안함, 음수 인덱스 사용 가능.
+	const months2 = ["Jan", "March", "April", "June"];
+
+	let slice1 = months2.slice(1,3);
+	console.log(months2, slice1);//["Jan", "March", "April", "June"], ["March", "April"]
+
+	let slice2 = months2.slice(-2);
+	console.log(months2, slice2);//["Jan", "March", "April", "June"], ["April", "June"]
+
+	let copyMonths = months2.slice(); // 배열 전체 복사
+	console.log(copyMonths);//["Jan", "March", "April", "June"]
+
+	//----- concat((arg1, arg2...) : 배열 추가
+	let arr2 = [1, 2];
+
+	// arr의 요소 모두와 [3,4]의 요소 모두를 한데 모은 새로운 배열이 만들어집니다.
+	console.log( arr2.concat([3, 4]) ); // [1,2,3,4]
+
+	// arr의 요소 모두와 [3,4]의 요소 모두, [5,6]의 요소 모두를 모은 새로운 배열이 만들어집니다.
+	console.log( arr2.concat([3, 4], [5, 6]) ); // [1,2,3,4,5,6]
+
+	// arr의 요소 모두와 [3,4]의 요소 모두, 5와 6을 한데 모은 새로운 배열이 만들어집니다.
+	console.log( arr2.concat([3, 4], 5, 6) ); // [1,2,3,4,5,6]
+
+	// 유사배열일때는 값만 복제되지 않고 객체 통째로 추가 연결 복제 
+	let arr3 = [1, 2];
+
+	let arrayLike = {
+		0: "something",
+		length: 1
+	};
+
+	console.log( arr3.concat(arrayLike) ); // [1,2,[object Object]]
+
+	// Symbol.isConcatSpreadable 이 true 인 유사배열객체일땐 값만 추가 연결 복제
+	let arrayLike2 = {
+		0: "something",
+		1: "else",
+		[Symbol.isConcatSpreadable]: true,
+		length: 2
+	};
+	console.log( arr3.concat(arrayLike2) );//[1, 2, 'something', 'else']
+
+	
+/*-------------------------------------------------------------------
+원하는 요소 찾기(배열 탐색) (indexOf,lastIndexOf,includes,find)
+---------------------------------------------------------------------*/
+
+	let arr4 = [2,1,0,3,0,false];
+
+	// indexOf, lastIndexOf : 요소 인덱스 반환 
+	console.log(arr4.indexOf(0)); // 2 
+	console.log(arr4.indexOf(false)); // 5
+	console.log(arr4.lastIndexOf(0)); // 4
+	
+	// includes : 요소 존재여부 
+	console.log(arr4.includes(4)); // false , 4는 없다
+	console.log(arr4.includes(2));	// true
+	console.log(arr4.includes(2,1)) // false, 인덱스 1번부터 값 2 검색 존재여부 반환
+
+
+	// find : 요소 찾기
+	let result = arr4.find(function(item, index, array) {
+	// true가 반환되면 반복이 멈추고 해당 요소를 반환합니다.
+	// 조건에 해당하는 요소가 없으면 undefined를 반환합니다.
+		if(item==5) return true;
+		return false;
+	});
+
+	console.log('find=>'+ result); // find=>undefined
+
+	let users = [
+		{id: 1, name: "John"},
+		{id: 2, name: "Pete"},
+		{id: 3, name: "Mary"}
+	];
+	let user = users.find(item => item.id == 1);
+	console.log('user=>' +  user.name); // user=>John
+
+	// findIndex : 요소 인덱스 찾기
+	let userIndex = users.findIndex(item => item.id == 3);
+	console.log('userIndex.name=>' + users[userIndex].name); // userIndex.name=>Mary
+
+	// filter : 조건에 맞는 것들을 골라 새 배열로 반환
+	let results = users.filter(function(item, index, array) {
+		// 조건을 충족하는 요소는 results에 순차적으로 더해집니다.
+		
+		// 조건을 충족하는 요소가 하나도 없으면 빈 배열이 반환됩니다.
+
+		if(item.id > 1) return true;
+		return false;
+	});
+
+	console.log(JSON.stringify(results)); // [{"id":2,"name":"Pete"},{"id":3,"name":"Mary"}]
+
+	const arr5 = [-1, 0, 1, 2 ];
+	const re = arr5.filter(i => i > 0); // 0보다 큰 것만 새 배열에 담는다
+	console.log(JSON.stringify(re)); //[1,2]
+
+/*-------------------------------------------------------------------
+forEach로 반복작업하기
+---------------------------------------------------------------------*/
+	
+	["Bilbo", "Gandalf", "Nazgul"].forEach((item, index, array) => {
+		console.log(`${item} is at index ${index} in ${array}`);
+		/*
+		Bilbo is at index 0 in Bilbo,Gandalf,Nazgul
+		Gandalf is at index 1 in Bilbo,Gandalf,Nazgul
+		Nazgul is at index 2 in Bilbo,Gandalf,Nazgul
+		*/
+	});
+
+/*------------------------------------------------------------------- 
+배열을 변형하는 메서드(map,sort,reverse,split,join,reduce,reduceRight)
+---------------------------------------------------------------------*/
+
+	let users2 = [
+		{id: 1, name: "John"},
+		{id: 2, name: "Pete"},
+		{id: 3, name: "Mary"}
+	];
+	//----- map : 요소 전체를 순회하면서 새로운 결과를 새배열로 반환
+	let mapResult = users2.map(function(item, index, array) {
+  		// 요소 대신 새로운 값을 반환합니다.
+		return item.name + "-NEW";
+	});
+	console.log(JSON.stringify(mapResult)); // ['John-NEW', 'Pete-NEW', 'Mary-NEW']
+
+	let strLengthArr = ["Bilbo", "Gandalf", "Nazgul"].map(item => item.length);
+	console.log(JSON.stringify(strLengthArr)); // [5,7,6]  글자 길이 배열로 반환
+
+	//----- sort : 배열 정렬 후 반환
+	let arr6 = [1, 2, 15];
+	arr6.sort();
+	console.log(JSON.stringify(arr6)); // [1,15,2] , string으로 변환 후 정렬해서 이 모양이 됨.
+
+	arr6.sort((a,b)=>(a > b)?1:(a==b)?0:-1); //새로운 비교 함수를 넣으면 설정되로 오름차순 동작
+	console.log(JSON.stringify(arr6)); // [1,2,15]
+
+
+	// 문자열 정렬할때는 모든 문자의 정렬에도 가능한 localeCompare() 를 사용하자
+	let arr7 = ['Österreich', 'Andorra', 'Vietnam'];
+	let newArr7 = arr7.sort((a,b)=>a.localeCompare(b));
+	console.log(JSON.stringify(arr7)); 		// ["Andorra","Österreich","Vietnam"]
+	console.log(JSON.stringify(newArr7)); 	// ["Andorra","Österreich","Vietnam"]
+	
+	//----- reverse : 배열 순서를 그냥 역순으로 재 배열, sort처럼 값비교 정렬 개념이 아니고 그냥 배열 역순
+	arr6.sort((a,b)=> b-a); //역순정렬
+	console.log(JSON.stringify(arr6)); // [15,2,1]
+
+	arr6.reverse();
+	console.log(JSON.stringify(arr6)); // [1,2,15]
+
+	arr6.reverse(); // 다시 역순
+	console.log(JSON.stringify(arr6)); // [15,2,1]
+
+	let arr8 = [1, 2, 15];
+
+	arr8.sort();
+	console.log(JSON.stringify(arr8)); // [1,15,2] , 문자열로 변환후 정렬하느라..
+
+	arr8.reverse();
+	console.log(JSON.stringify(arr8)); // [2,15,1] , 이것으로 알 수 있는것은 그냥 배열의 역순 재배열
+
+	let arr9 = [2,9,1,8];
+	arr9.reverse();
+	console.log(JSON.stringify(arr9)); // [8,1,9,2], 요렇게 그냥 역순 
+
+	//----- split : 문자열 구분자로 나눠서 배열로 반환
+	let names = 'Bilbo,Gandalf,Nazgul';
+	let spArr = names.split(',');
+	console.log(JSON.stringify(spArr)); // ["Bilbo","Gandalf","Nazgul"]
+
+	let spArr2 = names.split(',' , 2); // 배열 2개로 제한
+	console.log(JSON.stringify(spArr2)); // ["Bilbo","Gandalf"]
+	
+	// 문자열에서 문자단위로 배열 만들기
+	let str = "test"; 
+	let spArr3 = str.split('');
+	console.log(JSON.stringify(spArr3)); // ["t","e","s","t"]
+
+	let spArr4 = str.split();
+	console.log(JSON.stringify(spArr4)); // ["test"]
+
+	//------ join : 
+	let namesArr2 = ['Bilbo', 'Gandalf', 'Nazgul'];
+	let semiNames = namesArr2.join(';'); // 배열 요소 모두를 ;를 사용해 하나의 문자열로 합칩니다.
+	console.log(semiNames); // Bilbo;Gandalf;Nazgul
+
+	//----- reduce(func,초기값) : 누적하기, 값 하나 도출하기 
+	/*
+		accumulator – 이전 함수 호출의 결과. initial(초기값)은 함수 최초 호출 시 사용되는 초깃값을 나타냄(옵션)
+		item – 현재 배열 요소
+		index – 요소의 위치
+		array – 배열
+	*/
+	const arr10 = [2,3,4,5,6];
+	let num = arr10.reduce((acc, curr)=>{
 		console.log(acc + ' , '+ curr);
 		/*
 			초기값: 0 , 배열[0]값 : 2
 			누적값(acc+curr) : 2, 배열[1]값 : 3
+			누적값(acc+curr) : 5, 배열[2]값 : 4
 			..
 			0 , 2
 			2 , 3
@@ -46,18 +250,39 @@
 		return acc + curr;
 	},0);
 	console.log('총합: '+num); // 총합: 20
-	
-	//splice(index, 삭제갯수, index에 넣거나 변경할 데이터)
-	const months = ["Jan", "March", "April", "June"];
 
-	months.splice(1, 0, "Feb"); //2번째에 'Feb' 껴넣기
-	console.log(months); //["Jan", "Feb", "March", "April", "June"]
 
-	months.splice(2, 1); // 3번째 자료 삭제
-	console.log(months); //["Jan", "Feb", "April", "June"]
+	let accResult2 = arr10.reduce(function(accumulator, item, index, array) {
+		console.log(accumulator+'-'+item+'-'+index , array); 
+		/*
+			0-2-0 	[2, 3, 4, 5, 6]
+			2-3-1 	[2, 3, 4, 5, 6]
+			5-4-2 	[2, 3, 4, 5, 6]
+			9-5-3 	[2, 3, 4, 5, 6]
+			14-6-4 	[2, 3, 4, 5, 6]
 
-	months.splice(2,0,'March');//3번째에 'March' 껴 넣기
-	console.log(months);//["Jan", "Feb", "March", "April", "June"]
+		*/
+		return accumulator + item;
+	}, 0);
+	console.log('총합2: '+accResult2); // 총합2: 20
 
-	months.splice((months.length - 1),1,'May');//마지막번째에 'May'로 업데이트
-	console.log(months);//["Jan", "Feb", "March", "April", "May"]
+	//----- reduceRight(func,초기값) : reduce와 같은 기능인데, 배열연산 index를 거꾸로 시작한다.
+	let accResult3 = arr10.reduceRight(function(accumulator, item, index, array) {
+		console.log(accumulator+'-'+item+'-'+index , array); 
+		/*
+			0-6-4 	[2, 3, 4, 5, 6]
+			6-5-3 	[2, 3, 4, 5, 6]
+			11-4-2 	[2, 3, 4, 5, 6]
+			15-3-1 	[2, 3, 4, 5, 6]
+			18-2-0 	[2, 3, 4, 5, 6]
+
+		*/
+		return accumulator + item;
+	}, 0);
+	console.log('총합3: '+accResult3); // 총합2: 20
+
+/*------------------------------------------------------------------- 
+Array.isArray 배열인지 여부
+---------------------------------------------------------------------*/
+	const ar = [];
+	console.log('isArray? '+Array.isArray(ar)); // isArray? true , 배열인지 아닌지 true/false
