@@ -173,7 +173,7 @@ forEach로 반복작업하기
 	arr6.sort();
 	console.log(JSON.stringify(arr6)); // [1,15,2] , string으로 변환 후 정렬해서 이 모양이 됨.
 
-	arr6.sort((a,b)=>(a > b)?1:(a==b)?0:-1); //새로운 비교 함수를 넣으면 설정되로 오름차순 동작
+	arr6.sort((a,b)=>(a < b)?-1:(a==b)?0:1); //새로운 비교 함수를 넣으면 설정대로 오름차순 동작
 	console.log(JSON.stringify(arr6)); // [1,2,15]
 
 
