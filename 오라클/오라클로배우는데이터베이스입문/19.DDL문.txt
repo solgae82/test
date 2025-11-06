@@ -1,0 +1,60 @@
+DDL은 데이터베이스의 여러객체를 정의하는 명령 언어이다
+여러 객체중 테이블 객체 기준으로 정의하는 테스트를 해보자
+
+	- create : 테이블 생성
+	- alter : 테이블 컬럼 구조 변경
+	- drop : 테이블 삭제
+	- rename : 테이블명 변경
+	- truncate : 테이블 내 데이터 삭제(초기화)
+
+1.CREATE
+
+	테이블 , 컬럼명 생성 규칙
+		- 문자로 시작, 30byte 이내, 중복불가
+		- 특수문자 '$' '#' '_' 사용가능
+		- 예약어 사용못함
+
+	테이블명과 컬럼명을 소문자로 정의해도 대문자로 생성된다.
+	특별히 소문자로 하고 싶을때 "col" 처럼 쌍따옴표로 감싸서 정의하면 이름이 소문자로 생성된다.
+
+		create table emp_ddl(
+			empno number(4),
+			ename varchar(10),
+			..
+		)
+
+		create table emp_alter
+		as select * from emp;
+
+2.ALTER
+
+	- add : 테이블 컬럼 추가
+		alter table emp_alter
+		add hp varchar2(20);
+
+	- rename column : 테이블 컬럼 이름변경
+		alter table emp_alter
+		rename column hp to tel;
+
+	- modify : 테이블 컬럼 자료형 변경
+		alter table emp_alter
+		modify empno number(5);
+	
+	- drop column : 테이블 컬럼 삭제
+		alter table emp_alter
+		drop column tel;
+
+
+3.DROP
+
+	drop table emp_alter;	
+
+4.RENAME
+
+	rename emp_ddl to emp_rename;
+
+5.TRUNCATE
+
+	: delete 처럼 rollback 할 수 없다. 
+
+	TRUNCATE table emp_rename;
