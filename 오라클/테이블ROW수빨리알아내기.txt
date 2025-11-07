@@ -1,0 +1,31 @@
+USER_TABLES 테이블의 NUM_ROWS 컬럼과, 
+USER_TAB_MODIFICATIONS 테이블의 INSERTS, DELETES  컬럼을 조인 연산하면
+select count(*) from dual; 으로 알아내는 것보다 빠르게 행수를 알아낼 수가 있다.
+
+-------------------
+
+SELECT T.TABLE_NAME, T.LAST_ANALYZED, T.NUM_ROWS, NVL(M.NUM_ROWS,0) ADD_ROWS, T.NUM_ROWS+NVL(M.NUM_ROWS,0) TOT_ROWS
+
+FROM USER_TABLES T LEFT OUTER
+
+JOIN (
+
+    SELECT
+
+        TABLE_NAME,
+
+        ( INSERTS -DELETES ) NUM_ROWS
+
+    FROM
+
+        USER_TAB_MODIFICATIONS
+
+    WHERE
+
+        PARTITION_NAME IS NULL
+
+) M
+
+ON T.TABLE_NAME = M.TABLE_NAME
+WHERE T.TABLE_NAME ='EMP'
+;
