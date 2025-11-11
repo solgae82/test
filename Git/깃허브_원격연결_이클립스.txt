@@ -87,14 +87,16 @@
 	D:\workspace\test 는 Git Repositories 탭이 관리하는 리스트이자 이클립스 test 프로젝트가 된다.
 
 3. 이클립스 프로젝트 와 깃허브 소스를 병합해서 연결
-	이 방식은 전혀 관련 없는 깃 리포지토리 끼리 연결하는 방식으로 볼 수 있다.
+	이 방식은 전혀 관련 없는 깃허브 리포지토리(이미 자료가 있는)와 컴 리포지토리 끼리 
+	연결하는 방식으로 볼 수 있다.
+	
 	요약된 순서는 아래와 같다
 		- 이클립스 프로젝트 git init으로 git 프로젝트로 만든다
 		- 해당 프로젝트 git remote를 만들어진 깃허브 주소로 매핑
 		- 서로 관련 없는 리포지토리이므로 수동으로 관계 맞추기
 			- 깃허브 소스를 강제로 fetch  후 merge 과정을 하여 서로 관련된 리포지토리로 만들기
-			- 그리고 push
-	※전제조건이 있다. 
+			- 그리고 commit - push
+	※ 전제조건이 있다. 
 	이클립스 프로젝트와 병합이므로 혹시나 이클립스 관련 설정파일등이 원격소스에 있다면 절대하면 안 된다.
 
 	-----------//실전
@@ -139,7 +141,11 @@
 				- Add create/update specification
 					Source ref: refs/heads/main (입력, 깃허브 main 브랜치)
 					Destination ref : refs/remotes/origin/main 
-						(입력, local컴의 rmotes/orgin/ 에 연결할 main 브랜치)				
+						(입력, 
+						- refs/heads/main 원격 브랜치의 소스를 받아놓을,
+							local컴의 refs/remotes/orgin/main 브랜치 
+						- 원격 브랜치명과 임시로 받아 놓는 브랜치는 이름을 통일 시켜놓는다
+						)										
 
 					Add Spec클릭
 
@@ -158,10 +164,10 @@
 
 				Remote Tracking 폴더를 열고 merge 할 브랜치 선택
 					- origin/main 선택 
-					(위에서 Destination Ref 연결할때  refs/remotes/origin/main)
+					(위에서 Destination Ref 연결할때 설정한 refs/remotes/origin/main)
 					
 				Merge 버튼 클릭				
-				 : refs/remotes/origin/main 에 fetch 받아온 버전을 
+				 : refs/remotes/origin/main 에 fetch 받아온 원격 버전을 
 				 현재 chekout된 master 브랜치와 병합한다. 
 				
 
@@ -175,3 +181,32 @@
 				(Merged 되었다면 설정 끝)
 			
 	- 이제 해당 프로젝트 pull/push 등을 해 본다
+	
+--------- Refspec
+
+Refspec 이라는 것이 있다
+	+ <src>:<dest> 형식
+	+ 는 덮어쓰기 옵션
+	
+	<src> : fetch일때는 원격지 브랜치 , push일때는 로컬 브랜치
+	<dest>: fetch일때는 로컬 브랜치, push일때는 원격지 브랜치
+	
+fetch 일때,
+	Sorce ref: refs/heads/main 
+		(원격지의 main 브랜치)
+	Destination ref : refs/remotes/origin/main
+		(로컬의 refs/remotes/origin/ 에 main 브랜치라는 뜻)
+	
+	specification:
+		+refs/heads/main:refs/remotes/origin/main
+		
+push 일때,
+	
+	Sorce ref : refs/heads/master
+		(로컬 master 브랜치)
+		
+	Destination ref : refs/heads/main
+		(원격지의 main 브랜치)
+		
+	specification:
+		+refs/heads/master:refs/heads/main
