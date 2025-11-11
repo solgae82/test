@@ -10,7 +10,7 @@
 -------------------//
 
 1. 첫 프로젝트 push
-	- 깃허브에 빈 리포지토리 생성
+	- 깃허브에 빈 리포지토리 생성(commit 이력 없는 빈 리포지토리, 심지어 기본 브랜치도 없는 상태)
 	- 이클립스 : 프로젝트 생성
 	- 생성한 프로젝트 깃 init으로 로컬 리포지토리 만들기 : 
 		프로젝트 우클릭>Team>Share Project..>Git>
@@ -29,12 +29,16 @@
 			마지막 Store in Secure Store 체크 (다음 부터 암호 안 물어보고 바로 push 할 수 있음)
 			Next 클릭 
 		
-		원격 연결되면 아래 박스가 나온다(연결했으니 push 하라고..)
+		다음으로 아래 [push Ref Specifications] 박스 설정이 나온다
 
 		push Ref Specifications 박스
 			Add create/update specification
-				Source ref: master[branch] 선택
-				Destination ref: refs/heads/master 로 바뀜
+				Source ref: refs/heads/master 선택 (local 브랜치 선택)
+				Destination ref: refs/heads/mater 로 바뀜 (github 브랜치 자동 선택됨)
+				:여기서 refs/heads/mater => refs/heads/main으로 바꾼다
+				아직 github에는 어떤 브랜치도 없는 상태다. master는 옛날 이름이므로 공식 
+				디폴트 브랜치인 main으로 바꾼 것이다. 다른 이름도 괜찮다
+				
 				Add Spec 버튼 클릭
 
 			Specifications for push 
@@ -43,7 +47,13 @@
 			finish 버튼 클릭
 		
 		push results 박스
-			잘 전송되었다는 메시지 박스가 뜬다
+			Pushed to http://gihub.com/...
+			mater->master [new branch]
+			
+			push 되면서 메시지 박스가 뜬다
+			
+	- 깃허브에 확인해보면, 목적지 주소로 정한(refs/heads/main) , 'main' 브랜치가 생성되고 그안에 push한 
+	자료들이 올라 간 것이 보일 것이다.
 
 2. clone으로 가져와서 프로젝트 등록하기
 	- 깃허브 리포지토리명 : test
@@ -87,10 +97,15 @@
 	이클립스 프로젝트와 병합이므로 혹시나 이클립스 관련 설정파일등이 원격소스에 있다면 절대하면 안 된다.
 
 	-----------//실전
+	
+	- 깃허브 : main 브랜치에 이미 커밋된 파일들이 있다고 가정.
+	
 	- 이클립스 프로젝트  git init
 		: 프로젝트 우클릭>Team>Share Project..>Git>
 		Use or create repository in parent folder of project 체크 > 
 		아래 Create Repository 버튼 클릭(로컬리포지토리 생성) > 해당 프로젝트 체크 > finish
+		
+		이클립스 기본 생성 브래치명은 master 이다
 
 	- 프로젝트 첫 커밋 : 아무 파일이나 일단 커밋을 해서 첫 이력을 만들어야 한다.
 
@@ -98,8 +113,8 @@
 		이 작업은 프로젝트 탭에서 보다는  Git repositories 탭으로 한다
 		: Git repositories>해당프로젝트>Remotes>우측마우스클릭>create remote..
 			Remote name: origin (원격별칭, 요걸 잘 기억해 놓자)
-			create 버튼 클릭
-			
+				-configure push > OK
+						
 			- Configure Push창
 				URI>Change버튼>Select a URI창 
 
@@ -121,13 +136,13 @@
 		Git repositories>해당프로젝트>Remotes>우측마우스클릭>Configure Fetch창
 			- Ref mappings>Advenced..>Fetch Ref Speccification
 				- Add create/update specification
-					Source ref: refs/heads/master (입력)
-					Destination ref : refs/remotes/origin/master (입력)
+					Source ref: refs/heads/master (입력, 이클립스 브랜치)
+					Destination ref : refs/remotes/origin/main (입력, 원격지 브랜치)
 					
 					  (왜 저렇게 입력하는지는 잘 모른다. 더 공부해야함
 					  refs/heads/ 와 refs/remotes/ 라는게 있다는 것만 인식.
 					  로컬의 refs/heads/master 브랜치와 
-					  원격의 refs/remotes/origin/master 브랜치라는 뜻같다
+					  원격의 refs/remotes/origin/main 브랜치라는 뜻같다
 					  )
 
 					Add Spec클릭
