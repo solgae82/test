@@ -34,8 +34,8 @@
 		push Ref Specifications 박스
 			Add create/update specification
 				Source ref: refs/heads/master 선택 (local 브랜치 선택)
-				Destination ref: refs/heads/mater 로 바뀜 (github 브랜치 자동 선택됨)
-				:여기서 refs/heads/mater => refs/heads/main으로 바꾼다
+				Destination ref: refs/heads/master 로 바뀜 (github 브랜치 자동 선택됨)
+				:이 브랜치를 refs/heads/master => refs/heads/main으로 바꾼다(깃허브 디폴트 브랜치)
 				아직 github에는 어떤 브랜치도 없는 상태다. master는 옛날 이름이므로 공식 
 				디폴트 브랜치인 main으로 바꾼 것이다. 다른 이름도 괜찮다
 				
@@ -48,7 +48,7 @@
 		
 		push results 박스
 			Pushed to http://gihub.com/...
-			mater->master [new branch]
+			master->main [new branch]
 			
 			push 되면서 메시지 박스가 뜬다
 			
@@ -68,7 +68,8 @@
 
 			> Next > Branch Selectiong : 가져올 브랜치 선택 후 Next
 			> Local Destination : 
-				Destination : 깃허브 소스를 받을 디렉토리를 설정하는데, 이클립스 workspace 를 설정한다
+				Destination : 깃허브 소스를 받을 디렉토리를 설정하는데, 
+				이클립스 workspace 디레토리를 설정한다
 			
 			> Finish : 깃 허브 소스를 이클립스 workspace/test 으로 소스를 받아온다.
 
@@ -136,21 +137,17 @@
 		Git repositories>해당프로젝트>Remotes>우측마우스클릭>Configure Fetch창
 			- Ref mappings>Advenced..>Fetch Ref Speccification
 				- Add create/update specification
-					Source ref: refs/heads/master (입력, 이클립스 브랜치)
-					Destination ref : refs/remotes/origin/main (입력, 원격지 브랜치)
-					
-					  (왜 저렇게 입력하는지는 잘 모른다. 더 공부해야함
-					  refs/heads/ 와 refs/remotes/ 라는게 있다는 것만 인식.
-					  로컬의 refs/heads/master 브랜치와 
-					  원격의 refs/remotes/origin/main 브랜치라는 뜻같다
-					  )
+					Source ref: refs/heads/main (입력, 깃허브 main 브랜치)
+					Destination ref : refs/remotes/origin/main 
+						(입력, local컴의 rmotes/orgin/ 에 연결할 main 브랜치)				
 
 					Add Spec클릭
 
 				- Specification for fetch 
 					 해당란 테이블에 방금 설정 값의 행이 보인다.
 
-				Finish  클릭
+				- Finish  클릭
+				
 			- Save and Fetch 버튼 클릭
 
 			: 원격 리포지토리를 잘 fetch 했다는 메시지 창이 뜬다
@@ -160,11 +157,16 @@
 			Merge 'master' 창이 뜬다
 
 				Remote Tracking 폴더를 열고 merge 할 브랜치 선택
-
-				Merge 버튼 클릭
+					- origin/main 선택 
+					(위에서 Destination Ref 연결할때  refs/remotes/origin/main)
+					
+				Merge 버튼 클릭				
+				 : refs/remotes/origin/main 에 fetch 받아온 버전을 
+				 현재 chekout된 master 브랜치와 병합한다. 
+				
 
 			Merge Result 창이 뜨면서 
-				Result => Merged/Failed 등이 뜬다
+				: Result => Merged/Failed 등이 뜬다
 
 				: Merged가 뜨면 끝 
 				Failed는 No~!! , 
