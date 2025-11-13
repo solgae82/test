@@ -22,7 +22,3 @@ clone 명령은 복제개념인데 편리하다
 	# [생성될 로컬 저장소명]을 생략하면
 		$ git clone https://github.com/solgae82/test.git 
 		(원격 리포지터리 명이 'test2' 면 test2 디렉토리가 생기고 복제된다)
-
-push 하기
-
-	$ git push origin main
