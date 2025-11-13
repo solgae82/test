@@ -1,0 +1,149 @@
+#git 초기화
+	git init
+
+# 깃 명령어 옵션 help 보기 
+	git status -h #status 명령어 옵션 보기
+
+#깃 상태보기
+	git status
+
+#staging 하기
+	git add .
+
+# 커밋하기
+	git commit
+	git commit -m "메시지"
+	
+	# tracked 된 파일은 아래와 같이 한번에 staged + commit 할 수 있다
+	# tracked 된 파일이 아니면 할 수 없다
+	git commit -am "메시지" 
+
+#깃 로그 보기
+	git log
+	git log --oneline #로그 한줄로 간단하게 보기
+	git log --patch , -p #변경사항 자세히 보기
+	git log --graph
+	git log --branch #모든 브랜치 로그 보기
+
+
+#태그
+	git tag v1.0 #최신 커밋에 태그 붙이기
+	git tag v0.9 68a0860 #특정 커밋에 태그 붙이기
+	git tag --list , -l #태그 리스트 보기
+		v0.9
+		v1.0
+	git tag --delete v0.9 , -d v0.9 #태그 삭제
+	git tag
+		v1.0
+		
+#비교하기
+	git diff : 최근 커밋과 작업 디렉토리 비교하기
+	git diff --staged, diff --cached : 최근 커밋과 스테이지 비교하기
+	git diff <커밋해시> <커밋해시> : 커밋끼리 비교하기
+		HEAD^ , HEAD~1 #현재 브랜치 최신 커밋의 하나 이전 커밋
+		HEAD^^ , HEAD~2 #현재 브랜치 최신 커밋의 하나 이전 커밋
+		
+		git diff HEAD~2 HEAD~1 : 현재 HEAD-2 에서 HEAD-1 비교
+		
+	git diff <브랜치> <브랜치> : 브랜치끼리 비교하기
+		git diff master foo  #master 브랜치 기준으로 foo 브랜치 비교
+
+#되돌리기 reset
+	soft	: 커밋 후 워킹디렉토리 변경사항 + staged 까지 reset
+	mixed	: 커밋 후 워킹디렉토리 변경사항까지 reset, [default]
+	hard	: 커밋된 상태까지 reset
+	
+	git reset --soft 9723547
+	git reset --mixed 9723547
+	git reset --hard 9723547
+	
+#되돌리기 revert
+	git revert <취소할 커밋> : 
+		- 취소된 새로운 커밋 만들기 
+		- 취소된 커밋 이전 커밋상태로 돌아간 새버전
+		
+	$ git log --oneline
+	8761a20 (HEAD -> master, tag: v1.0) third commit
+	68a0860 second commit
+	933583f first
+	
+	$ git revert 8761a20 <= 이럴게 하면 8761a20 커밋 버전을 취소한 68a0860 커밋 상태의 새버전 추가됨.
+				# 깃 새버전 commit 메시지 작성하고 저장해야함
+	
+	$ git log --oneline
+	00e4323 (HEAD -> master) Revert "third commit"  <= 새버전 추가됨 (68a0860 과 같음)
+	8761a20 (tag: v1.0) third commit
+	68a0860 second commit
+	933583f first
+
+#임시저장 stash
+	# a.txt 파일 변경 추가 'D' 후 stash 저장
+		$ git stash -m "add D"
+	# a.txt 파일 변경 추가 'E' 후 stash 저장
+		$ git stash -m "add E"
+
+	# 임시저장 리스트 보기
+	$ git stash list
+	stash@{0}: On master: add E
+	stash@{1}: On master: add D
+	
+	#임시 저장한 것 다시 적용
+	$ git stash apply stash@{0} # 'E' 저장한 상태로 a.txt 돌아감
+
+	#임시 저장 삭제
+	$ git stash drop stash@{0}
+	Dropped stash@{0} (1201038d7258fa38c434442e1d7aef13c4dcee3f)
+	
+	#임시저장 리스트 확인
+	$ git stash list
+	stash@{0}: On master: add D
+
+#브랜치
+	#현재 브랜치 확인
+	$ git branch
+	
+	#브랜치 생성
+	$ git branch foo
+	
+	$ git branch -b bar # bar 브랜치 생성 후 bar로 체크아웃 하기
+	
+	$ git branch
+	foo
+	* master <= 현재 브랜치(*)
+	
+	# 브랜치 체크아웃(변경)
+	$ git checkout foo
+	
+	$ git branch
+	* foo
+	  master
+
+	# master 브랜치에서 foo 브랜치 merge 하기
+	$ git checkout master
+	$ git merge master foo
+	
+	# 충돌해결하기
+	파일 충돌이 나면 변경 확정 후 stage->commit을 해야한다
+	
+	# foo 브랜치 삭제하기 --gitdelete, -d
+	$ git checkout master
+	$ git branch --delete foo
+	Deleted branch foo (was e89bef8).
+	
+	$ git branch
+	* master
+	
+#rebase
+	: 부모에서 빠져나온 분기점을 부모 최신 분기점으로 변경한느 명령어
+	: 이 과정에서 충돌이 발생할 수 있다. 해결 후 다시 커밋하면 된다.
+	
+	git rebase <부모브랜치>
+	
+	# bar 브랜치에서 부모 브랜치 최신 커밋 위치로 분기점 옮기기
+	dong2020@desktop-2020 MINGW64 /d/git/test (bar)
+	$ git rebase master
+	Successfully rebased and updated refs/heads/bar.
+
+	#분기점 그래프로 확인하기
+	$ git log --oneline --branches --graph
+
