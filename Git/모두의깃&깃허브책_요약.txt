@@ -1,13 +1,13 @@
-#git 초기화
+# git 초기화
 	git init
 
 # 깃 명령어 옵션 help 보기 
 	git status -h #status 명령어 옵션 보기
 
-#깃 상태보기
+# 깃 상태보기
 	git status
 
-#staging 하기
+# staging 하기
 	git add .
 
 # 커밋하기
@@ -18,7 +18,7 @@
 	# tracked 된 파일이 아니면 할 수 없다
 	git commit -am "메시지" 
 
-#깃 로그 보기
+# 깃 로그 보기
 	git log
 	git log --oneline #로그 한줄로 간단하게 보기
 	git log --patch , -p #변경사항 자세히 보기
@@ -26,7 +26,7 @@
 	git log --branch #모든 브랜치 로그 보기
 
 
-#태그
+# 태그
 	git tag v1.0 #최신 커밋에 태그 붙이기
 	git tag v0.9 68a0860 #특정 커밋에 태그 붙이기
 	git tag --list , -l #태그 리스트 보기
@@ -36,7 +36,7 @@
 	git tag
 		v1.0
 		
-#비교하기
+# 비교하기
 	git diff : 최근 커밋과 작업 디렉토리 비교하기
 	git diff --staged, diff --cached : 최근 커밋과 스테이지 비교하기
 	git diff <커밋해시> <커밋해시> : 커밋끼리 비교하기
@@ -48,7 +48,7 @@
 	git diff <브랜치> <브랜치> : 브랜치끼리 비교하기
 		git diff master foo  #master 브랜치 기준으로 foo 브랜치 비교
 
-#되돌리기 reset
+# 되돌리기 reset
 	soft	: 커밋 후 워킹디렉토리 변경사항 + staged 까지 reset
 	mixed	: 커밋 후 워킹디렉토리 변경사항까지 reset, [default]
 	hard	: 커밋된 상태까지 reset
@@ -57,7 +57,7 @@
 	git reset --mixed 9723547
 	git reset --hard 9723547
 	
-#되돌리기 revert
+# 되돌리기 revert
 	git revert <취소할 커밋> : 
 		- 취소된 새로운 커밋 만들기 
 		- 취소된 커밋 이전 커밋상태로 돌아간 새버전
@@ -76,7 +76,7 @@
 	68a0860 second commit
 	933583f first
 
-#임시저장 stash
+# 임시저장 stash
 	# a.txt 파일 변경 추가 'D' 후 stash 저장
 		$ git stash -m "add D"
 	# a.txt 파일 변경 추가 'E' 후 stash 저장
@@ -98,13 +98,13 @@
 	$ git stash list
 	stash@{0}: On master: add D
 
-#브랜치
+# 브랜치
 	#현재 브랜치 확인
 	$ git branch
+	$ git branch -a # 모든 브랜치 보기(원격지 포함)
 	
 	#브랜치 생성
 	$ git branch foo
-	
 	$ git branch -b bar # bar 브랜치 생성 후 bar로 체크아웃 하기
 	
 	$ git branch
@@ -133,8 +133,8 @@
 	$ git branch
 	* master
 	
-#rebase
-	: 부모에서 빠져나온 분기점을 부모 최신 분기점으로 변경한느 명령어
+# rebase
+	: 부모에서 빠져나온 분기점을 부모 최신 분기점으로 변경하는 명령어
 	: 이 과정에서 충돌이 발생할 수 있다. 해결 후 다시 커밋하면 된다.
 	
 	git rebase <부모브랜치>
@@ -147,3 +147,59 @@
 	#분기점 그래프로 확인하기
 	$ git log --oneline --branches --graph
 
+# 원격지 소통
+	
+	# 복제
+		$ git clone https://github.com/solgae82/test-repo.git
+	
+	# remote 설정
+		$ git remote add origin https://github.com/solgae82/test-repo.git
+	
+	#remote 설정 확인
+		$ git remote -v 
+		$ git remote --verbose
+	
+	#원격지 별칭 origin->github 변경, 다시 복구
+		$ git remote rename origin github 
+		$ git remote rename github origin 
+	
+	# 원격지 설정 삭제
+		$ git remote remove origin 
+	
+	#로컬 master브랜치에 origin/main 브랜치로 push
+		$ git push origin master:main 
+	
+	# 현재 브랜치(master)와 원격지 브랜치(main)명 통일하기
+		$ git checkout master
+		$ git branch -M main
+	
+	# 로컬 main브랜치에 origin/main 브랜치로 push
+		$ git push origin main
+	
+	# -u 옵션 주고 로컬 main브랜치에 origin/main 브랜치로 push
+		$ git push -u origin main
+	
+		#다음부터 push, pull을 브랜치 지정없이 명령할 수 있다
+		$ git push 
+		$ git pull
+		
+	# fetch,원격지 origin의 main브랜치를 로컬 origin/main 브랜치로 가져오기
+		$ git fetch origin main
+		
+		# 현재 로컬 브랜치(main)와 origin/main 비교
+		$ git diff main origin/main 
+		
+		# 로컬 main 브랜치(현재 checkout된)와 origin/main과 와 병합
+		$ git merge origin/main
+		
+	# pull (fetch + merge)
+	
+		# 현재 로컬브랜치에 원격지(origin) 의 main 브랜치 pull하기
+		$ git pull origin main
+
+# help
+	형식 : git <명령어> --help
+	
+	# log 명령어 help 보기
+	$ git log --help	
+	

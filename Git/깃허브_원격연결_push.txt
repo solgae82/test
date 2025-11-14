@@ -23,13 +23,27 @@
 	형식: git push <원격지 별칭> <로컬 브랜치>:<원격지 브랜치>
 	
 		$ git push github master:main
+		
+		# 로컬 master 브랜치에서 github 원격지 main 브랜치로 push
 	
 	-u 옵션 :  이 옵션을 쓰면, 다음번 push때는 push 명령만 쓸 수 있다
-		$ git push -u github master:main
 		
-		#.. 다음 push 할때
-		$ git push 
+		그런데 아래와 같이 하면 안된다
+		
+			$ git push -u github master:main
+		
+		아래처럼 로컬브랜치와 원격지 브랜치 이름을 통일 시킨 후 해야
+		-u 옵션으로 명령을 1회 적용하면 다음 push부터는 'push' 명령만으로도 
+		이전 push 설정으로 push가 적용된다.
+		
+			$ git branch -M main #로컬 브랜치 변경(원격지도 main)
+			$ git push -u github main
+			
+			#.. 다음 push 할때
+			$ git push 
 
+		로컬 브랜치와 원격지 브랜치와 이름을 통일 시키면, push 뿐만 아니라 pull도 
+		자동으로 같은 브랜치에 pull하게 된다.
 -------------------
 중요!!
 -------------------
@@ -54,3 +68,17 @@
 	$ git push github master:main
 
 복잡할 수 있으니 브랜치명도 통일 시키는 것이 좋겠다
+
+※ 로컬 브랜치와 원격지 브랜치와 이름을 통일 시키면, push 뿐만 아니라 pull도 
+	자동으로 같은 브랜치에 pull하게 된다.
+	
+		$ git push -u origin main 
+	
+	다음부터는 줄인 명령어인 
+	
+		$ git push
+		$ git pull
+	
+	만으로 로컬브랜치 main 과 원격지 origin/main 에 데이터를 push,pull 하게 된다. 
+	
+	
