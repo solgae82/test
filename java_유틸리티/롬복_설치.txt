@@ -1,0 +1,39 @@
+기본 설치법
+	: IDE에도 lombok.jar가 설치되어야 하고, 프로젝트 lib에도 설치되어야 한다
+	
+	(예 : 1.18.38 버전을 다운로드 받았다고 하자)
+	
+	D:\download\lombok-1.18.38.jar 다운로드
+	
+	1. IDE 설치 
+		#다운로드 받은 곳에 가서 실행
+		cd D:\download
+		
+		$ java -jar lombok-1.18.38.jar
+		
+		#인스톨러 실행되면 IDEs란을 보고 선택할 IDE를 선택해도 되고,
+		안 나오면 [Specify locaion...]을 눌러서 IDE 실행파일을 선택하고 
+		
+		# [Install / Update] 버튼 실행
+
+		# 인스톨 후 해다 IDE 실행파일 디렉토리에 가면, lombok.jar 복사되어 있는 것을 확인한다
+		# 여기까진 IDE에 설치된 것이다.
+		
+	2. 프로젝트 lib/classpath 에도 IDE에 설치된 lombok.jar를 복사해서 연결한다.
+	
+	
+심화 설치
+	여러 블로그 보면 설치 방법이 IDE 설치버전과 프로젝트 설치 버전이 다르게 설치하는 둥 개판 난리인데, 
+	중요 핵심은 같은 버전의 lombok.jar 가 IDE 실행파일에 설치되고,
+	프로젝트 lib 에도 설치되어야 한다는 것이다.
+		
+		IDE 실행파일 디렉토리 : lombok.jar
+		프로젝트/lib : lombok-1.18.38.jar
+	
+	이름은 다르지만 버전은 같게 하는게 좋을 것 같지 않나?
+	
+	만약 maven 으로 repositary  설치되었다면, 그 리포지터리에 가서 거기에 있는 lombok-버전.jar를 
+	IDE에 설치해서 서로 버전을 맞춰야 한다.
+	그러므로 IDE 설치버전과, 프로젝트 lib 에 설치되는 버전과 같게 하기 위해서, maven도 롬복 버전을
+	명시하는 것이 좋을 것이다.
+	
