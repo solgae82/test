@@ -1,0 +1,105 @@
+스프링부트는 스타터라는 프로그램으로 스프링 개발 구조를 자동으로 만들어 준다.
+스프링 부트 관리 사이트와 연동되는 프로그램이고, 시간이 지날수록 여러 버전들이 자동으로 올라간다.
+에전 버전을 찾아서 맞추기 어려운 구조다
+
+스프링부트로 프로젝트를 만들면 구조를 변경해서는 안된다.
+정해진 컨벤션으로 만들어지 아키텍처이므로 왠만해서 건들지 말자
+
+스타터로 maven 기준 chapter01 플젝을 만들면 아래 구조를 가진다
+
+	프로젝트명 : chapter01
+	패키지 com.solgae 
+	
+	src/main/java : 자바 소스 위치
+		com.solgae
+			Chapter01Application.java : boot 시작 main 프로그램		
+		
+	src/main/resources : 리소드들 저장
+		static : html,css,javascript등 정적 자료들
+		templetes : 타임리프나, jsp등 웹 템플릿 위치
+		application.properties : 프로그램 전체에 사용하는 프로퍼티 설정
+	
+	src/test/java : 자바 테스트
+	
+	pom.xml : maven 관련
+		<parent /> 태그로 starter 등 수많은 자동 설정을 상속 받는다
+		
+@SpringBootApplication : 스프링 부트 애플리케이션 시작 어노테이션, Chapter01Application.java 에 선언되어있다.
+
+이클립스 플젝 > Run As > Spring Boot App 으로 실행 
+
+Chapter01Application.java 에 설정한 것보다 application.properties 설정이 우선한다. 
+
+
+실행 종류 바꾸기 (일반 java , 웹, reactive)
+
+	application.properties
+		spring.main.web-application-type=none
+		#spring.main.web-application-type=servlet
+		#spring.main.web-application-type=reactive
+		
+	Chapter01Application.java
+		SpringApplication application = new SpringApplication(Chapter01Application.class);
+		//application.setWebApplicationType(WebApplicationType.NONE); //일반 자바프로그램 실행
+		application.setWebApplicationType(WebApplicationType.SERVLET); //웹 실행
+		//application.setWebApplicationType(WebApplicationType.REACTIVE); //비동기 처리 웹플러스 실행
+
+	: application.properties 우선 하므로 일반 자바프로그램이 실행된다.
+	
+실행 배너 바꾸기
+
+	src/main/resources
+		/banner/
+			user_banner.txt : 사용자가 위치 지정해서 했을 경우
+			spring_boot.png : 사용자가 위치 지정한 이미지 배너 
+			
+		banner.txt : 약속된 디폴트 배너 텍스트 출력 파일(banner.txt), 없으면  SpringBoot 기본 텍스트 배너 출력
+			${spring-boot.formatted-version} : 스프링 버전 출력 변수
+		
+	application.properties
+	
+		# spring.main.banner=off #출력 안함
+		spring.main.banner=console # 콘솔 출력
+		
+		spring.banner.location=banner/user_banner.txt #사용자 지정 배너 텍스트
+
+		#이미지 지정시
+		#spring.banner.image.location=banner/spring_boot.png
+		#spring.banner.image.with=80
+		#spring.banner.image.height=10
+		
+	Chapter01Application.java
+	
+		application.setBannerMode(Banner.Mode.OFF);
+		#application.setBannerMode(Banner.Mode.CONSOLE);
+		
+	: 실행시 banner/user_banner.txt 가 콘솔에 출력된다
+	
+서버 포트 지정
+	application.properties
+		server.port=8080
+		
+컴포넌트 스캔 설정
+	@SpringBootApplication
+	@ComponentScan(basePackages = {"com.solgae.test","com.test"})
+	public class Chapter01Application {..}
+	
+서버 재시작 안하기
+	spring-boot-devtools 메이븐 dependencies에 추가
+	: java 변경 되면 서버 자동 재시작 한다
+	
+롬복설치
+	메이븐에도 dependencies에도 추가하고, 리포지토리에 찾아가서  lombok-버전.jar 실행해서 IDE에 연동도 해야한다
+		java -jar lombok-버전.jar
+		
+	
+	VO등 제작할때, getter,setter등을 자동 생성해준다
+	
+	제공 어노테이션
+		@Getter : 멤버 getter 메소드를 만들어준다
+		@Setter : 멤버 setter 메소드를 만들어준다
+		@RequireArgsConstructor : 모든 멤버 변수 초기화하는 생성자를 만들어준다.
+		@ToString : 모든 멤버변수를 문자열로 출력하는 toString() 메소드를 만들어 준다
+		@EqualsAndHashCode : equals(), hashCode()를 만들어 준다
+		@Data : @Getter,@Setter,@RequireArgsConstructor,@ToString,@EqualsAndHashCode
+			모두를 포함한다

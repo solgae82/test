@@ -37,3 +37,13 @@
 	그러므로 IDE 설치버전과, 프로젝트 lib 에 설치되는 버전과 같게 하기 위해서, maven도 롬복 버전을
 	명시하는 것이 좋을 것이다.
 	
+롬복 어노테이션
+
+	@Getter : 멤버 getter 메소드를 만들어준다
+	@Setter : 멤버 setter 메소드를 만들어준다
+	@RequireArgsConstructor : 모든 멤버 변수 초기화하는 생성자를 만들어준다.
+	@ToString : 모든 멤버변수를 문자열로 출력하는 toString() 메소드를 만들어 준다
+	@EqualsAndHashCode : equals(), hashCode()를 만들어 준다
+	@Data : @Getter,@Setter,@RequireArgsConstructor,@ToString,@EqualsAndHashCode
+		모두를 포함한다
+		
