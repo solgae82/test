@@ -1,0 +1,69 @@
+뷰(VIEW)	
+	하나 이상의 테이블을 조회하는 select 문을 저장한 객체, 가상 테이블
+
+뷰 사용 목적
+	1.편리성 : select 복잡성 완화
+	2.보안성 : 테이블의 특정열을 노출하고 싶지 않을 경우
+
+-- SYSTEM 으로 뷰 생성 권한 주기
+	GRANT CREATE VIEW TO DONG;
+
+-- 뷰 생성 : DONG 사용자 세션에서 
+
+	CREATE VIEW VM_EMP20
+	AS (
+	    select empno, ename,job,deptno from emp 
+	    where deptno=20
+	);
+
+-- view 딕셔너리에서 생성한 view 확인
+	select * from user_views; 
+
+-- 생성한 뷰 SQL 조회로 확인
+	select * from VM_EMP20; 
+
+-- ROWNUM 특성 조회
+	select rownum, E.* from emp E;
+
+	select rownum, E.* from emp E order by SAL DESC;
+
+-- 인라인 뷰
+-- : SQL from 절, 또는 WITH 절에 정의해서 사용하는 1회성 뷰를 '인라인 뷰' 라고 한다.
+
+	-- SAL 값 상위 3개 출력하기
+	select rownum, E.* from 
+	(select * from emp E order by SAL DESC) E
+	where rownum <=3 
+	;
+
+	WITH E AS (select * from emp E order by SAL DESC) 
+	select ROWNUM, E.* from E
+	where ROWNUM <=3
+	;
+
+-- 뷰 삭제
+	DROP VIEW VM_EMP20;
+
+-- 생성 형식
+	[..생략가능..]
+
+	CREATE [OR REPLACE] [FORCE | NOFORCE] VIEW '뷰이름' [(열이름1,열이름2,..)]
+	AS (저장할 select 문)
+
+	[WITH CHECK OPTION [CONTRAINT 제약조건]]
+	[WITH READ ONLY [CONSTRAINT 제약조건]];
+	
+	--------------------- 형식 설명
+
+	OR REPLACE : 같은 이름의 뷰가 이미 존재할 경우에 현재 생성할 뷰로 대체하여 생성 [생략가능]
+	FORCE : 뷰가 저장할 대상 테이블이 존재하지 않아도 강제 생성[생략가능]
+	NOFORCE : 뷰가 저장할 대상 테이블이 존재할 경우에만 생성. (디폴트)[생략가능]
+	뷰 이름 : 뷰 이름 (필수)
+	(열이름1..) : select 문에 명시된 이름 대신 사용할 별칭 열 이름 지정 [생략가능] 
+	저장할 select 문 : 생성할 뷰에 저장할 select 문 (필수)
+	WITH CHECK OPTION : 지정한 제약 조건을 만족하는 데이터에 한해 DML 작업이 가능하도록 뷰 생성 [생략가능]
+	WITH READ ONLY : select 만 가능하도록 뷰 생성 [생략가능]
+
+
+
+	
