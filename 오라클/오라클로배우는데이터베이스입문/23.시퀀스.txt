@@ -1,36 +1,42 @@
 sys,system 접속으로 계정에 시퀀스 생성 권한을 줘야한다
+	GRANT CREATE SEQUENCE TO DONG;
 
-GRANT CREATE SEQUENCE TO DONG2;
+-- 테스트 테이블 생성
+	create table dept_sequence 
+	as select * from dept where 1 <> 1;
 
---시퀀스 생성
-CREATE SEQUENCE dept_seq
-       INCREMENT BY 1
-       START WITH 1
-       MINVALUE 1
-       MAXVALUE 9999
-       NOCYCLE
-       NOCACHE
-       NOORDER;
-       
---시퀀스 수정
-ALTER SEQUENCE dept_seq INCREMENT BY 2;
+	select * from dept_sequence;
 
-ALTER SEQUENCE dept_seq MAXVALUE 99999;
+-- 시퀀스 생성
+	create sequence SEQ_DEPT_SEQUENCE 
+	INCREMENT BY 10
+	START WITH 10
+	MAXVALUE 90
+	MINVALUE 0
+	NOCYCLE
+	CACHE 2;
 
---시퀀스 삭제
-DROP SEQUENCE dept_seq;
+-- 생성한 시퀀스 조회
+	select * from user_sequences;
 
--- 사용
- select dept_seq.nextval from dual; -- 현재 시퀀스값 출력, 실행때마다 증가한다.
-       
- select dept_seq.currval from dual; -- 현재 시퀀스값 출력, 계속 실행해도 변하지 않는다.
+-- dept_sequence 테이블에 시퀀스(.nextval)로 데이터 넣기
+	insert into dept_sequence (deptno , dname, loc) 
+	values(seq_dept_sequence.nextval, 'DATABASE', 'SEOUL');
 
- insert into dept (deptno, dname, loc) 
- values(
-	dept_seq.NEXTVAL
-	,'sales'
-	,'seoul'
- )
+-- dept_sequence 테이블 조회
+	select * from dept_sequence;
+
+-- 현재 seq_dept_sequence 시퀀스(.currval) 값 조회
+	select seq_dept_sequence.currval from dual;
+
+-- 시퀀스 수정
+	ALTER SEQUENCE SEQ_DEPT_SEQUENCE 
+	INCREMENT BY 3
+	MAXVALUE 99
+	CYCLE;
+
+-- 시퀀스 삭제
+	DROP SEQUENCE SEQ_DEPT_SEQUENCE;
 
 ---------
 형식 :
