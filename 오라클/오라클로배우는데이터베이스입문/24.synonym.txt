@@ -1,0 +1,36 @@
+
+synonym (동의어)
+테이블,뷰,시퀀스 등 객체이름 대신 사용할 수 있는 다른이름을 부여하는 객체
+sysnonym 객체 사용 권한이 있어야 사용 가능.
+
+-- sys,system 접속으로 계정에 시퀀스 생성 권한을 줘야한다
+
+	GRANT CREATE SYNONYM TO DONG;
+
+	GRANT CREATE PUBLIC SYNONYM TO DONG;
+
+-- synonym 생성
+CREATE SYNONYM E FOR EMP;
+
+-- synonym 'E' 조회
+select * from E;
+
+-- synonym 삭제
+DROP SYNONYM E;
+
+
+생성 형식 :
+
+	[..생략가능..]
+
+	CREATE [PUBLIC] SYNONYM '동의어 이름'
+	FOR [사용자.][객체이름]
+
+	public : 시노님 사용 권한이 있는 모든 사용자에게 사용할 수 있게 설정.
+		생략할 경우 동의어 생성한 사용자만 가능.
+		public 이여도 본 객체 사용 권한이 있어야 사용 가능.
+	
+	동의어 이름(필수) : 생성할 동의어 이름
+
+	사용자. : synonym 객체 사용자 지정. 생략할 경우 현재 접속자
+	객체이름 : synonym 대상 객체 지정
