@@ -126,7 +126,7 @@ CONSTRAINT 설정시 '제약조건이름' 지정하지 않으면, 오라클 시�
 		DROP constraint TB_ID_UQ2; --삭제
 
 3. PRIMARY KEY
-	: 자동으로 INDEX 만들어짐, drop시 INDEX도 같이 삭제됨.
+	: 자동으로 INDEX 만들어짐, PRIMARY KEY drop시 INDEX도 같이 삭제됨.
 	
 	(테이블 DDL시 제약조건 정의)
 	-- inline , 컬럼 레벨 제약조건 정의
