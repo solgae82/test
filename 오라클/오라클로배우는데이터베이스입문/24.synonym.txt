@@ -10,14 +10,13 @@ sysnonym 객체 사용 권한이 있어야 사용 가능.
 	GRANT CREATE PUBLIC SYNONYM TO DONG;
 
 -- synonym 생성
-CREATE SYNONYM E FOR EMP;
+	CREATE SYNONYM E FOR EMP;
 
 -- synonym 'E' 조회
-select * from E;
+	select * from E;
 
 -- synonym 삭제
-DROP SYNONYM E;
-
+	DROP SYNONYM E;
 
 생성 형식 :
 
@@ -34,3 +33,4 @@ DROP SYNONYM E;
 
 	사용자. : synonym 객체 사용자 지정. 생략할 경우 현재 접속자
 	객체이름 : synonym 대상 객체 지정
+
