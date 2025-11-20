@@ -1,0 +1,245 @@
+데이터 무결성을 위해 테이블 특정 컬럼에 제약조건을 걸 수 있다
+제약조건에 위배되는 데이터는 입력(저장)할 수 없게 된다.
+
+제약조건은 DDL로 정의한다.
+제약조건은 테이블 설계시점(테이블생성) 주로 지정하지만,
+생성 후에도 추가,변경,삭제 가능하다
+
+제약조건 종류
+	1. NOT NULL
+		- 지정할 열에 NULL을 허용하지 않는다.
+		- 중복 데이터는 허용
+
+	2. UNIQUE
+		- 중복 데이터 불가
+		- NULL 허용
+
+	3. PRIMARY KEY
+		- 중복 데이터 불가 
+		- NULL 불가
+		- 자동 INDEX 만들어짐
+
+	4. FOREIGN KEY
+		- 다른 테이블의 특정열을 참조하여, 존재하는 값만 입력 가능
+		- NULL 허용
+
+	5. CHECK
+		- 설정한 조건식에 만족하는 데이터만 입력 가능
+
+제약조건은 아니지만, 특정열에 입력 지정하지 않을 경우 자동 입력되는 기본값을 지정할 수 있는 키워드
+	
+	DEFAULT	: 특정 열에 입력값이 지정되지 않을 경우 입력될 기본 데이터
+
+데이터 무결성
+
+	1.도메인(영역) 무결성 / Domain Integrity 
+		: 적절한 데이터 타입, 범위, null 여부 규정하는 규칙
+	
+	2.개체 무결성 / Entity Integrity 
+		: 기본키(primary key)는 null이 아닌 값을 가져야하고, 중복 값을 가질 수 없는 규칙
+	
+	3.참조 무결성 / Referential Integrity
+		: 외래 키(Foreign Key)가 참조하는 테이블의 기본 키(Primary Key) 값과 일치하거나 
+			NULL 값이어야 한다는 규칙
+	
+CREATE TABLE 선언 정의 DDL 제약조건 지정 형식 2가지
+
+	- inline / column-level 제약조건
+
+		create table tb_login(
+			id varcahr2(20) constaint tb_login_pk primary key,
+			..
+		) 
+
+	- out-of-line / table-level 제약조건
+
+		create table tb_login(
+			id varchar2(20),
+			..
+
+			primary key (id)
+			또는
+			constaint tb_login_pk primary key (id) 
+		) 
+
+	※ NOT NULL table-level 제약조건 지정 
+ 		- NOT NULL은  table-levle 제약조건 지정할 수 없다.
+		- NOT NULL 은 inline 만 가능하다.
+
+CONSTRAINT 설정시 '제약조건이름' 지정하지 않으면, 오라클 시스템이 자동으로 이름 생성한다.
+		ex) : SYS_C007013
+
+제약조건 확인 테이블 (USER_CONSTRAINTS)
+	
+	SELECT 
+	    OWNER,
+	    CONSTRAINT_NAME,
+	    CONSTRAINT_TYPE,
+	    TABLE_NAME
+	FROM USER_CONSTRAINTS;
+
+	- CONSTRAINT_TYPE 컬럼 문자의미 : 
+		- C : CHECK, NOT NULL
+		- U : UNIQUE
+		- P : PRIMARY KEY
+		- R : FOREIGN KEY
+
+------------------- 제약조건 DDL 
+	
+1. NOT NULL
+
+	(테이블 DDL시 제약조건 정의)
+	-- inline , 컬럼 레벨 제약조건 정의
+		pwd varcahr2(20) not null
+		pwd varcahr2(20) constaint TB_PW_NN not null
+	
+	-- out-of-line, 테이블 레벨 제약조건 정의 (x)
+		constaint TB_PW_NN not null(pwd)
+		될 것 같지만, not null은 테이블 레벨로 제약조건 지정 할 수 없다.
+
+	(ALTER TABLE '테이블명')
+		MODIFY (pwd not null); --제약조건 추가
+		MODIFY (pwd constraint TB_PW_NN not null);
+		MODIFY (pwd null); --해제
+		MODIFY (pwd constraint TB_PW_NN null);--해제
+		DISABLE constraint TB_PW_NN; --비활성화
+		ENABLE constraint TB_PW_NN; --활성화
+		RENAME constraint TB_PW_NN to TB_PW_NN2; --이름변경
+		DROP constraint TB_PW_NN2; --삭제
+
+2. UNIQUE
+
+	(테이블 DDL시 제약조건 정의)
+	-- inline , 컬럼 레벨 제약조건 정의
+		login_id varchar2(20) unique
+		login_id varchar2(20) constraint TB_ID_UQ unique
+	
+	-- out-of-line, 테이블 레벨 제약조건 정의 
+		constraint TB_ID_UQ unique(login_id)
+
+	(ALTER TABLE '테이블명')
+		MODIFY (login_id unique);
+		MODIFY (login_id constraint TB_ID_UQ unique);
+		DISABLE constraint TB_ID_UQ; --비활성화
+		ENABLE constraint TB_ID_UQ; --활성화
+		RENAME constraint TB_ID_UQ to TB_ID_UQ2; --이름변경
+		DROP constraint TB_ID_UQ2; --삭제
+
+3. PRIMARY KEY
+	: 자동으로 INDEX 만들어짐, drop시 INDEX도 같이 삭제됨.
+	
+	(테이블 DDL시 제약조건 정의)
+	-- inline , 컬럼 레벨 제약조건 정의
+		login_id varchar2(20) primary key
+		login_id varchar2(20) constraint TB_ID_PK primary key
+	
+	-- out-of-line, 테이블 레벨 제약조건 정의 
+		constraint TB_ID_PK primary key(login_id)
+
+	(ALTER TABLE '테이블명')
+		MODIFY (login_id primary key);
+		MODIFY (login_id constraint TB_ID_PK primary key);
+		DISABLE constraint TB_ID_PK; --비활성화
+		ENABLE constraint TB_ID_PK; --활성화
+		RENAME constraint TB_ID_PK to TB_ID_PK2; --이름변경
+		DROP constraint TB_ID_PK2; --삭제
+
+4. FOREIGN KEY
+
+	참조 테이블 : dept , 참조컬럼 : deptno
+
+	(테이블 DDL시 제약조건 정의)
+		설정 마지막에 삭제시 옵션을 줄 수가 있다
+		ON DELETE CASCADE : 부모 테이블의 참조 데이터가 삭제될때, 참조하는 자식 테이블의 행 모두 삭제
+		ON DELETE SET NULL : 부모 테이블의 참조 데이터가 삭제될때, 참조하는 자식 테이블의 행 모두 NULL 업데이트
+
+	-- inline , 컬럼 레벨 제약조건 정의
+		dept_no number(2) references dept(deptno)
+		dept_no number(2) constraint TB_DT_FK references dept(deptno)
+
+		-- 부모 테이블의 참조 데이터가 삭제될때, 자식 테이블 참조행 모두 [삭제 or NULL업데이트]
+		dept_no number(2) references dept(deptno) on delete [cascade / set null]		
+		dept_no number(2) constraint TB_DT_FK references dept(deptno) on delete [cascade / set null]
+
+	-- out-of-line, 테이블 레벨 제약조건 정의 
+		constraint TB_DT_FK foreign key(dept_no) references dept(deptno)
+
+		-- 부모 테이블의 참조 데이터가 삭제될때, 자식 테이블 참조행 모두 [삭제 or NULL업데이트]
+		constraint TB_DT_FK foreign key(dept_no) references dept(deptno) on delete [cascade / set null]
+
+	(ALTER TABLE '테이블명')
+		MODIFY (dept_no references dept(deptno));
+		MODIFY (dept_no constraint TB_DT_FK references dept(deptno));
+		DISABLE constraint TB_DT_FK; --비활성화
+		ENABLE constraint TB_DT_FK; --활성화
+		RENAME constraint TB_DT_FK to TB_DT_FK2; --이름변경
+		DROP constraint TB_DT_FK2; --삭제
+
+	----------- etc
+	부모테이블 참조 컬럼 : 참조되는 대상 컬럼
+	자식테이블 foreign key 컬럼 : 부모테이블 참조 컬럼값을 사용하는 자식테이블 컬럼
+
+	- 부모테이블 참조 컬럼 값 범위만 자식테이블 foreign key 컬럼값으로 사용할 수 있다.(null 도 가능)
+
+	- 부모테이블의 참조되는 컬럼값 중 자식 테이블에서 참조하는 레코드가 존재하면, 
+		부모테이블 참조되는 값 행은 삭제할 수 없다.
+
+		- 부모테이블 특정 참조값이 자식테이블에 의해 참조되고 있을 때 부모 참조값 행 삭제하기 위한 방법
+		1) 삭제하려는 값을 참조하는 자식 테이블의 행을 먼저 삭제 후 부모 테이블 참조값 행 삭제 가능
+		2) 삭제하려는 값을 참조하는 자식 테이블의 참조컬럼 값을 NULL로 변경 후 부모 테이블 참조값 행 삭제 가능
+		3) 자식 테이블의 foreign key 제약을 삭제(drop) 후 부모테이블 참조값 행 삭제 가능.
+		4) 자식 테이블의 foreign key 제약을 disable 변경 후 부모테이블 참조값 행 삭제 가능.
+
+5. CHECK
+
+	(테이블 DDL시 제약조건 정의)
+	-- inline , 컬럼 레벨 제약조건 정의
+		login_pwd varchar2(20) check(length(login_pwd) > 3)
+		login_pwd varchar2(20) constraint TB_PWD_CK check(length(login_pwd) > 3)
+	
+	-- out-of-line, 테이블 레벨 제약조건 정의 
+		constraint TB_PWD_CK check(length(login_pwd) > 3)
+
+	(ALTER TABLE '테이블명')
+		MODIFY (login_pwd check(length(login_pwd) > 3));
+		MODIFY (login_pwd constraint TB_PWD_CK check(length(login_pwd) > 3));
+		DISABLE constraint TB_PWD_CK; --비활성화
+		ENABLE constraint TB_PWD_CK; --활성화
+		RENAME constraint TB_PWD_CK to TB_PWD_CK2; --이름변경
+		DROP constraint TB_PWD_CK2; --삭제
+
+- DEFAULT '기본값'
+
+	:제약 조건이 아님. insert 할때 컬럼 지정 누락시 '기본값' 으로 들어갈 데이터 지정
+
+	create table table_df(
+	    login_id varchar2(20) primary key,
+	    login_pwd varchar2(20) default '1234',
+	    tel varchar2(20)
+	);
+
+	insert into table_df(login_id,  tel) values('ch_1','010-1234-5678');
+	----------------------------------------------
+	LOGIN_ID	LOGIN_PWD	TEL
+	----------------------------------------------
+	ch_1 		1234 		010-1234-5678
+
+
+	alter table table_df modify (login_pwd default 'abc'); -- 기본값 수정
+	insert into table_df(login_id,  tel) values('ch_2','010-1234-5678'); =
+	----------------------------------------------
+	LOGIN_ID	LOGIN_PWD	TEL
+	----------------------------------------------
+	ch_1 		1234 		010-1234-5678
+	ch_2		abc		010-1234-5678
+
+
+	alter table table_df modify (login_pwd default null);  -- 기본값 수정
+	insert into table_df(login_id,  tel) values('ch_3','010-1234-5678');
+	----------------------------------------------
+	LOGIN_ID	LOGIN_PWD	TEL
+	----------------------------------------------
+	ch_1 		1234 		010-1234-5678
+	ch_2		abc		010-1234-5678
+	ch_2		(null)		010-1234-5678
+
