@@ -1,0 +1,30 @@
+D:\git 깃 디렉토리는 남아 있고, C:는 포맷 후 운영체제 재설치 후 git 다시 설치일 경우 인식에러,
+또는 PC 교체 후 git 디렉토리 옮겨 git 설치 후 리포지토리 디렉토리 인식 에러
+또는 git을 재설치 했을때 등 인식에러
+
+이런 경우 이런 에러가 뜬다
+
+	(git config --global --add safe.directory):fatal: 
+	detected dubious ownership in repository at ... is owned by ...
+	
+깃 로컬 리포지토리 디렉토리 소유자 문제라는데,
+이럴 경우 안내대로 깃 디렉토리를 git config safe.directory 에 설정해주면 된다.
+디렉토리 구분자는 윈도우즈 '\' 로 하지말고, 유닉스 스타일로 '/' 설정한다
+
+	git config --global --add safe.directory D:/git
+
+-------------------
+깃 허브와 local 리포지포리 다시 연결할때
+	(이럴 경우는 운영체제 다시 설치했거나, pc 교체등 이유)
+	
+	git config --global user.name "깃허브계정 아이디"
+	git config --globaluser.email "깃허브계정 email"
+	
+로 맞춰준다. (로그인시 현재는 토큰으로 연결한다)
+특수한 경우에는 --local 설정해도 될 것 같다.
+	 
+	git config user.name "깃허브계정 아이디"
+	git config user.email "깃허브계정 email"
+
+-------------------
+

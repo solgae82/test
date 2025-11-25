@@ -30,8 +30,8 @@
 		$ cd test2
 		$ git init					#test2 디렉토리 git으로 관리 초기화
 		$ git config --local --list			#test2 디렉토리 로컬 설정 보기
-		$ git config --local user.name "dong2"		#test2 디렉토리 로컬 user.name설정
-		$ git config --local user.email "dong2@ggg.com"	#test2 디렉토리 로컬 user.email설정
+		$ git config user.name "dong2"		#test2 디렉토리 로컬 user.name설정
+		$ git config user.email "dong2@ggg.com"	#test2 디렉토리 로컬 user.email설정
 		$ git config --local user.email
 		dong2@ggg.com #설정값 출력
 
