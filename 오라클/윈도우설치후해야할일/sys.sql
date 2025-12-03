@@ -1,5 +1,6 @@
 ----- 문자 셋 설정
 /*
+	SYS AS SYSDBA 로 접속하자
 	위치 : $ORACLE_HOME/product/버전/dbs/init.ora
 	parallel_server => true / false 확인 
 	false로 설정 되어 있어야 설정시 오류가 발생하지 않는다.
