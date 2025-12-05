@@ -1,0 +1,126 @@
+1. 사용자 관리
+	CREATE USER dong IDENTIFIED BY oracle; -- DONG (대문자로 생성된다)
+
+	ALTER USER DONG IDENTIFIED BY 1234; -- 비밀번호 변경
+
+	-- 사용자 관리 데이터사전들
+	SELECT * FROM All_USERS WHERE username='dong';--(X)소문자
+	SELECT * FROM ALL_USERS WHERE username='DONG';
+	SELECT * FROM DBA_USERS WHERE USERNAME='DONG';
+	SELECT * FROM DBA_OBJECTS WHERE owner = 'DONG';
+
+	DROP user DONG; --DONG 사용자 삭제
+	DROP user DONG CASCADE; -- DONG사용자와 객체 모두 삭제
+
+2.권한 관리
+	시스템 권한(system privilege) 과 
+	객체 권한(object privilege)으로 분류한다.
+
+	시스템 권한 
+		SYS, SYSTEM등 이 권한 생성 가능.
+		데이터베이스 여러 자원과 객체조작(생성,변경,삭제등)에 대한 권한.
+		(사용자생성,접속,테이블,index,view,sequence,synonym,profile,roll등)
+		
+	객체권한
+		특정 사용자가 생성한 테이블,인덱스,뷰,시퀀스등과 관련된 권한
+		(table,view,sequence,procedure,function,package등)
+	
+3.시스템 권한(system privilege)
+	권한주기 형식:
+		GRANT [시스템권한] 
+		TO [사용자이름/Role이름/public] 
+		[(선택)WITH ADMIN OPTION]; 
+		
+		- 시스템권한명 : 
+			- 너무 많으므로 인터넷으로 검색, 
+			- ',' 쉼표로 다중 설정 가능. 
+		- 사용자이름/Roll이름/public :
+			- 사용자명,ROLL명
+			- PUBLIC : 모든 사용자라는 뜻
+			- ',' 쉼표로 다중 설정 가능.
+		- WITH ADMIN OPTION (선택) : 
+			- 현재 부여 받은 권한을 다른 사용자에게 부여할 수 있은 권한도 부여.
+			- 현재 사용자 권한이 사라져도, 권한을 재부여한 다른 사용자 권한은 유지.
+	
+		(예)
+		GRANT create session TO DONG; -- 접속권한 주기
+		GRANT create session , RESOURCE TO DONG; - 다중 설정, RESOURCE(롤 명) 
+	
+	권한 취소 형식:
+		REVOKE [시스템권한] FROM [사용자이름/Roll이름/public]
+	
+		(예)
+		REVOKE create session FROM ORCLSTUDY;
+		
+4.객체 권한(object privilege)
+	특정 사용사가 생성한 테이블,인덱스,뷰,시퀀스등과 관련된 권한
+	권한 주기 형식:
+		GRANT [객체권한/ALL PRIVILEGE] 
+			ON [스키마.객체이름] 
+			TO [사용자이름/Roll이름/public] 
+			[(선택)WITH GRANT OPTION]; 
+		
+		- 객체권한/ALL PRIVILEGE :
+			- 설정할 객체의 핸들링 권한명(인터넷으로 검색)
+			- ',' 쉼표로 다중 설정 가능. 
+			- ALL PRIVILEGE : 설정한 객체의 모든 권한
+		- 스키마.객체이름: 
+			- (예) DONG.EMP (DONG 사용자의 EMP 테이블 객체)
+		- 사용자이름/Role이름/public :
+			- 사용자명,ROLL명
+			- PUBLIC : 모든 사용자라는 뜻
+			- ',' 쉼표로 다중 설정 가능.
+		- WITH GRANT OPTION (선택) : 
+			- 현재 부여 받은 권한을 다른 사용자에게 부여할 수 있은 권한도 부여.
+			- 현재 사용자 권한이 사라지면, 권한을 재부여한 다른 사용자 권한도 사라진다.
+
+
+		(예)
+		-- DONG 사용자가 자신의 emp 테이블 select 권한을 
+		ORCLSTUDY 사용자에 주기, 사용자는 대소문자 구분한다
+		
+		GRANT select ON emp TO ORCLSTUDY;
+		
+		-- ORCLSTUDY 사용자가 DONG 사용자의 emp 테이블 조회
+		SELECT * FROM DONG.emp;
+		
+	권한 취소 형식:
+		REVOKE [객체권한/ALL PRIVILEGE] 
+			ON [스키마.객체이름]
+			FROM [사용자이름/Roll이름/public]
+			[(선택)casecade constraints / force]
+			
+		(예)
+		-- DONG 사용자 emp 테이블 select 권한을 준 ORCLSTUDY 에게
+		권한 취소하기 (DONG 사용자 접속 모드에서)
+		
+		REVOKE select ON emp FROM ORCLSTUDY;
+		
+5.롤(Role) 관리
+	롤은 여러 종류의 권한을 묶어 놓은 그룹
+	
+	- 사전 정의된 롤(predefined roles)
+		CONNECT, RESOURCE, DBA 등
+	
+	- 사용자 정의 롤 (user roles)
+		
+		-- role 생성
+		CREATE ROLE DROLE;
+
+		-- 생성한 role에 권한 주기(권한 그룹화)
+		GRANT CONNECT, RESOURCE, CREATE VIEW TO DROLE;
+		
+		-- role 삭제
+		DROP ROLE DROLE;
+
+6. 부여된 권한 및 role 확인
+
+	-- 접속된 계정에서 조회(데이터 사전)
+	select * from user_sys_privs;
+	select * from user_role_privs;
+	
+	-- 데이터 관리 권한이 있다면 아래 데이터 사전으로
+	select * from dba_sys_privs;
+	select * from dba_role_privs;
+	
+	
