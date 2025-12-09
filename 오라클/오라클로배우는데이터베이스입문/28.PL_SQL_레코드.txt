@@ -1,0 +1,122 @@
+set SERVEROUTPUT on;
+
+/*
+    레코드(record) : c언어 구조체 또는 java class 느낌
+*/
+declare
+    type REC_DEPT IS RECORD(
+        deptno number(2) not null := 0,
+        dname DEPT.DNAME%TYPE,
+        loc DEPT.LOC%TYPE
+    );
+    
+    dept_rec REC_DEPT; --레코드 변수 선언
+begin
+    dept_rec.deptno := 81;
+    dept_rec.dname := 'skyWorker';
+    dept_rec.loc :='seoul';
+    
+    DBMS_OUTPUT.PUT_LINE('deptno=>' || dept_rec.deptno);
+    DBMS_OUTPUT.PUT_LINE('dname=>' || dept_rec.dname);
+    DBMS_OUTPUT.PUT_LINE('loc=>' || dept_rec.loc);
+end;
+/
+
+/*
+    레코드 사용 insert
+*/
+--create table dept_record
+--AS select * from dept;
+--select * from dept_record;
+
+declare
+    type REC_DEPT IS RECORD(
+        deptno number(2) not null := 0,
+        dname DEPT.DNAME%TYPE,
+        loc DEPT.LOC%TYPE
+    );
+    
+    dept_rec REC_DEPT; -- record 변수 선언
+begin
+    dept_rec.deptno := 82;
+    dept_rec.dname :='skyWorker';
+    dept_rec.loc :='SEOUL';
+    
+    insert into dept_record values dept_rec; -- 레코드 삽입
+end;
+/
+select * from dept_record; -- 삽입된 자료 확인.
+
+/*
+    레코드 update
+*/
+declare
+    TYPE REC_DEPT IS RECORD(
+        deptno number(2) not null :=0,
+        dname dept.dname%type,
+        loc dept.loc%type
+    );
+    
+    dept_rec REC_DEPT; -- 레코드 변수
+begin
+    dept_rec.deptno :=83;
+    dept_rec.dname := 'DN2';
+    dept_rec.loc :='JEONJU';
+    
+    -- 레코드로 업데이트 하기
+    update dept_record SET row = dept_rec where deptno=82;
+end;
+/
+select * from dept_record; -- update 확인
+
+/*
+    레코드 안의 레코드
+*/
+declare
+    type REC_DEPT IS RECORD(
+        deptno number(2) not null := 0,
+        dname dept.dname%type,
+        loc dept.loc%type
+    );
+    type REC_EMP IS RECORD(
+        empno emp.empno%type,
+        ename emp.ename%type,
+        d_info REC_DEPT -- 레코드 안에 레코드형 선언
+    );
+    
+    emp_rec REC_EMP; -- REC_EMP 레코드형 변수 선언 
+begin
+    select 
+        E.EMPNO 
+        , E.ENAME
+        , D.DEPTNO
+        , D.DNAME
+        , D.LOC 
+    
+    into -- 레코드형 변수에 넣기
+        emp_rec.empno
+        , emp_rec.ename
+        , emp_rec.d_info.deptno
+        , emp_rec.d_info.dname
+        , emp_rec.d_info.loc
+        
+    from emp E, dept D
+    where E.deptno = D.deptno and E.empno =7788;
+    
+    DBMS_OUTPUT.PUT_LINE('empno=>' || emp_rec.empno );
+    DBMS_OUTPUT.PUT_LINE('ename=>' || emp_rec.ename);
+    DBMS_OUTPUT.PUT_LINE('----------d_info');
+    DBMS_OUTPUT.PUT_LINE('d_info.deptno=>' || emp_rec.d_info.deptno);
+    DBMS_OUTPUT.PUT_LINE('d_info.dname=>' || emp_rec.d_info.dname);
+    DBMS_OUTPUT.PUT_LINE('d_info.loc=>' || emp_rec.d_info.loc);
+end;
+/
+-- 출력 확인과 비교
+select 
+        E.EMPNO 
+        , E.ENAME
+        , D.DEPTNO
+        , D.DNAME
+        , D.LOC     
+    from emp E, dept D
+    where E.deptno = D.deptno and E.empno =7788;

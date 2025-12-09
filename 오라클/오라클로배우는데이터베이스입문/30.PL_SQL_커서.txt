@@ -1,0 +1,239 @@
+
+corsor란: 
+	- select 문 또는 데이터 조작어(insert,update,delete)등의 SQL문을 실행했을때 
+		처리된 정보를저장한 메모리공간을 가리키는 메모리 포인터.
+	
+	- 사용방법에 따라 명시적(explicit) 커서 와 묵시적(implicit) 커서로 나눈다. 
+
+------------------- 명시적 커서 
+
+명시적(explicit) 커서
+	- SELECT 시 결과 행이 하나이든 여러행이든 관계없이 사용가능
+	- 커서 문법으로 사용
+		DECLARE
+			CURSOR (커서이름[(파라미터 변수 타입..)]) IS (SQL문);
+		BEGIN
+			OPEN (커서명);
+			FETCH (커서명) INTO (변수);
+			CLOSE (커서명);
+		END;
+	    
+	- 커서변수로 커서속성 접근
+		커서변수명%NOTFOUND : FETCH문으로 추출된 행이 없는지 여부 true/false  반환.
+		커서변수명%FOUND : FETCH문으로 추출된 행이 있는지 여부 true/false  반환.
+		커서변수명%ROWCOUNT : FETCH문으로 추출된 행수 반환
+		커서변수명%ISOPEN : 커서 OPEN 여부 true/false 반환.
+
+	- 기타 (이것 외에도..)
+		잠금기능을 제공하는 FOR UPDATE절 
+		추출한 행에 DMS 명령어를 사용한느 WHRER CURRENT  OF절 
+		
+		등등 다양한 사용법이 더 있다고 함. 별도 챕터로 나중에 정리하기로 함.
+	
+	----------- (예제)
+	set SERVEROUTPUT on;
+
+	/*
+	    1. 한개행 조회 명시적 커서
+	*/
+	declare
+	    V_DEPT_ROW DEPT%ROWTYPE; -- ROWTYPE 변수 선언
+	    
+	    -- 명시적 커서 선언
+	    cursor c1 is 
+		select deptno , dname, loc from dept where deptno = 30;    
+	begin
+
+	    open c1;
+	    fetch c1 into V_DEPT_ROW; -- ROWTYPE 변수에 담기
+	    
+	    -- 출력
+	    DBMS_OUTPUT.PUT_LINE('deptno=>' || V_DEPT_ROW.deptno); -- deptno=>30
+	    DBMS_OUTPUT.PUT_LINE('dname=>' || V_DEPT_ROW.dname); -- dname=>SALES
+	    DBMS_OUTPUT.PUT_LINE('loc=>' || V_DEPT_ROW.loc);  -- loc=>CHICAGO
+	    
+	    close c1;
+	end;
+	/
+
+	/*
+	    2. 여러행 조회 명시적 커서 (LOOP 사용)
+	*/
+	declare
+	    v_dept_row DEPT%ROWTYPE;
+	    
+	    cursor c1 is 
+		select * from dept;
+	begin
+	    open c1;
+	    
+		loop
+		    fetch c1 into v_dept_row;
+		    exit when c1%NOTFOUND; -- 추출행이 없으면 탈출
+		    
+		    DBMS_OUTPUT.PUT_LINE(
+		    v_dept_row.deptno || ':' || 
+		    v_dept_row.dname ||  ':' ||
+		    v_dept_row.loc);
+		    /*
+		    10:ACCOUNTING:NEW YORK
+		    20:RESEARCH:DALLAS
+		    30:SALES:CHICAGO
+		    40:OPERATIONS:BOSTON
+		    */
+		end loop;
+		
+	    close c1;
+	end;
+	/
+
+	/*
+	    3. 여러행 조회 명시적 커서(FOR LOOP)
+		: 커서에 FOR LOOP 문을 사용하면 open-fetch-close를 작성하지 않는다
+	*/
+	declare
+	    cursor c1 is 
+		select * from dept;
+	begin
+	    for rec in c1 loop
+		DBMS_OUTPUT.PUT_LINE(rec.deptno || ':' || rec.dname || ':' || rec.loc);
+		/*
+		10:ACCOUNTING:NEW YORK
+		20:RESEARCH:DALLAS
+		30:SALES:CHICAGO
+		40:OPERATIONS:BOSTON
+		*/
+	    end loop;
+	end;
+	/
+
+	/*
+	    4. 여러행 조회 명시적 커서(파라미터 사용)
+	*/
+	declare
+	    v_dept_row dept%rowtype;
+	    cursor c1(p_deptno dept.deptno%type) is
+		select * from dept where deptno = p_deptno;
+
+	begin
+	    open c1(10); -- 10번 부서 전부 출력
+		loop
+		    fetch c1 into v_dept_row;
+		    exit when c1%notfound;
+		    DBMS_OUTPUT.PUT_LINE(v_dept_row.deptno || ',' || 
+		    v_dept_row.dname || ',' || v_dept_row.loc);
+		    -- 10,ACCOUNTING,NEW YORK
+		end loop;
+	    close c1;
+	    
+	    open c1(20); -- 20번 부서 전부 출력
+		loop
+		    fetch c1 into v_dept_row;
+		    exit when c1%notfound;
+		    DBMS_OUTPUT.PUT_LINE(v_dept_row.deptno || ',' || 
+		    v_dept_row.dname || ',' || v_dept_row.loc);
+		    -- 20,RESEARCH,DALLAS
+		end loop;
+	    close c1;
+	    
+	end;
+	/
+
+	/*
+	    5. 여러행 조회 명시적 커서 (파라미터 사용), 사용자 입력 받기
+	*/
+	declare
+	    v_deptno dept.deptno%type; -- 사용자 입력값 받을 변수
+	    
+	    cursor c1(p_deptno dept.deptno%type) is
+		select * from dept where deptno = p_deptno; 
+	begin
+	    v_deptno := &input_no; -- 사용자 입력 받기,(프로그램에 따라 입력창이 뜨거나, 입력라인등이 생김)
+	    
+	    -- 입력창에 '20' 입력
+	    
+	    for rec in c1(v_deptno) loop
+		DBMS_OUTPUT.PUT_LINE(
+		    rec.deptno || '-' ||
+		    rec.dname  || '-' ||
+		    rec.loc
+		);
+		-- 20-RESEARCH-DALLAS
+	    end loop;
+
+	end;
+	/
+	
+------------------- 묵시적 커서 
+
+묵시적(implicit) 커서
+	- PL/SQL 내의 모든 DML 실행시 자동 생성
+	- SELECT INTO는 결과가 한개의 행일때만 사용 가능한 묵시적 커서 방식
+	- 커서 문법 사용하지 않음
+	- SQL키워드로 묵시적 커서속성 접근
+	    SQL%NOTFOUND : 
+		- 묵시적 커서 안에 (select)로 추출한 행이 없는지 여부 true/false 반환.
+		- 묵시적 커서 안에 (insert,update,delete)로 영향 받은 행이 없는지 여부 true/false 반환.
+	    
+	    SQL%FOUND : 
+		- 묵시적 커서 안에 (select)로 추출한 행이 있는지 여부 true/false 반환.
+		- 묵시적 커서 안에 (insert,update,delete)로 영향 받은 행이 있는지 여부 true/false 반환
+		
+	    SQL%ROWCOUNT :  
+		- 묵시적 커서에 (select)로 추출한 행수, (insert,update,delete)로 영향 받은 행수 반환.
+	    
+	    SQL%ISOPEN : 
+		- 묵시적 커서는 자동으로 SQL문 추출후 close 되므로 항상 false를 반환.
+
+	-----------(예제)
+	/*
+	   1. select into 방식은 결과행이 단 하나의 행일때만 사용 가능 , 묵시적 커서 방식
+	*/
+	declare
+	    V_DEPT_ROW DEPT%ROWTYPE; -- ROWTYPE 변수 선언
+	begin
+	    select deptno, dname,loc into V_DEPT_ROW from dept where deptno = 40;
+	    
+	    DBMS_OUTPUT.put_line('deptno=>' || V_DEPT_ROW.deptno ); -- deptno=>40
+	    DBMS_OUTPUT.put_line('dname=>' || V_DEPT_ROW.dname ); -- dname=>OPERATIONS
+	    DBMS_OUTPUT.put_line('loc=>' || V_DEPT_ROW.loc ); -- loc=>BOSTON
+	end;
+	/
+	
+	/*
+	    2. 묵시적 커서 속성 사용하기
+	*/
+	declare
+	    
+	begin
+	    -- 묵시적 커서 자동 생성됨
+	    update dept set dname ='database' where deptno = 50; -- 50번은 없다
+		
+	    -- 1. SQL%NOTFOUND 속성 테스트
+	    if SQL%NOTFOUND then 
+		DBMS_OUTPUT.put_line('NOTFOUND=>true'); -- NOTFOUND=>true
+	    else
+		DBMS_OUTPUT.put_line('NOTFOUND=>false');
+	    end if;
+	    
+	    -- 2.  SQL%FOUND 속성 테스트
+	    if SQL%FOUND then 
+		DBMS_OUTPUT.put_line('FOUND=>true');
+	    else
+		DBMS_OUTPUT.put_line('FOUND=>false'); -- FOUND=>false
+	    end if;
+	    
+	    -- 3. SQL%ROWCOUNT 속성 테스트
+	    DBMS_OUTPUT.put_line('갱신된 행수=>' || SQL%ROWCOUNT); -- 갱신된 행수=>0
+	    
+	    -- 4.  SQL%ISOPEN 속성 테스트
+	    if SQL%ISOPEN then 
+		DBMS_OUTPUT.put_line('ISOPEN=>true');
+	    else
+		DBMS_OUTPUT.put_line('ISOPEN=>false'); -- ISOPEN=>false
+	    end if;
+	    
+	end;
+	/
+	
+	

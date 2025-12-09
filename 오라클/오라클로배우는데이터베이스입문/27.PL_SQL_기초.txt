@@ -1,0 +1,241 @@
+set SERVEROUTPUT on;
+begin
+    DBMS_OUTPUT.PUT_LINE('Hello PL/SQL');
+end;
+/
+
+declare
+V_EMPNO number(4) := 7788;
+V_ENAME varchar2(10);
+begin
+    v_ename := 'scott';
+    DBMS_OUTPUT.put_line('V_EMPNO : ' || v_empno);
+    DBMS_OUTPUT.put_line('V_ENAME : ' || v_ename);
+end;
+/
+
+declare
+    v_empno number(4) := 7788;
+    v_ename varchar2(10);
+begin
+    v_ename :='scott';
+    DBMS_OUTPUT.put_line('empno=>' || v_empno);
+    DBMS_OUTPUT.put_line('ename=>' || v_ename);
+end;
+/
+
+declare
+    v_tax constant number(1) := 3;
+begin
+    -- v_tax := 4;
+    DBMS_OUTPUT.PUT_LINE('상수=>' || v_tax );
+end;
+/
+
+declare
+    v_deptno number(2) default 10;
+begin
+    v_deptno := 3;
+    DBMS_OUTPUT.PUT_LINE('default value=>' || v_deptno);
+end;
+/
+
+declare
+    v_deptno number(2) not null DEFAULT 3;
+begin
+    v_deptno := 7;
+    DBMS_OUTPUT.PUT_LINE('v =>' || v_deptno);
+end;
+/
+
+declare
+    v_deptno dept.deptno%type := 50;
+begin
+    DBMS_OUTPUT.PUT_LINE('deptno=>' || v_deptno);
+end;
+/
+
+declare
+    v_dept_row dept%rowtype;
+begin
+    select deptno, dname,loc into v_dept_row from dept where deptno=40;
+    DBMS_OUTPUT.put_line('deptno=>' || v_dept_row.deptno);
+    DBMS_OUTPUT.put_line('dname=>' || v_dept_row.dname);
+    DBMS_OUTPUT.put_line('loc=>' || v_dept_row.loc);
+end;
+/
+
+declare
+    v_dname dept.dname%type := 'none';
+begin
+    select dname into v_dname from dept where deptno=40;
+    DBMS_OUTPUT.put_line('dname=>' || v_dname);
+end;
+/
+
+/*
+    IF-THEN , IF-THEN-ELSE , IF-THEN-ELSIF
+*/
+
+declare
+    v_number number := 13;
+begin
+    if mod(v_number, 2) = 1 then
+     DBMS_OUTPUT.put_line( v_number ||'은 홀수 입니다/'); -- 1
+    end if;
+end;
+/
+
+declare 
+    v_number number := 14;
+begin
+    if mod(v_number,2) = 2 then
+        DBMS_OUTPUT.PUT_LINE(v_number || '은 홀수 입니다.');
+    else
+        DBMS_OUTPUT.PUT_LINE(v_number || '은 짝수 입니다.');
+    end if;
+end;
+/
+
+declare
+    v_score number :=77;
+begin
+    if v_score >= 90 then
+        DBMS_OUTPUT.PUT_LINE('A 학점');
+    elsif v_score >=80 then
+        DBMS_OUTPUT.PUT_LINE('B 학점');
+    elsif v_score >=70 then
+        DBMS_OUTPUT.PUT_LINE('C 학점');
+    elsif v_score >=60 then
+        DBMS_OUTPUT.PUT_LINE('D 학점');
+    else
+        DBMS_OUTPUT.PUT_LINE('F 학점'); 
+    end if;
+end;
+/
+
+/*
+    case 조건식
+        when 값 then
+            처리;
+        else
+            처리;
+    end case;
+*/
+declare
+    v_score number := 99;
+begin
+    -- DBMS_OUTPUT.PUT_LINE('trunc=>' || trunc(v_score / 10));
+    
+    case trunc(v_score / 10)
+        
+        when 10 then DBMS_OUTPUT.PUT_LINE('A+ 학점');
+        when 9 then DBMS_OUTPUT.PUT_LINE('A 학점');
+        when 8 then DBMS_OUTPUT.PUT_LINE('B 학점');
+        when 7 then DBMS_OUTPUT.PUT_LINE('C 학점');
+        when 6 then DBMS_OUTPUT.PUT_LINE('D 학점');
+        else DBMS_OUTPUT.PUT_LINE('F 학점');
+        
+    end case;
+end;
+/
+
+/*
+    case 
+        when 조건식 then 처리 ;
+        else 처리;
+    end case;
+*/
+declare
+    v_score number := 59;
+begin
+    case
+        when v_score >= 90 then DBMS_OUTPUT.PUT_LINE('A 학점');
+        when v_score >= 80 then DBMS_OUTPUT.PUT_LINE('B 학점');
+        when v_score >= 70 then DBMS_OUTPUT.PUT_LINE('C 학점');
+        when v_score >= 60 then DBMS_OUTPUT.PUT_LINE('D 학점');
+        else DBMS_OUTPUT.PUT_LINE('F 학점');
+    end case;
+end;
+/
+
+/*
+    
+    반복문 종류 : loop , while loop , for loop , cursor for loop
+    
+        loop
+            처리식;
+            
+            exit when 탈출 조건식; -- 1.탈출식
+            
+            또는
+            
+            if 탈출 조건식 then  -- 2.탈출식
+                exit; 
+            end if;
+            
+        end loop;
+*/
+
+declare
+    v_num number := 0;
+begin
+    loop
+        DBMS_OUTPUT.PUT_LINE('v_num=>' || v_num);
+        v_num := v_num + 1;
+        --exit when v_num > 4;
+        if v_num > 4 then  
+            exit;  
+        end if;
+    end loop;
+end;
+/
+
+/*
+    반복문 종류 : loop , while loop , for loop , cursor for loop
+    
+        while 조건식 loop
+            처리식;
+        end loop;
+*/
+declare
+    v_num number := 0;
+begin
+    while v_num < 4 loop
+        DBMS_OUTPUT.PUT_LINE('while loop | v_num=>' || v_num);
+        v_num := v_num + 1;
+    end loop;
+end;
+/
+
+/*
+    반복문 종류 : loop , while loop , for loop , cursor for loop
+    
+        for 카운터변수 in [reverse] 초기값..종료값 loop
+            처리식;
+        end loop;
+*/
+declare
+
+begin
+    for i in reverse 0..4 loop
+        DBMS_OUTPUT.put_line('i=>' || i);
+    end loop;
+end;
+/
+
+/*
+    continue : oracle 11부터 사용 가능.
+        if 조건식 then continue; end if; 
+        continue when 조건식;
+*/
+declare
+
+begin
+    for i in 0..6 loop 
+        -- continue when mod(i , 2) = 1; -- 홀수는 건너 뜀
+        if mod(i , 2) = 1 then continue; end if;
+        DBMS_OUTPUT.PUT_LINE('짝수 => ' || i);
+    end loop;
+end;
+/

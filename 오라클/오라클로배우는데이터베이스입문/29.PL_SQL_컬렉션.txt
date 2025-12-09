@@ -1,0 +1,157 @@
+set SERVEROUTPUT on;
+/*
+    컬렉션 (자료형이 같은 여러 데이터 저장) 
+        연관배열(associative array / index by table)
+        중첩테이블(nested table)
+        VARRAY(variable-size array)
+    ----
+    1.기본 연관배열 사용법
+*/
+declare
+    type ITAB_EX IS TABLE OF varchar2(20)
+    index by PLS_INTEGER;
+    
+    text_arr ITAB_EX;
+begin
+    text_arr(1) := '1st data';
+    text_arr(2) := '2st data';
+    text_arr(3) := '3st data';
+    text_arr(4) := '4st data';
+    
+    DBMS_OUTPUT.PUT_LINE('text_arr(1)=>' || text_arr(1));
+    DBMS_OUTPUT.PUT_LINE('text_arr(2)=>' || text_arr(2));
+    DBMS_OUTPUT.PUT_LINE('text_arr(3)=>' || text_arr(3));
+    DBMS_OUTPUT.PUT_LINE('text_arr(4)=>' || text_arr(4));
+end;
+/
+/*
+    컬렉션 (자료형이 같은 여러 데이터 저장) 
+        연관배열(associative array / index by table)
+        중첩테이블(nested table)
+        VARRAY(variable-size array)
+    ----
+    2.레코드 자료형을 활용한 연관배열
+*/
+declare
+    type REC_DEPT IS RECORD(
+        deptno DEPT.DEPTNO%TYPE,
+        dname DEPT.DNAME%TYPE
+    );
+    
+    type ITAB_DEPT IS TABLE OF REC_DEPT 
+    INDEX BY PLS_INTEGER;
+    
+    dept_arr ITAB_DEPT;
+    idx PLS_INTEGER :=0;
+    
+begin
+
+    FOR i IN (select deptno,dname from dept) LOOP
+        idx := idx + 1;
+        dept_arr(idx).deptno := i.deptno;
+        dept_arr(idx).dname := i.dname;
+        
+        DBMS_OUTPUT.PUT_LINE(dept_arr(idx).deptno || ' : ' || dept_arr(idx).dname);
+        /*
+        10 : ACCOUNTING
+        20 : RESEARCH
+        30 : SALES
+        40 : OPERATIONS
+        */
+    END LOOP;
+
+end;
+/
+
+/*
+    컬렉션 (자료형이 같은 여러 데이터 저장) 
+        연관배열(associative array / index by table)
+        중첩테이블(nested table)
+        VARRAY(variable-size array)
+    ----
+    3.%ROWTYPE 자료형을 활용한 연관배열
+*/
+declare
+    type ITAB_DEPT is table of DEPT%ROWTYPE
+    index by PLS_INTEGER;
+    
+    dept_arr ITAB_DEPT;
+    idx PLS_INTEGER := 0;
+begin
+    
+    FOR i IN (select * from dept) LOOP
+        idx := idx + 1;
+        
+        dept_arr(idx).deptno  := i.deptno;
+        dept_arr(idx).dname  := i.dname;
+        dept_arr(idx).loc  := i.loc;
+        
+        DBMS_OUTPUT.PUT(
+        dept_arr(idx).deptno || ' : ' ||
+        dept_arr(idx).dname || ' : ' ||
+        dept_arr(idx).loc
+        );
+        DBMS_OUTPUT.PUT_LINE('');
+        DBMS_OUTPUT.PUT_LINE('--------------');
+    END LOOP;
+    
+    
+end;
+/
+
+/*
+    컬렉션 (자료형이 같은 여러 데이터 저장) 
+        연관배열(associative array / index by table)
+        중첩테이블(nested table)
+        VARRAY(variable-size array)
+    ----
+    4.컬렉션 메서드
+        EXISTS(n) : 컬렉션에 n인덱스의 데이터 존재 여부를 true/false 반환
+        COUNT : 컬렉션에 포함되어 잇는 요소 개수를 반환
+        LIMIT : 현재 컬렉션에 최대 크기 반환,최대 크기가 없으면 NULL 반환
+        FIRST : 컬렉션의 첫번째 인덱스 번호 반환
+        LAST : 컬렉션의 마지막 인덱스 번호 반환
+        PRIOR(n) : 컬렉션 n인텍스 바로 앞 인덱스 값 반환.없으면 NULL 반환
+        NEXT(n) : 컬렉션 n인텍스 다음 인덱스 값 반환.없으면 NULL 반환
+        DELETE : 컬렉션 요소 삭제 
+            - DELETE : 모두 삭제
+            - DELETE(n) : n인덱스 요소 삭제
+            - DELETER(n,m) : n~m 인덱스 요소 삭제
+        EXTEND : 컬렉션 크기 확장,연관배열 제외한 중첩테이블,VARRAY에서 사용. 
+        TRIM : 컬렉션 크기 축소,연관배열 제외한 중첩테이블,VARRAY에서 사용.
+*/
+declare
+    type ITAB_EX is table of varchar2(20)
+    index by PLS_INTEGER;
+    
+    txt_arr ITAB_EX;
+begin
+    txt_arr(1) := '1st';
+    txt_arr(2) := '2st';
+    txt_arr(3) := '3st';
+    txt_arr(50) := '50st';
+    
+    if txt_arr.EXISTS(3) then
+        DBMS_OUTPUT.PUT_LINE('txt_arr(3)=>존재한다');
+    end if;
+    
+   
+    DBMS_OUTPUT.PUT_LINE('COUNT=>' || txt_arr.COUNT); -- COUNT=>4
+    DBMS_OUTPUT.PUT_LINE('LIMIT=>' || txt_arr.LIMIT); -- LIMIT=>
+    DBMS_OUTPUT.PUT_LINE('FIRST=>' || txt_arr.FIRST); -- FIRST=>1
+    DBMS_OUTPUT.PUT_LINE('LAST=>' || txt_arr.LAST); -- LAST=>50
+    DBMS_OUTPUT.PUT_LINE('PRIOR(50)=>' || txt_arr.PRIOR(50)); -- PRIOR(50)=>3
+    DBMS_OUTPUT.PUT_LINE('NEXT(50)=>' || txt_arr.NEXT(50)); -- NEXT(50)=>
+    
+    --txt_arr.DELETE;
+    --DBMS_OUTPUT.PUT_LINE('COUNT=>' || txt_arr.COUNT); -- COUNT=>0
+    
+    --txt_arr.DELETE(50);
+    --DBMS_OUTPUT.PUT_LINE('COUNT=>' || txt_arr.COUNT); -- COUNT=>3
+    
+    txt_arr.DELETE(1,3);
+    DBMS_OUTPUT.PUT_LINE('COUNT=>' || txt_arr.COUNT); -- COUNT=>1
+    DBMS_OUTPUT.PUT_LINE(txt_arr(50)); -- 50st
+    
+end;
+/
