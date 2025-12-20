@@ -1,0 +1,4 @@
+-- 리스너 빠르게 등록 시키기
+	sqlplus / as sysdba  #다시 접속 후
+	SQL> alter system register;
+	SQL> exit;

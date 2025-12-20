@@ -1,1 +1,108 @@
-정리 전..
+set SERVEROUTPUT on;
+
+/*
+    내부예외 (오라클 시스템에 사전 정의된 예외)
+        이름있는 예외
+            예외 번호에 해당하는 이름이 존재하는 예외
+            
+        이름없는 예외
+            예외 번호에 해당하는 이름이 없는 예외
+            
+    사용자정의 예외 (사용자가 직접 예외 발생)
+        사용자가 필요에 따라 직접 발생 정의한 예외
+*/
+
+/*
+   1. 내부예외 : 이름이 있는 에러
+*/
+declare
+    v_wrong NUMBER;
+    
+begin
+    select dname into v_wrong from dept 
+    where deptno = 10;
+    
+    DBMS_OUTPUT.put_line('dname =>' || v_wrong); -- 오류 다음행은 실행되지 않는다
+    
+    -- 예외 처리
+    EXCEPTION 
+        -- VALUE_ERROR | ORA-06502: -6502 ('VALUE_ERROR' 라는 이름 있는 예외)
+        WHEN VALUE_ERROR THEN              
+            dbms_output.put_line('(내부예외)VALUE_ERROR: 수치 또는 값 오류 발생'); -- 출력
+            
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('기타에러!');
+end;
+/
+
+
+/*
+   2. 내부예외 : 예외 이름 없는 에러 (에러 번호는 있지만 이름은 없는 예외, 직접 이름을 정해준다)
+*/
+declare
+    v_wrong NUMBER;
+    
+    TYPE_ERROR EXCEPTION; -- 사용자 정의 예외 변수 선언
+    
+    PRAGMA EXCEPTION_INIT (TYPE_ERROR, -6502); -- 이름없는 에러번호에 사용자 정의 이름(변수명으로)을 정해준다
+    
+begin
+    select dname into v_wrong from dept 
+    where deptno = 10;
+    
+    DBMS_OUTPUT.put_line('dname =>' || v_wrong); -- 오류 다음행은 실행되지 않는다
+    
+    -- 예외 처리
+    EXCEPTION 
+        WHEN TYPE_ERROR THEN 
+            dbms_output.put_line('(내부예외) 이름 직접 지정 예외 발생'); -- 출력
+        
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('기타에러!');
+end;
+/
+
+/*
+   3. 사용자 정의 예외 : 직접 예외를 발생해서 던진다
+*/
+declare
+    v_wrong NUMBER := 1;
+    
+    CUSTOM_ERROR EXCEPTION; -- 예외 변수 선언
+    
+begin
+    
+    if v_wrong > 0 then
+        RAISE CUSTOM_ERROR; -- 사용자 정의 예외 던지기
+    end if;
+    
+    DBMS_OUTPUT.put_line('dname =>' || v_wrong); -- 오류 다음행은 실행되지 않는다
+    
+    -- 예외 처리
+    EXCEPTION 
+        WHEN CUSTOM_ERROR THEN 
+            dbms_output.put_line('사용자정의 예외 발생'); -- 출력
+        
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('기타에러!');
+end;
+/
+
+/*
+    4. 오류 코드(SQLCODE), 에러메시지(SQLERRM)
+    오류코드와 에러메시지를 알고 싶을 때 쓰는 PL/SQL에서만 쓸 수 있는 함수
+*/
+declare
+    v_wrong NUMBER;
+begin
+    select dname into v_wrong from dept where deptno = 10;
+    
+    DBMS_OUTPUT.put_line('dname =>' || v_wrong); -- 오류 다음행은 실행되지 않는다
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('-오류코드,에러메시지 출력-');
+            DBMS_OUTPUT.PUT_LINE('SQLCODE=> ' || SQLCODE); -- SQLCODE=> -6502
+            DBMS_OUTPUT.PUT_LINE('SQLERRM=> ' || SQLERRM); -- SQLERRM=> ORA-06502: PL/SQL: 수치 또는 값 오류: 문자를 숫자로 변환하는데 오류입니다
+end;
+/

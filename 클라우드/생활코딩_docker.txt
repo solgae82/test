@@ -1,0 +1,3 @@
+Docker 컨테이너 기술은 리눅스 운영체제 기술이다.
+	
+docker install
