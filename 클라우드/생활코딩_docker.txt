@@ -1,3 +1,58 @@
 Docker 컨테이너 기술은 리눅스 운영체제 기술이다.
 	
-docker install
+
+기본 구조 
+	docker hub : 공식 Registry (https://hub.docker.com/)
+	image : docker image를 통해 컨테이너가 구동된다.
+		(실행에 필요한 프로그램, 라이브러리,미들웨어,OS,네트워크 설정등을 패키징한 image)
+	container : 실행되는 컨테이너	
+
+docker hub(registry) -> (pull) -> image -> (run) -> container
+
+---------
+
+# httpd image pull 하기
+
+	docker pull httpd	
+
+# pull한 로컬 image들 모두 보기
+
+	docker images	
+
+# httpd 이미지 컨테이너로 등록 후 시작하기
+	
+	docker run httpd 
+
+# httpd 이미지를 'ws1' 이라는 이름을 설정 후 run하기
+	
+	docker run --name ws1 httpd
+	
+# 컨테이너 프로세서 목록 보기
+	
+	docker ps	#현재 실행중인 컨테이너 목록 출력
+	docker ps -a	#정지+실행중인 컨테이너 목록 출력  
+	
+# 컨테이너 등록된 ws1 정지 및 시작하기
+	
+	docker stop ws1
+	docker start ws1
+	
+# 컨테이너 ws1 로그 보기
+	
+	docker logs -f ws1
+	
+# 컨테이너 삭제하기(정지 후 삭제)
+
+	docker stop ws1 
+	docker rm ws1
+	
+# 컨테이너 삭제하기(정지 + 삭제)
+
+	docker rm --force ws1
+	
+# 이미지 삭제하기
+
+	docker rmi httpd
+
+	
+	
