@@ -1,0 +1,181 @@
+
+저장 서브프로그램 :
+	- 오라클 시스템에 저장하여 사용하는 PL/SQL 프로그램
+	- 프로시저,함수,패키지,트리거 등
+ 
+프로시저: 
+    - 특정 처리 작업 수행을 위한 서브프로그램.
+    - EXEC 프로시저명; 또는 다른 PL/SQL문에 사용됨.
+    - SQL문 안에 사용 불가
+    - 파라미터 사용가능(IN, OUT, IN OUT)
+    - return문을 사용하면 로직 종료라는 뜻이다
+    
+함수: 특정 연산을 거친 결과 값을 반환하는 서브프로그램.(SQL문 안에 사용 가능) 
+패키지: 저장 서브프로그램을 그룹화
+트리거: 특정이벤트 발생시 자동으로 수행할 기능
+
+-------------------
+
+set SERVEROUTPUT on;
+
+-- 0. 프로시저 기본
+
+	create or replace procedure pro_noparam
+	is
+	    v_empno NUMBER(4) := 7788;
+	    v_name varchar(10);
+	begin
+	    v_name := 'SCOTT';
+	    DBMS_OUTPUT.put_line('v_empno=>' || v_empno);
+	    DBMS_OUTPUT.put_line('v_name=>' || v_name);
+	end;
+	/
+
+	-- 실행
+		EXECUTE pro_noparam;
+		--EXEC pro_noparam;
+		
+		/*
+		v_empno=>7788
+		v_name=>SCOTT
+		*/
+		
+
+	-- PL/SQL 문에서 실행
+		begin
+		    pro_noparam;
+		end;
+		/
+
+		/*
+		v_empno=>7788
+		v_name=>SCOTT
+		*/
+		
+	--프로시저 내용 확인하기(생성할때는 소문자로 이름정했으나, 막상 저장될땐 대문자로 저장됨.'PRO_NOPARAM')
+		
+		select * from user_source where name='PRO_NOPARAM';
+
+	-- 프로시저 삭제
+		drop procedure pro_noparam;
+
+/*
+    파라미터 사용 프로시저
+    '프로시저명(..)' 안에 지정
+    
+    (파라미터명 (IN/OUT/IN OUT) 자료형 , ..)
+    
+	    IN : 지정하지 않으면 기본 IN(입력 파라미터)
+	    OUT : 호출할때 반환(출력 파라미터)
+	    IN OUT : 호출할때 입력받은 후 결과값을 반환
+
+*/
+
+-- 1. IN 파라미터 프로시저
+
+	create or replace procedure pro_param_in
+	(
+	    param1 in number,
+	    param2 number, 
+	    param3 number :=3,
+	    param4 number default 4
+	)
+	is 
+
+	begin
+	    DBMS_OUTPUT.PUT_LINE('param1=>' || param1);
+	    DBMS_OUTPUT.PUT_LINE('param2=>' || param2);
+	    DBMS_OUTPUT.PUT_LINE('param3=>' || param3);
+	    DBMS_OUTPUT.PUT_LINE('param4=>' || param4);
+	end;
+	/
+
+	-- 실행
+	EXEC pro_param_in(11);
+		/*
+		ORA-06550: 줄 1, 열74:PLS-00306: 'PRO_PARAM_IN' 호출 시 인수의 갯수나 유형이 잘못되었습니다
+		ORA-06550: 줄 1, 열74:PL/SQL: Statement ignored
+		*/
+
+	EXEC pro_param_in(11,44);
+		/*
+		param1=>11
+		param2=>44
+		param3=>3
+		param4=>4
+		*/
+
+	-- 파라미터 변수명으로 직접 대입하기
+	
+		EXEC pro_param_in(param1=>11,param2=>44);
+			/*
+			param1=>11
+			param2=>44
+			param3=>3
+			param4=>4
+			*/
+		EXEC pro_param_in(1,2, param3=>11,param4=>44);
+			/*
+			param1=>1
+			param2=>2
+			param3=>11
+			param4=>44
+			*/
+
+
+-- 2. OUT 파라미터 프로시저
+
+	create or replace procedure pro_param_out
+	(
+	    in_empno in emp.empno%type,
+	    out_ename out emp.ename%type,
+	    out_sal out emp.sal%type
+	)
+	is 
+	    
+	begin
+	    select ename,sal into out_ename, out_sal from emp where empno = in_empno;
+	end;
+	/
+
+	-- out 파라미터 프로시저 사용하기
+	declare
+	    v_ename emp.ename%type;
+	    v_sal emp.sal%type;
+	begin
+	    pro_param_out(7788, v_ename, v_sal); -- out 프로시저 실행
+	    DBMS_OUTPUT.put_line('v_ename=>' || v_ename);
+	    DBMS_OUTPUT.put_line('v_sal=>' || v_sal);
+	    
+	    /*
+	    v_ename=>SCOTT
+	    v_sal=>3000
+	    */
+	end;
+	/
+
+
+-- 3. IN OUT 파라미터 프로시저
+
+	create or replace procedure pro_param_inout
+	(
+	    inout_no IN OUT NUMBER
+	)
+	is
+
+	begin
+	    inout_no := inout_no * 2;
+	end;
+	/
+
+	-- IN OUT 파라미터 실행
+	declare
+	    v_no number;
+	begin
+	    v_no := 5;
+	    pro_param_inout(v_no); -- in out 역할을 동시에 한다
+	    DBMS_OUTPUT.PUT_LINE('v_no=>'|| v_no); -- v_no=>10
+	end;
+	/
+
+

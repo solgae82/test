@@ -1,0 +1,48 @@
+저장 서브프로그램 :
+	- 오라클 시스템에 저장하여 사용하는 PL/SQL 프로그램
+	- 프로시저,함수,패키지,트리거 등
+ 
+함수: 
+	- 특정 연산을 거친 결과 값을 반환하는 서브프로그램.
+	- PL/SQL 내에 사용 가능
+	- SQL문 안에 사용 가능 
+	- 파라미터 사용가능(IN 모드만 사용한다)
+	- return 문으로 반드시 하나의 값 반환해야 함.
+
+-------------------
+
+set SERVEROUTPUT on;
+
+-- 함수 생성
+	create or replace function func_aftertax
+	(
+	    sal IN NUMBER
+	)
+	return NUMBER
+
+	is
+	    tax NUMBER := 0.05;
+	begin
+	    return (round(sal - (sal * tax)));
+	end;
+	/
+
+-- 새성한 함수 내용 확인하기
+	select * from user_source where name='FUNC_AFTERTAX'; --대문자로 검색해야함.
+
+-- SQL 쿼리로 함수 테스트
+	select func_aftertax(100) real_sal from dual; -- 95
+
+	select empno,ename,sal,func_aftertax(sal) "실수령액" from emp;
+
+-- PL/SQL에서 사용하기
+	declare
+	    v_after_sal NUMBER;
+	begin
+	    v_after_sal := func_aftertax(5000000);
+	    DBMS_OUTPUT.put_line('실수령액=>' || v_after_sal); -- 실수령액=>4750000
+	end;
+	/
+
+-- 함수 삭제
+	drop function func_aftertax;

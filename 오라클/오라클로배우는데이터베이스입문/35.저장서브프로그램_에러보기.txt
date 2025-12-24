@@ -1,0 +1,35 @@
+
+저장 서브프로그램은 컴파일 에러가 나도 저장은 된다.
+에러를 보기 위한 방법을 알아본다
+
+	-- 오류 정보 확인하기
+	
+	show errors; -- 최신 실행 에러 보기
+	show err (procedure/function/package등) 저장프로그램 이름; -- 특정 저장서브프로그램 최신 에러보기        
+
+-------------------
+
+-- 프로시저 컴파일 에러 내기(에러가 나도 저장됨)
+	create or replace procedure pro_err
+	is
+	    err_no NUMBER;
+	begin
+	    err_no = 100; -- 일부러 에러내고 저장됨 , = (x) , := (o)
+	    DBMS_OUTPUT.PUT_LINE('err_no=>' || err_no);
+	end;
+	/
+
+-- 발생한 에러 보기
+
+	show errors; -- 최신 에러 보기
+	--show err; -- 줄여쓰기 가능 
+
+	show errors procedure pro_err; -- 프로시저 pro_err 최신 에러 보기
+	-- show err procedure pro_err;
+	
+	
+	-- 함수 , 패키지 에러 보기
+		show err function func_err;
+		show err package pakage_err; 
+		
+		

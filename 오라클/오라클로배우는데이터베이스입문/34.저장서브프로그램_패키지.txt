@@ -1,0 +1,104 @@
+저장 서브프로그램 :
+	- 오라클 시스템에 저장하여 사용하는 PL/SQL 프로그램
+	- 프로시저,함수,패키지,트리거 등
+
+패키지: 저장 서브프로그램을 그룹화
+
+-------------------
+
+set SERVEROUTPUT on;
+
+-- 패키지 명세(선언)
+
+	create or replace package pkg_exam 
+	is
+	    spec_no NUMBER := 10;
+	    function func_aftertax(sal NUMBER) return NUMBER;
+	    procedure pro_emp(in_empno in EMP.EMPNO%TYPE);
+	    procedure pro_dept(in_deptno in dept.deptNo%TYPE);
+	end;
+	/
+
+
+-- 패키지 body(본문)
+
+	create or replace package body pkg_exam
+	is
+	    body_no NUMBER := 20;
+	    
+	    function func_aftertax(sal NUMBER) return NUMBER
+	    is
+		tax NUMBER := 0.05;
+	    begin
+		return (round(sal - (sal * tax)));
+	    end func_aftertax;
+	    
+	    procedure pro_emp(in_empno in EMP.EMPNO%TYPE)
+	    is
+		out_ename EMP.ENAME%TYPE;
+		out_sal EMP.SAL%TYPE;
+	    begin
+		select ename, sal into out_ename, out_sal from emp where empno = in_empno;
+		
+		DBMS_OUTPUT.put_line('ename=>' || out_ename);
+		DBMS_OUTPUT.put_line('sal=>' || out_sal);
+		
+	    end pro_emp;
+	    
+	    procedure pro_dept(in_deptno in dept.deptNo%TYPE)
+	    is
+		out_dname DEPT.DNAME%TYPE;
+		out_loc DEPT.LOC%TYPE;        
+	    begin
+		select dname, loc into out_dname, out_loc from dept where deptno = in_deptno;
+		
+		DBMS_OUTPUT.put_line('out_dname=>' || out_dname);
+		DBMS_OUTPUT.put_line('out_loc=>' || out_loc);
+		
+	    end pro_dept;
+	end;
+	/
+
+-- 패키지 명세 확인
+
+	select * from user_source where type='PACKAGE' and name = 'PKG_EXAM';
+	desc pkg_exam;
+	
+-- 패키지 명세에 선언된 변수값 출력
+
+	begin
+	    DBMS_OUTPUT.PUT_LINE('pkg_exam.spec_no=>' || pkg_exam.spec_no); -- pkg_exam.spec_no=>10
+	end;
+	/
+
+-- 패키지 함수 실행
+
+	select pkg_exam.func_aftertax(100) as real_sal from dual; -- 95
+
+-- 패키지(프로시저).pro_emp 실행
+
+	exec pkg_exam.pro_emp(7788);
+	
+	    /*
+	    ename=>SCOTT
+	    sal=>3000
+	    */
+	    
+-- 패키지(프로시저).pro_dept 실행
+
+	exec pkg_exam.pro_dept(pkg_exam.spec_no);
+	
+	    /*
+	    out_dname=>ACCOUNTING
+	    out_loc=>NEW YORK
+	    */
+	    
+    
+-- 패키지 삭제하기 (명세 + 본문)
+	
+	drop package pkg_exam;
+
+-- 패키지 삭제하기 (본문)
+	
+	drop package body pkg_exam;
+
