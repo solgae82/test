@@ -1,0 +1,110 @@
+----- 문자 셋 설정
+/*
+	SYS AS SYSDBA 로 접속하자
+	위치 : $ORACLE_HOME/product/버전/dbs/init.ora
+	parallel_server => true / false 확인 
+	false로 설정 되어 있어야 설정시 오류가 발생하지 않는다.
+*/
+show parameter parallel_server; 
+
+-- 문자셋 확인 쿼리
+select * from nls_database_parameters where parameter like '%CHARACTERSET%';
+
+select * from sys.props$ where name='NLS_LANGUAGE';
+
+-- 문자셋 변경하기
+update sys.props$ set value$='UTF8' where name='NLS_CHARACTERSET';
+update sys.props$ set value$='UTF8' where name='NLS_NCHAR_CHARACTERSET';
+update sys.props$ set value$='KOREAN_KOREA.UTF8' where name='NLS_LANGUAGE';
+
+commit;
+
+#####################################################################
+클라이언트 접속시 에러(ORA-06552 ORA-06553) 메시지가 나올때..
+#####################################################################
+
+1. 아래 쿼리를 sqlplus,  sys계정으로 실행해본다
+
+	SELECT DISTINCT (NLS_CHARSET_NAME (CHARSETID)) CHARACTERSET, DECODE (type#, 1, DECODE (CHARSETFORM, 1, 'VARCHAR2',2,'NVARCHAR2','UNKOWN'),9, DECODE (CHARSETFORM,1, 'VARCHAR',2, 'NCHAR VARYING','UNKOWN'),96, DECODE (CHARSETFORM,
+	1, 'CHAR',2, 'NCHAR','UNKOWN'),112, DECODE (CHARSETFORM,1, 'CLOB',2, 'NCLOB','UNKOWN')) types_used_in FROM SYS.col$ WHERE CHARSETFORM IN (1, 2) AND type# IN (1, 9, 96, 112);
+
+	- 실행해보면 TYPES_USED_IN 컬럼의 캐릭터셋을 보면 중복이 나올 것이다..(중복에러)
+	- 예를 들어 아래처럼
+ 
+
+	CHARACTERSET                            TYPES_USED_IN
+	-----------------------------------------------------
+	 AL16UTF16                               NCHAR
+	 AL16UTF16                               NVARCHAR2
+	 AL16UTF16                               NCLOB
+	 US7ASCII                                CHAR
+	 US7ASCII                                VARCHAR2 # <-요기
+	 WE8DEC                                  VARCHAR2 # <-요기
+	 US7ASCII                                CLOB
+
+
+	※ 중복 캐릭터셋이 없더라도 아래 명령을 시도해보자(된다)
+	
+2. 아래 명령을 차례차례 해본다..그럼 해결 된다.
+
+	SQL> sqlplus / as sysdba
+	SQL> SHUTDOWN IMMEDIATE;
+	SQL> STARTUP MOUNT;
+	SQL> ALTER SYSTEM ENABLE RESTRICTED SESSION;
+	SQL> ALTER SYSTEM SET JOB_QUEUE_PROCESSES=0;
+	SQL> ALTER SYSTEM SET AQ_TM_PROCESSES=0;
+	SQL> ALTER DATABASE OPEN;
+	SQL> COL VALUE NEW_VALUE CHARSET
+	SQL> SELECT VALUE FROM NLS_DATABASE_PARAMETERS WHERE PARAMETER='NLS_CHARACTERSET';
+		VALUE
+		---------
+		UTF8
+	SQL> COL VALUE NEW_VALUE NCHARSET
+	SQL> SELECT VALUE FROM NLS_DATABASE_PARAMETERS WHERE PARAMETER='NLS_NCHAR_CHARACTERSET';
+		VALUE
+		---------
+		UTF8
+	SQL> ALTER DATABASE CHARACTER SET INTERNAL_USE &CHARSET;
+		old   1: ALTER DATABASE CHARACTER SET INTERNAL_USE &CHARSET
+		new   1: ALTER DATABASE CHARACTER SET INTERNAL_USE UTF8
+	
+	SQL> ALTER DATABASE NATIONAL CHARACTER SET INTERNAL_USE &NCHARSET;
+		old   1: ALTER DATABASE NATIONAL CHARACTER SET INTERNAL_USE &NCHARSET
+		new   1: ALTER DATABASE NATIONAL CHARACTER SET INTERNAL_USE UTF8
+
+	# 2번 재시동
+	SQL> SHUTDOWN IMMEDIATE;
+	SQL> STARTUP;
+	-- yes, 2 times startup/shutdown . This is not a typo
+	SQL> SHUTDOWN IMMEDIATE;
+	SQL> STARTUP;
+
+3. 클라이언트 프로그램 다시 재시작 후 접속해보면 에러메시지가 사라졌음을 확인할 수 있다.
+
+-------------------// DONG 계정 생성 권한 주기
+
+-- DONG 테이블스페이스 생성
+create tablespace DONG
+datafile 'dong.dbf'	/*설치된 $ORACL_HOME/dbs/ */
+size 100M
+autoextend on next 5M
+maxsize unlimited;
+
+--  DONG temporary 테이블스페이스 생성
+create temporary tablespace DONGTEMP
+tempfile 'dongtemp.dbf' /*설치된 $ORACL_HOME/dbs/ */
+size 50M
+autoextend on next 5M
+maxsize unlimited;
+
+
+-- 계정 생성
+CREATE USER DONG IDENTIFIED BY "패스워드"
+DEFAULT TABLESPACE DONG
+TEMPORARY TABLESPACE DONGTEMP
+ACCOUNT UNLOCK;
+
+-- 권한 주기
+grant connect, resource, dba to DONG;
+
+
