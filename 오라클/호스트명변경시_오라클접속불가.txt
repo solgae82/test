@@ -12,12 +12,12 @@ listener.ora
 	  )
 
 	위에 HOST 부분을 잘 보자, 이전컴퓨터명 부분을 바뀐 컴퓨터명으로 바꾸던가 IP주소로 바꾸던가 해야한다
-	(ADDRESS = (PROTOCOL = TCP)(HOST = 이전컴퓨터명)(PORT = 1521))
+		(ADDRESS = (PROTOCOL = TCP)(HOST = 이전컴퓨터명)(PORT = 1521))
 	
 	아래처럼
-	(ADDRESS = (PROTOCOL = TCP)(HOST = dong-notebook)(PORT = 1521))
+		(ADDRESS = (PROTOCOL = TCP)(HOST = dong-notebook)(PORT = 1521))
 	또는
-	(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))
+		(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))
 
 
 tnsnames.ora
@@ -31,9 +31,9 @@ tnsnames.ora
 	  )
 	
 	위에 HOST 부분을 잘 보자, 이전컴퓨터명 부분을 바뀐 컴퓨터명으로 바꾸던가 IP주소로 바꾸던가 해야한다
-	(ADDRESS = (PROTOCOL = TCP)(HOST = 이전컴퓨터명)(PORT = 1521))
+		(ADDRESS = (PROTOCOL = TCP)(HOST = 이전컴퓨터명)(PORT = 1521))
 
 	아래처럼
-	(ADDRESS = (PROTOCOL = TCP)(HOST = dong-notebook)(PORT = 1521))
+		(ADDRESS = (PROTOCOL = TCP)(HOST = dong-notebook)(PORT = 1521))
 	또는
-	(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521)) 
+		(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521)) 
