@@ -140,13 +140,110 @@ set SERVEROUTPUT on;
 	
 	
 -------------------------------------------------// 최종 정리
+트리거 DDL:  
+	CREATE [OR REPLACE] TRIGGER trigger_name
+	[BEFORE | AFTER | INSTEAD OF] 
+	[INSERT | UPDATE | DELETE] ON table_name
+	[REFERENCING OLD as od NEW as nw] -- (옵션)  
+	[FOR EACH ROW] -- (옵션)
+	[WHEN (condition)] -- (옵션)
+	[FOLLOWS 트리거 이름, 트리거이름..] -- (옵션)
+	[ENABLE | DISABLE] -- (옵션)
+	
+	DECLARE 
+		-- (선언부 - 변수 등)
 
+	BEGIN 
+		-- (실행부 - PL/SQL 코드)
+		EXCEPTION -- (예외 처리 - 선택적)
+	END;
+	/
+	
+속성 설명:
+	
+	[BEFORE | AFTER | INSTEAD OF]
+		BEFORE : 이벤트 발생 전 트리거 실행
+		AFTER : 이벤트 발생 후 트리거 실행
+		INSTEAD OF : view에 대해 DML실행할 경우 DML 대신 트리거를 실행
+		
+	[INSERT | UPDATE | DELETE]
+		- 트리거가 실행될 DML 이벤트 지정
+		- 'OR' 로 다중 설정 가능
+			insert OR update OR delete on EMP
+		- 'OF' 로 컬럼 지정 가능
+			update OF sal, comm on EMP -- EMP.sal 컬럼이 변경될 때
+			
+	ON table_name : 이벤트가 발생하는 대상 테이블 지정 (예: ON EMP)
 
-오라클에서 FOR EACH ROW 트리거는 DML(INSERT, UPDATE, DELETE) 이벤트 발생 시 영향받는 각 행(row)마다 트리거가 실행되도록 하는 옵션이며, WHEN 절은 이 행 트리거가 실행될 세부적인 조건을 지정하여, 특정 조건(예: :new.컬럼명 > 100)을 만족하는 행에 대해서만 트리거 본문(PL/SQL)을 실행하게 해주는 구문입니다. 이는 문장(Statement) 트리거와 달리, 각 레코드의 변경 전후 값(:old, :new)에 접근하여 정밀한 제어를 가능하게 합니다. 
-FOR EACH ROW 트리거란?
-실행 방식: 테이블에 영향을 주는 SQL문이 실행될 때, 해당 SQL문에 의해 변경되는 모든 행에 대해 개별적으로 트리거 본문이 실행됩니다.
-주요 사용: 레코드별로 데이터 검증, 감사 로깅, 특정 값 변경 등 행 단위 처리가 필요할 때 사용됩니다. 
-WHEN 절이란?
-역할: FOR EACH ROW 트리거가 실행된 후, 트리거 본문 실행 여부를 결정하는 필터 역할을 합니다.
-구문: WHEN (조건식) 형태로 사용하며, 조건식은 :old (변경 전 값) 또는 :new (변경 후 값) 레코드 컬럼을 참조하여 작성합니다.
-예시: WHEN (new.salary > 50000)과 같이 급여가 50000을 초과하는 경우에만 트리거 본문이 실행되도록 합니다
+	[REFERENCING OLD as od NEW as nw]
+		- 지정하지 않으면 레코드 잠조명은 아래와 같다
+			- 변경 전 레코드 참조명은 OLD
+			- 변경 후 레코드 참조명은 NEW
+		- 특별히 별칭을 지정해서 사용하고 싶다면 아래와 같이 한다
+			
+			REFERENCING OLD before_rec
+			REFERENCING NEW as after_rec
+			
+			또는 아래처럼 한번에 모두 설정
+				
+			REFERENCING OLD before_rec od NEW as after_rec
+		- 설정 후 PL/SQL 안에서 사용
+			:before_rec.sal -- 변경 전 레코드 sal 컬럼 접근
+			:after_rec.sql  -- 변경 후 레코드 sal 컬럼 접근
+
+		※ 특별한 이유가 없다면 그냥 :NEW , :OLD 를 사용하는게 낫다
+		
+	[FOR EACH ROW]	
+
+		- FOR EACH ROW: (row 단위 트리거)
+			- 각 행마다 트리거 실행
+			- FOR EACH ROW 트리거는 DML(INSERT, UPDATE, DELETE) 이벤트 발생 시 
+			영향받는 각 행(row)마다 트리거가 실행되도록 하는 옵션.
+		
+		- FOR EACH STATEMENT: (문장 단위 트리거)
+			- 전체 DML 문장에 대해 1번만 실행 
+			(아무 것도 지정하지 않으면 이 모드가 지정된 것으로 간주)
+	 
+	[WHEN (condition)]
+			
+		- 역할: FOR EACH ROW 트리거가 실행된 후, 트리거 본문 실행 여부를 결정하는 필터 역할을 합니다.
+		- 구문: WHEN (조건식) 형태로 사용하며, 조건식은 old (변경 전) 또는 new (변경 후) 레코드 컬럼을 참조하여 작성합니다.
+		- 예시: WHEN (new.salary > 10000)과 같이 급여가 10000을 초과하는 경우에만 트리거 본문이 실행되도록 합니다
+
+		(예시)
+			CREATE OR REPLACE TRIGGER trg_update_salary
+			BEFORE UPDATE ON emp
+			FOR EACH ROW
+			WHEN (NEW.sal > 10000) -- 업데이트된 NEW.sal 값이 10000을 넘을때만 실행 
+			BEGIN
+			    DBMS_OUTPUT.PUT_LINE('높은 급여 변경 발견 => ' || :NEW.sal);
+			END;
+			/
+		
+		-주의 할 점은 WHEN 절의 NEW 레코드 참조변수는 ':'을 붙이지 않는다.
+		-트리거 본체에서는 ':NEW' 처럼 사용해야 한다.
+		
+	[FOLLOWS 트리거 이름, 트리거이름..]
+		- 오라클 11g 이상에서 설정 가능
+		
+		FOLLOWS trg_A -- 현재 트리거 보다 먼저 실행될 트리거(trg_A) 설정.
+		
+	[ENABLE | DISABLE]
+		- 오라클 11g 이상에서 설정 가능
+		- 활성화/비활성화를 트리거 만들면서 정하는 기능(쓸일 없을 듯)
+		
+	
+트리거 제약사항
+	1. 트리거 소스코드 크기는 32KB 이하로 해야한다.
+	2. LONG, LONG RAW 타입 변수 사용 못함
+	3. 트리거가 걸린 테이블을 조회하거나 변경하는 로직을 사용할 수 없다.
+	4. 트리거 내에서 DDL,TCL실행 불가능(기본)
+		- 꼭 사용해야한다면 declare절에 PRAGMA AUTONOMOUS_TRASACTION 설정해야 한다
+		declare
+		
+			PRAGMA AUTONOMOUS_TRASACTION	
+			
+		begin..end;
+	5. 트리거 내에서 트랜잭션 제어하는 서브프로그램은 호출 못한다.
+		
+
