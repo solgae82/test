@@ -6,3 +6,136 @@
 
 -------------------
 
+set SERVEROUTPUT on;
+
+-- DML 실행 전 수행할 트리거 테스트 
+
+	-- 트리거 테스트 테이블 생성
+	create table emp_trg
+	as select * from emp;
+
+	-- DML 실행 전 수행할 트리거 생성
+	/*
+	- INSERTING , UPDATING , DELETING 은 예약 키워드 , 이벤트가 발생했을때 true.
+	- raise_application_error 는 내장 프로시저로서 사용자 정의 예외 발생
+	    -(사용자 정의 예외코드는 20000 ~ 20999 까지 사용가능)
+	*/
+	create or replace trigger trg_emp_nodml_weekend 
+	before --실행전
+	insert or update or delete on emp_trg
+	begin
+	    if to_char(sysdate , 'DY') in ( '토', '일') then 
+		if INSERTING then --삽입할때
+		    raise_application_error(-20000, '주말 사원정보 추가 불가');
+		elsif UPDATING then -- 수정시
+		    raise_application_error(-20001, '주말 사원정보 수정 불가');
+		elsif DELETING then -- 삭제시
+		    raise_application_error(-20002, '주말 사원정보 삭제 불가');
+		else
+		    raise_application_error(-20003, '주말 사원정보 변경 불가');
+		end if;
+	    end if;
+	end;
+	/
+
+	-- update 트리거 이벤트 발생하기, oracle 설치된 OS 날짜를 토요일로 변경하고 테스트
+	update emp_trg set sal=3500 where empno = 7788; -- ORA-20001: 주말 사원정보 수정 불가
+
+-- DML 수행 후 수행할 트리거 테스트
+
+	-- 로그 테이블 생성
+	create table emp_trg_log(
+	    tablename varchar2(10), -- DML이 수행된 테이블 이름
+	    dml_type varchar2(10),  -- DML 명령어 종류
+	    empno number(4),        -- DML 대상이 된 사원번호
+	    user_name varchar(30),  -- DML 수행할 user 이름(세션이름)
+	    change_date date        -- DML 수행된 날짜
+	);
+
+	-- 대상테이블에 DML 수행 후 변경 사항 이력 emp_trg_log 테이블에 기록하기 트리거 생성
+	create or replace trigger trg_emp_log 
+	after -- 수행 후
+	insert or update or delete on emp_trg
+	for each row --영향 받은 행마다 트리거 실행
+
+	begin
+	    
+		if INSERTING then
+		    insert into emp_trg_log values(
+			'emp_trg','INSERT', :new.empno,
+			SYS_CONTEXT('USERENV','SESSION_USER'), sysdate
+		    );
+		elsif UPDATING then
+		    insert into emp_trg_log values(
+			'emp_trg','UPDATE', :old.empno,
+			SYS_CONTEXT('USERENV','SESSION_USER'), sysdate
+		    );
+		elsif DELETING then
+		    insert into emp_trg_log values(
+			'emp_trg','DELETE', :old.empno,
+			SYS_CONTEXT('USERENV','SESSION_USER'), sysdate
+		    );
+		
+		end if;
+	    
+	end;
+	/
+
+	-- 삽입 이벤트 트리거 발생하기
+	insert into emp_trg values(9999,'DONG','CLERK',7788,to_date('2025-12-25','YYYY-MM-DD')
+	,1200, null, 20);
+
+	commit;
+
+	-- 삽입 확인
+	select * from emp_trg;
+
+	-- 트리거 로그 확인
+	select * from emp_trg_log;
+
+		/* 
+		tablename   dml_type    empno   user_name   change_date
+		-------------------------------------------------------
+		emp_trg	    INSERT	    9999    DONG        25/12/25
+		*/
+
+	-- 업데이트 이벤트 트리거 발생하기
+	update emp_trg set sal = 1300 where mgr=7788; -- 2개 행 이(가) 업데이트되었습니다.
+	commit;
+	
+	-- 업데이트 확인
+	select * from emp_trg; -- '7876/ADAMS', '9999/DONG' 2개행이 sal=1300 으로 변경되었다
+
+	-- 트리거 로그 확인
+	select * from emp_trg_log;
+
+		/* 
+		tablename   dml_type    empno   user_name   change_date
+		-------------------------------------------------------
+		emp_trg	    INSERT	    9999	DONG	    25/12/25
+		emp_trg	    UPDATE	    7876	DONG	    25/12/25
+		emp_trg	    UPDATE	    9999	DONG	    25/12/25
+		*/
+
+--트리거 정보 조회 (user_triggers)
+	select * from user_triggers;
+	
+	select 
+	    trigger_name, 
+	    trigger_type,
+	    triggering_event,
+	    table_name,
+	    status  /* ENABLED/DISABLED */
+	from user_triggers;
+
+-- 트리거 변경
+    --특정 트리거 (활성화/비활성화)
+    alter trigger trg_emp_log disable; -- enable / disable
+
+    -- 테이블 기준으로 관련된 트리거 모두 (활성화/비활성화)
+    alter table emp_trg disable ALL TRIGGERS;
+
+-- 트리거 삭제
+	drop trigger TRG_EMP_LOG;
+	
+	
