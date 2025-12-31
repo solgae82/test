@@ -1,0 +1,3 @@
+풀젝 생성 후 Java Build Path > Order and Export > 빨간색 마크가 생겼을때.
+	: 프로젝트에서 해당 디렉토리를 생성해준다
+	

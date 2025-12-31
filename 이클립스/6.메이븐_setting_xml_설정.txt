@@ -1,0 +1,29 @@
+maven 라이브러리 리포지토리 경로를 관리하기 위해 설정하는 방법이다
+-------------------
+1. settings.xml 생성
+
+	: 메이븐 프로그램 관련 설정 파일이다. 
+	없다면 아래처럼 파일 생성 후 xml설정을 한다.
+	
+	관리경로/settings.xml : 
+	
+		<?xml version="1.0" encoding="UTF-8"?>
+		<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+		
+			<!-- 리포지토리 경로 설정-->
+			<localRepository>D:\eclipse\repository</localRepository>
+			
+		</settings>	
+
+2. 이클립스 maven 설정 변경 
+	
+	Window>Preference>Maven>User Settings>User Settings
+		란에 변경한 '관리경로/settings.xml' 을 구성파일로 설정하면,
+		아래란에 있는 Local Repository 값이 설정한 
+		settings.xml의 <localRepository> 값으로 변경되는 것을 확인할 수 있다
+		
+		앞으로 maven 라이브러리들은 설정한 'D:\eclipse\repository'로 다운로드 하게된다.
+	
+	

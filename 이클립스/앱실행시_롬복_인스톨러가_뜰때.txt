@@ -1,0 +1,10 @@
+새로운 java 프로젝트 생성후 실행하면 롬복 인스톨러가 자꾸 뜰때가 있다.
+이 경우는 이전에 롬복을 사용한 플젝의 흔적이 남아서인 것이다.
+아래처럼 조치하면 된다
+-------------------
+
+이클립스에서 앱 실행시 자꾸 롬복 실행될때
+	프로젝트우클릭 > Run As > Run Configurations > Java Application > App
+		Main탭
+			Project: Chapter04  <= (해당 프로젝트 이름으로 교체) 
+			Main class: com.solgae.App <=(롬복 어쩌고로 실행되게 되어있을텐데, 바꾼다)
