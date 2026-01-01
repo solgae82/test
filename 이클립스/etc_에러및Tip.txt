@@ -1,3 +1,7 @@
 풀젝 생성 후 Java Build Path > Order and Export > 빨간색 마크가 생겼을때.
-	: 프로젝트에서 해당 디렉토리를 생성해준다
+	: 프로젝트에서 직접 해당 디렉토리들을 생성해준다
+	
+실행시 자꾸 엉뚱한 프로세스가 실행될때
+	플젝 우클릭 > Run As > Run Configurations > Java Application > App 
+	: Main 탭의 Project 입력부분과, Main class 부분을 살펴본다.
 	

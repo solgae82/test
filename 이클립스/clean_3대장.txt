@@ -1,0 +1,8 @@
+프로젝트 clean
+	Project > clean
+
+톰캣 clean
+	Servers>톰캣서버우클릭>Clean Tomcat Work Directory
+	
+메이븐 clean
+	메이븐플젝 우클릭>Run As>Maven clean..
