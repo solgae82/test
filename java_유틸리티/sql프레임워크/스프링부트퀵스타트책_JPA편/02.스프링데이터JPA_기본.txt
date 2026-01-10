@@ -5,7 +5,25 @@ JPA(Java Persistence API) 기반 데이터 접근 계층 개발을 단순화하�
 핵심은 JpaRepository 인터페이스 제공을 통해 데이터베이스 접근을 객체 지향적으로 처리하며, 
 SQL 작성 부담을 크게 줄여준다는 점입니다. 
 
+기본 메서드
 
+	조회 (Read)
+		findAll(): 모든 엔티티를 리스트로 조회합니다.
+		findById(ID id): 특정 ID를 가진 엔티티를 Optional 형태로 조회합니다.
+		count(): 엔티티의 총 개수를 반환합니다.
+		existsById(ID id): 특정 ID의 엔티티가 존재하는지 여부를 반환합니다.
+		findBy프로퍼티(값): 속성 이름으로 쿼리 생성 (예: findByUsername(String username)).
+	저장/수정 (Create/Update)
+		save(T entity): 엔티티를 저장하거나 업데이트합니다. 새 엔티티면 INSERT, 기존 엔티티면 UPDATE가 실행됩니다.
+		saveAll(Iterable<T> entities): 여러 엔티티를 한 번에 저장합니다.
+		flush(): 영속성 컨텍스트의 변경사항을 DB에 즉시 반영합니다.
+		saveAndFlush(T entity): 저장 후 즉시 flush를 호출합니다.
+	삭제 (Delete)
+		delete(T entity): 특정 엔티티를 삭제합니다.
+		deleteById(ID id): 특정 ID를 가진 엔티티를 삭제합니다.
+		deleteAll(): 모든 엔티티를 삭제합니다.
+		deleteAll(Iterable<T> entities): 여러 엔티티를 한 번에 삭제합니다.
+			
 ------------------- application.properties
 
 # DataSource Setting

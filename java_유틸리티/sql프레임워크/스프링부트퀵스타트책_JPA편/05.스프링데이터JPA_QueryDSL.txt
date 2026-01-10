@@ -218,3 +218,59 @@ public class DynamicQueryDslTest {
 	}
 }
 
+-------------------
+QueryDSL의 기본 메소드는 조회, 조건, 정렬, 페이징, 집계 함수 등을 메서드 체인 방식으로 제공한다.
+JPQL보다 훨씬 유연하고 컴파일 시점에서 오류를 잡을 수 있어 편리합니다. 
+
+	JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
+	// QMember.member는 Q클래스 인스턴스
+	QMember member = QMember.member;
+	QTeam team = QTeam.team;
+
+	List<Member> members = queryFactory
+	    .selectFrom(member) // SELECT * FROM Member
+	    .where(member.age.gt(20)) // WHERE age > 20
+	    .leftJoin(member.team, team) // LEFT JOIN Team team ON member.team_id = team.id
+	    .where(team.name.eq("개발팀")) // AND team.name = '개발팀'
+	    .orderBy(member.username.desc()) // ORDER BY username DESC
+	    .fetch(); // List<Member> 반환
+		
+
+1. 기본 구조 (QueryFactory)
+	JPAQueryFactory queryFactory;: JPAQueryFactory 객체를 생성하여 사용합니다.
+	
+	select(), from(), where()
+	selectFrom(QEntity entity): 엔티티를 선택하고 FROM 절을 설정합니다 (예: selectFrom(member))
+	
+2. 검색 조건 (where절)
+	메서드 체인이나 콤마(,)로 연결하며, 다양한 비교 연산자를 제공합니다. 
+	eq(): 같다 (equals)
+	ne(): 같지 않다 (not equals)
+	in(): 포함 (in)
+	notIn(): 미포함 (not in)
+	go() / gt() / ge(): 크다 / 크거나 같다 (greater than / greater than or equal)
+	lo() / lt() / le(): 작다 / 작거나 같다 (less than / less than or equal)
+	isNull() / isNotNull(): null 여부
+	like(): 패턴 매칭 (%, _ 사용)
+	contains(): 부분 문자열 포함
+	between(): 범위 (between A and B)
+	and(), or(): 조건 결합
+	
+3. 조회 결과 처리 (결과 셋)
+	fetch(): 결과 리스트 반환 (List).
+	fetchOne(): 결과가 1개일 때 단일 객체 반환.
+	fetchFirst(): 첫 번째 결과만 반환.
+	fetchCount(): count() 쿼리로 변환하여 개수 반환.
+	fetchResults(): 페이징 정보와 함께 결과 리스트 반환 (QueryResults) 
+	
+4. 정렬 (OrderBy)
+	orderBy(entity.field.asc()): 오름차순 (ascending).
+	orderBy(entity.field.desc()): 내림차순 (descending).
+	orderBy(entity.field.asc(), entity.otherField.desc()): 여러 조건 정렬.
+	
+5. 집계 및 그룹화
+	count(), sum(), avg(), min(), max(): JPQL 집합 함수 사용 가능.
+	groupBy(entity.field): 그룹화.
+	
+	

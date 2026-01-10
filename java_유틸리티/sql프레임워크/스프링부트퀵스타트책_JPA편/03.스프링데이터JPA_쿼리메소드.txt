@@ -1,12 +1,18 @@
 스프링 데이터 JPA : 쿼리메소드 
 
-	Spring Data JPA에서 메소드 이름의 규칙만으로 자동으로 JPQL 쿼리를 생성해주는 기능으로, 
-	개발자가 복잡한 SQL 작성 없이 findByUsername, countByEmail처럼 메소드 이름 규칙에 따라 
-	데이터를 조회, 수정, 삭제할 수 있어 개발 생산성을 높여줍니다. 
+Spring Data JPA에서 메소드 이름의 규칙만으로 자동으로 JPQL 쿼리를 생성해주는 기능. 
+(메소드명으로 jpql 쿼리를 생성하는 기능)
 
-	이는 find, get, query 등의 키워드와 엔티티 필드명을 조합하여 사용하며, 
-	간단한 조회 시 매우 유용하지만 복잡한 쿼리에는 @Query 어노테이션을 사용하기도 합니다
+Repositary 인터페이스에 메소드명을 선언하는데,
+find, get, query 등의 키워드와 엔티티 필드명,조건 키워드등을 조합하여 메소드명을 만든다.
 
+(예)
+	findBy + 컬럼명 + 조건 키워드(Like, GreaterThan 등) + And/Or + 컬럼명 
+
+메소드 이름의 조합의 경우의 수는 너무 많으므로 API 문서를 보면서 만들어야한다.
+
+간단한 조회 시 매우 유용하지만 복잡한 쿼리에는 @Query 어노테이션을 사용한다.
+	
 ------------------- application.properties
 
 # DataSource Setting
@@ -33,7 +39,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -231,3 +237,41 @@ public class QueryMethodTest {
 	}
 }
 
+-------------------
+쿼리 메소드 조합 기본 규칙
+	시작: find, get, read, query, count, delete 등으로 시작.
+	컬럼명: 엔티티의 속성 이름을 정확히 사용 (예: Title, Price).
+	연산자: And, Or 등으로 여러 조건을 연결하고, Like, GreaterThan, LessThan, Is, In 등 다양한 키워드를 조합하여 조건 추가
+
+주요 조합 키워드
+	And, Or: 여러 조건을 논리적으로 연결.
+	Is / Equals: 값이 같은 경우 (대부분 생략 가능).
+	Not: 값이 다른 경우.
+	Like: 부분 일치 검색 (% 사용).
+	StartingWith, EndingWith, Containing: Like의 특수한 형태.
+	GreaterThan, LessThan, GreaterOrEqual, LessOrEqual: 크기 비교.
+	Between: 범위 검색.
+	IsNull, IsNotNull: null 여부 확인.
+	In: 여러 값 중 하나와 일치. 
+
+
+작성예)
+	// 예시: 제목(title)이 'Spring'으로 시작하고(Like) 가격(price)이 10000보다 큰(GreaterThan) 게시글 조회
+	List<Post> findByTitleLikeAndPriceGreaterThan(String title, int price);
+
+	// 예시: 상태(status)가 'ACTIVE'이거나(Or) 생성일(createdDate)이 특정 날짜 이전인(Before) 사용자 조회
+	List<User> findByStatusOrCreatedDateBefore(String status, LocalDate date);
+
+	// 예시: 이름(name)이 같거나(Equals) 이메일(email)이 포함된(Containing) 사용자 조회
+	List<User> findByNameEqualsOrEmailContaining(String name, String email);
+
+언제 쿼리 메소드 조합이 유용한가?
+	- 간단한 조건의 조회/수정/삭제 시.
+	- 복잡하지 않은 여러 조건을 결합할 때.
+	- 개발 생산성을 높이고 싶을 때. 
+
+한계 및 대안
+	매우 복잡한 조인(JOIN)이나 동적 쿼리가 필요한 경우 쿼리 메소드 이름만으로는 한계가 있음.
+	이 경우 @Query 어노테이션을 사용해 직접 JPQL을 작성하거나 QueryDSL을 사용하는 것이 더 효율적. 
+	
+	

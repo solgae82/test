@@ -1,3 +1,5 @@
+
+-------------------
 MEAT-INF/persistence.xml
 
 	<!-- 엔티티 클래스 등록-->
@@ -40,10 +42,41 @@ EntityManager 생성
 
 EntityManager 기본 메소드
 
-	persist(Object entity), merge(Object entity), remove(Object entity)
-	find(Class<T> entityClass, Object pk)
-	createQuery(String sql, Class<T> resultClass)
+	persist(Object entity) 
+		엔티티 객체를 받아 데이터베이스에 저장(INSERT)하고 
+		영속 상태로 만듭니다.
 	
+	merge(Object entity)
+		준영속 상태의 엔티티를 다시 영속 상태로 만들거나, 
+		새로운 엔티티를 저장할 때 사용합니다. 
+	
+	remove(Object entity)
+		: 영속 상태의 엔티티 객체를 받아 데이터베이스에서 삭제(DELETE)합니다. 
+	
+	find(Class<T> entityClass, Object pk)
+		엔티티 클래스와 기본 키(ID)를 받아 데이터베이스에서 해당 엔티티를 조회합니다. 
+		객체가 없으면 null을 반환합니다.
+	
+	createQuery(String sql, Class<T> resultClass)
+		JPQL(Java Persistence Query Language) 쿼리 문자열을 받아 
+		Query 객체를 반환합니다. 
+		이를 통해 더 복잡한 조회를 할 수 있습니다.
+
+	createNativeQuery(String sqlString, Class resultClass)
+		네이티브 SQL 쿼리를 실행
+	
+	flush()
+		영속성 컨텍스트의 변경사항을 데이터베이스에 동기화 (즉시 반영)
+
+	refresh(Object entity)
+		엔티티의 상태를 데이터베이스의 최신 상태로 새로고침
+	
+	detach(Object entity)
+		엔티티를 영속성 컨텍스트에서 분리, 준영속 상태로 만든다.
+
+	contains(Object entity) 
+		주어진 엔티티가 현재 영속성 컨텍스트에서 관리되고 있는지 확인
+
 영속성 컨텍스트
 
 	엔티티를 관리하는 컨테이너

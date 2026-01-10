@@ -1,4 +1,4 @@
-JPA 기본
+
 JPA 기본
 	MEAT-INF/persistence.xml
 
@@ -7,15 +7,45 @@ JPA 기본
 	EntityManager 생성 
 
 	EntityManager 기본 메소드
-		
+	
+		persist(Object entity)		
+		merge(Object entity)		
+		remove(Object entity)		
+		find(Class<T> entityClass, Object pk)		
+		createQuery(String sql, Class<T> resultClass)
+		createNativeQuery(String sqlString, Class resultClass)		
+		flush()
+		refresh(Object entity)		
+		detach(Object entity)
+		contains(Object entity) 
+
 	영속성 컨텍스트
 
 	JPQL(Java Persistence Query Language)
 	
+		createQuery(String jpqlString, entityClass)
+		
 스프링 데이터 JPA
 	
 	기본 CRUD
-		
+
+		조회
+			findAll()
+			findById(ID id)
+			count()
+			existsById(ID id)
+			findBy프로퍼티(값)
+		저장/수정
+			save(T entity)
+			saveAll(Iterable<T> entities)
+			flush()
+			saveAndFlush(T entity)
+		삭제
+			delete(T entity)
+			deleteById(ID id)
+			deleteAll()
+			deleteAll(Iterable<T> entities)
+	
 	쿼리 메소드
 		
 	@Query 어노테이션
@@ -32,4 +62,12 @@ QueryDSL
 		
 	: 스프링 데이터 JPA의 보완재 오픈소스 라이브러리 
 	
+연관관계매핑 :
+	
+	단방향
+	
+	양방향
+	
+	영속성전이
+
 	
