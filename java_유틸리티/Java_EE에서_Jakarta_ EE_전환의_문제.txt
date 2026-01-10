@@ -1,0 +1,65 @@
+Java EE에서 Jakarta EE로의 전환의 문제
+
+	spring boot 3.x 버전은 java 17, jakarta EE 9+ 이상을 지원
+
+	spring boot 2.7 버전은 jakarta EE 8 을 지원
+
+	그 이하 버전은 java 1.8, java EE를 지원한다고 합니다.
+
+이전 버전은 아래와 같은 import 가
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpSession;
+
+Jakarta EE 9+ 이상 버전은 아래처럼 'jakarta' 로 써야하기에 
+	import jakarta.servlet.http.HttpServletRequest;
+	import jakarta.servlet.http.HttpSession;
+
+기존에 만들어진 라이브러리등이 'java.lang.ClassNotFoundException' 이 나면서 작동되자 않는 이슈가 있음
+
+스프링, 스프링을 기본으로 하는 스프링 부트등에도 jakarta EE 9+ 이상을 지원하는 버전부터 나타나는 증상.
+소스를 수정해야 하는 문제인데, 예전 책등으로 스프링부트등을 설정하면  문제가 생긴다
+
+왜냐면, 스프링부트는 최신버전을 강제하는 경향이 있으므로, 예전 책의 버전이 없어서 현재 버전으로 셋팅 후 책대로 조합하려고 하면,
+위의 문제로 인한 복잡한 에러 상황을 마주하게 된다.
+에러 메시지를 봐도 해결이 나지 않는 좃같은 상황..
+
+여러 문제가 생기는데, 스프링 시큐리티나, QueryDSL 라이브러리, mybitx-spiring 라이브러리등의 문제가 있다.
+버전을 올리거나, 여러 기법을 쓰는데
+
+QueryDSL 메이븐 디페던시 외부 라이브러리는 <classifier>jakarta</classifier> 태그로 해결하는 듯 하다.
+
+-------------------
+QueryDSL로 예로 들면 
+
+Spring Boot 3.x 이상 버전에서 QueryDSL 같은 특정 라이브러리를 설정할때 플러그인 에러가 발생하는데, 
+이는 javax.* 네임스페이스에서 jakarta.* 네임스페이스로의 마이그레이션 과정에서 발생하는 의존성 충돌 문제이다. 
+
+문제 원인:
+Spring Boot 3.x 이상은 Jakarta EE 9+를 기반으로 하므로 jakarta.* 패키지를 사용하지만, 
+일부 라이브러리(QueryDSL등)의 구버전이나 특정 하위 의존성은 여전히 이전의 javax.* 패키지를 참조하는 문제가 있다. 
+
+이로 인해 클래스를 찾을 수 없는 NoClassDefFoundError 같은 오류가 발생합니다. 
+
+<classifier>jakarta</classifier>는 해당 라이브러리의 Jakarta EE 지원 버전을 사용하도록 명시하는 역할을 합니다. 
+
+메이븐 디펜던시 설정에서 '<classifier>jakarta</classifier>'를 추가해준다. 
+
+	<!-- QueryDSL APT Config -->
+	<dependency>
+		<groupId>com.querydsl</groupId>
+		<artifactId>querydsl-apt</artifactId>
+		<version>${querydsl.version}</version>
+		<classifier>jakarta</classifier>
+		<scope>provided</scope>
+	</dependency>
+
+	<!-- QueryDSL JPA Config -->
+	<dependency>
+		<groupId>com.querydsl</groupId>
+		<artifactId>querydsl-jpa</artifactId>
+		<version>${querydsl.version}</version>
+		<classifier>jakarta</classifier>
+	</dependency>
+
+최신 스프링 데이터 JPA 와 연동하는 최신 QueryDSL 은 메이븐 플러그인 설정도 필요없게 되었다고 한다.
+(디펜던시만 추가하면 끝)

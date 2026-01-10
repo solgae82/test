@@ -1,0 +1,173 @@
+(다대일,N:1) 은 단방향 매핑이다
+
+@ManyToOne 속성
+	optional: 연관된 엔티티가 반드시 존재해야 하는지 여부 (기본: true)
+		- true:없어도 된다, 
+		- false: 있어야 한다
+		
+	fetch: 글로벌 페지 전략 설정(기본: EAGER)
+		- EAGER:연관 엔티티 동시조회, 
+		- LAZY:연관 엔티티 사용할때 조회
+				
+	casecade: 영속성 전이 기능 설정
+		CasecadeType.ALL : cascade all operation
+		CasecadeType.PERSIST : cascade persist operation
+		CasecadeType.MERGE : cascade merge operation
+		CasecadeType.REMOVE : cascade remove operation
+		CasecadeType.REFRESH : cascade refresh operation
+		CasecadeType.DETACH : cascade detach operation
+	
+	targetEntity: 연관된 엔티티의 타입 정보를 명시적으로 설정한다. 잘 사용하지 않는다
+	
+------------------- application.properties
+
+# DataSource Setting
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+spring.datasource.username=sa
+spring.datasource.password=
+
+# JPA Setting
+spring.jpa.hibernate.ddl-auto=update # 조회하기 위해 바꿈
+spring.jpa.generate-ddl=false
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logging Setting
+logging.level.org.hibernate=info
+
+------------------- board.java
+
+package com.solgae.domain;
+
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@Entity
+public class Board {
+
+	@Id
+	@GeneratedValue
+	private Long seq;
+	private String title;
+	
+	@ManyToOne // N대1 설정
+	@JoinColumn(name="MEMBER_ID", nullable = false) // nullable = false 을 하면, 내부조인을 사용한다.
+	private Member member;
+	
+	private String content;
+	private LocalDateTime createDate;
+	private Long cnt;
+	
+}
+
+------------------- member.java
+
+package com.solgae.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@Entity
+public class Member {
+
+	@Id
+	@Column(name ="MEMBER_ID")
+	private String id;
+	private String password;
+	private String name;
+	private String role;
+	
+}
+
+------------------- board 리포지토리 생성
+
+package com.solgae.repositary;
+
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
+
+import com.solgae.domain.Board;
+
+public interface DynamicBoardRepositary extends CrudRepository<Board, Long>, QuerydslPredicateExecutor<Board> {
+
+}
+
+------------------- member 리포지토리 생성
+
+package com.solgae.repositary;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.solgae.domain.Member;
+
+public interface MemberRepositary extends CrudRepository<Member, String> {
+
+}
+
+------------------- 테스트
+
+package com.solgae.mapping;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.solgae.domain.Board;
+import com.solgae.domain.Member;
+import com.solgae.repositary.DynamicBoardRepositary;
+import com.solgae.repositary.MemberRepositary;
+
+@SpringBootTest
+public class RelationMappingTest {
+
+	@Autowired
+	private DynamicBoardRepositary boardRepositary;
+	
+	@Autowired
+	private MemberRepositary memberRepositary;
+	
+		
+	@Test
+	public void testManyToOneSelect() {
+	
+		//board 리포지토리로 검색하지만, 연결된 속성인 member도 내부 조인해서 정보를 가져온다.
+		Board board = boardRepositary.findById(5L).get();
+		
+		// 조인으로 조회 후 출력함
+		System.out.println("제목=>" + board.getTitle());	//제목=>둘리가 등록한 게시글 2
+		System.out.println("내용=>" + board.getContent()); //내용=>둘리가 등록한 게시글 내용 2
+		System.out.println("작성자=>" + board.getMember().getName()); //작성자=>도우너
+		System.out.println("작성자 권한=>" + board.getMember().getRole()); //작성자 권한=>Admin
+	}
+	
+	
+}

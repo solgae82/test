@@ -1,0 +1,189 @@
+다대일과 일대다를 설정하면 양방향 매핑된다.
+이전 단방향 (다대일) 소스에서 일대다를 설정하는 과정
+
+일대다의 다(多) 필드 타입 설정은 List로 하면 된다
+
+@OneToMany 속성
+	mappedBy: 
+		- 양방향 연관관계에서 연관관계의 주인(Owner)이 아닌 쪽 엔티티에서 설정. 
+		- 주인 엔티티의 필드명을 값으로 지정하여 연관관계를 맵핑.
+		
+	fetch: 글로벌 페지 전략 설정(기본: LAZY)
+		- EAGER:연관 엔티티 동시조회, 
+		- LAZY:연관 엔티티 사용할때 조회
+				
+	casecade: 영속성 전이 기능 설정
+		CasecadeType.ALL : cascade all operation
+		CasecadeType.PERSIST : cascade persist operation
+		CasecadeType.MERGE : cascade merge operation
+		CasecadeType.REMOVE : cascade remove operation
+		CasecadeType.REFRESH : cascade refresh operation
+		CasecadeType.DETACH : cascade detach operation
+	
+	targetEntity: 연관된 엔티티의 타입 정보를 명시적으로 설정한다. 잘 사용하지 않는다
+		
+주의!!
+	도메인 클래스끼리 서로 참조하는 상태가 되므로
+	롬복 사용시 @ToString(exclude = "참조필드명")을 서로 제외 시켜줘야한다.
+	계속 서로 순환 참조하는 stackoverflow 상태로 무한 루프에 빠지게 되기 때문이다.
+	
+	롬복 아닌 일반 도메인도 ToString 구현시 서로 순환 참조 못하게 신경 써야한다.
+	(좃같다 시발, 이런걸 다 외워야 하냐?)
+	
+------------------- application.properties
+
+# DataSource Setting
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+spring.datasource.username=sa
+spring.datasource.password=
+
+# JPA Setting
+spring.jpa.hibernate.ddl-auto=update #처음 생성 모드가 아님
+spring.jpa.generate-ddl=false
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logging Setting
+logging.level.org.hibernate=info
+
+------------------- board.java
+
+package com.solgae.domain;
+
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString(exclude = "member") //<= 요기
+@Entity
+public class Board {
+
+	@Id
+	@GeneratedValue
+	private Long seq;
+	private String title;
+	
+	@ManyToOne // N대1 설정
+	@JoinColumn(name="MEMBER_ID", nullable = false) // nullable = false 을 하면, 내부조인을 사용한다.
+	private Member member;
+	
+	private String content;
+	private LocalDateTime createDate;
+	private Long cnt;
+	
+	
+}
+
+------------------- member.java
+
+package com.solgae.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString(exclude = "boardList") //<= 요기
+@Entity
+public class Member {
+
+	@Id
+	@Column(name ="MEMBER_ID")
+	private String id;
+	private String password;
+	private String name;
+	private String role;
+	
+	// 1:N 매핑을 위해 설정
+	//mappedBy = "member" 의 member는 Board엔티티의 member 필드명을 뜻한다
+	//연관관계에서 주인(owner) 는 Board.member이다, mappedBy는 주인이 아닌곳에서 설정
+	@OneToMany(mappedBy = "member", fetch = FetchType.EAGER) //<= 요기
+	private List<Board> boardList = new ArrayList<Board>(); //<= 요기, 일대다 'N'이니 리스트로
+}
+
+------------------- board 리포지토리 생성
+
+package com.solgae.repositary;
+
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
+
+import com.solgae.domain.Board;
+
+public interface DynamicBoardRepositary extends CrudRepository<Board, Long>, QuerydslPredicateExecutor<Board> {
+
+}
+
+------------------- member 리포지토리 생성
+
+package com.solgae.repositary;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.solgae.domain.Member;
+
+public interface MemberRepositary extends CrudRepository<Member, String> {
+
+}
+
+------------------- 테스트
+
+package com.solgae.mapping;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.solgae.domain.Board;
+import com.solgae.domain.Member;
+import com.solgae.repositary.DynamicBoardRepositary;
+import com.solgae.repositary.MemberRepositary;
+
+@SpringBootTest
+public class RelationMappingTest {
+
+	@Autowired
+	private DynamicBoardRepositary boardRepositary;
+	
+	@Autowired
+	private MemberRepositary memberRepositary;
+	
+		
+	// member의 boardList 필드를 출력함 (양방향 연결되었으므로 가능해짐)
+	@Test
+	public void testTwoWayMapping() {
+		Member member = memberRepositary.findById("member1").get();
+		
+		System.out.println(member.getName() + "가 저장한 게시글 목록");
+		List<Board> boardList = member.getBoardList();
+		
+		for(Board board : boardList) {
+			System.out.println(board.toString());
+		}
+	}
+	
+}

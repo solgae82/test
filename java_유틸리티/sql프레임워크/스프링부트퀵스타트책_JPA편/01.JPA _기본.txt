@@ -1,0 +1,342 @@
+MEAT-INF/persistence.xml
+
+	<!-- 엔티티 클래스 등록-->
+	<class>com.solgae.domain.Board</class>
+	
+	<!-- create, update, create-drop -->
+	<property name="hibernate.hbm2ddl.auto" value="update"/> 
+	
+
+도메인 어노테이션
+	
+	@Entity
+	@Table(name = "BOARD")
+		name, catalog, schema, uniqueConstraints, initialValue
+		
+	@TableGenerator
+		name, table, pkColumnValue, initialValue, allocationSize
+		
+	@SequenceGenerator
+		name, sequenceName, initialValue, allocationSize
+	@Id
+
+	@GeneratedValue
+		strategy = GenerationType.(TABLE, SEQUENCE, IDENTITY, AUTO)
+		generator = "@XXXGenerator.name 이름"
+			
+	@Column
+		name, unique, nullable, insertable, updatable, columnDefinition, 
+		length, precisoion, scale
+		
+	@Temporal
+		TemporalType.DATE, TemporalType.TIME, TemporalType.TIMESTAMP
+		
+	@transient
+
+
+EntityManager 생성 
+
+	Persistence -> EntityManagerFactory -> EntityManager
+
+EntityManager 기본 메소드
+
+	persist(Object entity), merge(Object entity), remove(Object entity)
+	find(Class<T> entityClass, Object pk)
+	createQuery(String sql, Class<T> resultClass)
+	
+영속성 컨텍스트
+
+	엔티티를 관리하는 컨테이너
+	영속석 컨텍스트 = EntityManager
+	
+	상태 :
+		비영속성(New) 
+		영속(Managed) 
+		준영속(Detached)
+			준영속 되는 이유: detach(entity), clear(), close()
+		삭제(Removed)
+	
+	구조
+		1차캐시, SQL저장소, 스냅샷(엔티티 복사본)
+	
+JPQL(Java Persistence Query Language)
+
+	JPA에서 제공하는 별도 쿼리 명령어 
+	SQL과 비슷한 문법이지만 대상이 다르다.
+	대상이 테이블 기준이 아니라, 엔티티 기준인 명령어
+	
+	// BOARD(테이블)이렇게 하면 안된다. 엔티티 클래스 이름으로 해야한다.(Board.class)
+	String jpql = "select b from Board b order by b.seq desc"; 
+    		
+    	List<Board> resultList = em.createQuery(jpql, Board.class).getResultList();
+	
+	
+------------------- META-INF/persistence.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+                http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+             
+    <persistence-unit name="Chapter04">
+        
+
+        <!-- 엔티티 클래스 목록 -->
+        <class>com.solgae.domain.Board</class>
+        
+
+        <properties>
+            <!-- 데이터베이스 연결 정보 -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+
+            <!-- JPA 구현체(Hibernate) 관련 설정 -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- 스키마 자동 생성/업데이트 -->
+            <property name="hibernate.show_sql" value="true"/> <!-- SQL문 출력 -->
+            <property name="hibernate.format_sql" value="true"/> <!-- SQL 포맷팅 -->
+            <property name="hibernate.use_sql_comments" value="false"/>
+            <property name="hibernate.id.new_generator_mappings" value="true"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
+
+------------------- Board 도메인 클래스
+
+package com.solgae.domain;
+
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+
+@Entity
+@Table(name="BOARD")
+@TableGenerator(
+		name = "BOARD_SEQ_GENERATOR",
+		table = "ALL_SEQUENCE",
+		pkColumnValue = "BOARD_SEQ",
+		initialValue = 0, /* @TableGenerator는 0부터 시작해야한다 그래야 1번부터 삽입됨.*/
+		allocationSize = 1
+		)
+/*@SequenceGenerator(
+		name = "BOARD_SEQ_GENERATOR",
+		sequenceName = "BOARD_SEQUENCE",
+		initialValue = 1,
+		allocationSize = 1
+		)
+*/
+public class Board {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "BOARD_SEQ_GENERATOR")
+	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOARD_SEQ_GENERATOR")
+	private Long seq;
+	private String title;
+	private String writer;
+	private String content;
+	private Date createDate;
+	private Long cnt;
+	
+	.. getter, setter
+}
+
+------------------- App.java
+
+package com.solgae.Chapter04;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+import com.solgae.domain.Board;
+
+/**
+ * Hello world!
+ *
+ */
+public class App 
+{
+	static final String UNIT_NAME = "Chapter04";
+	
+    public static void main( String[] args )
+    {
+        
+    	
+    	//insert(3);
+    	
+    	//select(2);
+    	
+    	//update(1, "변경한 제목");
+    	
+    	//delete(1);
+    	
+    	selectList();
+    }
+    
+    
+    private static void select (int seq) {
+    	
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+    	
+    	EntityManager em = emf.createEntityManager();
+    	    	
+    	try {
+    		
+    		Board searchBoard = em.find(Board.class, Long.valueOf(seq));
+    		System.out.println(searchBoard.toString());
+    		
+    		
+    	}catch (Exception e) {
+		e.printStackTrace();
+		
+	}finally {
+		em.close();
+		emf.close();
+		
+	}
+    }
+    
+    private static void selectList () {
+    	
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+    	
+    	EntityManager em = emf.createEntityManager();
+    	    	
+    	EntityTransaction tx = em.getTransaction();
+    	
+    	try {
+    		
+    		tx.begin();
+    		
+    		//글 목록 조회
+		// BOARD 이렇게 하면 안된다. 엔티티 클래스 이름으로 해야한다.
+    		String jpql = "select b from Board b order by b.seq desc"; 
+    		
+    		List<Board> resultList = em.createQuery(jpql, Board.class).getResultList();
+    		
+    		for (Board row : resultList) {
+    			System.out.println("===>" + row.toString());
+    		}
+    		
+    		tx.commit();// commit
+    		
+    	}catch (Exception e) {
+    		tx.rollback();
+		e.printStackTrace();
+			
+	}finally {
+		em.close();
+		emf.close();
+		
+	}
+    }
+
+    private static void update(int seq , String title) {
+    	
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+    	
+    	EntityManager em = emf.createEntityManager();
+    	
+    	EntityTransaction tx = em.getTransaction();
+    	
+    	try {
+    		
+    		tx.begin();
+    		
+    		Board board = em.find(Board.class, Long.valueOf(seq));
+    		
+    		board.setTitle(title); //title변경
+    		
+    		tx.commit();// commit
+    		
+    	}catch (Exception e) {
+		e.printStackTrace();
+		tx.rollback();
+	}finally {
+		em.close();
+		emf.close();
+		
+	}
+    }
+    
+    private static void insert(int num) {
+    	
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+    	
+    	EntityManager em = emf.createEntityManager();
+    	
+    	EntityTransaction tx = em.getTransaction();
+    	
+    	try {
+    		
+    		tx.begin();
+    		
+    		Board board = new Board();
+    		board.setTitle("JPA 제목 :"+num);
+    		board.setWriter("관리자");
+    		board.setContent("글 내용 등록입니다,("+num+")");
+    		board.setCreateDate(new Date());
+    		board.setCnt(0L);
+    		
+    		em.persist(board); //글 등록
+    		
+    		tx.commit();// commit
+    		
+    	}catch (Exception e) {
+		e.printStackTrace();
+		tx.rollback();
+	}finally {
+		em.close();
+		emf.close();
+		
+	}
+    }
+    
+    private static void delete(int seq) {
+    	
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+    	
+    	EntityManager em = emf.createEntityManager();
+    	
+    	EntityTransaction tx = em.getTransaction();
+    	
+    	try {
+    		
+    		tx.begin();
+    		
+    		Board board = em.find(Board.class, Long.valueOf(seq));
+    		
+    		if( board != null) {
+    			em.remove(board);
+    		}else {
+    			System.out.println(seq +"번 글이 없습니다");
+    			
+    		}
+    		
+    		tx.commit();// commit
+    		
+    	}catch (Exception e) {
+		e.printStackTrace();
+		tx.rollback();
+	}finally {
+		em.close();
+		emf.close();
+		
+	}
+    }
+}

@@ -1,0 +1,47 @@
+Spring Boot 3.x 이상 버전에서 QueryDSL 같은 특정 라이브러리를 설정할때 플러그인 에러가 발생하는데, 
+이는 javax.* 네임스페이스에서 jakarta.* 네임스페이스로의 마이그레이션 과정에서 발생하는 의존성 충돌 문제이다. 
+
+문제 원인:
+Spring Boot 3.x 이상은 Jakarta EE 9+를 기반으로 하므로 jakarta.* 패키지를 사용하지만, 
+일부 라이브러리(QueryDSL등)의 구버전이나 특정 하위 의존성은 여전히 이전의 javax.* 패키지를 참조하는 문제가 있다. 
+
+이로 인해 클래스를 찾을 수 없는 NoClassDefFoundError 같은 오류가 발생합니다. 
+
+<classifier>jakarta</classifier>는 해당 라이브러리의 Jakarta EE 지원 버전을 사용하도록 명시하는 역할을 합니다. 
+
+메이븐 디펜던시 설정에서 '<classifier>jakarta</classifier>'를 추가해준다. 
+
+	<!-- QueryDSL APT Config -->
+	<dependency>
+		<groupId>com.querydsl</groupId>
+		<artifactId>querydsl-apt</artifactId>
+		<version>${querydsl.version}</version>
+		<classifier>jakarta</classifier> <!-- 요게 중요 -->
+		<scope>provided</scope>
+	</dependency>
+
+	<!-- QueryDSL JPA Config -->
+	<dependency>
+		<groupId>com.querydsl</groupId>
+		<artifactId>querydsl-jpa</artifactId>
+		<version>${querydsl.version}</version>
+		<classifier>jakarta</classifier> <!-- 요게 중요 -->
+	</dependency>
+
+	<!-- 플러그인 설정 -->
+	<plugin>
+		<groupId>com.mysema.maven</groupId>
+		<artifactId>apt-maven-plugin</artifactId>
+		<version>1.1.3</version>
+		<executions>
+		    <execution>
+			<goals>
+			    <goal>process</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>target/generated-sources/annotations</outputDirectory>
+			    <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+			</configuration>
+		    </execution>
+		</executions>
+	</plugin>

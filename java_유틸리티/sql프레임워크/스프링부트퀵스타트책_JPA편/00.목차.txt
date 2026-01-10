@@ -1,0 +1,35 @@
+JPA 기본
+JPA 기본
+	MEAT-INF/persistence.xml
+
+	도메인 어노테이션
+
+	EntityManager 생성 
+
+	EntityManager 기본 메소드
+		
+	영속성 컨텍스트
+
+	JPQL(Java Persistence Query Language)
+	
+스프링 데이터 JPA
+	
+	기본 CRUD
+		
+	쿼리 메소드
+		
+	@Query 어노테이션
+	
+		위치기반 파라미터
+		
+		이름기반 파라미터
+		
+		네이티브 쿼리 
+		
+		페이지 정렬처리
+		
+QueryDSL
+		
+	: 스프링 데이터 JPA의 보완재 오픈소스 라이브러리 
+	
+	
