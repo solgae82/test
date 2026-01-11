@@ -19,8 +19,9 @@ QueryDSL
 	(최근 방식)
 	com.querydsl.jpa.impl.JPAQueryFactory
 	
-	JPAQueryFactory를 직접 주입받아 사용하는 방식이 더 간편하고 유연하여, 
-	최근에는 QuerydslRepositorySupport를 상속받는 방식 대신 커스텀 리포지토리를 구현할 때 
+	QueryDSL에서 제공하는 JPAQueryFactory를 직접 주입받아 사용하는 방식이 더 간편하고 유연하여, 
+	최근에는 스프링데이터JPA가 제공하는 QuerydslRepositorySupport를 상속받는 방식 대신 
+	커스텀 리포지토리를 구현할 때 
 	JPAQueryFactory 빈을 주입받아 사용하는 방식이 더 선호되는 추세라고 함.	
 	
 -------------------QuerydslRepositorySupport
@@ -74,7 +75,7 @@ QueryDSL
 		
 		public interface CustomBoardRepository {
 
-			public List<Board> search(String name);
+			public List<Board> searchList(String name);
 		}
 		
 	--------- BoardRepository.java
@@ -109,10 +110,12 @@ QueryDSL
 			}
 
 			@Override
-			public List<Board> search(String name) {
-				QBoard board = QBoard.board;
-				List<Board> fetch = from(board).fetch();		
-				return fetch;
+			public List<Board> searchList(String name) {
+				QBoard board = QBoard.board; //QueryDSL이 자동 생성한 클래스
+				List<Board> list = from(board)
+					.where(board.title.like("%둘리%"))
+					.fetch();		
+				return list;
 			}
 
 		}
@@ -139,7 +142,7 @@ QueryDSL
 				// 컴파일 에러 , 이렇게는 절대 안된다. 스프링DI만 됨. 뭔가 있는데 그걸 모르겠다.
 				//repo = new BoardRepositoryImpl(); 
 								
-				List<Board> list = repo.search("둘리");
+				List<Board> list = repo.searchList("둘리");
 						
 				for(Board board : list) {
 					System.out.println(board.toString());
@@ -160,6 +163,168 @@ QueryDSL
 	select() , selectFrom() 으로 시작 가능
 	EntityManager , QueryFactory 제공
 	
+	실무에서는 @Configure로 설정해서 관리한다.
 
+	--------- Board.java
+		package com.solgae.domain;
+
+		import java.time.LocalDateTime;
+		import jakarta.persistence.Entity;
+		import jakarta.persistence.GeneratedValue;
+		import jakarta.persistence.Id;
+		import lombok.Getter;
+		import lombok.Setter;
+		import lombok.ToString;
+
+		@Getter
+		@Setter
+		@ToString
+		@Entity
+		public class Board {
+
+			@Id
+			@GeneratedValue
+			private Long seq;
+			private String title;
+			private String writer;
+			private String content;
+			private LocalDateTime createDate;
+			private Long cnt;
+		}
+
+
+	1. 바로 테스트 하기 
+	
+		package com.solgae.repository;
+
+		import java.util.List;
+
+		import org.junit.jupiter.api.Test;
+		import org.springframework.boot.test.context.SpringBootTest;
+		import com.querydsl.jpa.impl.JPAQueryFactory;
+		import com.solgae.domain.Board;
+		import com.solgae.domain.QBoard;
+
+		import jakarta.persistence.EntityManager;
+		import jakarta.persistence.PersistenceContext;
+
+		@SpringBootTest
+		public class Test2 {
+			
+			@PersistenceContext
+			private EntityManager entityManager;
+					
+			@Test
+			public void testJPAQueryFactory() {
+				
+				JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+				
+				QBoard board = QBoard.board; //QueryDSL이 자동 생성한 클래스
+				
+				List<Board> list = queryFactory
+					.selectFrom(board)
+					.where(board.title.like("%둘리%"))
+					.fetch();
+				
+				for(Board el : list) {
+					System.out.println(el.toString());
+				}
+				
+			}
+		}
 	
 	
+	2. Configuration으로 관리해서 테스트하기
+	
+		------ JPAConfig.java
+		
+		package com.solgae.config;
+
+
+		import org.springframework.context.annotation.Bean;
+		import org.springframework.context.annotation.Configuration;
+		import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+		import com.querydsl.jpa.impl.JPAQueryFactory;
+
+		import jakarta.persistence.EntityManager;
+		import jakarta.persistence.PersistenceContext;
+
+		//해당 클래스가 설정과 관련된 class임을 spring boot에 알림
+		@Configuration
+
+		//@Entity로 관리되는 JPA 엔터티들의 상태 변화를 감시하는 기능을 켠다는 뜻
+		@EnableJpaAuditing
+		public class JPAConfig {
+
+			//EntityManager에 의존성 주입을  담당하는 Annotation이다.
+			@PersistenceContext 
+			private EntityManager em; 
+			
+			@Bean
+			public JPAQueryFactory jpaQueryFactoryBean(EntityManager em) {
+				return new JPAQueryFactory(em);
+			}
+		}
+
+		-------- BoardDAO.java
+		
+		package com.solgae.dao;
+
+		import java.util.List;
+
+		import org.springframework.stereotype.Component;
+		import com.querydsl.jpa.impl.JPAQueryFactory;
+		import com.solgae.domain.Board;
+		import com.solgae.domain.QBoard;
+
+		import lombok.RequiredArgsConstructor;
+
+		//롬복 어노테이션 @RequiredArgsConstructor를 사용하면 final 필드에 주입용 생성자 자동 생성
+		@RequiredArgsConstructor
+		@Component
+		public class BoardDAO {
+			
+			// 주입용 생성자 자동 생성, 자동 빈 주입됨
+			private final JPAQueryFactory queryFactory; 
+			
+			public List<Board> getBoardList(String title){
+				
+				QBoard board = QBoard.board;			
+				
+				return queryFactory.selectFrom(board)
+					.where(board.title.like("%" + title +"%")).fetch();
+			}
+		}
+
+		-------- 테스트
+		
+		package com.solgae.repository;
+
+		import java.util.List;
+
+		import org.junit.jupiter.api.Test;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.boot.test.context.SpringBootTest;
+		import org.springframework.context.annotation.Import;
+		import com.solgae.config.JPAConfig;
+		import com.solgae.dao.BoardDAO;
+
+		@SpringBootTest
+		@Import({JPAConfig.class})  //<== 요걸 하고 테스트 해야함.
+		public class Test2 {
+			
+			@Autowired
+			private BoardDAO dao;
+								
+			@Test
+			public void testJPAQueryFactory2() {
+				
+				List<Board> list = dao.getBoardList("둘리");
+				for(Board el : list) {
+					System.out.println(el.toString());
+				}
+			}
+		}
+
+		
