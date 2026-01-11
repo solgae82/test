@@ -1,0 +1,165 @@
+QueryDSL
+	
+	QueryDSL은 정적 타입(Type-Safe)을 이용해 JPQL을 자바 코드로 생성해주는 오픈소스 라이브러리로, 
+	컴파일 시점에 문법 오류를 잡고, 동적 쿼리나 복잡한 조인 등을 훨씬 유연하고 직관적으로 작성할 수 있게 도와주는 
+	스프링 데이터 JPA의 보완재 라이브러리입니다. 
+	
+	단순 CRUD는 스프링 데이터 JPA 쿼리 메서드를 쓰고, 
+	복잡한 쿼리는 QueryDSL을 활용하여 개발 생산성과 쿼리 안정성을 높이는 데 사용됩니다. 
+	
+	Spring Data JPA와 QueryDSL 의 조합은 복잡한 동적 쿼리를 안전하게 처리하기 위한 표준 기술 스택으로 자리 잡고 있습니다.
+	
+	
+	Spring Data JPA는 2가지 방법으로 QueryDSL을 지원한다.
+	
+	1. org.springframework.data.querydsl.QuerydslPredicateExecutor (인터페이스)
+	2. org.springframework.data.jpa.repository.support.QuerydslRepositorySuppor (추상클래스)
+	
+	
+	(최근 방식)
+	com.querydsl.jpa.impl.JPAQueryFactory
+	
+	JPAQueryFactory를 직접 주입받아 사용하는 방식이 더 간편하고 유연하여, 
+	최근에는 QuerydslRepositorySupport를 상속받는 방식 대신 커스텀 리포지토리를 구현할 때 
+	JPAQueryFactory 빈을 주입받아 사용하는 방식이 더 선호되는 추세라고 함.	
+	
+-------------------QuerydslRepositorySupport
+
+장점
+	getQuerydsl().applyPagination() 스프링 데이터가 제공하는 페이징을 Querydsl로 편리하게 변환 가능(단! Sort는 오류발생)
+	from() 으로 시작 가능(최근에는 QueryFactory를 사용해서 select() 로 시작하는 것이 더 명시적)
+	EntityManager 제공
+	
+한계
+	Querydsl 3.x 버전을 대상으로 만듦
+	Querydsl 4.x에 나온 JPAQueryFactory로 시작할 수 없음
+	select로 시작할 수 없음 (from으로 시작해야함)
+	QueryFactory 를 제공하지 않음
+	스프링 데이터 Sort 기능이 정상 동작하지 않음
+
+
+	--------- Board.java
+		package com.solgae.domain;
+
+		import java.time.LocalDateTime;
+		import jakarta.persistence.Entity;
+		import jakarta.persistence.GeneratedValue;
+		import jakarta.persistence.Id;
+		import lombok.Getter;
+		import lombok.Setter;
+		import lombok.ToString;
+
+		@Getter
+		@Setter
+		@ToString
+		@Entity
+		public class Board {
+
+			@Id
+			@GeneratedValue
+			private Long seq;
+			private String title;
+			private String writer;
+			private String content;
+			private LocalDateTime createDate;
+			private Long cnt;
+		}
+
+	--------- CustomBoardRepository.java
+
+		package com.solgae.repository;
+		
+		import java.util.List;
+		import com.solgae.domain.Board;
+		
+		public interface CustomBoardRepository {
+
+			public List<Board> search(String name);
+		}
+		
+	--------- BoardRepository.java
+
+		package com.solgae.repository;
+
+		import org.springframework.data.repository.CrudRepository;
+		import com.solgae.domain.Board;
+
+		public interface BoardRepository extends CrudRepository<Board, Long>, 
+			CustomBoardRepository {
+
+		}
+
+	---------BoardRepositoryImpl.java
+
+		package com.solgae.repositoryImpl;
+
+		import java.util.List;
+		import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+		import org.springframework.stereotype.Component;
+		import com.solgae.domain.Board;
+		import com.solgae.domain.QBoard;
+		import com.solgae.repository.CustomBoardRepository;
+
+		@Component
+		public class BoardRepositoryImpl extends QuerydslRepositorySupport 
+			implements CustomBoardRepository {
+
+			public BoardRepositoryImpl() {
+				super(Board.class); //설정
+			}
+
+			@Override
+			public List<Board> search(String name) {
+				QBoard board = QBoard.board;
+				List<Board> fetch = from(board).fetch();		
+				return fetch;
+			}
+
+		}
+		
+	--------- 테스트
+		package com.solgae.repository;
+
+		import java.util.List;
+		import org.junit.jupiter.api.Test;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.boot.test.context.SpringBootTest;
+		import com.solgae.domain.Board;
+		import com.solgae.repositoryImpl.BoardRepositoryImpl;
+
+		@SpringBootTest
+		public class Test2 {
+
+			@Autowired
+			private BoardRepository repo;
+			
+			@Test
+			public void testSupport() {
+				
+				// 컴파일 에러 , 이렇게는 절대 안된다. 스프링DI만 됨. 뭔가 있는데 그걸 모르겠다.
+				//repo = new BoardRepositoryImpl(); 
+								
+				List<Board> list = repo.search("둘리");
+						
+				for(Board board : list) {
+					System.out.println(board.toString());
+				}
+			}
+		}
+
+
+
+
+------------------- JPAQueryFactory 사용 (최신기법)
+
+스프링 데이터가 제공하는 QuerydslRepositorySupport 가 지닌 한계를 극복하기 위해 직접 JPAQueryFactory
+장점
+	스프링 데이터가 제공하는 페이징을 편리하게 변환
+	페이징과 카운트 쿼리 분리 가능
+	스프링 데이터 Sort 지원
+	select() , selectFrom() 으로 시작 가능
+	EntityManager , QueryFactory 제공
+	
+
+	
+	
