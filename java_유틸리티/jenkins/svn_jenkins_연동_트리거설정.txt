@@ -1,0 +1,40 @@
+(svn -> jenkins 빌드 트리거 설정)
+
+1. Jenkins 설정
+	
+	관리자 > Security > API Token > Add new token 생성 
+		web-token(이름) : 116ed666176258db70e343e7d3aee9b0fc
+	
+	web(item) > Configuration > Tiggers 
+		빌드를 원격으로 유발(예:스크립트 사용)
+		Authentication Token
+		: 116ed666176258db70e343e7d3aee9b0fc
+	
+		다음 URL을 사용하여 원격 빌드 유발: 
+		JENKINS_URL/job/web/build?token=TOKEN_NAME or /buildWithParameters?token=TOKEN_NAME
+		Optionally append &cause=Cause+Text to provide text that will be included in the recorded build cause.
+
+2. 인증 토큰을 이용한 빌드 트리거 URL (http인증 사용)
+	
+	실전 호출: 
+	
+	curl -X POST http://192.168.0.11:9090/job/web/build \
+	--user "admin:116ed666176258db70e343e7d3aee9b0fc" \
+	-d "token=116ed666176258db70e343e7d3aee9b0fc"
+
+3. svn 훅 설정
+
+	cd /svn/repo1/hooks
+	
+	cp post-commit.tmpl post-commit #템플릿 복사
+	
+	chmod +x post-commit #실행 권한 주기
+	
+	vi /svn/repo1/hooks/post-commit
+		#!/bin/sh
+		curl -X POST http://192.168.0.11:9090/job/web/build \
+		--user "admin:116ed666176258db70e343e7d3aee9b0fc" \
+		-d "token=116ed666176258db70e343e7d3aee9b0fc"
+		
+		:wq
+		
