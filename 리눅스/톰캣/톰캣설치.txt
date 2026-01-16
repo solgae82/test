@@ -5,67 +5,49 @@ java 설치 후 설치해야 한다 [java설치.txt 참조]
 widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 설치되는 형식인 것이다.
 
 
-1. /usr/local/apache-tomcat-8.5.51 <= 톰캣  디렉토리(tar 압축해제한) 위치시킨 후
-
-2. 프로파일에 자바설정과, 톰캣 디렉토리 설정 (해도 그만 , 안 해도 그만)
+1. tomcat 사용자 생성 , (실행,정지,권한등 모든 액션은 tomcat 계정으로 할 수 있게 하기 위해)
 	
-	옛날 설정 방식 같은데, 안 해도 되더라..
+	adduser tomcat
 	
-	그러더라도 어떤 진화 상태인지 일단 보자	
-
-	/etc/profile 은 시스템 전체에 먼저 설정되는 환경변수 파일이다
-	root권한만 편집 가능하다
-
-	/etc/profile 을 보면 주석 끝나고 첫줄 즈음에 자바를 설치했다면 이렇게 설정했을 것이다
-		
-		vi /etc/profile
-		..
-		export JAVA_HOME=/usr/local/jdk1.8.0_241
-		export CLASSPATH="." 
-		export PATH="$PATH:$JAVA_HOME/bin"
-
-	실험해보니 아무 설정을 하지 않아도 톰캣 구동은 된다 
-	(내부적으로 .sh 스크립트 분석해보면..)
-	JAVA_HOME 변수만 확실히 있으면 톰캣 구동 된다
-
-	무슨 JRE_HOME , CATALINA_HOME 등을 추가하는 설치법등을 볼 수 있는데, 옛날 방식같다.
-	실험한 8.0버전으로 설치할땐 설정할 필요가 없었다
+2. /usr/local/apache-tomcat-9.0.113 <= 톰캣 디렉토리(tar 압축해제) 
 	
-	그래도 옛날 스타일로 다시 재설정하고 싶다면 이 정도하면 된다
-		
-		#JRE_HOME 은 JAVA_HOME과 같아야 한다,뒤에 ../jre를 붙이면 낭패다
-		export JRE_HOME=/usr/local/jdk1.8.0_241 
-		
-		export CATALINA_HOME=/usr/local/apache-tomcat-8.5.51
-		
-		# CATALINA_HOME을 만들고 PATH에 추가해 놓으면 기동/종료 명령어를 바로 할 수 있을 것이다
-		export PATH="$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin" 
+	cd /usr/local
+	chown -R tomcat:tomcat apache-tomcat-9.0.113 #톰캣으로 사용자:그룹 변경
 	
-	덧붙여,
-	꼭 설정할 환경변수가 있다면 이왕이면 공식 환경변수 설정 방법인 
-	톰캣 홈/bin/setenv.sh 를 생성,추가해서 설정하는 방법으로 설정하자
-		
-		cd /usr/local/apache-tomcat-8.5.51/bin
-		vi setenv.sh
+3. /usr/local/jdk11.0.0.2 <= java 디렉토리(tar 압축해제)
+	: tomcat이 실행할 수 있게 권한 줘야한다 (모든 앱이 실행할 수 있게 해놓는다)
+	
 
-			export JAVA_HOME=/usr/local/jdk1.8.0_241 #다른버전으로 교체가능
-			export JRE_HOME=/usr/local/jdk1.8.0_241 #다른버전으로 교체가능
-			export CATALINA_HOME=/usr/local/apache-tomcat-8.5.51
+4. setenv.sh 생성 java 설정
+	
+	(톰캣 8이상은 JAVA_HOME 환경변수만 설정해주면 된다.)
+	
+	su - tomcat # 톰캣계정으로 생성한다
+	
+	cd /usr/local/apache-tomcat-9.0.113/bin
+	vi setenv.sh
+	
+		#!/usr/bin/bash
+		export JAVA_HOME=/usr/local/jdk11.0.0.2
 
-	이렇게 하면 jdk,jre버전도 별도로 지정할 수 있다
+	:wq
+	
+	#같은 디렉토리의 다른 실행 .sh와 같은 권한으로 변경
+	
+	chmod 750 setenv.sh	#tomcat 권한인지도 확인.
 
-	혹시 /etc/profile 에 설정 했다면, 업데이트 명령을 줘야한다. (reboot 하던지)
 
-		source /etc/profile	
-
-3. firewall(방화벽에) 에 8080포트 허가
+5. firewall(방화벽에) 에 8080포트 허가 (root 계정으로 해야한다)
 	firewall-cmd --permanent --zone=public --add-port=8080/tcp
 	firewall-cmd --reload #재시작
 
-4. 포트확인
+6. 포트확인
 	netstat -ntl <=  열린 포트 확인
 
-5.톰캣 시작/종료
-	cd /usr/local/apache-tomcat-8.5.51/bin
+7. 톰캣 시작/종료
+	
+	su - tomcat # 항상 tomcat 계정으로 실행한다.
+	
+	cd /usr/local/apache-tomcat-9.0.113/bin
 	./startup.sh
 	./shudown.sh

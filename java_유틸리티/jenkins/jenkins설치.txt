@@ -34,3 +34,20 @@ centOS7 에 설치한다
 	(꼭 제로보드 설정하는 거 같다)
 
 7. jenkins 관리 홈이 접속 된다.
+
+-------------------
+
+jenkins.war 는 서버없이 java로 독립 실행 시킬 수 있다
+
+	java -jar jenkins.war --httpPort=9090
+	
+	http://localhost:9090/ 접속
+	
+실행파일 만들기
+	jenkins.bat 
+		@echo off
+		REM 젠킨스 설치 경로로 이동 (예시: C:\Jenkins)
+		cd "D:\programs\jenkins"
+
+		REM 젠킨스 실행 (백그라운드에서 실행, 창이 뜨지 않음)
+		start "" java -jar jenkins.war --httpPort=9090
