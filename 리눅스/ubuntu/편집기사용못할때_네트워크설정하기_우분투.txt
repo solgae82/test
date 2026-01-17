@@ -1,0 +1,88 @@
+설치할때 옵션으로 minimized를 선택했더니, 
+아무런 편집기가 없더라 시발 ㅋㅋ
+네트워크 설정해야 뭘 받든지 말든지 하지..
+
+ifconfig, ping, vi,vim, nano, touch 모두 없음.
+
+cat, ip , curl , tee 은 있었음.
+
+암튼 이렇게 골때리는 상황에서, ip를 이용한 
+임시적으로 네트워크 설정하는 방법이다.
+
+네트워크 카드 아이디 확인하고 나서 
+	1. ip + subnet 설정
+	2. 네트워크 인터페이스 활성화
+	3. 게이트웨이 설정
+	4. DNS 설정
+
+임시적인 조치이므로 재부팅되면 사라지는 네트워크 설정이다
+저렇게 해서 네트워크 되는지 확인하고 잽싸게 vim를 설치한다.
+
+-------------------
+#네트워크 아이디 확인
+sudo ip addr show 
+	
+	2: enp2s0f0 : ..
+	
+#ip / subnet 
+sudo ip addr add 192.168.0.7/24 dev enp2s0f0
+
+#네트워크 ip 잘 설정되었는지 확인
+sudo ip addr show 
+
+#interface 활성화
+sudo ip link set dev enp2s0f0 up
+
+#게이트웨이 추가
+sudo ip route add default via 192.168.0.1 dev enp2s0f0
+
+#게이트웨이 잘 설정되었는지 확인
+sudo ip route show
+
+#DNS
+echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+
+#DNS 설정 확인
+cat /etc/resolv.conf
+
+#인터넷 접속 체크
+curl google.com
+
+-------------------
+	
+인터넷 연결되었다면 여러 툴들을 다운로드 받는다.
+
+apt 를 이용해서 
+
+sudo apt update
+
+sudo apt install vim # 편집기 설치
+
+sudo apt install net-tools # ifconfig 설치
+
+sudo apt install iputils-ping #ping 설치
+
+-------------------
+
+정 안되면 네트워크 설정파일을 내용을 생성 및 강제로 삽입저장 시키는 기술을 써야한다
+위에 DNS 설정파일 삽입시키듯
+
+sudo cat <<EOF > /etc/netplan/01-netcfg.yaml
+network:   
+  version: 2
+  ethernets:
+    enp2s0f0:
+      addresses: [192.168.0.7/24]
+      gateway4: 192.168.0.1
+      nameservers: 
+        addresses: [168,126,63,1,8.8.8.8]
+EOF
+
+sudo netplan apply #적용
+
+이렇게 하면 임시도 아니므로 영구히 설정 끝난다.
+
+-------------------
+
+다 설치하고 나서 이것저것 정리하면서 보니,
+pico라는 편집기 툴이 있었더라고..그게 뭐여 니미
