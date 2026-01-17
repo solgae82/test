@@ -1,0 +1,22 @@
+
+cd /etc/netplan
+ls -al
+
+# 아무 파일이 없다면 아무 이름으로 .yaml 파일을 만들면 된다
+root 권한으로 만들어야 한다.
+
+$ sudo vi /etc/netplan/macmini-net-config.yaml
+network:
+  ethernets:
+    enp2s0f0:
+      addresses: [192.168.0.7/24]
+      routes:
+        - to: default
+          via: 192.168.0.1
+      nameservers:
+          addresses: [168.126.63.1,8.8.8.8]
+  version: 2
+
+:wq
+
+$ sudo netplan apply # 적용

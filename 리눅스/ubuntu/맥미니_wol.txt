@@ -1,0 +1,79 @@
+구형 맥미니에 우분투 설치는 성공했다
+wol 기능도 가능한 듯하여 여러 설정 시도를 하면서 알게된 것은?
+
+결론: 
+	맥미니는 전원 완전 차단 후 wol로 다시 켜기는 안된다는 것.
+	(우분투에서 절전모드[Suspend/Hybrid Sleep] 들어간 상태에서 wol 호출은 다시 켜기 가능)
+	
+열심히 검색해서 이것저것 별짓 다 했는데, 전원 꺼진 상태에서 wol로 못 켠다는 결론을 알게되었다
+
+전원 꺼진 상태에서 못 켜면 내가 원하는 아니지만,
+그래도 맥미니에서는 전원 완전 끄면 wol 호출이 안 된다는 것을 알아냈다.ㅋ
+
+------------------- 우분투 리눅스 wol 설정
+
+1. 필요 프로그램 설치
+	sudo apt-get install net-tools ethtool wakeonlan
+	
+2. Network interface 확인
+
+	ifconfig
+
+	enp2s0f0: ..
+	
+3.WOL 활성화
+
+	sudo ethtool -s enp2s0f0 wol g #셋
+
+	sudo ethtool enp2s0f0 #확인
+
+		 Wake-on: g # 'g' 확인
+		 
+4. 네트워크 설정파일에 wakeonlan 설정 적용
+
+	vi /etc/netplan/macmini-network-config.yaml
+		..
+		enp2s0f0: 
+		  ..
+		  wakeonlan: true #추가
+	  
+	:wq
+	
+5. 설정 적용 후 다시 확인
+	sudo ethtool enp2s0f0
+	
+		 Wake-on: g # 'g' 확인
+
+------------------- 우분투 절전모드
+3가지 절전모드가 있다
+
+보통 절전 모드에서 깨어나기 위해선, 전원 버튼이나 키보드 입력으로 복귀
+
+	대기 모드 (Suspend): 
+		현재 작업 상태를 RAM에 유지하고 저전력 상태로 전환합니다. 가장 빠르고 일반적으로 사용됩니다.
+		맥 장치에서 전원 불빛이 깜박거리며 대기모드임을 알린다
+			sudo systemctl suspend
+		
+		절전모드 깨우기: 키보드 가능, 전원 버튼 
+		
+	최대 절전 모드 (Hibernate): 
+		RAM 내용을 디스크(swap 파티션)에 저장하고 전원을 완전히 차단합니다. 
+		대기 모드보다 느리지만 전력 소모가 없습니다.
+			
+			sudo systemctl hibernate
+
+		절전모드 깨우기: 전원 버튼
+		
+	하이브리드 절전 모드 (Hybrid Sleep): 
+		대기 모드와 최대 절전 모드의 혼합으로, RAM과 디스크 모두에 저장합니다.
+		맥 장치에서 전원 불빛이 깜박거리며 대기모드임을 알린다
+			
+			sudo systemctl hybrid-sleep
+			
+		절전모드 깨우기: 키보드 가능, 전원 버튼
+-------------------
+테스트 해보니, 예상대로
+전원이 완전히 차단된 상태인 Hibernate 절전모드는 wol이 작동하지 않는다
+
+Suspend, Hybrid Sleep 상태는 전원을 완전히 차단한 상태가 아니기에 wol이 호출에 깨어난다.
+

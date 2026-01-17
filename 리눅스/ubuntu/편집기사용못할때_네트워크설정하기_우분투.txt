@@ -67,15 +67,17 @@ sudo apt install iputils-ping #ping 설치
 정 안되면 네트워크 설정파일을 내용을 생성 및 강제로 삽입저장 시키는 기술을 써야한다
 위에 DNS 설정파일 삽입시키듯
 
-sudo cat <<EOF > /etc/netplan/01-netcfg.yaml
-network:   
-  version: 2
+sudo cat <<EOF > /etc/netplan/macmini-net-config.yaml
+network:
   ethernets:
     enp2s0f0:
       addresses: [192.168.0.7/24]
-      gateway4: 192.168.0.1
-      nameservers: 
-        addresses: [168,126,63,1,8.8.8.8]
+      routes:
+        - to: default
+          via: 192.168.0.1
+      nameservers:
+          addresses: [168.126.63.1,8.8.8.8]
+  version: 2
 EOF
 
 sudo netplan apply #적용

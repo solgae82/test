@@ -206,6 +206,8 @@ ls -al
 하드링크는 inode를 공유한다 
 심볼릭 링크는 inode를 공유하지 않고 원본파일 파일포인터를 가지고 가르키고 있다(윈도우 바로가기 아이콘처럼)
 
+형식 : ln [-s] 원본파일및디렉토리 링크파일명 
+
 ls -ali # inode 출력
 	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa
 
@@ -215,7 +217,7 @@ ln aa hard_link_aa	#하드링크 생성
 
 # aa를 편집하면 hard_link_aa 내용도 똑같이 바뀐다
 
-ln -s ln -s aa symbolic_link_aa	 #심볼릭 링크 생성
+ln -s aa symbolic_link_aa	 #심볼릭 링크 생성
 
 ls -ali
 	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
