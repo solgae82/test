@@ -1,0 +1,143 @@
+이클립스 같은 IDE 사용하면 경고 메시지를 볼 수 없으므로 
+수동 컴파일과, 컴파일시 -Xlint 를 붙여 컴파일하면 경고 메시지가 상세히 출력된다.
+
+-------------------
+JDK가 지원하는 기본(표준) 애노테이션
+
+
+@Override
+	상위 클래스에서 오버라이딩 했다는 것을 컴파일러에 알려준다.
+	개발자가 잘못된 재선언을 할 경우 컴파일러가 알려준다
+	
+@Deprecated
+	더 이상 사용하지 말라는 기능에 붙인다
+	변수, 메소드, 클래스등에 선언하면, 호출하는 곳에서 컴파일시 경고 메시지를 보여준다
+	
+	class NewClass{
+	int newField;
+	
+	@Deprecated 
+	int oldFiled;
+	
+	int getNewField() {return newField;}
+	
+	@Deprecated
+	int getOldField() {return oldFiled;}
+	
+	}
+
+	public class Test {
+		
+	    //@SuppressWarnings("deprecation") //이렇게 하면 'deprecation' 경고를 억제한다.
+	    public static void main(String[] args) {
+				
+		NewClass nc = new NewClass();
+		
+		// 컴파일시 경고-> warning: [deprecation] oldFiled in NewClass has been deprecated
+		nc.oldFiled = 20; 
+		
+		// 컴파일시 경고-> warning: [deprecation] getOldField() in NewClass has been deprecated
+		int old = nc.getOldField();
+		
+		System.out.println(old);
+	    }
+	}
+	
+	
+	-Xlint 옵션으로 컴파일시 'deprecation' 경고 메시지를 출력한다 
+	
+@FunctionalInterface
+	함수형 인터페이스를 선언할때 사용하는 애노테이션
+	컴파일러가 함수형 인터페이스 여부를 확인한다.
+	
+	@FunctionalInterface
+	interface MyFuc{
+		public abstract int max(int a, int b);
+	}
+	
+	
+	
+@SuppressWarnings
+	경고 메시지 억제 애노테이션
+	
+	메지지 종류: @SuppressWarnings("메시지 종류")
+	
+		deprecation : @Deprecated가 붙은 대상을 사용할 경우 발생하는 경고
+		
+		rawtypes : 지네릭 타입을 사용할 때 타입 매개변수를 명시하지 않고 원시 타입(Raw Types)을 사용할 때 발생하는 경고
+			
+			List rawList = new ArrayList(); // rawtypes 경고 발생
+			
+			
+		unchecked : 
+			컴파일러가 타입 검사를 할 수 없는 상황에서 발생하는 경고이다. 
+			주로 타입 캐스팅이나 제네릭 타입과 관련된 작업에서 타입 안전성을 보장할 수 없을 때 발생
+			
+			List rawList = new ArrayList(); // rawtypes 경고 발생
+			rawList.add("Hello");	// unchecked 경고발생
+			rawList.add(42);	// unchecked 경고발생
+		
+			
+		varargs : 가변인자 타입이 지네릭 타입일때 발생하는 경고
+		
+			void method (T... arr)
+		
+	사용예: 
+		호출하는 메소드에 붙여 사용.		
+		아래 예제는 컴파일시 경고 메시지 두개를 억제 적용했다.
+		
+		public class Test {
+	
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			public static void main(String[] args) {
+						
+				List rawList = new ArrayList(); // rawtypes 경고 발생
+				rawList.add("Hello"); // unchecked 경고발생
+				rawList.add(42);	 // unchecked 경고발생
+					
+			}
+		}
+	
+@SafeVarargs
+	메서드 가변인자의 타입이 non-reifiable 타입(지네릭)일 경우 사용하는 애노테이션
+	항상 @SuppressWarnings("varargs")와 함께 선언해서 사용한다.
+	
+	(T... arr) 처럼 메서드 가변인자의 타입이 non-reifiable 타입일 경우 
+	해당 메서드 선언 부분과 호출하는 부분에서 'unchecked'  경고가 발생한다
+	또한 추가로 선언부분에 'varargs' 경고도 발생한다
+	
+	'unchecked' 경고 발생 억제를 하려면,
+	두 지점(선언, 호출)에 다 @SuppressWarnings("unchecked")를 선언하거나
+	아니면, 선언 부분에만 @SafeVarargs 설정으로 한방에 경고를 억제할 수 있다.
+		
+	'varargs' 경고는 선언부분에만 @SuppressWarnings("varargs") 설정하면 된다.
+	
+	결론은 @SafeVarargs은 항상 @SuppressWarnings("varargs")가 붙는다
+	
+	
+	class MyArrayList<T>{
+		T[] arr;
+		
+		@SafeVarargs
+		@SuppressWarnings("varargs")
+		MyArrayList(T... arr){ //가변인자 타입이 non-reifiable
+			this.arr = arr;
+		}
+		
+		@SafeVarargs
+		@SuppressWarnings("varargs")
+		public static <T> MyArrayList<T> asList(T... a){
+			return new MyArrayList<>(a);
+		}
+		
+		public String toString() {
+			return Arrays.toString(arr);
+		}
+	}
+	
+	-- 사용하는 곳
+	
+	public static void main(String[] args) {
+		MyArrayList<String> list = MyArrayList.asList("1","2","3");
+		System.out.println(list);
+	}
