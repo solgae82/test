@@ -1,0 +1,231 @@
+
+사용자가 직접 애노테이션을 만들 수 있다
+	
+코드로 일단 보고 이해하는 것이 빠르다
+
+-------------------
+
+package com.solgae.annotation;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Arrays;
+
+
+enum TestType {FIRST, SECOND, THIRD}
+
+@Retention(RetentionPolicy.RUNTIME) //실행시 가능하도록 설정
+@interface CustomDateTime{
+	String yymmdd();
+	String hhmmss();
+}
+
+@Target(ElementType.TYPE) //클래스에 사용하도록 설정
+@Retention(RetentionPolicy.RUNTIME) //실행시 가능하도록 설정
+@interface TestInfo{
+	int count() default 1;
+	String testedBy();
+	String[] testTools() default {"JUnit4","JUnit5"};
+	TestType testType() default TestType.FIRST;
+	CustomDateTime testDate();
+}
+
+
+
+@Deprecated
+@SuppressWarnings("unchecked") //@SuppressWarnings는 런타임 시점에 getAnnotations() (리플렉션)의 대상이 아닙니다. 
+@TestInfo(
+		testedBy = "aaa", 
+		testDate = @CustomDateTime(yymmdd = "20260119",hhmmss = "212511")
+)
+public class Anno {
+
+	public static void main(String[] args) {
+		
+		Class<Anno> cls =  Anno.class;
+		TestInfo tan = (TestInfo) cls.getAnnotation(TestInfo.class);
+		
+		System.out.println("count()=>"+tan.count()); // count()=>1
+		
+		System.out.println("testedBy()=>"+tan.testedBy()); // testedBy()=>aaa
+		
+		System.out.println("testTools()=>"
+		+ Arrays.toString(tan.testTools())); // testTools()=>[JUnit4, JUnit5]
+		
+		System.out.println("testType()=>"+tan.testType()); // testType()=>FIRST
+		
+		System.out.println("testDate().yymmdd()=>"
+		+tan.testDate().yymmdd()); // testDate().yymmdd()=>20260119
+		
+		System.out.println("testDate().hhmmss()=>"
+		+tan.testDate().hhmmss()); // testDate().hhmmss()=>212511
+		
+		System.out.println("타입=> "
+		+tan.annotationType()); // 타입=>interface com.solgae.annotation.TestInfo
+		
+		System.out.println();
+		
+		//-------설정된 모든 애노테이션 가져오기
+		
+		Annotation[] annotations = cls.getAnnotations();
+		
+		for(Annotation an : annotations) {
+			
+			System.out.println(an);
+			/*
+			 
+			@java.lang.Deprecated(forRemoval=false, since="")
+				(x) @SuppressWarnings("unchecked") 무시됨
+			@com.solgae.annotation.TestInfo(count=1, 
+			testType=FIRST, 
+			testTools={"JUnit4", "JUnit5"}, 
+			testedBy="aaa", 
+			testDate=@com.solgae.annotation.CustomDateTime(yymmdd="20260119", hhmmss="212511"))
+
+			 */
+		}
+		
+		
+		
+	}
+
+}
+
+-------------------
+기본 애너테이션 생성 형식은
+	@interface '애노테이션이름'{
+		타입 요소이름(); // 애너테이션 요소 선언
+		..
+	}
+	
+메타 애노테이션으로 부가설정 조합
+	@Target(ElementType.TYPE) //적용대상 클래스
+	@Retention(RetentionPolicy.RUNTIME) //유지정책 런타임까지
+	@interface TestInfo{}
+	
+	선언위에 사용된 @Target, @Retention 는 
+	사용자 애너테이션을 생성할때 사용할 수 있는 메타애너테이션이다
+	
+	메타애너테이션은 '애너테이션의 애너테이션'이라고 부른다.
+	애노테이션 적용대상, 유지기간등을 설정하는 도우미 애너테이션이다
+	
+	메타에너테이션과 커스텀 애노테이션 생성은 항상 조합으로 사용된다.
+	
+	메타애너테이션은 별도로 정리한다.
+
+애너테이션은 인터페이스와 비슷하면서도 다르다
+
+	- 상수도 정의 가능하다
+	- 메서드 정의 가능하다
+	- 디폹 메서드 정의는 할 수 없다.
+	- 상속 허용되지 않는다. 
+		@interface TestInfo extends A{} (x)
+	
+애너테이션 내에 선언된 메서드 형식을 '애너테이션의 요소(elment)' 라고 한다.
+
+애너테이션 요소는 반환값이 있고, 매개변수는 없는 추상메서드 형태로 선언되야한다.
+
+애너테이션 요소(메서드형식) 규칙
+	
+	형식 : 타입 요소이름();
+		
+		ex) String testMsg();
+		
+	- 요소의 타입은 기본형, String, enum, @애너테이션, Class만 가능
+	- 메서드 ()에 매개변수를 선언 할 수 없다.
+	- 예외 선언할 수 없다
+	- 요소를 타입 매개변수로 정의 할 수 없다. <T> 안됨.
+	- 디폴트 메서드는 정의할 수 없다.
+
+선언한 요소는 사용시 값을 모두 설정해 줘야한다 (기본).	
+	
+	@interface TestInfo{
+		int age();
+		String name();
+	}
+	
+	@TestInfo(age=22, name="고동완")
+	
+요소 선언시 기본값을 가질 수 있으며, 기본값이 설정된 요소는 생략 가능하다.
+	
+	@interface TestInfo{
+		int age() default 22;
+		String name();
+	}
+	
+	@TestInfo(name="고동완") //@TestInfo(age=22, name="고동완") 과 동일.
+	
+요소가 오직 한개이고 이름이 'value'인 경우는, 설정시 요소이름 생략가능.
+
+	@interface TestInfo{
+		String value(); //value명은 특별히 생략 가능.
+	}
+
+	@TestInfo("고동완") //@TestInfo(value="고동완") 과 동일.
+
+요소 타입이 배열인 경우, '{}' 를 사용해서 여러 값을 지정한다.
+	
+	@interface TestInfo{
+		String[] arr(); 
+	}
+	
+	@TestInfo(arr={"고동완","백동수","감수광"}) // 기본 배열 설정
+	@TestInfo(arr="고동완") // 값이 하나일때 {} 생략가능
+	@TestInfo(arr={}), @TestInfo(arr="") //값이 없어도 기본 선언해야함
+	
+요소 타입이 배열인 경우, 기본값 지정도 상위와 같다
+	
+	@interface TestInfo{
+		String[] arr();
+		String[] arr1() default {};
+		String[] arr2() default {"하루","이틀"};
+		String[] arr3() default "하루";
+			
+	}
+	
+	@TestInfo(arr="없다"}
+	
+요소 타입이 배열인 경우, 요소가 1개이고, 요소명이 'value'이면 설정시 요소이름 생략가능
+	@interface TestInfo{
+		String[] value();			
+	}
+
+	//설정
+	@TestInfo({})
+	@TestInfo("") 
+	@TestInfo("고동완")
+	@TestInfo({"고동완","백동수","감수광"})
+
+------------------- java.lang.annotation.Annotation
+
+모든 애너테이션 조상은 Annotation 이다
+
+Annotation은 인터페이스로 되어있다
+
+	package java.lang.annotation;
+
+	public interface Annotation {
+		boolean equals(Object obj);
+		int hashCode();
+		String toString();
+		Class<? extends Annotation> annotationType();
+	}
+	
+
+애너테이션은 상속 허용되지 않으므로  아래와 같이 명시적 조상으로 지정할 수 없다.
+
+	@interface TestInfo extends Annotation{} (x)
+	
+모든 애너테이션의 조상은 Annotation이므로, 
+equals(), hashCode(),toString(),annotationType() 메소드 호출 가능하다
+
+------------------- 마커 마커애너테이션
+Marker Annotation
+
+	값을 지정할 필요가 없는 경우, 애너테이션 요소를 하나도 선언하지 않을 수 있다.
+	Serializable 이나 Cloneable 인터페이스처럼 요소가 한도 정의되지 않은 애너테이션을
+	마커애너테이션(Marker Annotation) 이라고한다.
+	

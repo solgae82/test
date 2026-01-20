@@ -1,0 +1,104 @@
+
+메타애노테이션은 '애노테이션을 위한 애노테이션'이다
+
+사용자가 선언하는 애노테이션에 적용하는 애노테이션으로,
+애노테이션 적용대상, 유지기간등을 설정하는데 사용된다.
+
+애노테이션 설정 도우미 애노테이션 이라고 해석해도 뭐 어쩔겨.
+
+-------------------
+
+@Target
+	java.lang.annotation.Target;
+	
+	새로 선언되는 애노테이션의 적용가능한 대상을 지정하는 메타애노테이션.
+		
+	java.lang.annotation.ElementType 에 선언된 상수로 적용.
+	
+		ex) @Target(ElementType.TYPE)
+	
+	ElementType 상수(적용대상):
+		ANNOTATION_TYPE : 애노테이션에 적용
+		CONSTRUCTOR : 생성자
+		FIELD : 멤버변수(기본형), enum상수
+		LOCAL_VARIABLE : 지역변수
+		METHOD : 메서드
+		PACKAGE : 패키지
+		PARAMETER : 메서드 매개변수
+		TYPE : 타입(클래스, 인터페이스, enum)
+		TYPE_PARAMTER : 타입 매개변수(<T>)
+			public class MyService<@Nullable T>
+		TYPE_USE : 타입변수(참조형) 선언에 사용
+		
+	(예제)
+	@Target(ElementType.TYPE) //클래스, 인터페이스, enum에 적용가능
+	@interface TestInfo{..}
+
+@Retention
+	java.lang.annotation.Retention;
+	
+	새로 선언되는 애노테이션이 유지되는 범위를 지정하는 메타애노테이션
+
+	java.lang.annotation.RetentionPolicy 에 선언되는 상수로 적용.
+		@Retention(RetentionPolicy.RUNTIME)
+		
+	RetentionPolicy 상수(적용대상):
+		SOURCE : 소스 파일에만 존재. 클래스파일에는 존재하지 않음.
+			- 컴파일가 사용하는 애너테이션
+		CLASS : 클래스 파일에만 존재. 실행시에 사용불가.(기본값)
+			- 잘 사용안함. 쓸데 없음. ㅋ
+		RUNTIME : 클래스 파일에만 존재. 실행시에 사용가능.
+			- 실행시 '리플렉션(reflection)'을 통해 클래스 파일에 저장된
+			애노테이션 정보 사용가능.
+	
+	(예제)
+	@Retention(RetentionPolicy.RUNTIME) //실행시에 사용되도록 유지정책 설정
+	@interface TestInfo{..}
+	
+@Documented
+	java.lang.annotation.Inherited;
+	
+	새로 선언되는 애노테이션이 javadoc 문서에 포함되게 하는 메타애노테이션
+
+	(예제)
+	@Documented //javadoc.exe가 doc파일 만들때 포함되게 설정.
+	@interface TestInfo{..}
+	
+@Inherited
+	java.lang.annotation.Inherited;
+	
+	새로 선언되는 애노테이션이 자손 클래스에 상속되도록 하는 메타애노테이션
+
+	(예제)
+	@Inherited
+	@interface SupperAnno{}
+
+	@SupperAnno
+	class Parent2{}
+
+	class Child2 extends Parent2{} //  @SupperAnno 애너테이션이 붙은 것으로 인식
+		
+@Repeatable
+	새로 선언되는 애노테이션이 여러번 반복해서 적용할 수 있게 하는 메타애노테이션
+	
+	사용법:
+		1. 반복 적용할 애노테이션 선언 
+		2. 반복 적용할 애노테이션을 담을 수 있는 컨테이너 애노테이션 선언
+			- 반드시 요소이름은 'value' 여야한다.
+			- (ex) 
+				Robot[] value();
+		3. 반복 적용할 애노테이션에 @Repeatable('컨테이너애노테이션'.class) 적용
+		4. 클래스에 반복 적용 가능한 애노테이션 사용
+	
+	(예제)
+	@Repeatable(RobotContainer.class) //3. Robot 애너테이션용 컨테이너 애노테이션과 함께 @Repeatable 적용
+	@interface Robot{String value();} // 1. 반복적용할 수 있는 Robot 애너테이션 선언
+
+	@interface RobotContainer{ //2. 여러개의 Robot 애너테이션을 담을 컨테이너 애너테이션 선언.
+		Robot[] value(); // Robot애노테이션 배열타입선언. 이른이 반드시 'value' 이어야 함.
+	}
+
+	@Robot("한번")
+	@Robot("두번") //반복 선언 가능
+	class MyClass{}
+

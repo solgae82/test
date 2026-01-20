@@ -141,3 +141,48 @@ JDK가 지원하는 기본(표준) 애노테이션
 		MyArrayList<String> list = MyArrayList.asList("1","2","3");
 		System.out.println(list);
 	}
+	
+@Native
+
+	자바의 @Native 어노테이션은 
+	네이티브 메서드(native method)에서 참조하는 상수 필드 앞에 붙여, 
+	해당 상수가 네이티브 코드에서 사용됨을 나타내는 표준 메타데이터입니다. 
+
+	이는 자바 VM(JVM)이 설치된 
+	운영체제(OS)의 네이티브 코드로 구현된 메서드와 java 상수가 연결될 때 사용된다.
+
+	@Native 어노테이션의 특징 및 용도
+	
+		메타데이터: 
+			@ 기호를 사용하여 주석처럼 붙이지만, 
+			컴파일러나 런타임 시스템에 유용한 정보를 제공하는 메타데이터입니다.
+		
+		용도: 
+			자바의 native 키워드와 함께 사용되며, 
+			네이티브 메서드에서 사용되는 상수 값을 명시합니다.
+		
+		표준 어노테이션: 
+			java.lang 패키지에서 제공하는 기본(표준) 어노테이션 중 하나입니다.
+		
+		참조: 
+			네이티브 메서드는 C/C++ 등으로 작성되어 OS의 기능을 직접 호출하는 경우가 많은데, 
+			이때 필요한 상수 값들을 자바 코드에서 정의하고 @Native를 붙여 연결합니다. 
+
+	(예시)
+	public class NativeExample {
+	    
+	    // 네이티브 메서드에서 사용할 상수 필드에 @Native 어노테이션을 붙임
+	    @Native
+	    public static final int NATIVE_CONSTANT = 100;
+
+	    // 네이티브 메서드 선언 (실제 구현은 네이티브 코드에 있음)
+	    public native void callNativeMethod();
+
+	}
+
+	위 예시에서 @Native 어노테이션은 NATIVE_CONSTANT가 네이티브 코드에서 참조될 수 있음을 알려주는 역할을 합니다. 
+	
+	(덧붙여): 
+	JNI(Java Native Interface) 는 OS의 네이티브 메서드와 java의 'native'로 선언된 메서드를 연결하는 기술
+	
+	
