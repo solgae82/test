@@ -14,15 +14,15 @@ JDK가 지원하는 기본(표준) 애노테이션
 	변수, 메소드, 클래스등에 선언하면, 호출하는 곳에서 컴파일시 경고 메시지를 보여준다
 	
 	class NewClass{
-	int newField;
-	
-	@Deprecated 
-	int oldFiled;
-	
-	int getNewField() {return newField;}
-	
-	@Deprecated
-	int getOldField() {return oldFiled;}
+		int newField;
+		
+		@Deprecated 
+		int oldFiled;
+		
+		int getNewField() {return newField;}
+		
+		@Deprecated
+		int getOldField() {return oldFiled;}
 	
 	}
 
@@ -54,17 +54,16 @@ JDK가 지원하는 기본(표준) 애노테이션
 	interface MyFuc{
 		public abstract int max(int a, int b);
 	}
-	
-	
-	
+		
 @SuppressWarnings
 	경고 메시지 억제 애노테이션
 	
-	메지지 종류: @SuppressWarnings("메시지 종류")
+	경고메시지 종류: @SuppressWarnings("경고메시지")
 	
 		deprecation : @Deprecated가 붙은 대상을 사용할 경우 발생하는 경고
 		
-		rawtypes : 지네릭 타입을 사용할 때 타입 매개변수를 명시하지 않고 원시 타입(Raw Types)을 사용할 때 발생하는 경고
+		rawtypes : 지네릭 타입을 사용할 때 타입 매개변수를 명시하지 않고 
+			원시 타입(Raw Types)을 사용할 때 발생하는 경고
 			
 			List rawList = new ArrayList(); // rawtypes 경고 발생
 			
@@ -99,7 +98,7 @@ JDK가 지원하는 기본(표준) 애노테이션
 		}
 	
 @SafeVarargs
-	메서드 가변인자의 타입이 non-reifiable 타입(지네릭)일 경우 사용하는 애노테이션
+	메서드 가변인자의 타입이 non-reifiable 타입(지네릭)일 경우 사용하는 애노테이션.
 	항상 @SuppressWarnings("varargs")와 함께 선언해서 사용한다.
 	
 	(T... arr) 처럼 메서드 가변인자의 타입이 non-reifiable 타입일 경우 
@@ -108,11 +107,13 @@ JDK가 지원하는 기본(표준) 애노테이션
 	
 	'unchecked' 경고 발생 억제를 하려면,
 	두 지점(선언, 호출)에 다 @SuppressWarnings("unchecked")를 선언하거나
-	아니면, 선언 부분에만 @SafeVarargs 설정으로 한방에 경고를 억제할 수 있다.
+	아니면, 선언 부분에만 @SafeVarargs 설정으로 한방에 'unchecked' 경고를 억제할 수 있다.
 		
 	'varargs' 경고는 선언부분에만 @SuppressWarnings("varargs") 설정하면 된다.
 	
-	결론은 @SafeVarargs은 항상 @SuppressWarnings("varargs")가 붙는다
+	결론은 
+	메소드(T... arr) 선언시,  선언부분에만
+	@SafeVarargs 와 @SuppressWarnings("varargs")를 항상 같이 사용한다
 	
 	
 	class MyArrayList<T>{
@@ -126,7 +127,7 @@ JDK가 지원하는 기본(표준) 애노테이션
 		
 		@SafeVarargs
 		@SuppressWarnings("varargs")
-		public static <T> MyArrayList<T> asList(T... a){
+		public static <T> MyArrayList<T> asList(T... a){ //가변인자 타입이 non-reifiable
 			return new MyArrayList<>(a);
 		}
 		
