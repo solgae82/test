@@ -1,0 +1,430 @@
+
+스프링부트,JPA 4.0.2 + 시큐리티 7.0.2 에서 테스트 함 (2026년1월30일)
+
+------------------- application.properties
+spring.application.name=Chapter07
+
+#Security log level Setting
+logging.level.org.springframework.security=debug
+
+#DataSource Setting
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+spring.datasource.username=sa
+spring.datasource.password=
+
+#JPA Setting
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.generate-ddl=false
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.properties.hibernate.format_sql= true
+
+#Logging Setting
+logging.level.org.hibernate=info
+
+------------------- 테이블 구조
+(패스워드는 '1234') : org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder 로 암호화
+
+
+SELECT * FROM MEMBER2;
+ID  	PASSWORD  							NAME  	ROLE  	ENABLED  
+member	$2a$10$yeLmxIOvzHONwSFXfDcfZOJXcWTG52SWAA3zYHbLYbXoEHWbsZqwa	회원	MEMBER	TRUE
+manager	$2a$10$yeLmxIOvzHONwSFXfDcfZOJXcWTG52SWAA3zYHbLYbXoEHWbsZqwa	매니저	MANAGER	TRUE
+admin	$2a$10$yeLmxIOvzHONwSFXfDcfZOJXcWTG52SWAA3zYHbLYbXoEHWbsZqwa	어드민	ADMIN	TRUE
+
+
+------------------- SecurityConfig.java
+
+package com.solgae.chapter07.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import com.solgae.chapter07.service.BoardUserDetailService;
+
+
+@Configuration
+public class SecurityConfig{
+	
+		
+	// 시큐리티 필터 체인, 설정 적용 순서대로 작동한다
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+		
+		
+		http.authorizeHttpRequests(authorize->authorize
+			.requestMatchers("/","/login","/logout").permitAll() //모두가 접근할 수 있는 path
+			.requestMatchers("/member/**").authenticated() //인증된 사용자만 접근가능
+			.requestMatchers("/manager/**").hasAnyRole("MANAGER","ADMIN") //인증 + 'MANAGER' role일때만 접근가능한 path
+			.requestMatchers("/admin/**").hasRole("ADMIN") //인증 + 'ADMIN' role일때만 접근가능한 path
+			.anyRequest().authenticated() //나머지 path는 인증되었을때만 접근가능
+		);
+
+		
+		http.exceptionHandling(exception->exception
+				.accessDeniedPage("/accessDenied")); //403 Forbidden 페이지 설정
+		
+		http.csrf(csrf -> csrf.disable()); // CSRF 비활성화
+		
+		http.formLogin(form-> form.loginPage("/login").defaultSuccessUrl("/loginSuccess",true));
+		
+		//http.userDetailsService(userDetailService); //빈 자동 주입받아서 셋팅하는 옛날 등록 방법 		
+		return http.build();
+	}
+	
+	
+	// 비밀번호 암호화 Bean 등록 (시큐리티가 그냥 이것을 가져다 쓴다)
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	
+	/*
+	//메모리 기반 사용자 저장소 Bean 등록(UserDetailsService 구현하는 이런 방법도 있다)
+	@Bean
+	public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+		
+		UserDetails user = User.withUsername("user")
+				.password(encoder.encode("1234"))
+				.roles("MEMBER")
+				.build();
+		
+		UserDetails manager = User.withUsername("manager")
+		.password(encoder.encode("1234"))
+		.roles("MANAGER")
+		.build();
+		
+		UserDetails admin = User.withUsername("admin")
+				.password(encoder.encode("1234"))
+				.roles("ADMIN")
+				.build();
+		
+		return new InMemoryUserDetailsManager(user, manager, admin);
+		
+	}
+	*/
+	
+}
+
+
+------------------- Role.java
+
+package com.solgae.chapter07.domain;
+
+public enum Role {
+	ADMIN, MANAGER, MEMBER
+}
+
+
+------------------- Member2.java
+
+package com.solgae.chapter07.domain;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@Entity
+public class Member2 {
+
+	@Id
+	private String id;
+	private String password;
+	private String name;
+	
+	@Enumerated(EnumType.STRING)
+	private Role role;
+	
+	private boolean enabled;
+}
+
+
+------------------- MemberRepository.java
+
+package com.solgae.chapter07.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.solgae.chapter07.domain.Member2;
+
+public interface MemberRepository extends JpaRepository<Member2 , String> {
+
+}
+
+------------------- BoardUserDetailService.java
+
+package com.solgae.chapter07.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.solgae.chapter07.domain.Member2;
+import com.solgae.chapter07.repository.MemberRepository;
+
+@Service
+public class BoardUserDetailService implements UserDetailsService {
+
+	@Autowired
+	private MemberRepository repo;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) 
+	throws UsernameNotFoundException {
+		
+		System.out.println("==============>loadUserByUsername"); 
+		
+		Optional<Member2> findById = repo.findById(username);
+		if(!findById.isPresent()) {
+			throw new UsernameNotFoundException("유저 없다");
+		}
+		
+		Member2 member2 = findById.get();		
+		
+		return User.builder()
+				.username(member2.getId())
+				.password(member2.getPassword())
+				.roles(member2.getRole().toString())				
+				.build();
+	}
+
+}
+
+
+------------------- LoginController.java
+
+package com.solgae.chapter07.controller;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class LoginController {
+	
+	@GetMapping("/login")
+	public void login() {
+
+	}
+	
+	@RequestMapping("/loginSuccess")
+	public void loginSuccess(Model model) {
+		
+		String name = SecurityContextHolder.getContext().getAuthentication().getName();
+		String string = SecurityContextHolder.getContext().getAuthentication()
+		.getAuthorities().toString();
+		
+		System.out.println(name);//member
+		System.out.println(string);//[FactorGrantedAuthority [authority=FACTOR_PASSWORD, issuedAt=2026-01-27T23:14:00.884928400Z]]
+		
+		model.addAttribute("name", name);
+	}
+}
+
+
+------------------- SecurityController.java
+
+package com.solgae.chapter07.controller;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class SecurityController {
+	
+	@GetMapping("/")
+	public String index(Model model) {
+		System.out.println("index 요청");
+		@Nullable
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		System.out.println("isAuthenticated()=>"+authentication.isAuthenticated());
+		System.out.println("getName()=>" + authentication.getName());
+		System.out.println("getPrincipal()=>" + authentication.getPrincipal());
+				
+		boolean isLogin = false;
+		
+		// 로그인 여부 체크 
+		//if(authentication != null && authentication.isAuthenticated() && 
+		//		!"anonymousUser".equals(authentication.getPrincipal())) {
+		
+		if(authentication != null && authentication.isAuthenticated() && 
+				!(authentication instanceof AnonymousAuthenticationToken)) {
+			isLogin = true;
+		}
+		
+		
+		System.out.println("isLogin=>" + isLogin);
+		model.addAttribute("isLogin", isLogin);
+		model.addAttribute("name", authentication.getName());
+				
+		return "index";
+	}
+	
+	@GetMapping("/member")
+	public void forMember() {
+		System.out.println("Member 요청");
+	}
+	
+	@GetMapping("/manager")
+	public void forManager() {
+		System.out.println("Manager 요청");
+	}
+	
+	@GetMapping("/admin")
+	public void forAdmin() {
+		System.out.println("Admin 요청");
+	}
+	
+	@GetMapping("/accessDenied")
+	public void accessDenied() {
+		System.out.println("403 forbidden 접근권한 페이지 요청");
+	}
+}
+
+
+------------------- /templates/index.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>홈</title>
+</head>
+<body>
+<h1>인덱스 화면입니다.^^</h1>
+
+<a th:if="${!isLogin}" th:href="@{/login}">로그인</a>
+<a th:if="${isLogin}" th:href="@{/logout}">로그아웃</a>
+
+</body>
+</html>
+
+------------------- /templates/admin.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Admin 테스트</title>
+</head>
+<body>
+<h1>Admin 화면입니다.^^</h1>
+<a th:href="@{/loginSuccess}">뒤로 가기</a><br /><br />
+<a th:href="@{/logout}">로그아웃</a>
+</body>
+</html>
+
+------------------- /templates/manager.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Manager 테스트</title>
+</head>
+<body>
+<h1>Manager 화면입니다.^^</h1>
+<a th:href="@{/loginSuccess}">뒤로 가기</a><br /><br />
+<a th:href="@{/logout}">로그아웃</a>
+</body>
+</html>
+
+
+------------------- /templates/member.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Member 테스트</title>
+</head>
+<body>
+<h1>Member 화면입니다.^^</h1>
+<a th:href="@{/loginSuccess}">뒤로 가기</a><br /><br />
+<a th:href="@{/logout}">로그아웃</a>
+</body>
+</html>
+
+------------------- /templates/login.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>login폼</title>
+</head>
+<body>
+<h1>로그인</h1>
+<form method="post">
+	아이디: <input type="text" name="username" /><br />
+	비밀번호: <input type="password" name="password" /><br />
+	<input type="submit" value="로그인" />
+</form>
+</body>
+</html>
+
+------------------- /templates/loginSuccess.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>login성공</title>
+</head>
+<body>
+<h1><span style="color: skyblue">[[${name}]]</span> 로그인 성공 하셨습니다.</h1>
+<hr />
+<h5><a th:href="@{/}">INDEX 페이지로 이동</a></h5>
+<h5><a th:href="@{/member}">Member 페이지로 이동</a></h5>
+<h5><a th:href="@{/manager}">Manager 페이지로 이동</a></h5>
+<h5><a th:href="@{/admin}">Admin 페이지로 이동</a></h5>
+<h5><a th:href="@{/logout}">로그아웃</a></h5>
+</body>
+</html>
+
+------------------- /templates/accessDenied.html
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>접근권한에러</title>
+</head>
+<body>
+<h1>페이지 접근권한이 없습니다.</h1>
+<a th:href="@{/loginSuccess}">뒤로 가기</a><br /><br />
+<a th:href="@{/logout}">로그아웃</a>
+</body>
+</html>

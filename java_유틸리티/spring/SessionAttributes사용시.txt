@@ -2,7 +2,9 @@
 @SessionAttributes("testVO") //요기
 public class TestContoller {
 
-	// 이것 꼭 추가, 이거 안 하면 리스트 보기등에는 session 에러 남
+	// 이것 꼭 추가, 이거 안 하면 리스트 보기등에서 세션 'testVO' 참조시 session 에러 남
+	// 세션에 등록된 'testVO'명의 객체가 없을 경우엔 이 메소드가 실행되면서 세션에 등록된 후 다른 컨트롤 메소드 실행됨.
+	// 빈 기본 객체이기 하지만, 세션에 'testVO' 등록되었기 때문에 세션명 'testVO' 참조시 에러가 나지 않는다.   
 	@ModelAttribute("testVO")
 	public TestVO get() {
 		return new TestVO();
@@ -21,7 +23,8 @@ public class TestContoller {
 		return "/regist";
 	}
 
-	//@ResponseBody 사용시는 HttpSession을 인자로 꼭 넣어줘야 에러 안 남
+	//@ResponseBody 사용시는 HttpSession을 파라미터 인자로 꼭 넣어줘야 에러 안 남
+	//@ResponseBody + 파라미터 HttpSession 는 같이 써야 하는 것으로 강제된 것이라고 생각하자
 
 	@GetMapping("/ajax.do")
 	@ResponseBody

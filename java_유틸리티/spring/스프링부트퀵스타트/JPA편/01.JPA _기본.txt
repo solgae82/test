@@ -1,4 +1,17 @@
 
+------------------- pom.xml
+	<dependency>
+		<groupId>com.h2database</groupId>
+		<artifactId>h2</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+
+	<!--  JPA, 하이버네이트 -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>5.1.0.Final</version>
+	</dependency>
 -------------------
 MEAT-INF/persistence.xml
 
