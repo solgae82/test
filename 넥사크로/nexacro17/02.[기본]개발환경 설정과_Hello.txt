@@ -1,0 +1,111 @@
+02. [기본]개발환경 설정과 Hello
+	
+	TypeDefinition>Services>User Serivce> 
+		Defualt > 
+			PrefixID : Hello
+			Type : form
+			URL : ./Hello/
+			CacheLevel : Session
+			Version : 0
+			commu.. : 0
+		Extentsion >
+			IncludeSub.. : true
+			.. 나머지는 비워 놓는다
+			
+	좌측 메뉴에 Hello 메뉴가 생겼을 것이다.
+	Hello 메뉴 선택 후 우클릭 > New > 창 > Name : 'Hello000' 입력 > OK
+	
+	Hello 메뉴 선택 후 > 상단 메뉴바 New > form(.xfdl) > Form Wizard 창 뜸
+		Name : Hello
+		Location : 'Hello' 선택되어 있을 것이다
+		
+		Next버튼 > Layout Information : form 기본 사이즈등을 설정
+		Next버튼 > 화면 top,left,right,bottom 등 전체 영역 : px로 고정함. 시발 설명 좃같네
+		(px로 그냥 하자..뭔지도 모르는데)
+		
+		Finish > form이 만들어 진다
+		
+	버튼 만들기
+		상단 아이콘 리스트 중 버튼 선택 후 폼에 드래그로 그리면 된다.
+		
+		버튼 텍스트 변경(3가지)
+		
+		1. 텍스트 빈 곳에 클릭 , 클릭 (시간차 공격) 텍스트 변경
+			줄바꿈은 ctrl + enter
+		
+		2. 속성창에서 변경 
+			text 항목 : 텍스트 변경, 줄바꿈은 콤보버튼 누른 후 ctrl + enter
+			
+		3. 버튼선택 후 단축키 'F2' 누르고 편집 , 줄바꿈은 ctrl + enter
+		
+		
+	버튼 id 속성 
+		속성창 'id' 항목에서 설정
+		
+	버튼 이벤트 걸기
+		더블클릭 빨리하면 디폴트 이벤트 함수 스크립트 모드로 들어감
+			'Button00_onClick' 디폴트 이벤트명으로 이벤트 함수가 만들어 있다
+			
+			this.Button00_onClick=function(obj:nexacro.Button, e:enxacro.ClickEventInfo){
+			
+			}
+		속성창 >  이벤트 아이콘 >  onclick 이벤트에서 '사용자이벤트명' 설정하면(디폴트아닌) 
+		해당 사용자 이벤트명으로 이벤트 스크립트 추가됨
+			'fn_Hello' 로 이름을 설정하면 아래와 같이 스크립트가 설정된다.
+			
+			this.fn_Hello=function(obj:nexacro.Button, e:enxacro.ClickEventInfo){
+			
+			}
+		
+		
+	버튼 이벤트에서 경고창 
+	
+		this.Button00_onClick=function(obj:nexacro.Button, e:enxacro.ClickEventInfo){
+			this.alert("안녕"); //nexacro 에서 alert	
+		}
+		
+	실행
+		메뉴 상단 아이콘 중 QuickView 클릭 (Ctrl + F6)
+		Run Configuration 창
+			Run Screen : Destktop_screen 'Application_Desktop'
+			Browser : Nexacro Runtime Environment  (NRE 환경 , 넥사크로 전용 브라우저 모드)
+			
+			
+		Run Environment
+			- Local (선택
+			- Local Web Server (caddy.exe)
+			- Web Server
+			
+		Run 버튼으로 실행!
+	
+	로그 찍기
+		nexacro.getApplication().trace("로그찍기");
+		
+		var log = nexacro.getApplication()l
+		log.trace("로그찍기");
+		
+	
+		넥사크로 NRE 환경으로 실행하면 개발자 output 에 로그가 찍히고,
+		브라우저로 실행했을 경우에는 해당 브라우저 로그에 나온다.
+		
+	
+	버튼 속성 바꾸기
+		this.Button00_onClick=function(obj:nexacro.Button, e:enxacro.ClickEventInfo){
+			this.Button00.set_text("안녕"); //set_속성명
+			this.alert(this.Button00.text); //객체.속성명
+			
+			obj.set_text("안녕"); //이렇게 쓰자
+			this.alert(obj.text); //이렇게 쓰자
+		}
+		
+		
+	변수 선언법
+	
+		var str = 'abc'; // 스크립트 영영에서만 쓸수 있다
+		this.str2 = 'abc'; //스크립트 영역, 컴포넌트와 컴포넌트 사이, 폼과 폼 사이에서도 참조 가능(요렇게 쓰자)
+		str3 = 'abc'; //어플리케이션 글로벌 영역, 절대 쓰지 말자.
+		
+	원본 소스 경로 vs 배포 경로
+		원본(.xfdl) 소스 경로와, 배포(.js) 경로는 다르다
+		배포경로에는 넥사크로 lib 디렉토리도 같이 배포된다.
+	
