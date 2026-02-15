@@ -9,7 +9,7 @@
 		- false: 있어야 한다
 		
 	fetch: 글로벌 페지 전략 설정(기본: EAGER)
-		- EAGER:연관 엔티티 동시조회, 
+		- EAGER:연관 엔티티 동시조회
 		- LAZY:연관 엔티티 사용할때 조회
 				
 	casecade: 영속성 전이 기능 설정

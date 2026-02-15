@@ -60,61 +60,45 @@ public class SecurityConfig{
 		
 	// 시큐리티 필터 체인, 설정 적용 순서대로 작동한다
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+	public SecurityFilterChain filterChain(HttpSecurity security) throws Exception{
 		
 		
-		http.authorizeHttpRequests(authorize->authorize
+		security.authorizeHttpRequests(authorize->authorize
 			.requestMatchers("/","/login","/logout").permitAll() //모두가 접근할 수 있는 path
 			.requestMatchers("/member/**").authenticated() //인증된 사용자만 접근가능
-			.requestMatchers("/manager/**").hasAnyRole("MANAGER","ADMIN") //인증 + 'MANAGER' role일때만 접근가능한 path
+			.requestMatchers("/manager/**").hasAnyRole("MANAGER","ADMIN") //인증 + 'MANAGER' 또는 'ADMIN' role일때만 접근가능한 path
 			.requestMatchers("/admin/**").hasRole("ADMIN") //인증 + 'ADMIN' role일때만 접근가능한 path
 			.anyRequest().authenticated() //나머지 path는 인증되었을때만 접근가능
 		);
 
-		
-		http.exceptionHandling(exception->exception
+		//접근금지 페이지 설정
+		security.exceptionHandling(exception->exception
 				.accessDeniedPage("/accessDenied")); //403 Forbidden 페이지 설정
 		
-		http.csrf(csrf -> csrf.disable()); // CSRF 비활성화
+		// CSRF 비활성화,실전엔 활성화해야한다.
+		security.csrf(csrf -> csrf.disable()); 
 		
-		http.formLogin(form-> form.loginPage("/login").defaultSuccessUrl("/loginSuccess",true));
+		//로그인 설정
+		security.formLogin(form-> form.loginPage("/login").defaultSuccessUrl("/loginSuccess",true));
 		
-		//http.userDetailsService(userDetailService); //빈 자동 주입받아서 셋팅하는 옛날 등록 방법 		
-		return http.build();
+		//로그아웃 설정
+		secutiry.logout(form->form.logoutUrl("/logout")
+				.invalidateHttpSession(true)
+				.logoutSuccessUrl("/"));
+		
+		//빈 자동 주입받아서 셋팅하는 옛날 등록 방법,최신버전은 @Service 로 등록 		
+		//security.userDetailsService(userDetailService); 
+		
+		return security.build();
 	}
 	
 	
-	// 비밀번호 암호화 Bean 등록 (시큐리티가 그냥 이것을 가져다 쓴다)
+	// 비밀번호 암호화 Bean 등록 (시큐리티가 아래 설정한 암호방식을 가져다 쓴다)
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
-	
-	/*
-	//메모리 기반 사용자 저장소 Bean 등록(UserDetailsService 구현하는 이런 방법도 있다)
-	@Bean
-	public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-		
-		UserDetails user = User.withUsername("user")
-				.password(encoder.encode("1234"))
-				.roles("MEMBER")
-				.build();
-		
-		UserDetails manager = User.withUsername("manager")
-		.password(encoder.encode("1234"))
-		.roles("MANAGER")
-		.build();
-		
-		UserDetails admin = User.withUsername("admin")
-				.password(encoder.encode("1234"))
-				.roles("ADMIN")
-				.build();
-		
-		return new InMemoryUserDetailsManager(user, manager, admin);
-		
-	}
-	*/
 	
 }
 
@@ -186,21 +170,29 @@ import org.springframework.stereotype.Service;
 import com.solgae.chapter07.domain.Member2;
 import com.solgae.chapter07.repository.MemberRepository;
 
+/**
+* 이전 버전엔 스프링 시큐리티 전용 어노테이션이 있었으나,
+* 최근 버전엔 그냥 스프링 @Service로 등록하도록 바뀌었다
+*/
 @Service
 public class BoardUserDetailService implements UserDetailsService {
 
 	@Autowired
 	private MemberRepository repo;
 	
+	/**
+	*	시큐리티가 아래 구현한 loadUserByUsername 메소드를 호출해서 사용한다
+	*	코드를 보면 알 수 있듯이 로그인 관련 DB정보를 셋팅하면,
+	*	사용자가 전송한 로그인 정보와 비교처리 및 로그인 후처리 등을 할 것으로 예상된다.
+	*/
 	@Override
 	public UserDetails loadUserByUsername(String username) 
 	throws UsernameNotFoundException {
 		
-		System.out.println("==============>loadUserByUsername"); 
-		
+				
 		Optional<Member2> findById = repo.findById(username);
 		if(!findById.isPresent()) {
-			throw new UsernameNotFoundException("유저 없다");
+			throw new UsernameNotFoundException(username);
 		}
 		
 		Member2 member2 = findById.get();		

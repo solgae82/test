@@ -13,7 +13,7 @@ QueryDSL
 	Spring Data JPA는 2가지 방법으로 QueryDSL을 지원한다.
 	
 	1. org.springframework.data.querydsl.QuerydslPredicateExecutor (인터페이스)
-	2. org.springframework.data.jpa.repository.support.QuerydslRepositorySuppor (추상클래스)
+	2. org.springframework.data.jpa.repository.support.QuerydslRepositorySupport (추상클래스)
 	
 	
 	(최근 방식)
