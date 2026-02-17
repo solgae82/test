@@ -570,26 +570,56 @@
 
 	- 인터페이스 구현
 		interface Able{
-			String HELLO = "Hi hello"; //pblic static final 이 앞에 자동으로 붙는다.
-			public static final NUM = 10;
-			print(String msg); // public abstract 이 앞에 자동으로 붙는다.
-			public abstract print2(String msg);
+			String HELLO = "Hi! hello"; //pblic static final 이 앞에 자동으로 붙는다.
+			public static final AGE = 10;
+			void print(String msg); // public abstract 이 앞에 자동으로 붙는다.
+			public abstract void print2(String msg);
 		}
 		
 		class Ex implements Able{
-			public print(String msg){..}
-			public print2(String msg){..}
+			public void print(String msg){..} //Able 구현 메서드
+			public void print2(String msg){..} //Able 구현 메서드
 		}
 
 		구현을 모두 못했을 경우 추상클래스가 된다
 			abstract class Ex implements Able{
-				public print(String msg){..}
+				public void print(String msg){..}
 				// print2() 구현 못함
 			}
 
 		다른 클래스 상속과 구현을 동시에 할 수 있다
 			class Ex extends Unit implements Able{..}
 
+	- 인터페이스 다중 구현
+		
+		다중 구현도 가능하며 ',' 구분자로 인터페이스를 추가한다.
+		
+		위 예제에서 DoIt 인터페이스를 추가해서 구현해보자
+		
+		interface DoIt{
+			String DOIT_MESSAGE="Just Do It!";
+			void canPrint(String msg);
+		}
+		
+		// ','로 구분해서 인터페이스 다중 구현 가능.
+		class Ex implements Able , DoIt{
+			public void print(String msg){
+				System.out.println(HELLO +", "+ msg);
+			}
+			public void print2(String msg){
+				System.out.println("내 나이는 "+AGE + "살, " + msg);
+			}
+			public void canPrint(String msg){System.out.println(msg + ", " + DOIT_MESSAGE);}
+		}
+		
+		// 실행
+		public static main(String[] args){
+			Ex ex = new Ex();
+			
+			ex.print("내 이름은 GodRich 야"); //Hi! hello, 내 이름은 GodRich야 
+			ex.print2("만나서 반가워!"); // 내 나이는 10살, 만나서 반가워!
+			ex.canPrint("생각하지마!"); //생각하지마!, Just Do It!
+		}
 	- 인터페이스 상속
 
 		인터페이스끼리만 상속 가능하며, 다중상속 가능.
@@ -612,9 +642,9 @@
 	
 	- static 메서드
 		JDK 1.8 부터 적용
-		구현된 static 메소드다
+		구현된 static 메소드다(추상 메서드 아님)
 		static 키워드만 있을 경우 public static이 된다(public이 기본이고 생략가능)
-		클래스에서는 인스턴스에서도 접근 가능했지만, 인터페이스는 인터페이스명.메서드 로만 접근 가능
+		클래스에서는 인스턴스에서도 접근 가능했지만, 인터페이스는 '인터페이스명.메서드' 로만 접근 가능
 			
 			interface A{
 				static void print(){ // public static 자동 변경됨
@@ -633,7 +663,7 @@
 
 	- 디폴트(default) 메서드
 		JDK 1.8 부터 적용
-		구현된 일반 메소드
+		구현된 일반 메소드(추상 메서드 아님)
 		원래 인터페이스 목적에는 구현의 강제성을 위해 추상 메소드만 허용했지만, 
 		구현 완료된 메서드의 상속 기능도 허용된 듯..
 		인터페이스에는 default 키워드를 메서드에 붙여서 구분. 
@@ -659,3 +689,40 @@
 				: 다중 인터페이스를 상속한 인터페이스일 경우 다중상속한 인터페이스에서 오버라이딩 해야함
 			2. 인터페이스 디폴트 메서드와 일반 조상클래스 동시 구현 후 메서드 충돌 시
 				: 일반 조상클래스가 상속되고, 인터페이스 디폴트 메서드는 무시됨.
+
+	- private 메서드
+		JDK 9 부터 적용
+		구현된 일반 메소드(추상 메서드 아님)
+		접근제한자는 'private'이며, static도 붙일 수 있다
+			- static메서드에서 호출하는 private메서드는 반드시 'static' 이여야 한다
+			
+		
+			interface A{
+				
+				private void print(){ 
+					System.out.println("private 매서드 호출");
+				}
+				
+				private static void print2(){ 
+					System.out.println("private static 메소드 호출");
+				}
+				
+				default void allPrint(){
+					print();
+					print2();
+				}
+				
+			}
+
+			class AImpl implements A{}
+
+			public static void main(String[] args){
+				A a = new AImpl();
+				a.allPrint();
+				
+				/*
+				private 매서드 호출
+				private static 메소드 호출
+				*/
+
+			}

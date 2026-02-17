@@ -1,5 +1,5 @@
 
-스프링부트,JPA 4.0.2 + 시큐리티 7.0.2 에서 테스트 함 (2026년1월30일)
+스프링부트,JPA 4.0.2 + 시큐리티 7.0.2 에서 테스트 함 (2026년01월30일)
 
 ------------------- application.properties
 spring.application.name=Chapter07
@@ -197,6 +197,7 @@ public class BoardUserDetailService implements UserDetailsService {
 		
 		Member2 member2 = findById.get();		
 		
+		//아래 UserDetails 를 확장한 커스텀 클래스로 만들면 더 확장해서 펀리한 기능을 넣어 사용할 수 있다
 		return User.builder()
 				.username(member2.getId())
 				.password(member2.getPassword())
@@ -267,10 +268,11 @@ public class SecurityController {
 				
 		boolean isLogin = false;
 		
-		// 로그인 여부 체크 
+		
 		//if(authentication != null && authentication.isAuthenticated() && 
 		//		!"anonymousUser".equals(authentication.getPrincipal())) {
 		
+		// 로그인 여부 체크 
 		if(authentication != null && authentication.isAuthenticated() && 
 				!(authentication instanceof AnonymousAuthenticationToken)) {
 			isLogin = true;

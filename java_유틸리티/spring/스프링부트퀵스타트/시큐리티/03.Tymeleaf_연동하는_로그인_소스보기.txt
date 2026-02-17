@@ -1,0 +1,523 @@
+스프링부트,JPA 4.0.2 + 시큐리티 7.0.2 에서 테스트 함 (2026년02월15일)
+
+
+------------------- pom.xml
+
+<!-- 스프링 시큐리티 라이브러리  추가 -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<!-- Thymeleaf 라이브러리 추가 -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
+<!-- thymeleaf에서 springsecurity 사용하기 위한 라이브러리 (시큐리티6버전 이상은 아래 라이브러리를 사용)-->
+<dependency>
+	<groupId>org.thymeleaf.extras</groupId>
+	<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+</dependency>
+
+------------------- application.properties
+
+spring.application.name=BoardWeb
+
+#WebApplication Type Setting
+spring.main.web-application-type=servlet
+
+#Banner Setting
+spring.main.banner-mode=off
+
+#Thymeleaf Setting
+spring.thymeleaf.cache=false
+
+#DataSource Setting
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.url=jdbc:h2:tcp://localhost/~/test
+spring.datasource.username=sa
+spring.datasource.password=
+
+#JPA Setting
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.generate-ddl=false
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.properties.hibernate.format_sql= true
+
+#Logging Setting
+#logging.level.org.springframework.web=debug
+logging.level.org.hibernate=info
+#logging.level.org.springframework.security=debug
+
+------------------- h2 DB , MEMBER테이블 
+
+: org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder 로 암호화
+: (admin: 'admin123', member: 'member123')
+
+SELECT * FROM MEMBER;
+ENABLED  	MEMBER_ID  	NAME  	PASSWORD  							ROLE  
+TRUE		member		둘리	$2a$10$jtJPnbeJyaZaJrFpWpAjMew9wouV1hA5y8Pgo3pW6EABanb1NxHaG	MEMBER
+TRUE		admin		도우너	$2a$10$mFN5Mjt7/9st5HBeaJeAyOVY5BjwjENaEPkRDpaswzRfzEQ4/d0me	ADMIN
+
+
+------------------- Role.java
+
+package com.solgae.boardweb.domain;
+
+public enum Role {
+	MEMBER, ADMIN
+}
+
+------------------- Member.java
+
+package com.solgae.boardweb.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+public class Member {
+
+	@Id
+	@Column(name="MEMBER_ID")
+	private String id;
+	private String password;
+	private String name;
+	
+	@Enumerated(EnumType.STRING)
+	private Role role;
+	
+	private boolean enabled;
+		
+}
+
+------------------- SecurityUser.java (시큐리티 관련, 커스텀 UserDetails 구현 확장)
+
+package com.solgae.boardweb.security;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.solgae.boardweb.domain.Member;
+
+public class SecurityUser implements UserDetails {
+
+	private static final long serialVersionUID = 987489524972825590L;
+	
+	private Member member;
+	
+	
+	public SecurityUser(Member member){
+		this.member = member;
+	}
+	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		return List.of(new SimpleGrantedAuthority(member.getRole().toString()));
+	}
+
+	@Override
+	public @Nullable String getPassword() {
+		return member.getPassword();
+	}
+
+	@Override
+	public String getUsername() {
+		return member.getId();
+	}
+
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+	}
+	
+}
+
+------------------- SecurityUserDetailsService.java  (시큐리티 관련, 커스텀 UserDetailsService 구현)
+
+package com.solgae.boardweb.security;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.solgae.boardweb.domain.Member;
+import com.solgae.boardweb.persistence.MemberRepository;
+
+/**
+ * security 가 로그인 여부를 판단하는 service
+ *
+ */
+@Service
+public class SecurityUserDetailsService implements UserDetailsService {
+
+	@Autowired
+	MemberRepository memberRepo;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
+		Optional<Member> findById = memberRepo.findById(username);
+		
+		if(!findById.isPresent()) {
+			throw new UsernameNotFoundException(username);
+		}
+	
+		Member member = findById.get();
+		
+		return new SecurityUser(member);
+	}
+
+}
+
+------------------- SecurityConfig.java (시큐리티 Config 설정)
+
+package com.solgae.boardweb.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity secutiry) throws Exception{
+		
+		secutiry.authorizeHttpRequests(authorize->authorize
+				.requestMatchers("/","/system/**").permitAll() //모두가 접근할 수 있는 path
+				.requestMatchers("/board/**").authenticated() //인증된 사용자만 접근가능
+				.requestMatchers("/admin/**").hasRole("ADMIN") //인증 + 'ADMIN' role일때만 접근가능한 path
+				.anyRequest().authenticated() //나머지 path는 인증되었을때만 접근가능
+			);
+
+			
+		//403 Forbidden 페이지 설정
+		secutiry.exceptionHandling(exception->exception
+					.accessDeniedPage("/system/accessDenied")); 
+			
+		// CSRF 비활성화 , 실전에서 이렇게 하면 안된다
+		secutiry.csrf(csrf -> csrf.disable()); 
+			
+		//로그인 설정
+		secutiry.formLogin(form-> form.loginPage("/system/login")
+				.defaultSuccessUrl("/board/getBoardList",true));
+		
+		//로그아웃 설정
+		secutiry.logout(form->form.logoutUrl("/system/logout")
+				.invalidateHttpSession(true)
+				.logoutSuccessUrl("/"));
+		
+			
+		return secutiry.build();
+	}
+	
+	// 비밀번호 암호화 Bean 등록 (시큐리티가 이 암호방식을 가져다 쓴다)
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+}
+
+------------------- SecurityController.java
+
+package com.solgae.boardweb.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class SecurityController {
+
+	@GetMapping("/system/login")
+	public void login() {}
+	
+	@GetMapping("/system/logout")
+	public void logout() {}
+	
+	@GetMapping("/system/accessDenied")
+	public void accessDenied() {}
+	
+	@GetMapping("/admin/adminPage")
+	public void adminPage() {}
+	
+}
+
+------------------- BoardController.java
+
+: (@AuthenticationPrincipal SecurityUser user ) 매개변수를 주목하라
+: 커스텀 SecurityUser 만들면  비즈니스 로직 코드가 확 줄어든다.
+
+package com.solgae.boardweb.controller;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.solgae.boardweb.domain.Board;
+import com.solgae.boardweb.domain.Search;
+import com.solgae.boardweb.security.SecurityUser;
+import com.solgae.boardweb.service.BoardService;
+import com.solgae.boardweb.service.MemberService;
+
+
+@Controller
+@RequestMapping("/board/")
+public class BoardController {
+	
+	@Autowired
+	private BoardService boardService;
+	
+	@Autowired
+	private MemberService memberService;
+	
+	//글목록
+	@RequestMapping("/getBoardList")
+	public String getBoardList(Model model) {
+		
+		Page<Board> boardList = boardService.getBoardList();
+		model.addAttribute("boardList", boardList);
+		return "board/getBoardList";
+	}
+	
+	//상세보기
+	@GetMapping("/getBoard")
+	public String getBoard(Board board, Model model) {
+		model.addAttribute("board", boardService.getBoard(board));
+		
+		@Nullable
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		System.out.println("Authentication=>" + auth.toString());
+		
+		/*
+		요 출력 내용을 잘 보자.. (admin으로 로그인했을 때)
+		
+		Authentication=>
+		UsernamePasswordAuthenticationToken [
+			Principal=com.solgae.boardweb.security.SecurityUser@f3505e4
+			, Credentials=[PROTECTED]
+			, Authenticated=true
+			, Details=WebAuthenticationDetails [
+				RemoteIpAddress=0:0:0:0:0:0:0:1
+				, SessionId=948EE10C9EF9CBCFCCFAB65D42EA2852
+			]
+			, Granted Authorities=[
+				ADMIN
+				, FactorGrantedAuthority [
+					authority=FACTOR_PASSWORD
+					, issuedAt=2026-02-17T03:27:26.919430200Z
+				]
+			]
+		]		
+		*/
+		
+		return "board/getBoard";
+	}
+	
+	//새글등록폼
+	@GetMapping("/insertBoard")
+	public String insertBoardView(Model model, @AuthenticationPrincipal SecurityUser user) {
+		
+		/*
+		@Nullable
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+				
+		model.addAttribute("member", memberService.getMember(authentication.getName()));
+		*/
+		
+		//@AuthenticationPrincipal 사용으로 요렇게 줄어든다
+		model.addAttribute("member", user.getMember()); 
+		
+		return "board/insertBoard";
+	}
+	
+	
+	//새글저장
+	@PostMapping("/insertBoard")
+	public String insertBoard(Board board, @AuthenticationPrincipal SecurityUser user) {
+		
+		/*
+		@Nullable
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		Member member = new Member();
+		member.setId(authentication.getName());
+		board.setMember(member);
+		*/
+		
+		//@AuthenticationPrincipal 사용으로 요렇게 줄어든다
+		board.setMember(user.getMember()); 
+		
+		boardService.insertBoard(board);
+		return "redirect:getBoardList";
+	}
+	
+	//글 수정
+	@PostMapping("/updateBoard")
+	public String updateBoard(Board board) {
+		boardService.updateBoard(board);
+		return "redirect:getBoardList";
+	}
+	
+	//글 삭제
+	@GetMapping("/deleteBoard")
+	public String deleteBoard(Board board) {
+		boardService.deleteBoard(board);
+		return "redirect:getBoardList";
+	}
+}
+
+------------------- system/login.html
+
+<!DOCTYPE html>
+<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>로그인페이지</title>
+</head>
+<body>
+	<h1>로그인</h1>
+	<form method="post">
+	
+		ID : <input name="username" type="text" value="" /> <br />
+			
+		비밀번호 : <input name="password" type="password" value="" /> <br />
+			
+		<input type="submit" th:value="로그인" />
+			
+	</form>
+</body>
+</html>
+
+------------------- system/accessDeneid.html
+	
+	<!DOCTYPE html>
+	<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<meta charset="UTF-8">
+		<title>접근금지</title>
+	</head>
+	<body>
+		<h1>페이지에 대한 접근 권한이 없습니다</h1>
+		<h3>다시 로그인 하시고 싶으면 <a th:href="@{/system/logout}">여기</a>를 클릭하세요</h3>
+	</body>
+	</html>
+
+------------------- system/adminPage.html
+
+<!DOCTYPE html>
+<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>관리자페이지</title>
+</head>
+<body>
+	<h1>관리자님 환영합니다</h1>
+	<h3><a th:href="@{/board/getBoardList}">글목록</a>으로 이동</h3>
+</body>
+</html>
+
+------------------- board/getBoardList.html
+
+<!DOCTYPE html>
+<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>게시글 목록</title>
+</head>
+<body>
+	<h1>게시글 목록</h1>
+	<p sec:authorize="isAuthenticated()">
+		<span sec:authentication="principal.member.name"></span> <a th:href="@{/system/logout}">로그아웃</a>
+	</p>
+
+	생략 .....
+</body>
+</html>
+
+------------------- board/insertBoard.html
+
+<!DOCTYPE html>
+<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>새글등록</title>
+</head>
+<body>
+<h1>새글 등록</h1>
+	<form method="post" th:action="@{/board/insertBoard}">
+		
+		<table>
+			생략..
+			<tr>
+				<th>작성자</th>
+				<td th:text="${member.name}"></td> <!-- 요기 -->
+			</tr>
+			
+			생략..
+		</table>
+	</form>
+
+</body>
+</html>
+
+------------------- board/getBoard.html
+
+<!DOCTYPE html>
+<html xmln:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>게시글 상세</title>
+</head>
+<body>
+<h1>게시글 상세</h1>
+
+	생략...
+
+	<!-- 'ADMIN' 권한만 글삭제 가능하다 -->
+	<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/board/deleteBoard(seq=${board.seq})}">글삭제</a> &nbsp;&nbsp;
+	<a th:href="@{/board/getBoardList}">글목록</a>
+
+</body>
+</html>
+
