@@ -14,7 +14,7 @@ Jakarta EE 9+ 이상 버전은 아래처럼 'jakarta' 로 써야하기에
 	import jakarta.servlet.http.HttpServletRequest;
 	import jakarta.servlet.http.HttpSession;
 
-기존에 만들어진 라이브러리등이 'java.lang.ClassNotFoundException' 이 나면서 작동되자 않는 이슈가 있음
+기존에 만들어진 라이브러리등이 'java.lang.ClassNotFoundException' 이 나면서 작동되지 않는 이슈가 있음
 
 스프링, 스프링을 기본으로 하는 스프링 부트등에도 jakarta EE 9+ 이상을 지원하는 버전부터 나타나는 증상.
 소스를 수정해야 하는 문제인데, 예전 책등으로 스프링부트등을 설정하면  문제가 생긴다
