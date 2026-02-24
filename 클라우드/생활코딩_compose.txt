@@ -1,0 +1,117 @@
+PHP 프로그램인 워드프레스 이미지를 내려받아서 컨테이너로 등록하고
+MySQL 이미지를 내려 받아서 컨테이너를 등록 후 서로 연동하는 과정으로 예제를 연습한다
+
+cli로 수동 등록해서 컨테이너들과 서로 연동시키는 과정과,
+도커 compose 파일인 docker-compose.yml에 기술 후 
+docker-compose 명령어로 컨테이들을 연동시키는 과정을 비교해보자
+
+CLI 수동 등록법
+	# pull 다운 받아서 run으로 컨테이너 생성 
+	
+	# 네트워크 생성 설정
+	docker network create wordpress_net
+	
+	# mysql 컨테이너 등록 생성
+	docker \
+	run \
+	    --name "db" \
+	    -v "$(pwd)/db_data:/var/lib/mysql" \
+	    -e "MYSQL_ROOT_PASSWORD=123456" \
+	    -e "MYSQL_DATABASE=wordpress" \
+	    -e "MYSQL_USER=wordpress_user" \
+	    -e "MYSQL_PASSWORD=123456" \
+	    --network wordpress_net \
+	mysql:5.7
+
+
+	# wordpress 컨테이너 등록 생성
+	docker \
+	    run \
+	    --name app \
+	    -v "$(pwd)/app_data:/var/www/html" \
+	    -e "WORDPRESS_DB_HOST=db" \
+	    -e "WORDPRESS_DB_USER=wordpress_user" \
+	    -e "WORDPRESS_DB_NAME=wordpress" \
+	    -e "WORDPRESS_DB_PASSWORD=123456" \
+	    -e "WORDPRESS_DEBUG=1" \
+	    -p 8080:80 \
+	    --network wordpress_net \
+	wordpress:latest
+	
+	
+	#브라우저 접속 확인
+	http://localhost:8080/
+	
+docker-compose.yml 로 실행하기
+
+	docker-compose.yml 파일이 있는 디렉토리에서 명령어를 사용해야 한다
+	
+	
+	# 이름이 약속된 파일인 'docker-compose.yml' 파일 생성
+	cd /d
+	mkdir compose-test
+	cd compose-test
+	vi docker-compose.yml
+		
+		version: "3.7"
+
+		services:
+		  db:
+		    image: mysql:5.7
+		    volumes:
+		      - ./db_data:/var/lib/mysql
+		    restart: always
+		    environment:
+		      MYSQL_ROOT_PASSWORD: 123456
+		      MYSQL_DATABASE: wordpress
+		      MYSQL_USER: wordpress_user
+		      MYSQL_PASSWORD: 123456
+		  
+		  app:
+		    depends_on: 
+		      - db
+		    image: wordpress:latest
+		    volumes:
+		      - ./app_data:/var/www/html
+		    ports:
+		      - "8080:80"
+		    restart: always
+		    environment:
+		      WORDPRESS_DB_HOST: db:3306
+		      WORDPRESS_DB_NAME: wordpress
+		      WORDPRESS_DB_USER: wordpress_user
+		      WORDPRESS_DB_PASSWORD: 123456 
+	
+		:wq #저장
+		
+
+	docker-compose up #컨테이너들+네트워크 시작 후 서로 연동됨
+	
+	#실행한 위치에 컨테이너와 host간의 자료 연동을 위한 기본 디렉토리들이 설치된다.
+	# -- name명 '_data' 이름의 디렉토리가 생긴다
+	# 현재 예 (app_data : 워드프레스 관련, db_data: mysql관련)
+	
+	docker-compose down #컨테이너 및 네트워크 중지 및 제거.
+	
+
+AI 정리 : 
+	도커 컴포즈(Docker Compose)는 YAML 파일을 사용하여 여러 개의 도커 컨테이너를 정의하고, 
+	단일 명령어로 일괄 실행 및 관리하는 도구입니다. 
+	복잡한 컨테이너 설정(docker run)을 텍스트 파일(docker-compose.yml)에 기록하여 애플리케이션의 
+	개발, 테스트, 배포 환경을 일관성 있게 구성하고 운영 효율을 높여줍니다. 
+	
+	핵심 특징 및 장점:
+		멀티 컨테이너 관리: 웹 서버, 데이터베이스 등 연동된 여러 컨테이너를 하나의 서비스(프로젝트)로 묶어 관리.
+		YAML 파일 기반 설정: docker-compose.yml 파일에 컨테이너 설정(이미지, 네트워크, 볼륨 등)을 명시.
+		일괄 명령: docker-compose up 명령 하나로 모든 서비스 실행, down 명령으로 종료 및 삭제.
+		환경 일관성: 개발부터 운영 환경까지 동일한 구성을 유지하여 설정 오류 방지. 
+	
+	주요 명령어:
+		docker-compose up -d: 백그라운드에서 컨테이너 실행.
+		docker-compose down: 컨테이너 및 네트워크 중지 및 제거.
+		docker-compose logs -f: 로그 확인. 
+		
+	여러 컨테이너가 함께 실행되는 마이크로서비스 아키텍처나 복잡한 애플리케이션 환경을 효율적으로 다룰 때 필수적인 도구입니다.
+	
+
+	

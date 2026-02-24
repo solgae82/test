@@ -1,0 +1,51 @@
+Dockerfile 파일로 상세 내용을 기술해서 build 명령어로 기술한 Dockerfile 내용대로 이미지를 생성한다.
+
+
+	$pwd 
+	/home/dong
+	
+	$cat ./Dockerfile
+	FROM ubuntu:20.04
+	
+	#web-server-build라는 태그 이름으로 현재 디렉토리의 Dockerfile을 이용해서 이미지 생성
+	$docker build -t web-server-build .
+		
+	$docker images
+	..(새로 생성된 이미지)
+	web-server-build:latest   b02bf99d6aa1        109MB         27.5MB
+	
+파이썬 내장 웹서버 실행 실무 (윈도우즈에서 테스트) 
+	#파이썬 내장된 버전 설치 후 파이썬 웹서버 실행한 컨테이너 예제
+
+	cd D:\docker # 이동
+	
+		# ./Dockerfile 내용
+	
+		FROM ubuntu:20.04
+		RUN apt update && apt install -y python3
+		WORKDIR /var/www/html
+		COPY ["index.html","."]
+		CMD ["python3","-u","-m","http.server"]
+		
+
+		# ./index.html 내용
+		<!doctype html>
+		<html lang="ko"><head>
+		<meta charset="UTF-8">
+		<title>파이썬</title>
+		</head>
+		<body>
+			<h1>헤이맨~!</h1>
+		</body>
+		</html>
+		
+	#이미지 생성 (현재 디렉토리의 Dockerfile 참조해서 생성)
+	docker build -t web-server-build .
+		 
+	#새로 생성한 이미지로 컨테이너 생성 후 서비스 시작
+	docker run --name ws1 -p 8080:8000 -v d:/docker:/var/www/html web-server-build
+	
+	#브라우저 확인
+		http://localhost:8080/
+		
+		#index.html 내용 출력됨
