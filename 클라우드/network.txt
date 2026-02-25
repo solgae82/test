@@ -1,0 +1,63 @@
+기본 명령어
+	docker network ls	현재 생성된 네트워크 목록 확인
+	docker network create [이름]	새로운 사용자 정의 네트워크 생성
+	docker network inspect [이름]	특정 네트워크의 상세 정보(IP 대역, 연결된 컨테이너 등) 확인
+	docker network rm [이름]	특정 네트워크 삭제
+	docker network prune	사용 중이지 않은 모든 네트워크 일괄 삭제
+
+컨테이너 연결 관련
+	컨테이너를 네트워크에 넣거나 뺄 때 사용합니다.
+	
+	연결하기: docker network connect [네트워크] [컨테이너]
+	연결 끊기: docker network disconnect [네트워크] [컨테이너]
+	
+	실행 시 지정: docker run --network [네트워크] [이미지] (컨테이너 생성 시 바로 네트워크 지정) 
+
+네트워크 드라이브
+	네트워크를 생성할 때 --driver 옵션으로 선택할 수 있는 타입입니다.
+	
+	bridge (기본값): 같은 호스트 내 컨테이너끼리 통신할 때 사용합니다.
+	host: 호스트의 네트워크 환경을 그대로 사용합니다 (포트 포워딩 불필요).
+	none: 네트워크를 사용하지 않도록 완전히 격리합니다.
+	container: 다른 컨테이너의 네트워크 환경을 공유한다.
+	overlay: 여러 대의 도커 호스트(Swarm) 간에 컨테이너 통신이 필요할 때 사용합니다
+	Macvlan: 컨테이너에 실제 물리 네트워크의 MAC 주소를 부여해 독립된 장비처럼 보이게 합니다.
+	
+--------- 실습
+
+# 커스텀 네트워크 생성
+$ docker network create my-bridge-net
+a1f213779c4a3c4e6f7fe48b310684a3a5a66b2bb13b2a60165b7864fe70c41e
+
+
+# 생성된 도커 network 조회
+$ docker network ls
+NETWORK ID     NAME            DRIVER    SCOPE
+4bcaf89d22a8   bridge          bridge    local
+c2342c0ab818   host            host      local
+a1f213779c4a   my-bridge-net   bridge    local
+f4cbedd34825   none            null      local
+
+
+# 첫 번째 컨테이너 (이름: web-server)
+$ docker run -d --name web-server --network my-bridge-net alpine sleep 3600
+
+
+# 두 번째 컨테이너 (이름: db-server)
+$ docker run -d --name db-server --network my-bridge-net alpine sleep 3600
+
+
+# web-server 에서 db-server로 ping 체크
+# 사용자 정의 네트워크의 가장 큰 장점은 ip주소를 몰라도 '컨테이너 이름'으로도 통신이 가능하다는 점이다.(서비스 디스커버리 기능)
+# 아래 ping 3개 테스트로 컨테이너끼리 서로 통신되는 것을 알 수 있다.
+
+$ docker exec -it web-server ping -c 3 db-server
+PING db-server (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.063 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.056 ms
+64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.064 ms
+
+
+--- db-server ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.056/0.061/0.064 ms

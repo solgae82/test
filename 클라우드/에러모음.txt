@@ -1,0 +1,10 @@
+
+윈도우즈 
+Git Bash(MinGW64)에서 export MSYS_NO_PATHCONV=1은 자동 경로 변환을 비활성화하여 
+C:/와 같은 POSIX 형식이 /c/로 자동으로 바뀌는 것을 방지합니다
+
+	export MSYS_NO_PATHCONV=1
+	
+도커 볼륨등 설정시에 호스트 path 설정시 에러가 나므로 powershell을 사용하던가, 아니면 저 옵션을 영구 적용하는
+방법을 설정해서 해결하세요
+
