@@ -1,0 +1,76 @@
+
+--------- 볼륨 백업
+
+도커가 관리하는 영역의 volumn 데이터를 백업하는 방법이다.(볼륨 마운트)
+(바인드 마운트는 사용자가 알아서 백업하면 된다)
+
+대략적인 백업 방법 아이디어는 아래와 같다.
+임시로 컨테이너를 run 생성하며 -v옵션으로 두개의 볼륨 연결을 만든다.
+	1. -v 볼륨:(임시 컨테이너 '/A')
+	2. -v (백업받을 호스트경로):(임시 컨테이너 '/B')
+
+그리고 생성하며 동시에 임시 컨테이너 쉘로 들어가서 
+볼륨과 연결된 임시 컨테이너의 '/A'를 '/B'에 백업한다
+그러면 연결된 호스트 경로에 볼륨 데이터를 백업한 자료가 있을 것이다.
+
+그리고 임시 컨테이너이므로 run 할때 --rm 옵션을 줘서 
+컨테이너 내부 명령까지 모두 마친 후 생성한 임시 컨테이너를 삭제하게 한다.
+(임시 컨테이너 이미지는 'busybox'를 사용한다)
+
+!!백업/복구할땐 볼륨과 연결된 컨테이너는 정지해서 작업해야한다.
+
+--------- (백업 실습)
+
+#아래와 같은 상황의 컨테이너와 연결된 볼륨을 백업해보자
+
+	$ docker volume create my-volume
+	$ docker volume ls
+	DRIVER    VOLUME NAME
+	local     my-volume
+	
+	# my-volume과 연결한 컨테이너 생성
+	$ docker run --name ws1 -v my-volume:/usr/local/apache2/htdocs/ -p 8080:80 httpd
+	
+
+# 백업 전 확인 (백업하기 전 volume 과 연결된 컨테이너는 정지해야한다)
+
+	# 백업할 컨테이너 실행여부 확인
+	$ docker ps
+	
+	CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS         PORTS                                     NAMES
+	ba6e5388b9fb   httpd     "httpd-foreground"   4 minutes ago   Up 2 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   ws1
+	
+	# 백업하기 위해 정지
+	$ docker stop ws1
+	
+	# 정지 되었는지 확인
+	$ docker ps
+	
+# 백업
+	# busybox 이미지를 임시 컨테이너로 사용
+	# 임시 컨테이너 생성 후 임시 컨테이너 안에서 백업 명령을 사용해서 백업, 처리 끝나면 임시 컨테이너 삭제
+	
+	$ docker run --rm -v my-volume:/source -v D:\docker\ws1_backup:/target busybox `
+	>> tar czvf /target/backup.tar.gz -C /source .
+	./
+	./index.html
+	
+	
+# 백업 경로(호스트), D:\docker\ws1_backup 확인
+	
+	# (PC 로컬(호스트) 파워셀에서)
+	cd D:\docker\ws1_backup
+	backup.tar.gz
+		- index.html
+		
+--------- 복구
+
+복구도 백업과 원리는 같다. 방향만 다른 뿐이다
+해당 볼륨을 사용하는 컨테이너를 중지하고 복원해야한다
+
+	$docker run --rm -v my-volume:/source -v D:\docker\ws1_backup:/target busybox `
+	>> tar xzvf /target/backup.tar.gz -C /source
+	./
+	./index.html
+	
+	

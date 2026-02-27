@@ -26,38 +26,52 @@
 --------- 실습
 
 # 커스텀 네트워크 생성
-$ docker network create my-bridge-net
-a1f213779c4a3c4e6f7fe48b310684a3a5a66b2bb13b2a60165b7864fe70c41e
+	
+	$ docker network create my-bridge-net
+	a1f213779c4a3c4e6f7fe48b310684a3a5a66b2bb13b2a60165b7864fe70c41e
 
 
-# 생성된 도커 network 조회
-$ docker network ls
-NETWORK ID     NAME            DRIVER    SCOPE
-4bcaf89d22a8   bridge          bridge    local
-c2342c0ab818   host            host      local
-a1f213779c4a   my-bridge-net   bridge    local
-f4cbedd34825   none            null      local
+# 생성된 도커 네트워크 조회
+	
+	$ docker network ls
+	NETWORK ID     NAME            DRIVER    SCOPE
+	4bcaf89d22a8   bridge          bridge    local
+	c2342c0ab818   host            host      local
+	a1f213779c4a   my-bridge-net   bridge    local
+	f4cbedd34825   none            null      local
 
-
+# 생성된 도커 네트워크 상세 조회
+	
+	$ docker network inspect my-bridge-net
+	[..] 
+ 
 # 첫 번째 컨테이너 (이름: web-server)
-$ docker run -d --name web-server --network my-bridge-net alpine sleep 3600
+	
+	$ docker run -d --name web-server --network my-bridge-net alpine sleep 3600
 
 
 # 두 번째 컨테이너 (이름: db-server)
-$ docker run -d --name db-server --network my-bridge-net alpine sleep 3600
+	 $ docker run -d --name db-server --network my-bridge-net alpine sleep 3600
 
 
 # web-server 에서 db-server로 ping 체크
 # 사용자 정의 네트워크의 가장 큰 장점은 ip주소를 몰라도 '컨테이너 이름'으로도 통신이 가능하다는 점이다.(서비스 디스커버리 기능)
 # 아래 ping 3개 테스트로 컨테이너끼리 서로 통신되는 것을 알 수 있다.
 
-$ docker exec -it web-server ping -c 3 db-server
-PING db-server (172.18.0.3): 56 data bytes
-64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.063 ms
-64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.056 ms
-64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.064 ms
+	$ docker exec -it web-server ping -c 3 db-server
+	PING db-server (172.18.0.3): 56 data bytes
+	64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.063 ms
+	64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.056 ms
+	64 bytes from 172.18.0.3: seq=2 ttl=64 time=0.064 ms
 
 
---- db-server ping statistics ---
-3 packets transmitted, 3 packets received, 0% packet loss
-round-trip min/avg/max = 0.056/0.061/0.064 ms
+	--- db-server ping statistics ---
+	3 packets transmitted, 3 packets received, 0% packet loss
+	round-trip min/avg/max = 0.056/0.061/0.064 ms
+
+--------- container 네트워크 추가
+
+# run 실행할때 --network=네트워크명 을 넣지 않았을때 추가 방법
+
+	$ docker network connect my-bridge-net web-server
+

@@ -1,0 +1,13 @@
+
+docker cp (docker container cp)
+
+호스트 <-> container 간의 복사
+	
+	형식 : docker cp '원본경로파일' '복사할경로'
+	
+	container안의 경로형식 : 'container명':'container안의 경로'
+	
+--
+# 호스트 -> container 복사
+
+	docker cp D:\docker\index.html ws1:/usr/local/apache2/htdocs
