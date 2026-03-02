@@ -1,0 +1,9 @@
+
+#텍스트 파일로 모든 모듈 목록 텍스트 파일로 저장
+pip freeze > requirements.txt 
+
+# 저장한 전체 모듈 목록 삭제
+pip uninstall -r requirements.txt -y 
+
+# 삭제 확인
+pip list

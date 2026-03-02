@@ -1,0 +1,83 @@
+# 도커허브 접속 , 회원가입
+https://hub.docker.com/
+
+# 로그인 후 'python3' 리포지토리 생성
+	#리포지토리명, '아이디/리포지토리명'
+	리포지토리명 : solgae/python3
+
+# 컨테이너 만들기
+	$ docker run -it --name my-python ubuntu  #컨테이너 만들고 내부로 들어감
+	root@0439a96064b9:/# apt update && apt install -y python3 #파이썬 3설치한 컨테이너로 변경됨.
+
+	# 컨테이너 확인
+	$ docker ps
+	CONTAINER ID   IMAGE     COMMAND       CREATED         STATUS         PORTS     NAMES
+	0439a96064b9   ubuntu    "/bin/bash"   6 minutes ago   Up 2 minutes             my-python
+
+# 이미지 만들기 (solgae/python3:1.0)
+
+	$ docker commit my-python solgae/python3:1.0
+	sha256:22e44dcf5afd899eadb3ddcf56f2d4d74154c81aa2f97f873239bee0b7e090c3
+
+	# 이미지 생성 확인
+	$ docker images
+	IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+	solgae/python3:1.0     22e44dcf5afd        218MB         70.9MB
+	ubuntu:latest          d1e2e92c075e        119MB         31.7MB    U
+
+# 도커 허브 로그인
+
+	$ docker login
+	(이미 로그인 되어 있다면 바로 Login Succeeded 나온다)
+	
+	# 안 나오면 수동으로 로그인 하면 된다.
+
+
+# 도커 허브 로그인 후 생성한 이미지(solgae/python3:1.0) push 
+	
+	# push 명령으로 리포지토리에 push
+	> docker push solgae/python3:1.0
+	
+	The push refers to repository [docker.io/solgae/python3]
+	21d1a25134cd: Pushed
+	01d7766a2e4a: Mounted from library/ubuntu
+	1.0: digest: sha256:22e44dcf5afd899eadb3ddcf56f2d4d74154c81aa2f97f873239bee0b7e090c3 size: 751
+
+# 도커 허브에 브라우저 접속해서 'Repositories' 메뉴에 가서 잘 업로드 되었는지 확인
+
+	Activate
+	This repository contains 0 tag(s).
+
+	Tag	OS	Type	Pulled			Pushed
+	1.0	(리눅스)	Image	less than 1 day		2 minutes
+
+
+# 생성한 이미지(solgae/python3:1.0) 삭제
+	
+	$ docker rmi solgae/python3:1.0
+	
+	Untagged: solgae/python3:1.0
+	Deleted: sha256:22e44dcf5afd899eadb3ddcf56f2d4d74154c81aa2f97f873239bee0b7e090c3
+
+	$ docker images
+	IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+	ubuntu:latest          d1e2e92c075e        119MB         31.7MB    U
+
+# 업로드한 도커 허브에서 (pull) 다운 받기 되는지 테스트
+
+	$ docker pull solgae/python3:1.0
+	
+	1.0: Pulling from solgae/python3
+	21d1a25134cd: Pull complete
+	Digest: sha256:22e44dcf5afd899eadb3ddcf56f2d4d74154c81aa2f97f873239bee0b7e090c3
+	Status: Downloaded newer image for solgae/python3:1.0
+	docker.io/solgae/python3:1.0
+
+
+	# 허브에서 다운로드된 이미지 확인
+	$ docker images
+  
+	IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+	solgae/python3:1.0   22e44dcf5afd        218MB         70.9MB
+	ubuntu:latest        d1e2e92c075e        119MB         31.7MB    U
+	
