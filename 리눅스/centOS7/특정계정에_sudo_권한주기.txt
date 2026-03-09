@@ -1,0 +1,28 @@
+centos 특정권한에 sudo 권한 주기
+---------
+root 계정으로 전환
+
+	su - 
+
+#sudoers 파일 쓰기 권한 (임시) 주기
+	
+	chmod +w /etc/sudoers
+
+#/etc/sudoers 계정 권한 추가 
+
+	vi /etc/sudoers
+
+	# 'root ALL=(ALL) ALL' 을 찾아서 그 아래에 추가
+	root	ALL=(ALL)	ALL
+	dong	ALL=(ALL)	ALL
+	
+	:wq
+
+#sudoers 파일 쓰기 권한 제거 (중요)
+
+	chmod +w /etc/sudoers
+	
+# 테스트 
+su - dong
+sudo ls /root # 리스트 나오면 성공!
+
