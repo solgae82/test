@@ -22,7 +22,7 @@ grep ^processor /proc/cpuinfo | wc -l
 - cpu 당(물리적갯수) 코어 갯수
 grep "cpu cores" /proc/cpuinfo | tail -1
 
-- 실시간 cup 상용률 체크
+- 실시간 cpu 사용률 체크
 top
 
 

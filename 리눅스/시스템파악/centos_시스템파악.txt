@@ -1,0 +1,115 @@
+리눅스 서버 관리자가 새 서버를 인수인계 받거나 초기 세팅 시, 
+장애를 예방하고 효율적으로 관리하기 위해 가장 먼저 파악해야 할 정보는 다음과 같습니다.
+
+1. 시스템 정보 및 운영체제 (OS) 환경
+	
+	서버 목적: 웹 서버, DB 서버, 애플리케이션 서버 등 어떤 용도인지 파악.
+	
+	
+	CentOS, Ubuntu 등 배포판과 버전을 확인하여 패키지 관리 방식을 파악합니다.
+	
+	배포판 확인 : cat /etc/os-release
+		"CentOS Linux 7"
+		
+	패키지 관리 : yum
+
+	커널 버전 : uname -a
+		Linux 3.10.0-1062.12.1.el7.x86_64
+	
+	시스템 가동 시간 (Uptime): uptime
+		 08:52:35 up 25 min,  1 user,  load average: 0.00, 0.01, 0.05
+		 
+2. 하드웨어 자원 (리소스)
+	
+	CPU: cat /proc/cpuinfo 또는 lscpu (CPU 모델, 코어 수, 하이퍼스레딩 여부를 확인)
+		
+		모델 : Pentium(R) Dual-Core  CPU      E6700  @ 3.20GHz
+		코어수 : 2
+		하이퍼스레딩 여부 : 비활성화
+	
+	메모리 (RAM): free -h (전체 메모리 및 사용량을 확인)
+			total        used        free      shared  buff/cache   available
+		Mem:     7.6G        325M        7.1G        9.1M        249M        7.1G
+
+	디스크 (Disk): 
+		
+		df -hT 
+			파티션별 디스크 사용률, 파티션 타입 체크 
+					
+			Filesystem              Type      Size  Used Avail Use% Mounted on
+			devtmpfs                devtmpfs  3.9G     0  3.9G   0% /dev
+			tmpfs                   tmpfs     3.9G     0  3.9G   0% /dev/shm
+			tmpfs                   tmpfs     3.9G  9.1M  3.9G   1% /run
+			tmpfs                   tmpfs     3.9G     0  3.9G   0% /sys/fs/cgroup
+			/dev/mapper/centos-root xfs        50G  5.5G   45G  11% /
+			/dev/sda1               xfs      1014M  222M  793M  22% /boot
+			/dev/mapper/centos-home xfs       873G   18G  855G   3% /home
+			tmpfs                   tmpfs     783M     0  783M   0% /run/user/0
+
+		lsblk
+			디스크 구성+ 파티션타입 확인. 특히 루트(/) 파티션의 사용량 확인 필수.
+			
+			NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+			fd0               2:0    1     4K  0 disk
+			sda               8:0    0 931.5G  0 disk
+			├─sda1            8:1    0     1G  0 part /boot
+			└─sda2            8:2    0 930.5G  0 part
+			  ├─centos-root 253:0    0    50G  0 lvm  /
+			  ├─centos-swap 253:1    0   7.9G  0 lvm  [SWAP]
+			  └─centos-home 253:2    0 872.6G  0 lvm  /home
+
+
+3. 네트워크 설정
+	
+	네트워크 설정: IP, 서브넷 마스크, 게이트웨이, DNS 설정 (ip a, nmcli)
+	
+	호스트네임 및 IP 주소: hostname, ip addr (또는 ifconfig) 명령어로 네트워크 식별 정보 확인. 
+	
+	IP 주소 및 인터페이스: ip addr (또는 ip a) 명령어로 공인/사설 IP, 네트워크 인터페이스 상태를 확인합니다.
+	
+	라우팅 테이블: ip route 명령어로 기본 게이트웨이를 확인합니다.
+	
+	오픈 포트: ss -tuln 또는 netstat -an 명령어로 어떤 서비스가 어떤 포트(80, 443, 22 등)를 통해 대기 중인지 확인합니다. 
+
+4. 서비스 및 프로세스
+	
+	핵심 서비스: 현재 실행중인 핵심 서비스 체크
+		
+		- systemctl list-units --type=service 
+		- netstat -nlpt 
+		- ps -ef 
+		
+		명령어들을 통해 
+		실행 중인 웹 서버(Apache/Nginx), DB(MySQL/PostgreSQL) 등의 핵심 애플리케이션을 파악합니다.
+	
+	실시간 자원 사용량: top 또는 htop 명령어로 현재 CPU/메모리를 많이 소모하는 프로세스를 파악합니다. 
+
+5. 보안 및 사용자 관리
+
+	Root 권한 사용자: cat /etc/passwd로 시스템 사용자 목록을 확인합니다.
+	
+	사용자 및 권한: 루트 계정 관리 및 sudo 권한이 있는 사용자 명단 (/etc/passwd, /etc/sudoers)
+	
+	SSH 접속 설정: /etc/ssh/sshd_config 파일에서 Root 로그인 허용 여부, SSH 포트 번호를 확인합니다.
+	
+	방화벽 설정: iptables -L 또는 firewall-cmd --list-all (또는 ufw status) 명령어로 방화벽 규칙을 확인합니다. 
+
+6. 로그 및 백업 (가장 중요)
+
+	백업 상태: 가장 중요한 정보로, 백업 자동화 스크립트(cron) 및 백업 데이터의 위치/무결성 확인.
+	
+	로그 위치: /var/log/ 디렉토리 내의 주요 로그 파일(messages, secure, syslog) 위치와 
+		로그 로테이트(logrotate) 설정을 확인합니다.
+	
+	백업 상태: crontab -l 명령어로 자동 백업 스크립트가 등록되어 있는지, 
+		백업 데이터가 정상적으로 저장되고 있는지 확인합니다. 
+		
+7. 긴급 상황 대응
+	
+	서비스 재시작/종료 방법: systemctl 명령어를 통한 서비스 관리 숙지.
+	
+	모니터링 도구: 서버의 성능(top, iotop)과 자원 상태를 실시간으로 확인하는 도구 파악.
+	
+
+※ 이러한 정보들은 inventory 문서로 작성하여 관리하는 것이 좋습니다.
+
