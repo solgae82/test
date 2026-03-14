@@ -64,24 +64,108 @@
 	네트워크 설정: IP, 서브넷 마스크, 게이트웨이, DNS 설정 (ip a, nmcli)
 	
 	호스트네임 및 IP 주소: hostname, ip addr (또는 ifconfig) 명령어로 네트워크 식별 정보 확인. 
+		hotsname 
+			localhost.localdomain
+		
+		ip addr		#ip, (/24) netmask, broadcast
+			inet 192.168.0.6/24 brd 192.168.0.255
+		
+		ifconfig
+			inet 192.168.0.6  netmask 255.255.255.0  broadcast 192.168.0.255
+			
+	게이트웨이 확인(라우팅 테이블): ip route 명령어로 기본 게이트웨이를 확인합니다. 
+
+		route -n # Destination '0.0.0.0' 인게 현재 네트워크 인터페이스
+		
+			Kernel IP routing table
+			Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+			0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 enp3s0
+			169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 enp3s0
+			169.254.0.0     0.0.0.0         255.255.0.0     U     1003   0        0 enp4s0
+			192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 enp3s0
+			192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 enp4s0
+			192.168.122.0   0.0.0.0         255.255.255.0   U     0      0        0 virbr0
+		
+		ip route	# enp3s0 인터페이스 
+			
+			default via 192.168.0.1 dev enp3s0
+			169.254.0.0/16 dev enp3s0 scope link metric 1002
+			169.254.0.0/16 dev enp4s0 scope link metric 1003
+			192.168.0.0/24 dev enp3s0 proto kernel scope link src 192.168.0.6
+			192.168.0.0/24 dev enp4s0 proto kernel scope link src 192.168.0.6
+			192.168.122.0/24 dev virbr0 proto kernel scope link src 192.168.122.1
+
+	DNS 확인
+		cat /etc/resolv.conf
+			
+			nameserver 168.126.63.1
+			nameserver 168.126.63.2
+
+		nslookup
+		> server
+		Default server: 168.126.63.1
+		Address: 168.126.63.1#53
+		Default server: 168.126.63.2
+		Address: 168.126.63.2#53
+		> exit
+
+
+		dig #새로운 nslookup 대체 명령어
+			
+	랜선 연결된 네트워크 인터페이스 찾기
+		
+		#'enp3s0' 네트워크 인터페이스 기준으로 검색시 
+		cat /sys/class/net/enp3s0/carrier # 1:랜선연결, 0:연결안됨
+		또는 
+		cat /sys/class/net/enp3s0/operstate # UP:랜선연결, down:연결안됨
 	
-	IP 주소 및 인터페이스: ip addr (또는 ip a) 명령어로 공인/사설 IP, 네트워크 인터페이스 상태를 확인합니다.
+		# ip 명령어로 랜선연결 네트워크 인터페이스 찾기
+		ip -br link # 네트워크 인터페이스 중 'UP' 표시가 된 것이 현재 랜선연결된 네트워크 인터페이스
 	
-	라우팅 테이블: ip route 명령어로 기본 게이트웨이를 확인합니다.
 	
-	오픈 포트: ss -tuln 또는 netstat -an 명령어로 어떤 서비스가 어떤 포트(80, 443, 22 등)를 통해 대기 중인지 확인합니다. 
+	오픈 포트: ss -tulnp 또는 netstat -anp 명령어로 어떤 서비스가 어떤 포트(80, 443, 22 등)를 통해 대기 중인지 확인합니다.
+	
+		ss -tulnp
+		
+			또는 
+			
+		netstat -anp
+		
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+			tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN      1520/cupsd
+			tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      1973/master
+			tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      1697/mysqld
+			tcp        0      0 0.0.0.0:3690            0.0.0.0:*               LISTEN      1537/svnserve
+			tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      1/systemd
+			tcp        0      0 192.168.122.1:53        0.0.0.0:*               LISTEN      1913/dnsmasq
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1518/sshd
+			tcp        0    336 192.168.0.6:22          192.168.0.11:8746       ESTABLISHED 2510/sshd: root@pts
+			tcp6       0      0 ::1:631                 :::*                    LISTEN      1520/cupsd
+			tcp6       0      0 ::1:25                  :::*                    LISTEN      1973/master
+			tcp6       0      0 :::111                  :::*                    LISTEN      1/systemd
+
 
 4. 서비스 및 프로세스
 	
 	핵심 서비스: 현재 실행중인 핵심 서비스 체크
 		
-		- systemctl list-units --type=service 
-		- netstat -nlpt 
-		- ps -ef 
+		netstat -nlpt 
 		
-		명령어들을 통해 
-		실행 중인 웹 서버(Apache/Nginx), DB(MySQL/PostgreSQL) 등의 핵심 애플리케이션을 파악합니다.
-	
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+			tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN      1520/cupsd
+			tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      1973/master
+			tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      1697/mysqld
+			tcp        0      0 0.0.0.0:3690            0.0.0.0:*               LISTEN      1537/svnserve
+			tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      1/systemd
+			tcp        0      0 192.168.122.1:53        0.0.0.0:*               LISTEN      1913/dnsmasq
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1518/sshd
+			tcp6       0      0 ::1:631                 :::*                    LISTEN      1520/cupsd
+			tcp6       0      0 ::1:25                  :::*                    LISTEN      1973/master
+			tcp6       0      0 :::111                  :::*                    LISTEN      1/systemd
+
+		ps -ef # 모든 프로세스 보기
+		
+
 	실시간 자원 사용량: top 또는 htop 명령어로 현재 CPU/메모리를 많이 소모하는 프로세스를 파악합니다. 
 
 5. 보안 및 사용자 관리
@@ -90,10 +174,52 @@
 	
 	사용자 및 권한: 루트 계정 관리 및 sudo 권한이 있는 사용자 명단 (/etc/passwd, /etc/sudoers)
 	
+	
+		# sudo 권한 계정 파악
+		/etc/sudoers
+			..
+			root    ALL=(ALL)       ALL
+			dong    ALL=(ALL)       ALL
+			..
+	
 	SSH 접속 설정: /etc/ssh/sshd_config 파일에서 Root 로그인 허용 여부, SSH 포트 번호를 확인합니다.
 	
 	방화벽 설정: iptables -L 또는 firewall-cmd --list-all (또는 ufw status) 명령어로 방화벽 규칙을 확인합니다. 
+		
+		systemctl status iptables
+		Unit iptables.service could not be found.
+		
+		firewall-cmd --state
+		running
 
+		# firewalld 가 활성화 된 것을 확인할 수 있다.
+		
+	현재 로그인 사용자 확인
+				
+		[root@localhost ~]# w
+		08:13:51 up  2:38,  1 user,  load average: 0.00, 0.01, 0.05
+		USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+		root     pts/0    192.168.0.11     08:07    7.00s  0.08s  0.00s w
+
+		
+		[root@localhost ~]# who
+		root     pts/0        2026-03-15 08:07 (192.168.0.11)
+		
+	사용자 로그인 정보 확인
+	
+		[root@localhost ~]# last -F
+		root     pts/0        192.168.0.11     Sun Mar 15 08:07:43 2026   still logged in
+		root     pts/0        192.168.0.11     Sun Mar 15 05:41:22 2026 - Sun Mar 15 08:07:32 2026  (02:26)
+		..
+	
+	
+		#최근 접속확인
+		[root@localhost ~]# lastlog
+		사용자이름       포트     어디서           최근정보
+		root             pts/0    192.168.0.11     일  3월 15 08:07:43 +0900 2026
+		bin                                        **한번도 로그인한 적이 없습니다**
+		..
+		
 6. 로그 및 백업 (가장 중요)
 
 	백업 상태: 가장 중요한 정보로, 백업 자동화 스크립트(cron) 및 백업 데이터의 위치/무결성 확인.
