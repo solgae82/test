@@ -1,0 +1,279 @@
+리눅스 서버 관리자가 새 서버를 인수인계 받거나 초기 세팅 시, 
+장애를 예방하고 효율적으로 관리하기 위해 가장 먼저 파악해야 할 정보는 다음과 같습니다.
+
+1. 시스템 정보 및 운영체제 (OS) 환경
+	
+	서버 목적: 웹 서버, DB 서버, 애플리케이션 서버 등 어떤 용도인지 파악.
+	
+	
+	CentOS, Ubuntu 등 배포판과 버전을 확인하여 패키지 관리 방식을 파악합니다.
+	
+	배포판 확인 : cat /etc/os-release
+		"Rocky Linux 10.1 (Red Quartz)"
+		
+	패키지 관리 : yum , dnf
+
+	커널 버전 : uname -a
+		Linux 6.12.0-124.8.1.el10_1.x86_64
+	
+	시스템 가동 시간 (Uptime): uptime
+		 14:05:15 up 26 min,  3 users,  load average: 0.00, 0.00, 0.00
+		 
+2. 하드웨어 자원 (리소스)
+	
+	CPU: cat /proc/cpuinfo 또는 lscpu (CPU 모델, 코어 수, 하이퍼스레딩 여부를 확인)
+		
+		모델 :  Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz
+		
+		물리 cpu 수 : grep ^processor /proc/cpuinfo | wc -l
+		
+			2
+		코어수 : grep -c processor /proc/cpuinfo
+		
+			2		
+		하이퍼스레딩 여부 : lscpu
+			 Thread(s) per core:      1  # 비활성화
+	
+	메모리 (RAM): free -h (전체 메모리 및 사용량을 확인)
+				total        used        free      shared  buff/cache   available
+		Mem:           3.5Gi       515Mi       3.0Gi       8.9Mi       209Mi       3.0Gi
+		Swap:          3.9Gi          0B       3.9Gi
+
+
+	디스크 (Disk): 
+		
+		df -hT 
+			파티션별 디스크 사용률, 파티션 타입 체크 
+					
+			파일 시스템			형식     크기   사용   가용	사용% 마운트위치
+			/dev/mapper/rl-root xfs        50G  2.2G   48G    5% /
+			devtmpfs            devtmpfs  1.8G     0  1.8G    0% /dev
+			tmpfs               tmpfs     1.8G     0  1.8G    0% /dev/shm
+			efivarfs            efivarfs  256K   75K  177K   30% /sys/firmware/efi/efivars
+			tmpfs               tmpfs     725M  9.0M  716M    2% /run
+			tmpfs               tmpfs     1.0M     0  1.0M    0% /run/credentials/systemd-journald.service
+			/dev/sda2           xfs       960M  231M  730M   25% /boot
+			/dev/sda1           vfat      599M  8.4M  591M    2% /boot/efi
+			/dev/mapper/rl-home xfs        25G  511M   24G    3% /home
+			tmpfs               tmpfs     1.0M     0  1.0M    0% /run/credentials/getty@tty1.service
+			tmpfs               tmpfs     363M  4.0K  363M    1% /run/user/0
+			tmpfs               tmpfs     1.0M     0  1.0M    0% /run/credentials/getty@tty6.service
+			tmpfs               tmpfs     1.0M     0  1.0M    0% /run/credentials/getty@tty5.service
+
+
+		lsblk
+			디스크 구성+ 파티션타입 확인. 특히 루트(/) 파티션의 사용량 확인 필수.
+			
+			NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+			sda           8:0    0   80G  0 disk
+			├─sda1        8:1    0  600M  0 part /boot/efi
+			├─sda2        8:2    0    1G  0 part /boot
+			└─sda3        8:3    0 78.4G  0 part
+			  ├─rl-root 253:0    0 50.1G  0 lvm  /
+			  ├─rl-swap 253:1    0  3.9G  0 lvm  [SWAP]
+			  └─rl-home 253:2    0 24.4G  0 lvm  /home
+			sr0          11:0    1 1024M  0 rom
+
+
+
+3. 네트워크 설정
+	
+	네트워크 설정: IP, 서브넷 마스크, 게이트웨이, DNS 설정 (ip a, nmcli)
+	
+	호스트네임 및 IP 주소: hostname, ip addr (또는 ifconfig) 명령어로 네트워크 식별 정보 확인. 
+	
+		hotsname 
+			localhost.localdomain
+		
+		ip addr		
+			inet 192.168.111.6/24 brd 192.168.111.255
+		
+		ifconfig
+			inet 192.168.111.6  netmask 255.255.255.0  broadcast 192.168.111.255
+			
+	게이트웨이 확인(라우팅 테이블): ip route 명령어로 기본 게이트웨이를 확인합니다. 
+
+		route -n # Destination '0.0.0.0' 인게 현재 네트워크 인터페이스 
+		
+			# (현재 게이트웨이는 '192.168.111.2') 
+			Kernel IP routing table
+			Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+			0.0.0.0         192.168.111.2   0.0.0.0         UG    100    0        0 ens160
+			192.168.111.0   0.0.0.0         255.255.255.0   U     100    0        0 ens160
+		
+		ip route	
+			# ens160 인터페이스 (현재 게이트웨이 '192.168.111.2')
+			default via 192.168.111.2 dev ens160 proto static metric 100
+			192.168.111.0/24 dev ens160 proto kernel scope link src 192.168.111.6 metric 100
+
+	DNS 확인
+		cat /etc/resolv.conf
+			
+			nameserver 168.126.63.1
+			nameserver 168.126.63.2
+
+
+		# 명령어 없으면, sudo dnf install bind-utils -y  로 (nslookup,dig 명령어 사용가능)
+		
+		nslookup
+		> server
+		Default server: 168.126.63.1
+		Address: 168.126.63.1#53
+		Default server: 168.126.63.2
+		Address: 168.126.63.2#53
+		> exit
+
+		
+		dig #새로운 nslookup 대체 명령어
+			(맨 마지막에)
+			;; SERVER: 168.126.63.1#53(168.126.63.1) (UDP)
+
+			
+	랜선 연결된 네트워크 인터페이스 찾기
+		
+		#'ens160' 네트워크 인터페이스 기준으로 검색시 
+		cat /sys/class/net/ens160/carrier # 1:랜선연결, 0:연결안됨
+		또는 
+		cat /sys/class/net/ens160/operstate # UP:랜선연결, down:연결안됨
+	
+		# ip 명령어로 랜선연결 네트워크 인터페이스 찾기
+		ip -br link # 네트워크 인터페이스 중 'UP' 표시가 된 것이 현재 랜선연결된 네트워크 인터페이스
+	
+	
+	오픈 포트: ss -tulnp 또는 netstat -anp 명령어로 어떤 서비스가 어떤 포트(80, 443, 22 등)를 통해 대기 중인지 확인합니다.
+	
+		ss -tulnp
+		
+			Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:Port Process
+			udp   UNCONN 0      0          127.0.0.1:323        0.0.0.0:*     users:(("chronyd",pid=959,fd=5))
+			udp   UNCONN 0      0              [::1]:323           [::]:*     users:(("chronyd",pid=959,fd=6))
+			tcp   LISTEN 0      128          0.0.0.0:22         0.0.0.0:*     users:(("sshd",pid=1015,fd=7))
+			tcp   LISTEN 0      128             [::]:22            [::]:*     users:(("sshd",pid=1015,fd=8)) 
+			
+		netstat -anp
+		
+			Active Internet connections (servers and established)
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State                                                           PID/Program name
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN                                                          1015/sshd: /usr/sbi
+			tcp        0      0 192.168.111.6:22        192.168.111.1:10873     ESTABLISHED                                                     1559/sshd-session:
+			tcp6       0      0 :::22                   :::*                    LISTEN                                                          1015/sshd: /usr/sbi
+			udp        0      0 127.0.0.1:323           0.0.0.0:*                                                                               959/chronyd
+			udp6       0      0 ::1:323                 :::*                                                                                    959/chronyd
+			raw6       0      0 :::58                   :::*                    7                                                               1001/NetworkManager
+
+
+	=====================
+	기존 centOS => network 
+	Rocky 9 => NetworkManager 를 사용
+	Rocky 9는 /etc/sysconfig/network-scripts/ 대신 
+	/etc/NetworkManager/system-connections/를 사용합니다.
+	
+		cd /etc/NetworkManager/system-connections
+		ls
+			
+			ens160.nmconnection   # (직접 편집해도 된다)
+		
+	nmcli (명령어가 복잡) 또는 nmtui로 설정 권장.
+	
+	
+	설정 후 재시작
+		systemctl restart NetworkManager
+	=====================
+	
+	
+4. 서비스 및 프로세스
+	
+	핵심 서비스: 현재 실행중인 핵심 서비스 체크
+		
+		netstat -nlpt 
+		
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1015/sshd: /usr/sbi
+			tcp6       0      0 :::22                   :::*                    LISTEN      1015/sshd: /usr/sbi
+
+		ps -ef # 모든 프로세스 보기
+	
+	웹서버 SSL 인증서 확인 : 웹서버, WAS 등의 SSL 인증서 파일 위치, 만료기간 파악
+
+	실시간 자원 사용량: top 또는 htop 명령어로 현재 CPU/메모리를 많이 소모하는 프로세스를 파악합니다. 
+	
+
+5. 보안 및 사용자 관리
+
+	Root 권한 사용자: cat /etc/passwd로 시스템 사용자 목록을 확인합니다.
+	
+	사용자 및 권한: 루트 계정 관리 및 sudo 권한이 있는 사용자 명단 (/etc/passwd, /etc/sudoers)
+	
+	
+		# sudo 권한 계정 파악
+		cat /etc/sudoers
+			..
+			root    ALL=(ALL)       ALL
+			..
+	
+	SSH 접속 설정: /etc/ssh/sshd_config 파일에서 Root 로그인 허용 여부, SSH 포트 번호를 확인합니다.
+		more /etc/ssh/sshd_config
+		
+	방화벽 설정: iptables -L 또는 firewall-cmd --list-all (또는 ufw status) 명령어로 방화벽 규칙을 확인합니다. 
+		
+		systemctl status iptables
+		Unit iptables.service could not be found.
+		
+		firewall-cmd --state
+		running
+
+		# firewalld 가 활성화 된 것을 확인할 수 있다.
+		
+	SELinux 상태 확인 : 
+		sestatus
+			SELinux status: enabled
+
+
+	현재 로그인 사용자 확인
+				
+		[root@localhost ~]# w
+		14:45:07 up 0 min,  2 users,  load average: 0.12, 0.03, 0.01
+		USER     TTY        LOGIN@   IDLE   JCPU   PCPU WHAT
+		root               14:45   17.00s  0.00s  0.02s sshd-session: root [priv]
+		root               14:45   17.00s  0.00s  0.10s /usr/lib/systemd/systemd --user
+
+		
+		[root@localhost ~]# who
+		root     pts/0        2026-03-16 14:45 (192.168.111.1)
+
+		
+	사용자 로그인 정보 확인
+	
+		[root@localhost ~]# last -F
+		root     pts/0        192.168.111.1    Mon Mar 16 14:45:05 2026   still logged in
+		reboot   system boot  6.12.0-124.8.1.e Mon Mar 16 14:44:45 2026   still running
+		root     tty5                          Mon Mar 16 14:44:12 2026 - Mon Mar 16 14:44:23 2026  (00:00
+		..
+	
+	
+		#최근 접속확인
+		[root@localhost ~]# lastlog
+		Username         Port     From                Latest
+		root             pts/0    192.168.111.1       월  3월 16 14:45:05 +0900 2026
+		bin                                           **한번도 로그인한 적이 없습니다**
+		..
+		
+6. 로그 및 백업 (가장 중요)
+
+	백업 상태: 가장 중요한 정보로, 백업 자동화 스크립트(cron) 및 백업 데이터의 위치/무결성 확인.
+	
+	로그 위치: /var/log/ 디렉토리 내의 주요 로그 파일(messages, secure, syslog) 위치와 
+		로그 로테이트(logrotate) 설정을 확인합니다.
+	
+	백업 상태: crontab -l 명령어로 자동 백업 스크립트가 등록되어 있는지, 
+		백업 데이터가 정상적으로 저장되고 있는지 확인합니다. 
+		
+7. 긴급 상황 대응
+	
+	서비스 재시작/종료 방법: systemctl 명령어를 통한 서비스 관리 숙지.
+	
+	모니터링 도구: 서버의 성능(top, iotop)과 자원 상태를 실시간으로 확인하는 도구 파악.
+	
+
+※ 이러한 정보들은 inventory 문서로 작성하여 관리하는 것이 좋습니다.
+
