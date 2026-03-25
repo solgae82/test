@@ -16,6 +16,12 @@
 	커널 버전 : uname -a
 		Linux 6.12.0-124.8.1.el10_1.x86_64
 	
+	시스템 시간 확인
+		date
+		
+		# 시스템 시작 한국 시간으로 맞추기
+		sudo timedatectl set-timezone Asia/Seoul
+		
 	시스템 가동 시간 (Uptime): uptime
 		 14:05:15 up 26 min,  3 users,  load average: 0.00, 0.00, 0.00
 		 

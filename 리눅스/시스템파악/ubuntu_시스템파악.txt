@@ -1,0 +1,285 @@
+리눅스 서버 관리자가 새 서버를 인수인계 받거나 초기 세팅 시, 
+장애를 예방하고 효율적으로 관리하기 위해 가장 먼저 파악해야 할 정보는 다음과 같습니다.
+
+1. 시스템 정보 및 운영체제 (OS) 환경
+	
+	서버 목적: 웹 서버, DB 서버, 애플리케이션 서버 등 어떤 용도인지 파악.
+	
+	
+	CentOS, Ubuntu 등 배포판과 버전을 확인하여 패키지 관리 방식을 파악합니다.
+	
+	배포판 확인 : cat /etc/os-release
+		Ubuntu 24.04.4 LTS"
+		
+	패키지 관리 : apt, apt-get
+
+	커널 버전 : uname -a
+		
+		6.8.0-101-generic
+	
+	시스템 시간 확인
+		date
+		
+		# 시스템 시작 한국 시간으로 맞추기
+		sudo timedatectl set-timezone Asia/Seoul
+	
+	시스템 가동 시간 (Uptime): uptime
+	
+		  10:42:27 up  1:30,  1 user,  load average: 0.00, 0.00, 0.00
+		 
+	
+2. 하드웨어 자원 (리소스)
+	
+	CPU: cat /proc/cpuinfo 또는 lscpu (CPU 모델, 코어 수, 하이퍼스레딩 여부를 확인)
+		
+		모델 :  
+			Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz
+			
+		물리 cpu 수 : grep ^processor /proc/cpuinfo | wc -l
+		
+			2
+			
+		코어수 : grep -c processor /proc/cpuinfo , nproc
+		
+			2		
+			
+		하이퍼스레딩 여부 : lscpu
+			 Thread(s) per core:      1  # 비활성화
+	
+	메모리 (RAM): free -h (전체 메모리 및 사용량을 확인)
+		
+			       total        used        free      shared  buff/cache   available
+		Mem:           3.8Gi       523Mi       2.2Gi       1.1Mi       1.3Gi       3.3Gi
+		Swap:          3.8Gi          0B       3.8Gi
+
+
+	디스크 (Disk): 
+		
+		df -hT 
+			파티션별 디스크 사용률, 파티션 타입 체크 
+					
+			Filesystem                        Type   Size  Used Avail Use% Mounted on
+			tmpfs                             tmpfs  387M  1.2M  386M   1% /run
+			/dev/mapper/ubuntu--vg-ubuntu--lv ext4    39G  7.2G   29G  20% /
+			tmpfs                             tmpfs  1.9G     0  1.9G   0% /dev/shm
+			tmpfs                             tmpfs  5.0M     0  5.0M   0% /run/lock
+			/dev/mapper/ubuntu--vg-lv--0      ext4    39G   52K   37G   1% /home
+			/dev/sda2                         ext4   2.0G  199M  1.6G  11% /boot
+			tmpfs                             tmpfs  387M   12K  387M   1% /run/user/1000
+
+
+
+		lsblk
+			디스크 구성 + 파티션타입 확인. 특히 루트(/) 파티션의 사용량 확인 필수.
+			
+			NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+			sda                         8:0    0   80G  0 disk
+			├─sda1                      8:1    0    1M  0 part
+			├─sda2                      8:2    0    2G  0 part /boot
+			└─sda3                      8:3    0   78G  0 part
+			  ├─ubuntu--vg-ubuntu--lv 252:0    0   39G  0 lvm  /
+			  └─ubuntu--vg-lv--0      252:1    0   39G  0 lvm  /home
+			sr0                        11:0    1 1024M  0 rom
+
+
+3. 네트워크 설정
+	
+	네트워크 설정: IP, 서브넷 마스크, 게이트웨이, DNS 설정 (ip a, nmcli)
+	
+	호스트네임 및 IP 주소: hostname, ip addr (또는 ifconfig) 명령어로 네트워크 식별 정보 확인. 
+	
+		hotsname 
+			
+			ubuntu-server
+		
+		ip addr		
+			inet 192.168.111.7/24 brd 192.168.111.255 scope global ens32
+		
+		ifconfig
+			inet 192.168.111.7  netmask 255.255.255.0  broadcast 192.168.111.255
+			
+	게이트웨이 확인(라우팅 테이블): ip route 명령어로 기본 게이트웨이를 확인합니다. 
+
+		route -n # Destination '0.0.0.0' 인게 현재 네트워크 인터페이스 
+		
+			# (현재 게이트웨이는 '192.168.111.2') 
+			Kernel IP routing table
+			Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+			0.0.0.0         192.168.111.2   0.0.0.0         UG    0      0        0 ens32
+			192.168.111.0   0.0.0.0         255.255.255.0   U     0      0        0 ens32
+
+		ip route	
+			# ens32 인터페이스 (현재 게이트웨이 '192.168.111.2')
+			default via 192.168.111.2 dev ens32 proto static
+			192.168.111.0/24 dev ens32 proto kernel scope link src 192.168.111.7
+
+	DNS 확인
+		전통적인 /etc/resolv.conf 에 설정하는 것은 안되고
+		/etc/netplan/아무이름.yaml의 특정 네트워크인터페이스 파일에 추가하는게 공식적인 방법이란다
+		
+		기존 dig, nslookup 명령어로 나오는 것은 예전 /etc/resolve.conf 내용이 나오므로,
+			 
+			 127.0.0.53#53 <=요렇게 기본 설정되어 있다
+			 
+		우분투 최신 방식의 DNS  조회는 아래와 같이 한다.
+		
+			resolvectl status
+			
+		그려면 /etc/netplan/아무이름.yaml 에 설정된
+			 nameservers:
+			   addresses: [168.126.63.1,8.8.8.8]
+		
+		DNS 주소가 출력될 것이다
+		아래와 같이
+			dong@ubuntu-server:~$ resolvectl status
+			Global
+				 Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+			  resolv.conf mode: stub
+			Current DNS Server: 168.126.63.1
+			       DNS Servers: 168.126.63.1 168.126.63.2
+
+			Link 2 (ens32)
+			    Current Scopes: DNS
+				 Protocols: +DefaultRoute -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+			Current DNS Server: 168.126.63.1
+			       DNS Servers: 168.126.63.1 8.8.8.8
+			
+		
+	랜선 연결된 네트워크 인터페이스 찾기
+		
+		#'ens32' 네트워크 인터페이스 기준으로 검색시 
+		cat /sys/class/net/ens32/carrier # 1:랜선연결, 0:연결안됨
+			1
+		또는 
+		cat /sys/class/net/ens32/operstate # UP:랜선연결, down:연결안됨
+			up
+			
+		# ip 명령어로 랜선연결 네트워크 인터페이스 찾기
+		ip -br link # 네트워크 인터페이스 중 'UP' 표시가 된 것이 현재 랜선연결된 네트워크 인터페이스
+	
+	
+	오픈 포트: ss -tulnp 또는 netstat -anp 명령어로 어떤 서비스가 어떤 포트(80, 443, 22 등)를 통해 대기 중인지 확인합니다.
+	
+		ss -tulnp
+		
+			Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port Process
+			udp    UNCONN  0       0           127.0.0.54:53          0.0.0.0:*
+			udp    UNCONN  0       0        127.0.0.53%lo:53          0.0.0.0:*
+			tcp    LISTEN  0       4096        127.0.0.54:53          0.0.0.0:*
+			tcp    LISTEN  0       4096           0.0.0.0:22          0.0.0.0:*
+			tcp    LISTEN  0       4096     127.0.0.53%lo:53          0.0.0.0:*
+			tcp    LISTEN  0       4096              [::]:22             [::]:*
+
+			
+		netstat -anp
+		
+			Active Internet connections (servers and established)
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+			tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      -
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+			tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+			tcp        0     64 192.168.111.7:22        192.168.111.1:14371     ESTABLISHED -
+			tcp6       0      0 :::22                   :::*                    LISTEN      -
+			udp        0      0 127.0.0.54:53           0.0.0.0:*                           -
+			udp        0      0 127.0.0.53:53           0.0.0.0:*                           -
+			raw6       0      0 :::58                   :::*                    7  
+
+	
+4. 서비스 및 프로세스
+	
+	핵심 서비스: 현재 실행중인 핵심 서비스 체크
+		
+		netstat -nlpt 
+		
+			Active Internet connections (only servers)
+			Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+			tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      -
+			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+			tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+			tcp6       0      0 :::22                   :::*                    LISTEN      -
+
+
+		ps -ef # 모든 프로세스 보기
+	
+	웹서버 SSL 인증서 확인 : 웹서버, WAS 등의 SSL 인증서 파일 위치, 만료기간 파악
+
+	실시간 자원 사용량: top 또는 htop 명령어로 현재 CPU/메모리를 많이 소모하는 프로세스를 파악합니다. 
+	
+
+5. 보안 및 사용자 관리
+
+	Root 권한 사용자: sudo cat /etc/passwd로 시스템 사용자 목록을 확인합니다.
+	
+	사용자 및 권한: 루트 계정 관리 및 sudo 권한이 있는 사용자 명단 (/etc/passwd, /etc/sudoers)
+	
+	
+		# sudo 권한 계정 파악
+		sudo cat /etc/sudoers
+			..
+			root    ALL=(ALL)       ALL
+			..
+	
+	SSH 접속 설정: /etc/ssh/sshd_config 파일에서 Root 로그인 허용 여부, SSH 포트 번호를 확인합니다.
+		more /etc/ssh/sshd_config
+		
+	방화벽 설정: sudo ufw status verbose
+		Status: inactive # 꺼져있다
+
+		
+	(SELinux 같은 것) 상태 확인 : 우분투(Ubuntu)는 AppArmor를 기본 보안 모듈로 사용.
+			
+		cat /sys/module/apparmor/parameters/enabled
+		Y #기본 사용중
+
+		또는
+		
+		systemctl status apparmor
+			..
+			 Active: active (exited) # 사용중
+			..
+
+	현재 로그인 사용자 확인
+				
+		dong@ubuntu-server:~$ w
+		12:10:46 up 36 min,  1 user,  load average: 0.00, 0.01, 0.00
+		USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU  WHAT
+		dong              192.168.111.1    11:35   36:14   0.00s  0.01s sshd: dong [priv]
+		
+		dong@ubuntu-server:~$ who		
+		dong     pts/0        2026-03-25 11:35 (192.168.111.1)
+		
+	사용자 로그인 정보 확인
+	
+		dong@ubuntu-server:~$ last -F
+		dong     pts/0        192.168.111.1    Wed Mar 25 11:35:09 2026   still logged in
+		reboot   system boot  6.8.0-106-generi Wed Mar 25 11:34:29 2026   still running
+		..
+	
+	
+		#최근 접속확인
+		dong@ubuntu-server:~$ lastlog
+		Username         Port     From                Latest
+		root                                          **Never logged in**
+		daemon                                        **Never logged in**
+		dong             pts/0    192.168.111.1       Wed Mar 25 11:35:09 +0900 20
+		..
+		
+6. 로그 및 백업 (가장 중요)
+
+	백업 상태: 가장 중요한 정보로, 백업 자동화 스크립트(cron) 및 백업 데이터의 위치/무결성 확인.
+	
+	로그 위치: /var/log/ 디렉토리 내의 주요 로그 파일(messages, secure, syslog) 위치와 
+		로그 로테이트(logrotate) 설정을 확인합니다.
+	
+	백업 상태: crontab -l 명령어로 자동 백업 스크립트가 등록되어 있는지, 
+		백업 데이터가 정상적으로 저장되고 있는지 확인합니다. 
+		
+7. 긴급 상황 대응
+	
+	서비스 재시작/종료 방법: systemctl 명령어를 통한 서비스 관리 숙지.
+	
+	모니터링 도구: 서버의 성능(top, iotop)과 자원 상태를 실시간으로 확인하는 도구 파악.
+	
+
+※ 이러한 정보들은 inventory 문서로 작성하여 관리하는 것이 좋습니다.
+
