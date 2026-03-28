@@ -26,7 +26,7 @@
 
 4. /etc/sysconfig/network-scripts
 	# 네트워크 카드별로 설정 할 수 있는 곳
-	대체로 ip link 명령어로 보면 네트워크명 나오는데 매핑하면 된다
+	대체로 ip link 명령어로 보면 네트워크명(e:'enp3s0') 나오는데 같은 명 파일을 찾는다
 
 	예를 들어 
 		ip link

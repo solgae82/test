@@ -93,10 +93,10 @@
 			ubuntu-server
 		
 		ip addr		
-			inet 192.168.111.7/24 brd 192.168.111.255 scope global ens32
+			inet 192.168.111.8/24 brd 192.168.111.255 scope global ens32
 		
 		ifconfig
-			inet 192.168.111.7  netmask 255.255.255.0  broadcast 192.168.111.255
+			inet 192.168.111.8  netmask 255.255.255.0  broadcast 192.168.111.255
 			
 	게이트웨이 확인(라우팅 테이블): ip route 명령어로 기본 게이트웨이를 확인합니다. 
 
@@ -111,7 +111,7 @@
 		ip route	
 			# ens32 인터페이스 (현재 게이트웨이 '192.168.111.2')
 			default via 192.168.111.2 dev ens32 proto static
-			192.168.111.0/24 dev ens32 proto kernel scope link src 192.168.111.7
+			192.168.111.0/24 dev ens32 proto kernel scope link src 192.168.111.8
 
 	DNS 확인
 		전통적인 /etc/resolv.conf 에 설정하는 것은 안되고
@@ -178,7 +178,7 @@
 			tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      -
 			tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
 			tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
-			tcp        0     64 192.168.111.7:22        192.168.111.1:14371     ESTABLISHED -
+			tcp        0     64 192.168.111.8:22        192.168.111.1:14371     ESTABLISHED -
 			tcp6       0      0 :::22                   :::*                    LISTEN      -
 			udp        0      0 127.0.0.54:53           0.0.0.0:*                           -
 			udp        0      0 127.0.0.53:53           0.0.0.0:*                           -
