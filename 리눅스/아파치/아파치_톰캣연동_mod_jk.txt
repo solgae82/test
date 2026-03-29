@@ -1,0 +1,128 @@
+<아파치 톰캣 연동을 위한 mod_jk 설치>
+
+아파치 홈 : /usr/local/apache2.4/bin
+
+
+1. 소스 컴파일 설치
+	cd /usr/local/src
+
+	tar xvfz tomcat-connectors-1.2.50-src.tar.gz
+
+	cd ./tomcat-connectors-1.2.50-src/native
+
+	#아파치 홈/bin에 있는 apxs 를 지정
+	./configure --with-apxs=/usr/local/apache2.4/bin/apxs
+	 
+	#컴파일
+	make
+	 
+	#설치
+	make install
+
+	#확인 (mod_jk 생성되었는지)
+	cd /usr/local/apache2.4/modules
+	ls | grep mod_jk
+	mod_jk.so #생성 확인
+
+
+2. workers.propeties 파일 정의
+
+	cd /usr/local/apache2.4/conf
+	vi workers.propeties
+	
+	worker.list=tomcat01
+	worker.tomcat01.type=ajp13
+	worker.tomcat01.host=localhost
+	worker.tomcat01.port=8009
+	worker.tomcat01.secret=1234
+	
+3 run 디렉토리 만들기
+	cd /usr/local/apache2.4/
+	mkdir run
+	
+4. httpd.conf 설정
+	
+	# httpd.conf 추가 편집
+	cd /usr/local/apache2.4/conf
+	vi httpd.conf
+	..	
+	
+	# httpd.conf 하단에 아래 내용을 추가합니다.
+
+	# mod_jk.so 모듈의 위치
+	LoadModule jk_module modules/mod_jk.so
+
+	# workers.properties 설정
+	JkWorkersFile conf/workers.properties
+
+	# mod_jk log 위치
+	JkLogFile logs/mod_jk.log
+
+	# Load balancing worekrs will not function properly 오류 대응
+	JkShmFile run/mod_jk.shm
+
+	# /*.jsp 요청을 모두 tomcat01으로 전송
+	JkMount /*.jsp tomcat01
+
+	
+5. 설정 후 아파치 시작
+	cd /usr/local/apache2.4/bin
+	./apachectl start
+
+	 #아파치 홈 run 디렉토리에 
+		mod_jk.shm.6803  mod_jk.shm.6803.lock
+	파일이 생성되는지 확인해본다
+	
+6. 톰캣 설치 후 server.xml 설정
+	vi 톰캣홈/conf
+
+	<!-- 아래는 ssl 설정했을 경우 -->
+	<Connector protocol="AJP/1.3"
+		address="0.0.0.0"
+		port="8009"
+		redirectPort="8443"
+		maxParameterCount="1000" 
+		secretRequired="true" 
+		secret="1234"
+		allowedRequestAttributesPattern=".*"
+       />
+       
+===================
+
+아파치 documentroot 와 톰캣 appbase를 맞춰준다
+
+아파치 DocumentRoot 를 톰캣 기본 웹앱 디렉토리인 ROOT를 바로보게 한다.
+
+	DocumentRoot "/home/tomcat/public/ROOT"
+	<Directory "/home/tomcat/public/ROOT">
+
+톰캣홈/conf/server.xml
+	<Host name="localhost"  appBase="/home/tomcat/public"
+		    unpackWARs="true" autoDeploy="true">
+		    
+	#context 태그를 설정하지 않았다면 appBase/ROOT 디렉토리가 기본 웹앱 홈이 된다.
+	
+===================
+
+아파치 기동 , 톰캣 기동 후 테스트 해본다.
+http://localhost/index.html
+http://localhost/test.jsp
+
+===================
+
+연동이 잘 되지 않는다면 로그를 잘 봐야한다.
+	
+	아파치 홈/logs/mod_jk.log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
+	아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
+	톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
+	톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
+	
+===================
+SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
+SELinux 완전 끄던가. 
+아니면 아래 명령으로 보안 설정을 한다
+(아파치의 톰캣포트 AJP 8009로 통신 허용)
+
+	setsebool -P httpd_can_network_connect 1
+	
+	
