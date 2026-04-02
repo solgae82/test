@@ -1,0 +1,9 @@
+윈도우에서 기존 깃허브 자격증명을 삭제하려면 
+[제어판] -> [사용자 계정] -> [자격 증명 관리자] -> [Windows 자격 증명]에서 
+git:https://github.com 항목을 찾아 제거합니다. 
+
+-------------------
+
+맥(Mac)은 키체인 접근 앱에서 'github'을 검색해 삭제하며, 
+Git Bash에서는 git credential-manager github logout 명령어를 
+사용할 수 있습니다. 
