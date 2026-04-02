@@ -130,7 +130,7 @@
 원격저장소에 올리기(push)
 
 	- 먼저 fetch 또는 pull을 한다...그리고 병합 수정 작업 후 commit
-	- 사용법 : git push <원격 저장소 별칭> <로컬 저장소 브랜치명> 
+	- 사용법 : git push <원격 저장소 별칭> <로컬 저장소 브랜치명>  #로컬:원격과 브랜치명이 같을 경우
 		 git push <원격 저장소 별칭> <로컬 저장소 브랜치명>:<원격 저장소 브랜치명>
 
 	예제)
@@ -138,29 +138,42 @@
 	원격저장소 브랜치명 : main
 
 		$ git push github master 
-		# 로컬저장소 master 브랜치 -> 원격 저장소의 master 브랜치에 업로드,없다면 새로운 원격브랜치(master)생성
+		# 로컬저장소 master 브랜치 -> 
+			- 원격 저장소의 master 브랜치에 업로드
+			- 없다면 새로운 원격브랜치(master)생성 후 push
 
 		$ git push github master:main
-		# 로컬저장소 master 브랜치 -> 원격 저장소의 main 브랜치에 업로드,없다면 새로운 원격브랜치(main)생성
+		# 로컬저장소 master 브랜치 -> 
+			- 원격 저장소의 main 브랜치에 업로드
+			- 없다면 새로운 원격브랜치(main)생성 후 push
 				
 	* 브랜치명은 원격 브랜치명과 로컬 브랜치명을 같게 하는게 일관성 측면에 좋다
 			
 		$ git branch -M main
-		# 현재 위치의 브랜치명인 master -> main 으로 변경 
+		# 로컬의 브랜치명인 master -> main 으로 변경 
 		
 		# 이렇게 일치 시키면 명령어 길이도 줄어든다
 		$ git push github main 
+		
 
-	- 깃 허브 올려 보기(현재 로컬 브랜치 master 가정)
+	- 깃 허브에 push 해보기(현재 로컬 브랜치 master 가정)
 
 			$ git push github master:main	
 		
-			# 깃허브 기본 브랜치명이 master 이었는데, main으로 바뀌었음(노예제 연상시킨다고)
-			# ex) 계정(dong) , 깃허브 비밀번호 등을 입력한다
+			# 깃허브 기본 브랜치명이 master 이었는데, 지금은 main으로 바뀌었음(노예제 연상시킨다고)
+			# ex) 계정(dong) , 깃허브 비밀번호 등을 입력해서 push 완료시킨다
 
-		- 아래처럼 -u옵션 한번만 해주면 다음 push 부터는   'git push' 만 해도 된다.
+		- 아래처럼 로컬 브랜치명을 원격 브랜치명과 일치시켜주고  
+			-u 옵션 실행을 한번 해주면 다음 push 부터는 'git push' 만 해도 된다.
 
-			$ git push -u github master:main 
+			$ git branch -M main  # 현재 로컬 브랜치를 'main'으로 이름 변경
+			$ git push -u github main 
+			
+		- 위 설정 후 다음부터는 간단하게 줄여서 push 할 수 있다
+			
+			$ git push
+			
+			$ git pull # 'pull' 도 줄여서 가능.
 
 원격 저장소 삭제
 	

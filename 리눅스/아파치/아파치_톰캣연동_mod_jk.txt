@@ -84,24 +84,30 @@
 		maxParameterCount="1000" 
 		secretRequired="true" 
 		secret="1234"
-		allowedRequestAttributesPattern=".*"
+		allowedRequestAttributesPattern=".*" <!-- 요게 좀 확실히 알아봐야한다,명확하지 않다 -->
        />
        
-===================
+       <!--
+	기본 http 커넥터 포트는 비활성화 처리
+	<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443"/>
+	-->
 
-아파치 documentroot 와 톰캣 appbase를 맞춰준다
+7. 홈 디렉토리 설정
 
-아파치 DocumentRoot 를 톰캣 기본 웹앱 디렉토리인 ROOT를 바로보게 한다.
+	아파치 documentroot 와 톰캣 appbase를 맞춰준다
 
-	DocumentRoot "/home/tomcat/public/ROOT"
-	<Directory "/home/tomcat/public/ROOT">
+	아파치 DocumentRoot 를 톰캣 기본 웹앱 디렉토리인 ROOT를 바라보게 한다.
 
-톰캣홈/conf/server.xml
-	<Host name="localhost"  appBase="/home/tomcat/public"
-		    unpackWARs="true" autoDeploy="true">
-		    
-	#context 태그를 설정하지 않았다면 appBase/ROOT 디렉토리가 기본 웹앱 홈이 된다.
-	
+		DocumentRoot "/home/tomcat/public/ROOT"
+		<Directory "/home/tomcat/public/ROOT">
+
+	톰캣홈/conf/server.xml
+		<Host name="localhost"  appBase="/home/tomcat/public"
+			    unpackWARs="true" autoDeploy="true">
+			    
+		- context 태그를 설정하지 않았다면 
+		appBase(/home/tomcat/public)/ROOT 디렉토리가 기본 웹앱 홈이 된다.
+		
 ===================
 
 아파치 기동 , 톰캣 기동 후 테스트 해본다.

@@ -1,4 +1,4 @@
-----centos 에서 전역 설치
+----centos 에서 root 전역 설치
 
 /usr/local/jdk1.8.0_241
 에  tar로 풀고 디렉토리 위치시킨 후
@@ -28,7 +28,7 @@ java version "1.8.0_241"
 	
 	(톰캣 8이상은 JAVA_HOME 환경변수만 설정해주면 된다.)
 	
-	자바 홈 : /usr/local/jdk11.0.0.2
+	자바 홈 : /usr/local/jdk11.0.0.2 #소유권한은 tomcat:tomcat
 	
 	su - tomcat # 톰캣계정으로 생성한다
 	
