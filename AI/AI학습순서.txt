@@ -2,6 +2,7 @@
 머신러닝, 딥러닝 기술을 포함한 전반적인 AI 학습 로드맵은 다음과 같습니다. 
 
 1단계: 필수 기초 지식 (Pre-requisites) 
+
 	AI의 기반이 되는 수학적, 기술적 기초를 다집니다. 
 
 	프로그래밍 언어 (Python): AI 개발의 표준 언어인 파이썬의 기본 문법을 익힙니다.
@@ -16,8 +17,12 @@
 
 	AI 기본 개념: 인공지능, 머신러닝, 딥러닝의 차이와 구조를 이해합니다.
 	
-	머신러닝 종류: 지도 학습(Supervised Learning), 비지도 학습(Unsupervised Learning), 강화 학습(Reinforcement Learning)의 
+	머신러닝 종류: 
+		지도 학습(Supervised Learning), 
+		비지도 학습(Unsupervised Learning), 
+		강화 학습(Reinforcement Learning)의 
 		차이를 배웁니다.
+		
 	알고리즘: 회귀 분석, 결정 트리, 랜덤 포레스트, SVM 등 Scikit-learn 라이브러리를 활용한 모델을 익힙니다. 
 
 

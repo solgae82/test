@@ -14,7 +14,7 @@ network:
         - to: default
           via: 192.168.0.1
       nameservers:
-          addresses: [168.126.63.1,8.8.8.8]
+        addresses: [168.126.63.1,8.8.8.8]
   version: 2
 
 :wq

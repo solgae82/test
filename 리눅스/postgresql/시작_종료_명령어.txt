@@ -1,0 +1,64 @@
+설치 기본디렉토리 : /usr/local/postgresql-14.12
+	사용자 권한은 postgres 로 되어 있다고 가정
+	
+사용자 변경
+	
+	su - postgres
+	
+환경변수 설정 
+	
+	cd ~
+	vi .bash_profile
+	export PG_HOME=/usr/local/postgresql-14.12
+	export PATH=$PG_HOME/bin:$PATH
+	export PGDATA=$PG_HOME/data
+	export PGLIB=$PG_HOME/lib
+	:wq
+	
+	source .bash_profile
+	
+			
+기본 시작/종료/재시작
+	
+	pg_ctl : /usr/local/postgresql-14.12/bin 에 있는 '시작/종료/재시작' 프로그램
+		-D : 데이터베이스 디렉토리 지정
+	기동시 -D 옵션 : 지정하지 않으면, 환경변수 $PGDATA 값이 자동 지정된다.
+		ps -ef 시 
+	
+	
+	#시작 
+	pg_ctl start -D /usr/local/postgresql-14.12/data
+	
+	#종료(기본 - Fast): 
+	pg_ctl stop -D /usr/local/postgresql-14.12/data
+	
+	#재시작: 
+	pg_ctl restart -D /usr/local/postgresql-14.12/data
+	
+
+종료 옵션
+	-w : 서버가 완전히 정지될 때까지 기다립니다.	
+	-m : 기본값은 'fast' 다
+		smart : 모든 클라이언트의 연결이 끊어진 후 종료함.
+		
+		fast : (기본) 클라이언트의 연결을 기다리지 않고, 활성 트랜잭션을 롤백한 뒤 클라이언트를 강제로 끊고 clean하게 종료함. 
+			(이후 기동시 복구 과정 불필요함)
+			
+		immediate : 서버 프로세스를 즉시 중단시키고 종료함. 
+			(이후 기동시 인스턴스 복구를 수행함)
+			
+			
+	#실제 명령어
+	pg_ctl stop -D /usr/local/postgresql-14.12/data # -m 옵션 없으면 기본 -m fast
+	
+	pg_ctl stop -D /usr/local/postgresql-14.12/data -m smart -w
+	
+	pg_ctl stop -D  /usr/local/postgresql-14.12/data -m immediate -w
+	
+로그파일 지정해서 기동하기
+	
+	#디렉토리 만들기
+	mkdir /usr/local/postgresql-14.12/data/svc01/logs
+	
+	pg_ctl -D /usr/local/postgresql-14.12/data/svc01 \
+	 -l /usr/local/postgresql-14.12/data/svc01/logs/logfile start
