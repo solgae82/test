@@ -1,0 +1,131 @@
+Rocky 10 리눅스는 기본 모듈 중 pcre2를 써야한다!
+
+
+1. 기본 컴파일+도우미 모듈들 패키지 설치
+	
+	dnf -y install gcc gcc-c++ make expat-devel openssl-devel
+
+
+2. 직접 필수 설치해야할 모듈 apr, apr-util, apr-iconv, pcre2 다운로드 
+	# dnf로 할 수도 있겠지만, 그냥 컴파일해서 설치하도록 한다
+	# 미리 검색해서 다운 받아 놓자
+	
+	cd /usr/loca/src
+		apr-1.7.6.tar.gz
+		apr-util-1.6.3.tar.gz
+		apr-iconv-1.2.2.tar.gz
+		httpd-2.4.66.tar.gz
+		pcre2-10.47.zip #요건 깃허브에서 받으면 됨.
+
+3. apr 설치
+	
+	cd /usr/local/src
+	tar xvfz apr-1.7.6.tar.gz
+	
+	cd apr-1.7.6
+	./configure --prefix=/usr/local/apr-1.7.6
+	make && make install
+	
+	ls /usr/local # apr-1.7.6 디렉토리 생성되었는지 확인
+	
+4. apr-util 설치
+	
+	cd /usr/local/src
+	tar xvfz apr-util-1.6.3.tar.gz
+	
+	cd apr-util-1.6.3
+	./configure --prefix=/usr/local/apr-util-1.6.3 --with-apr=/usr/local/apr-1.7.6
+	make && make install
+	
+	ls /usr/local # apr-util-1.6.3 디렉토리 생성되었는지 확인
+	
+5. apr-iconv 설치
+	
+	cd /usr/local/src
+	tar xvfz apr-iconv-1.2.2.tar.gz
+	
+	cd apr-iconv-1.2.2
+	./configure --prefix=/usr/local/apr-iconv-1.2.2 --with-apr=/usr/local/apr-1.7.6
+	make && make install
+	
+	ls /usr/local # apr-iconv-1.2.2 디렉토리 생성되었는지 확인
+	
+6. pcre2 설치
+	
+	cd /usr/local/src
+	unzip pcre2-10.47.zip
+	ls # pcre2-main 디렉토리가 방금 푼 pcre2-10.47.zip 이다
+	
+	cd pcre2-main
+	./autogen.sh #이걸 해야 configure 파일이 생성된다.
+	
+	./configure --prefix=/usr/local/pcre2-10.47
+	make && make install
+	
+	ls /usr/local # pcre2-10.47 디렉토리 생성되었는지 확인
+	
+7. apache 설치
+	
+	cd /usr/local/src
+	tar xvfz httpd-2.4.66.tar.gz
+	
+	cd httpd-2.4.66
+	
+	
+	./configure --prefix=/usr/local/apache2.4.66 \
+	--enable-so --enable-rewrite --enable-proxy \
+	--enable-ssl --enable-mods-shared=all \
+	--enable-modules=shared --enable-modules==ssl \
+	--enable-mpms-shared=all --enable-expires \
+	--with-apr=/usr/local/apr-1.7.6 \
+	--with-apr-util=/usr/local/apr-util-1.6.3 \
+	--with-apr-iconv=/usr/local/apr-iconv-1.2.2 \
+	--with-pcre2=/usr/local/pcre2-10.47 \
+	--with-mpm=event
+
+	# enable-mpms-shared=all, with-mpm=event 꼭 지정해라. 고성능으로 톰캣 연동하려면..
+	
+	make && make install
+	
+	ls /usr/local # apache2.4.66 디렉토리 생성되었는지 확인 
+	
+8. 방화벽 오픈
+	firewall-cmd --permanent --list-ports # 열린 포트 목록 확인
+	firewall-cmd --list-services # 열린 서비스 목록 확인
+	
+	#80번이 안 열려서, 직접 포트 지정 열고 싶다면..
+	firewall-cmd --permanent --zone-public --add-port=80/tcp
+	
+	#방화벽 재시작
+	firewall-cmd --reload
+	
+9. httpd.conf 설정
+	
+	cd cd /usr/local/apache2.4.66/conf
+	vi httpd.conf
+	
+	# ServerName 주석 풀고 'localhost' 설정
+	ServerName localhost
+	
+	:wq
+
+	#설정 후 설정파일 잘 적용되었는지 테스트
+	/usr/local/apache2.4.66/bin/apachectl configtest
+	
+	Syntax OK #이렇게 나와야 설정이 이상 없다는 뜻이다
+	
+10. 기동/재시작/종료
+
+	-k 옵션 : 원래 기동시 기본 옵션이다(대부분 생략해도 동작하게 되어있다고 한다)
+	
+	# 기동 테스트
+	cd /usr/local/apache2.4.66/bin	
+	
+	./apachectl -k start	# 시작
+	./apachectl -k restart	# 재시작
+	./apachectl -k stop	# 종료
+	
+	netstat -nlt #80번 포트 확인
+	ps -ef | grep httpd #기동 프로세스 확인
+	
+	
