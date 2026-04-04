@@ -1,0 +1,154 @@
+apache HTTP2를 사용하기 위한 라이브러리인,
+APR(Apache Portable Runtime) 이라는 것이 있다
+
+APR을 설치 후 
+아파치에도 사용할 수 있고, 톰캣에도 설정해서 사용 할 수 있다.
+
+아파치에서는 컴파일시 configure 에 설정해서 컴파일해서 사용한다.
+
+톰캣에서는 libtcnative (tomcat-native lib) 라는 Connector를 사용해서 
+apr를 사용할 수 있다 
+(이름에서 알수 있듯이 native로 작성된 성능 좋은 Connector이다)
+
+톰캣 단독으로 설치할때는 
+	1. apr 설치 
+	2. (tomcat-native lib) 설치 후 연동.
+	
+아파치 설치 후 톰캣과 연동할 때는 apr 이미 설치 되었을테니
+	1. apr 홈 경로 파악
+	2. (tomcat-native lib) 설치 후 연동.
+	
+(tomcat-native lib)를 다운로드 받아야 할텐데,
+톰캣 소스에 이미 포함되어 있다. 
+
+이미 설치된 톰캣홈/bin 에 가보면 'tomcat-native.tar.gz' 가 있다.
+이게 (tomcat-native lib) 이다.
+native 라이브러리이므로 컴파일해서 설치하면 된다
+
+이 (tomcat-native lib)를 설치하고 설정해보자
+
+아래는 아파치와 연동하는 (tomcat-native lib) 설치과정이다
+
+-------------------
+
+apr홈은 아파치 설치시 이미 설치되어 있다고 가정한다.(없다면 설치하고 진행해야 한다)
+	apr홈: /usr/local/apr
+	
+(tomcat-native lib) 컴파일 후 라이브러리 파일 이름은 
+접두사로 'libtcnative' 가 붙는데 이 라이브러리 파일들은 
+apr홈/lib 에 설치될 것이다
+
+-------------------
+
+1. 설치 전 apr홈/lib 디렉토리를 확인해보자
+
+	ls /usr/local/apr/lib
+		apr.exp     libapr-1.la  libapr-1.so.0      pkgconfig
+		libapr-1.a  libapr-1.so  libapr-1.so.0.7.6
+
+2. 설치 시작 
+	su - tomcat
+	
+	cd /usr/local/tomcat-9.0.113/bin 
+	tar xvfz tomcat-native.tar.gz
+	ls 
+		tomcat-native-1.3.1-src # .gz 압축해제 디렉토리 확인
+		
+	cd tomcat-native-1.3.1-src/native
+
+	#설정 옵션을 자세히 보자 (검색해서 파악하면 좋다)
+	./configure --with-apr=/usr/local/apr/bin/apr-1-config \
+	--with-java-home=/usr/local/jdk-11.0.0.2 \
+	--with-ssl=yes
+
+	# 컴파일 및 설치
+	make && make install
+
+3. 설치 잘 되었는지 확인 ('libtcnative..' 라이브러리 파일들 생성 확인)
+
+	ls /usr/local/apr/lib
+	
+		apr.exp      libapr-1.so        libtcnative-1.a   libtcnative-1.so.0
+		libapr-1.a   libapr-1.so.0      libtcnative-1.la  libtcnative-1.so.0.3.1
+		libapr-1.la  libapr-1.so.0.7.6  libtcnative-1.so  pkgconfig
+	
+	# 5개의 ''libtcnative..' 파일들이 설치되었음을 확인할 수 있다.
+
+4. 설치된 라이브러리 경로 설정 
+
+	두가지 설정법이 있다. (1번이 나은 방법)
+	
+	1. JAVA_OPTS 에 라이브러리 경로 설정
+		: JVM레벨 환경변수 JAVA_OPTS의 옵션 '-Djava.library.path=경로' 에 설정. 
+		'/usr/local/apr/lib' 경로 추가
+		
+		cd /usr/local/tomcat-9.0.113/bin
+		vi setenv.sh
+		..
+		JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/usr/local/apr/lib"
+		export JAVA_OPTS
+		:wq
+	
+	2. 운영체제 라이브러리 경로 환경변수에 설정(전역 설정)
+	
+		: 운영체제 레벨 라이브러리 경로 환경변수인 'LD_LIBRARY_PATH=경로'에 
+		'/usr/local/apr/lib' 경로 추가
+		
+		cd /usr/local/tomcat-9.0.113/bin
+		vi setenv.sh
+		..
+		# LD_LIBRARY_PATH 추가 설정
+		LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/apr/lib
+		export LD_LIBRARY_PATH		
+		:wq	
+	
+	
+5. Tomcat AJP Connector 설정 변경 (server.xml)
+
+	: 아파치와 연동할 ajp 커넥터에 설정하는 설정법이다
+	: 톰캣 단독 8080 커넥터일때는 
+		protocol="org.apache.coyote.http11.Http11AprProtocol" 
+	로 설정해야한다
+	
+	cd /usr/local/tomcat-9.0.113/conf
+	vi server.xml
+	..
+	<!-- protocol="AJP/1.3" 을 protocol="org.apache.coyote.ajp.AjpAprProtocol" 변경 -->
+	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol"
+		address="127.0.0.1"
+		port="8009"
+		redirectPort="8443"
+		maxParameterCount="1000" 
+		secretRequired="true" 
+		secret="1234"
+		allowedRequestAttributesPattern=".*" 
+       />
+       
+       
+6. 작동 확인
+
+	: 아파치 기동 후 톰캣 기동 ,톰캣 로그를 확인해서 설정 확인. 
+	
+	/usr/local/apache2.4.66/bin/apachectl -k start  #아파치 기동
+	
+	/usr/local/tomcat-9.0.113/bin/starup.sh #톰캣 기동
+	
+	sudo tail -f /usr/local/tomcat-9.0.113/logs/catalina.out #로그 확인
+		
+		..["ajp-apr-127.0.0.1-8009"]
+		
+		..["ajp-apr-127.0.0.1-8009"]을(를) 초기화합니다.
+		
+		등의 메시지가 나오면 apr 설정이 제대로 된것이다
+	
+===================
+
+계속 에러가 나서 헤맸는데, 제미나이에게 물어봐서 해결했다
+	
+	아파치홈/conf/workers.propeties 의
+	
+		worker.tomcat01.host=127.0.0.1	 #이거 중요
+		
+	와 톰캣 Connector 의 address 속성값을 일치시켜야 했다
+	
+		address="127.0.0.1"

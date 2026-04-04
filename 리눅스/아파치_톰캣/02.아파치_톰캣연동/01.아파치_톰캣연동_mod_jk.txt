@@ -32,7 +32,7 @@
 	
 	worker.list=tomcat01
 	worker.tomcat01.type=ajp13
-	worker.tomcat01.host=localhost
+	worker.tomcat01.host=127.0.0.1	 #이거 중요
 	worker.tomcat01.port=8009
 	worker.tomcat01.secret=1234
 	
@@ -65,7 +65,7 @@
 	JkMount /*.jsp tomcat01
 
 	
-5. 설정 후 아파치 시작
+5. 설정 후 아파치 시작 (테스트)
 	cd /usr/local/apache2.4/bin
 	./apachectl start
 
@@ -73,22 +73,22 @@
 		mod_jk.shm.6803  mod_jk.shm.6803.lock
 	파일이 생성되는지 확인해본다
 	
-6. 톰캣 설치 후 server.xml 설정
+6. 톰캣 server.xml 설정
 	vi 톰캣홈/conf
 
-	<!-- 아래는 ssl 설정했을 경우 -->
-	<Connector protocol="AJP/1.3"
-		address="0.0.0.0"
+	<!-- protocol="AJP/1.3" 을 protocol="org.apache.coyote.ajp.AjpAprProtocol" 변경 -->
+	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol"
+		address="127.0.0.1"	# worker.tomcat01.host=127.0.0.1 값과 일치해야함.
 		port="8009"
 		redirectPort="8443"
 		maxParameterCount="1000" 
 		secretRequired="true" 
 		secret="1234"
-		allowedRequestAttributesPattern=".*" <!-- 요게 좀 확실히 알아봐야한다,명확하지 않다 -->
+		allowedRequestAttributesPattern=".*"  #요게 좀 확실히 알아봐야한다,명확하지 않다
        />
        
        <!--
-	기본 http 커넥터 포트는 비활성화 처리
+	기본 http 커넥터 포트는 비활성화 처리, 다른 Connector 모두 비활성화 처리 
 	<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443"/>
 	-->
 

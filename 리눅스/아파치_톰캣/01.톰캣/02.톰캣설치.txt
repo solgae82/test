@@ -1,4 +1,4 @@
-java 설치 후 설치해야 한다 [java설치.txt 참조]
+java 설치 후 설치해야 진행한다 
 
 .zip .tar.gz 등을 받으면 리눅스용 또는 윈도우용 모두 해당된다.
 왜냐면 톰캣은 자바프로그램이므로..(jvm에서 돌아가는 프로그램)
@@ -16,7 +16,7 @@ widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 
 	
 3. /usr/local/jdk11.0.0.2 <= java 디렉토리(tar 압축해제)
 	: tomcat이 실행할 수 있게 권한 줘야한다 (모든 앱이 실행할 수 있게 해놓는다)
-	
+	(ex: chown -R tomcat:tomcat등)
 
 4. setenv.sh 생성 java 설정
 	

@@ -66,7 +66,7 @@
 	독립변수와 종속변수의 관계를 인과관계라 한다
 	인과관계는 상관관계에 포함된다
 	
-머신러닝 배우기 관점
+머신러닝 배우기 자세
 	머신러닝을 도구로 바라보자.
 	
 	-공부관점: 언제 다 배우냐 -> 지루함, 절망
@@ -80,5 +80,8 @@
 	
 	- 비지도학습(Unsupervised Learning):
 		- 군집화(clustering)
-		- 변환(transform)
+		- 변환(Transformation)
+			- 차원 축소(Dimensionality Reduction)
+			- 피처 추출 (Feature Extraction)
 		- 연관(association)
+		

@@ -1,0 +1,28 @@
+리눅스 시스템에서 
+
+LD_LIBRARY_PATH와 JAVA_OPTS는 모두 애플리케이션 실행 환경을 설정하는 데 사용되지만, 작용하는 대상과 범위가 전혀 다릅니다.
+핵심 차이는 LD_LIBRARY_PATH는 운영체제(OS) 수준에서 네이티브 라이브러리를 찾는 경로이고, 
+JAVA_OPTS는 JVM(Java Virtual Machine)의 설정값들을 지정하는 환경변수라는 점입니다.
+	
+JAVA_OPTS 는 '-Djava.library.path=경로' 옵션으로 네이티브 라이브러리 경로를 설정합니다.
+
+자바 애플리케이션이 네이티브 라이브러리(*.so)를 JNI로 로드해야 하는데,
+그 라이브러리가 기본 시스템 경로(예: /usr/lib)에 없다면 
+LD_LIBRARY_PATH에 해당 경로를 설정해 주어야 합니다.
+
+만약 java.library.path라는 JVM 옵션(-Djava.library.path=...)을 JAVA_OPTS에 사용하지 않았다면, 
+자바는 LD_LIBRARY_PATH에 지정된 경로에서 라이브러리를 찾습니다. 
+
+
+예제)
+export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/usr/local/apr/lib"
+
+예제)
+export LD_LIBRARY_PATH=/path/to/native/lib:$LD_LIBRARY_PATH 
+
+
+찾는 순서(우선순위)는 
+
+	1. JAVA_OPTS에 설정된 -Djava.library.path=경로 
+	2. 운영체제 환경변수 LD_LIBRARY_PATH 
+
