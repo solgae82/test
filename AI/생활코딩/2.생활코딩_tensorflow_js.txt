@@ -1,0 +1,34 @@
+지도학습 (회귀, 분류)
+	:예측을 위한 인공지능 구현 방법
+	
+	해결 알고리듬 
+	- Decision Tree
+	- Random Forest
+	- KNN
+	- SVM
+	- Neural Network
+	
+	Neural Network = 인공신경망 = Deep Learning
+	
+	딥러닝 ⊂ 머신러닝 ⊂ 인공지능
+	
+딥러닝 구현 라이브러리들
+	TensorFlow
+	PyTorch
+	ConvNetJS
+	Caffe2
+	Brain.js
+	Theano 
+	..
+	
+지도학습 구현 순서
+	1. 과거의 데이터들을 준비한다.
+	2. 모델의 모양을 만든다.
+	3. 데이터로 모델을 학습(FIT) 시킨다.
+	4. 모델을 이용합니다.
+	
+모델 만들기 3가지 방법
+	- 이미 만들어진 모델을 찾아 활용
+	- 이미 만들어지 모델을 찾아 다시 학습 시킴(전이 학습)
+	- 딥러닝 라이브러리등을 이용해 직접 모델 만들기
+
