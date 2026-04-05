@@ -72,16 +72,57 @@
 	-공부관점: 언제 다 배우냐 -> 지루함, 절망
 	-도구관점: 스마트폰 사용처럼, 필요한 것만 학습해서 사용. -> 효용, 즐거움
 	
-머신러닝(Machine Learning) 분류
-	- 지도학습(Supervised Learning): 
-		- 분류(classfication)
-		- 회귀(regression)
-	- 강화학습(reinforcement):
+머신러닝(Machine Learning ,기계학습 , 機械學習) 종류
+	- 지도학습(Supervised Learning, 指導學習): 
+		- 분류(classfication , 分類)
+		- 회귀(regression, 回歸)
+	- 강화학습(reinforcement, 强化學習)):
 	
-	- 비지도학습(Unsupervised Learning):
-		- 군집화(clustering)
-		- 변환(Transformation)
-			- 차원 축소(Dimensionality Reduction)
+	- 비지도학습(Unsupervised Learning , 非指導學習):
+		- 군집화(clustering , 群集化)
+		- 변환(Transformation , 變換)
+			- 차원 축소(Dimensionality Reduction, 次元縮小)
 			- 피처 추출 (Feature Extraction)
-		- 연관(association)
+		- 연관규칙학습(association rule learning , 聯關規則學習)
+	
+	# 지배자들만 소유했던 공식의 대중화가 머신러닝이다.
+	
+지도학습
+	
+	정답이 있는 문제를 해결하기 위한 방식
+	원인 -> 결과가 있다.
+	독립변수, 종속변수가 필요하다
+	학습결과로 모델이 나온다
+	
+	독립변수 -> 모델 -> 종속변수 
+	
+	종류:
+		회귀 : 에측 결과가 (연속적)숫자일때
+		분류 : 예측 결과가 이름일때(범주를 가질때)
+
+비지도학습
+	
+	정답이 없는 문제를 해결하기 위한 방식
+	원인-결과(독립변수, 종속변수)가 필요없다
+	데이터의 특성을 파악하기 위한 학습
+	무언가에 대한 관찰을 통해 의미나 관계를 밝혀내기 위한 학습
 		
+	종류:
+		군집화 : 비슷한 것들(행)을 찾아서 그룹화
+			(분류는 대상을 어떤 그룹에 속하게 하는 것)
+			
+		연관규칙학습 : 연관있는 특성(열)을 그룹화
+			(라면구입과 계란구입은 연관이 있다)
+			
+
+강화학습
+	지도학습과 비슷하나 더 좋은 보상을 받기 위해 수련하는 학습
+	일단 경험하며 학습하는 방식
+	
+	용어:
+		environment : 게임기
+		agent : 게이머	
+		state : 게임상태
+		reward : 상/벌
+		policy : 판단력(강화주체)
+		action : 행동
