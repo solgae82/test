@@ -13,7 +13,7 @@ vscode 설정 기준이다.
 	
 3. vscode 터미널 열어서(powershell)
 
-	python -3.12 -m venv venv
+	py -3.12 -m venv venv
 	
 	#프로젝트 폴더에 venv 폴더가 생성되었는지 확인
 	
