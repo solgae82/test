@@ -62,6 +62,6 @@ vscode 설정 기준이다.
 	venv\Scripts\activate #(가상환경 활성화)
 	
 	ctrl + shift + p
-	(Python 3.12 (64-bit) C:\python\3.12.4\pythoe.exe) #선택
+	(Python 3.12 (64-bit) C:\python\3.12.4\python.exe) #선택
 	
 	
