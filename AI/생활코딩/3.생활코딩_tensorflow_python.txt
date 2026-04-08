@@ -1,0 +1,284 @@
+깃허브 플젝으로 개인 정리했음
+https://github.com/solgae82/sc_tensorflow_py
+
+이 곳에는 요약 코드를 올려놓는다
+
+머신러닝 지도학습의 예제이다.
+
+	- 보스톤 집값 예제 : 회귀 모델
+	- iris 꽃 품종 예제 : 분류 모델
+
+-------------------------------------------------
+
+#################################################
+보스톤 집값 예측 (딥러닝 코드)
+#################################################
+
+------------------- 보스톤 집값, 자료 (boston.csv)
+
+	"crim","zn","indus","chas","nox","rm","age","dis","rad","tax","ptratio","b","lstat","medv"
+	0.00632,18,2.31,"0",0.538,6.575,65.2,4.09,1,296,15.3,396.9,4.98,24
+	0.02731,0,7.07,"0",0.469,6.421,78.9,4.9671,2,242,17.8,396.9,9.14,21.6
+	
+	.. 이런 csv 형식으로 되어있다
+
+------------------- 보스톤 집값, 딥러닝 (학습 코드)
+
+	import tensorflow as tf
+	import pandas as pd
+	import os
+
+	###############################
+	# 딥러닝 모델로 만들어본다 (학습 잘 되는 모델, 최종 개선)
+	###############################
+
+	# 예측결과가 숫자형태일때 지도학습의 회귀로 해결.
+	# 회귀 예측 활성화 함수(Activation): identity(x=y)를 쓰는데, 내부적으로 적용된다고 생각하면 된다.
+	# loss 는 0에 가까울수록 좋다 : 회귀: msc[Mean Squared Error,평균제곱근오차]
+
+	#과거의 데이터 준비
+	파일경로 = 'boston.csv'
+	데이터 = pd.read_csv(파일경로)
+	#print(데이터.head()) #구조 확인
+
+	#종속변수, 독립변수 설정
+	독립변수 = 데이터[["crim","zn","indus","chas","nox","rm","age","dis","rad","tax","ptratio","b","lstat"]]
+	종속변수 = 데이터[["medv"]]
+	# print(독립변수.shape, 종속변수.shape) #구조 확인
+
+	#학습 구성값들
+	model_file_name = 'models/boston_deep_final_model.keras' # 학습 모델 최종 저장 경로
+	model = None
+	_epochs = 1000 #에포크 횟수 설정
+	first_new = True #처음 모델 설정시 (True), 모델 재사용 (False)
+
+
+	# 모델 구조 만들기 설정 (학습된 모델이 있을때 , 첫학습일때) 
+	if os.path.exists(model_file_name):
+	    print('기존 딥러닝 모델을 로드합니다.')
+	    model = tf.keras.models.load_model(model_file_name)
+	    first_new = False # 재사용
+
+	else: 
+	    # 첫 (Depp Learning) 모델 설정
+	    print('딥러닝 모델이 존재하지 않습니다. 딥러닝 모델을 새로 만듭니다.')
+	    
+	    X = tf.keras.layers.Input(shape=[13])
+	    # 히든 레이어를 구성한다 (Deep Learning Layer)
+		# H = tf.keras.layers.Dense(10, activation='swish')(X) # 이전 방식
+	    
+	    # 개선한 Hidden Layers (3개층)
+	    H = tf.keras.layers.Dense(8)(X)
+	    H = tf.keras.layers.BatchNormalization()(H)
+	    H = tf.keras.layers.Activation('swish')(H)
+	    
+	    H = tf.keras.layers.Dense(8)(H)
+	    H = tf.keras.layers.BatchNormalization()(H)  
+	    H = tf.keras.layers.Activation('swish')(H)
+
+	    H = tf.keras.layers.Dense(8)(H)
+	    H = tf.keras.layers.BatchNormalization()(H)
+	    H = tf.keras.layers.Activation('swish')(H) 
+	    # 개선한 Hidden Layers end
+
+	    Y = tf.keras.layers.Dense(1)(H)
+	    model = tf.keras.models.Model(X,Y)
+	    model.compile(loss='mse')
+	    
+	    
+
+	# 학습 전 모델 구성 요약을 출력
+	# model.summary()
+
+	#모델 학습
+	model.fit(독립변수.to_numpy(), 종속변수.to_numpy(), epochs=_epochs)
+	model.save(model_file_name)
+	if first_new:
+	    print('처음 모델을 만들었습니다.')
+	else:
+	    print('학습된 모델을 다시 학습 시켰습니다.')
+
+	#모델 예측
+	예측값 = model.predict(독립변수.to_numpy()[0:5]) # 5개만 보기
+	print("예측값-------------")
+	print(예측값)
+
+	#정답 값 출력
+	print('정답값-------------')
+	print(종속변수[0:5])
+
+------------------- 보스톤 집값, (학습된) 모델로 예측 하기
+
+	import common as cm
+	import tensorflow as tf
+	import pandas as pd
+	import os
+
+	#보스톤 집값 모델 불러오기
+	model_file_name = 'models/boston_deep_final_model.keras'
+
+	model = tf.keras.models.load_model(model_file_name)
+
+	#평가할 데이터 셋팅
+	파일경로 = 'boston.csv'
+
+	데이터 = pd.read_csv(파일경로)
+	#print(데이터.head()) #구조 확인
+
+	#펑가할 독립컬럼 변수로 만들기 설정
+	독립평가변수 = 데이터[["crim","zn","indus","chas","nox","rm","age","dis","rad","tax","ptratio","b","lstat"]]
+
+	#모델 예측
+	예측값 = model.predict(독립평가변수.to_numpy()[:5]) # 5개만 보기
+	print("보스톤 집값-예측값(5개):")
+	print(예측값)
+
+	# 정답 값
+	종속평가변수 = 데이터[["medv"]]
+	print('정답값(5개):')
+	print(종속평가변수[:5])
+
+	#모델 가중치(weight) + 편향(bias)확인
+	print('---------보스톤 집값 (가중치, bias 확인) -----------')
+	ws = model.get_weights()
+	print('가중치(weight)=>',ws[0])
+	print('편향(bias)=>',ws[1])
+
+#################################################
+iris 꽃 품종 예측 (딥러닝 코드)
+#################################################
+
+------------------- iris 꽃 품종, 자료 (iris.csv)
+
+	꽃잎길이,꽃잎폭,꽃받침길이,꽃받침폭,품종
+	5.1,3.5,1.4,0.2,setosa
+	7.0,3.2,4.7,1.4,versicolor
+	6.3,3.3,6.0,2.5,virginica
+
+	.. 이런 csv 형식으로 되어있다
+
+------------------- iris 꽃 품종, 딥러닝 (학습 코드)
+
+	import tensorflow as tf
+	import pandas as pd
+	import os
+
+	###############################
+	# 딥러닝 모델로 만들어본다 (학습 잘 되는 모델, 최종 개선)
+	###############################
+
+	# 예측결과가 숫자형태일때 지도학습의 회귀로 해결.
+	# 회귀 예측 활성화 함수(Activation): identity(x=y)를 쓰는데, 내부적으로 적용된다고 생각하면 된다.
+	# loss 는 0에 가까울수록 좋다 : 회귀: msc[Mean Squared Error,평균제곱근오차]
+
+	#과거의 데이터 준비
+	파일경로 = 'boston.csv'
+	데이터 = pd.read_csv(파일경로)
+	#print(데이터.head()) #구조 확인
+
+	#종속변수, 독립변수 설정
+	독립변수 = 데이터[["crim","zn","indus","chas","nox","rm","age","dis","rad","tax","ptratio","b","lstat"]]
+	종속변수 = 데이터[["medv"]]
+	# print(독립변수.shape, 종속변수.shape) #구조 확인
+
+	#학습 구성값들
+	model_file_name = 'models/boston_deep_final_model.keras' # 학습 모델 최종 저장 경로
+	model = None
+	_epochs = 1000 #에포크 횟수 설정
+	first_new = True #처음 모델 설정시 (True), 모델 재사용 (False)
+
+
+	# 모델 구조 만들기 설정 (학습된 모델이 있을때 , 첫학습일때) 
+	if os.path.exists(model_file_name):
+	    print('기존 딥러닝 모델을 로드합니다.')
+	    model = tf.keras.models.load_model(model_file_name)
+	    first_new = False # 재사용
+
+	else: 
+	    # 첫 (Depp Learning) 모델 설정
+	    print('딥러닝 모델이 존재하지 않습니다. 딥러닝 모델을 새로 만듭니다.')
+	    
+	    X = tf.keras.layers.Input(shape=[13])
+	    # 히든 레이어를 구성한다 (Deep Learning Layer)
+		# H = tf.keras.layers.Dense(10, activation='swish')(X) # 이전 방식
+	    
+	    # 개선한 Hidden Layers (3개층)
+	    H = tf.keras.layers.Dense(8)(X)
+	    H = tf.keras.layers.BatchNormalization()(H)
+	    H = tf.keras.layers.Activation('swish')(H)
+	    
+	    H = tf.keras.layers.Dense(8)(H)
+	    H = tf.keras.layers.BatchNormalization()(H)  
+	    H = tf.keras.layers.Activation('swish')(H)
+
+	    H = tf.keras.layers.Dense(8)(H)
+	    H = tf.keras.layers.BatchNormalization()(H)
+	    H = tf.keras.layers.Activation('swish')(H) 
+	    # 개선한 Hidden Layers end
+
+	    Y = tf.keras.layers.Dense(1)(H)
+	    model = tf.keras.models.Model(X,Y)
+	    model.compile(loss='mse')
+	    
+	    
+
+	# 학습 전 모델 구성 요약을 출력
+	# model.summary()
+
+	#모델 학습
+	model.fit(독립변수.to_numpy(), 종속변수.to_numpy(), epochs=_epochs)
+	model.save(model_file_name)
+	if first_new:
+	    print('처음 모델을 만들었습니다.')
+	else:
+	    print('학습된 모델을 다시 학습 시켰습니다.')
+
+	#모델 예측
+	예측값 = model.predict(독립변수.to_numpy()[0:5]) # 5개만 보기
+	print("예측값-------------")
+	print(예측값)
+
+	#정답 값 출력
+	print('정답값-------------')
+	print(종속변수[0:5])
+
+------------------- iris 꽃 품종, (학습된) 모델로 예측 하기
+
+	import common as cm
+	import tensorflow as tf
+	import pandas as pd
+	import os
+
+	
+	#아이리스 꽃 품종 모델 불러오기
+	model_file_name = 'models/iris_deep_final_model.keras' # 불러올 모델
+
+	model = tf.keras.models.load_model(model_file_name)
+
+	#평가할 데이터 셋팅
+	파일경로 = 'iris.csv'
+
+	데이터 = pd.read_csv(파일경로)
+	#print(데이터.head()) #구조 확인
+	인코딩 = pd.get_dummies(데이터) #분류 문제 데이터 인코딩
+
+	#펑가할 독립컬럼 변수로 만들기 설정
+	독립평가변수 = 인코딩[['꽃잎길이', '꽃잎폭', '꽃받침길이', '꽃받침폭']]
+	종속평가변수 = 인코딩[['품종_setosa', '품종_versicolor', '품종_virginica']]
+
+	#모델 예측
+	print("아이리스 꽃 품종-예측값(5개):")
+	예측값 = model.predict(독립평가변수.to_numpy()[-5:]) # 끝에서 5개만 보기
+	print(예측값)
+
+	print('-' * 10) # 구분선
+
+	print("아이리스 꽃 품종-비교값(5개):")
+	print(종속평가변수[-5:]) # 비교를 위해 출력
+
+	#모델 가중치(weight) + 편향(bias)확인
+	print('---------아이리스 꽃 품종 (가중치, bias 확인) -----------')
+	ws = model.get_weights()
+	print('가중치(weight)=>',ws[0])
+	print('편향(bias)=>',ws[1])
+

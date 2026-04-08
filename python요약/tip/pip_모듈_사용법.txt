@@ -1,0 +1,25 @@
+
+# pip 업그레이드
+python -m pip install --upgrade pip
+
+# pandas 라이브러리 설치
+pip install pandas
+
+#텍스트 파일로 모든 모듈 목록 텍스트 파일로 저장
+pip freeze > requirements.txt 
+	# 설치한 라이브러리 버전
+	numpy==2.4.4
+	pandas==3.0.2
+	python-dateutil==2.9.0.post0
+	six==1.17.0
+	tzdata==2026.1
+
+
+# requirements.txt 에 기록된 전체 모듈 목록 [설치]
+pip install -r requirements.txt
+
+# requirements.txt 에 기록된 전체 모듈 목록 [삭제]
+pip uninstall -r requirements.txt -y 
+
+# 삭제 확인
+pip list

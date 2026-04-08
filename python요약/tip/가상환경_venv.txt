@@ -13,7 +13,9 @@ vscode 설정 기준이다.
 	
 3. vscode 터미널 열어서(powershell)
 
+		
 	py -3.12 -m venv venv
+	
 	
 	#프로젝트 폴더에 venv 폴더가 생성되었는지 확인
 	
@@ -63,5 +65,15 @@ vscode 설정 기준이다.
 	
 	ctrl + shift + p
 	(Python 3.12 (64-bit) C:\python\3.12.4\python.exe) #선택
+	
+9. requirements.txt
+
+	#텍스트 파일로 모든 모듈 목록 텍스트 파일로 저장
+	pip freeze > requirements.txt
+	
+	Django==4.2.7
+	requests==2.31.0
+	numpy==1.24.3
+	pandas==2.0.3
 	
 	
