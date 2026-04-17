@@ -22,9 +22,18 @@
 	
 	pg_ctl : /usr/local/postgresql-14.12/bin 에 있는 '시작/종료/재시작' 프로그램
 		-D : 데이터베이스 디렉토리 지정
-	기동시 -D 옵션 : 지정하지 않으면, 환경변수 $PGDATA 값이 자동 지정된다.
-		ps -ef 시 
-	
+			(기동시 -D 옵션 : 지정하지 않으면, 환경변수 $PGDATA 값이 자동 지정된다.)
+			
+			ps -ef | grep postgresql (프로세스 확인)			
+			
+			postgres    7220       1  0 17:22 ? /usr/local/postgresql-14.12/bin/postgres
+			# -D 옵션 지정했을 경우 출력
+			postgres    7220       1  0 17:25 ? 
+			/usr/local/postgresql-14.12/bin/postgres -D /usr/local/postgresql-14.12/data/lnxi
+			
+			(클러스터를 두개 이상 올릴때는 명시적으로 클러스터 디렉토리를 지정해주는게 프로세스 확인에 좋다)
+			
+		-l : 로그파일 지정
 	
 	#시작 
 	pg_ctl start -D /usr/local/postgresql-14.12/data

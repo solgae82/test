@@ -55,14 +55,59 @@
 	#현재 사용자가 'postgres' 이고, '--pwprompt' 설정으로 암호를 설정하면 수퍼유저 암호가 설정된 것이다
 
 
-6. 인스턴스 기동/정지
+6. postgresql 원격 설정
+	
+	cd $PGDATA
+	
+	# postgresql.conf 설정 추가
+	echo "listen_addresses='*'" >> postgresql.conf # 모든 원격 접속 가능하게 추가 설정
+	
+	#  pg_hba.conf 설정 추가 
+	vi pg_hba.conf
+	
+		# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+		# "local" is for Unix domain socket connections only
+		local   all             all                                     scram-sha-256
+		# IPv4 local connections:
+		host    all             all             127.0.0.1/32            scram-sha-256
+		host    all             all             192.168.111.0/24        scram-sha-256 #추가
+		host    all             all             192.168.0.0/24          scram-sha-256 #추가
+
+	# 설정 파일 반영되게 리로드 
+	
+	cd $PG_HOME
+	cd bin
+	
+	pg_ctl reload # 리로드 
+	
+7. 인스턴스 기동/정지
 	#기동
 	pg_ctl -D /usr/local/postgresql-14.12/data/svc01 -l logfile start
+	
+	#환경변수 PGDATA 를 설정했다면
+	pg_ctl -l logfile start
+	
+	#기동 프로세스 확인 (-D 옵션을 붙여주면 찾기 편하다)
+	ps -ef | grep postgresql
+	postgres    7220       1  0 17:22 ?        
+	00:00:00 /usr/local/postgresql-14.12/bin/postgres -D /usr/local/postgresql-14.12/data/svc01
+
 
 	#정지
 	pg_ctl -D /usr/local/postgresql-14.12/data/svc01 stop
-
-7. 서비스 등록 및 시작
+	
+	#환경변수 PGDATA 를 설정했다면
+	pg_ctl stop
+	
+8. 방화벽 오픈
+	su - # root로 오픈해야함
+	firewall-cmd --zone=public --add-port=5432/tcp --permanent
+	firewall-cmd --reload
+		
+	firewall-cmd --list-ports # 오픈 포트 확인
+	
+9. 서비스 등록 및 시작
 	systemd 서비스 파일을 생성하여 등록합니다.
 	
 	vi /etc/systemd/system/postgresql-14.12.service

@@ -1,0 +1,63 @@
+------------------- 도커 데스크탑 wsl-ubuntu 설치
+
+기본 docker.desktop 설치히면 Docker가 직접 구성한 가벼운 6.x 대 커널 기반의 리눅스가 기본 작동됨.
+기본 리눅스가 아닌 명시적 버전의 리눅스(우분투) 로 변경하고 싶다면? 아래처럼 한다.
+
+1. wsl버전을 확인해서 2버전이 아니면 업그레이드 한 후 도커 데스크탑 설정에서 활성화
+2. powershell(관리자권한)에서 최신 우분투 배포판을 wsl 명령어로 설치
+3. 도커 데스크탑 설정에서 wsl-우분투 배포판 연결 활성화
+
+
+# wsl 버전 확인
+	(powershell 관리자 모드 실행)
+
+	wsl 버전 확인해서 2버전이 아니면 업그레이드
+		wsl -l -v  # 확인
+		
+도커 데스크탑에서 wsl2 활성화 확인
+	docker.desktop>설정>General>
+		(v) Use the WSL 2 based engine #체크 확인
+
+
+# 설치할 배포판 목록 검색 
+
+	(powershell 관리자 모드 실행) 
+	
+	wsl --list --online # MS 온라인으로 설치할 수 있는 버전 목록 출력
+
+	다음은 설치할 수 있는 유효한 배포 목록입니다.
+	'wsl.exe --install <Distro>'을 사용하여 설치합니다.
+
+	NAME                            FRIENDLY NAME
+	Ubuntu                          Ubuntu
+	Ubuntu-24.04                    Ubuntu 24.04 LTS
+	..
+	
+# 배포판 선택 설치
+
+	#선택 버전 명시해서 설치
+	wsl install Ubuntu-24.04 
+
+	#설치 후 생성할 기본 사용자와 패스워드 물어봄. 입력 생성 후 계속 설치된 Ubuntu-24.04 실행 상태
+	
+	# 우분투 최신 상태 만들기
+	sudo apt update
+	sudo apt upgrade 
+	
+	exit
+	
+	#다시 설치된 ubutu 들어가고 싶다면
+	wsl -d Ubuntu-24.04
+	
+	
+# 배포판 wsl 명령어로 설치 후 docker.desktop  wsl 설정 메뉴에서 해당 설치 배포판을 연결 활성화 시켜준다
+
+	docker.desktop>설정>Resources>WSL integration탭>
+		(v) Enable integration with my default WSL distro  #체크
+		
+		Enable integration with additional distros:
+
+			(토글활성화) Ubuntu-24.04 
+		
+		Apply 버튼 적용
+	
