@@ -1,0 +1,26 @@
+------------------- Dbeavor에서 백업/복구 버전 맞추고 작업하기
+
+#pg_restore, pg_dump* 등 버전 추가, 선택
+	프로젝트 우클릭>Connection settings>Main탭>Advanced>Local Client:>선택박스>열기...>홈추가 버튼
+		다운로드 받은 postgresql-17 경로\bin 을 추가해 준다
+	
+	원하는 백업/복구 버전을 여기서 선택 후 백업/복구 작업을 시작한다
+	
+# 백업
+	데이터베이스선택 우클릭>도구>백업>Choose objects to export>Objects>public 체크>Next
+		Backup settings>
+			Format: Tar
+			Encoding: UTF-8
+			Output>Output folder: C:\dev\backup  (백업 파일 폴더 경로)
+			File name pattern: dump-${database}-${timestamp}-14.tar (뒤에 14버전으로 백업했음을 표시했다)
+			
+		Start
+		
+# 복구
+	데이터베이스선택 우클릭>도구>복원>
+		Restore settings>
+			Format: Tar
+			
+			input>Backup file: C:\dev\dump-lnxi-202604151414-14.tar  (백업 파일 폴더 경로)
+			
+		Start

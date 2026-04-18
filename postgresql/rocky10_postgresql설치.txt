@@ -34,7 +34,7 @@
 	..
 	export PG_HOME=/usr/local/postgresql-14.12
 	export PATH=$PG_HOME/bin:$PATH
-	export PGDATA=$PG_HOME/data
+	export PGDATA=$PG_HOME/data/svc01
 	export PGLIB=$PG_HOME/lib
 	:wq
 	
@@ -52,17 +52,40 @@
 	--data-checksums \
 	--pwprompt
 	
-	#현재 사용자가 'postgres' 이고, '--pwprompt' 설정으로 암호를 설정하면 수퍼유저 암호가 설정된 것이다
+	------ 
+	# '--pwprompt' 설정으로 수퍼유저 암호를 설정하는 옵션이다
+	
+	initdb를 실행한 운영체제 (리눅스)사용자가 'postgres' 를 재사용해서  
+	같은 계정 이름의 postgresql 계정 'postgres' 계정이 생성되고 이 계정이 superuser가 된다.
+	수퍼유저 계정은 그렇게 정해지고, 그 다음 superuser 암호를 설정하게 된다.
+	
+	그래서 initdb 실행하는 운영체제 사용자를 먼저 만든 것이다.(postgres)
 
+	위 initdb를 실행하면 아래와 같이 나올 것이다.
+	------
+	
+	initdb .. #실행
+	
+	이 데이터베이스 시스템에서 만들어지는 파일들은 그 소유주가 "postgres" id로
+	지정될 것입니다. 또한 이 사용자는 서버 프로세스의 소유주가 됩니다.
+
+	데이터베이스 클러스터는 "C" 로케일으로 초기화될 것입니다.
+	기본 텍스트 검색 구성이 "english"(으)로 설정됩니다.
+
+	자료 페이지 체크섬 기능 사용함.
+
+	새 superuser 암호를 입력하십시오:
+
+	암호 확인:
 
 6. postgresql 원격 설정
 	
-	cd $PGDATA
+	cd $PGDATA #/usr/local/postgresql-14.12/data/svc01
 	
 	# postgresql.conf 설정 추가
 	echo "listen_addresses='*'" >> postgresql.conf # 모든 원격 접속 가능하게 추가 설정
 	
-	#  pg_hba.conf 설정 추가 
+	# pg_hba.conf 설정 추가 
 	vi pg_hba.conf
 	
 		# TYPE  DATABASE        USER            ADDRESS                 METHOD
