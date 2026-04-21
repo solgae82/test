@@ -1,0 +1,36 @@
+# 데이터베이스 클러스터 생성 초기화	 
+	initdb --locale='C' \
+	--encoding='UTF8' \
+	--pgdata='/usr/local/postgresql-14.12/data/svc01' \
+	--waldir='/usr/local/postgresql-14.12/wal/svc01' \
+	--auth='scram-sha-256' \
+	--data-checksums \
+	--pwprompt
+	
+	------ 
+	# '--pwprompt' 설정으로 수퍼유저 암호를 설정하는 옵션이다
+	
+	initdb를 실행한 운영체제 (리눅스)사용자가 'postgres' 를 재사용해서  
+	같은 계정 이름의 postgresql 계정 'postgres' 계정이 생성되고 이 계정이 superuser가 된다.
+	수퍼유저 계정은 그렇게 정해지고, 그 다음 superuser 암호를 설정하게 된다.
+	
+	그래서 initdb 실행하는 운영체제 사용자를 먼저 만든 것이다.(postgres)
+
+	위 initdb를 실행하면 아래와 같이 나올 것이다.
+	------
+	
+	initdb .. #실행
+	
+		이 데이터베이스 시스템에서 만들어지는 파일들은 그 소유주가 "postgres" id로
+		지정될 것입니다. 또한 이 사용자는 서버 프로세스의 소유주가 됩니다.
+
+		데이터베이스 클러스터는 "C" 로케일으로 초기화될 것입니다.
+		기본 텍스트 검색 구성이 "english"(으)로 설정됩니다.
+
+		자료 페이지 체크섬 기능 사용함.
+
+		새 superuser 암호를 입력하십시오:
+
+		암호 확인:
+	#암호설정 후
+		: postgres 계정명의 postgres 클러스터 + 데이터베이스 도 생성된다

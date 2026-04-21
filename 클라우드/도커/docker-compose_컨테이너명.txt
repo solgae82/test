@@ -1,0 +1,46 @@
+
+docker-compose.yml 의 정해진 이름으로 컨테이너가 생성되지 않아서 궁금했다.
+찾아보니, 실행하는 위치의 '디렉토리명'을 따라 컨테이너 이름을 짓는다고 한다(골까네)
+
+-------------------
+
+현재 위치에서 터미널 열고
+	cd C:\lnxiApp\docker
+	
+	# -d 옵션은 백그라운드 실행
+	
+	docker-compose up -d 
+	
+	
+하면 postgis/postgis 이미지가 등록되고,
+'docker' 라는 이름의 컨테이너가 생성 실행된다.
+
+왜 이름이 컨테이너 이름이 'docker'인가?
+	: 이유는 실행하는 디렉토리명이 'docker'이기 때문이다.
+
+디렉토리명을 'postgres'로 했다면
+
+	C:\lnxiApp\postgres
+	
+	docker-compose up -d 
+
+컨테이너명이 'postgres' 로 생성 실행될 것이다.
+
+
+다시 이름 바꿔서 실행하고 싶다면, 
+컴포즈를 삭제하고 다시 실행해야 한다 
+아래와 같이, 컴포즈 down 후 디렉토리명 바꾸고 다시 컴포즈 up
+	
+	docker-compose down
+	
+	# 디렉토리명 바꾸고 
+	
+	docker-compose up -d
+	
+------------------- 컨테이너명 명시해서 컴포즈 실행하기 (-p 컨테이너명)
+
+	docker-compose -p postgis up -d
+	
+	# postgis 이름의 컨테이너명이 생성될 것이다.
+	
+	

@@ -11,8 +11,9 @@
 	vi .bash_profile
 	export PG_HOME=/usr/local/postgresql-14.12
 	export PATH=$PG_HOME/bin:$PATH
-	export PGDATA=$PG_HOME/data
+	export PGDATA=$PG_HOME/data/lnxi
 	export PGLIB=$PG_HOME/lib
+	export PGLOGS=$PGDATA/logs
 	:wq
 	
 	source .bash_profile
@@ -24,27 +25,31 @@
 		-D : 데이터베이스 디렉토리 지정
 			(기동시 -D 옵션 : 지정하지 않으면, 환경변수 $PGDATA 값이 자동 지정된다.)
 			
-			ps -ef | grep postgresql (프로세스 확인)			
-			
-			postgres    7220       1  0 17:22 ? /usr/local/postgresql-14.12/bin/postgres
-			# -D 옵션 지정했을 경우 출력
-			postgres    7220       1  0 17:25 ? 
-			/usr/local/postgresql-14.12/bin/postgres -D /usr/local/postgresql-14.12/data/lnxi
-			
-			(클러스터를 두개 이상 올릴때는 명시적으로 클러스터 디렉토리를 지정해주는게 프로세스 확인에 좋다)
-			
 		-l : 로그파일 지정
 	
 	#시작 
-	pg_ctl start -D /usr/local/postgresql-14.12/data
+	pg_ctl start -D $PGDATA -l $PGLOGS/logfile.log
 	
 	#종료(기본 - Fast): 
-	pg_ctl stop -D /usr/local/postgresql-14.12/data
+	pg_ctl stop -D $PGDATA
 	
 	#재시작: 
-	pg_ctl restart -D /usr/local/postgresql-14.12/data
+	pg_ctl restart -D $PGDATA -l $PGLOGS/logfile.log
 	
 
+	-----------
+	ps -ef | grep postgresql (프로세스 확인)			
+	
+	# -D 옵션 지정 안했을 경우 출력
+	postgres    7220       1  0 17:22 ? /usr/local/postgresql-14.12/bin/postgres
+	
+	# -D 옵션 지정했을 경우 출력
+	postgres    7220       1  0 17:25 ? 
+	/usr/local/postgresql-14.12/bin/postgres -D /usr/local/postgresql-14.12/data/lnxi
+	
+	(클러스터 두개 이상 실행할 경우를 대비해서 명시적으로 클러스터 디렉토리를 지정해주는게 프로세스 확인에 좋다)
+	
+	-----------
 종료 옵션
 	-w : 서버가 완전히 정지될 때까지 기다립니다.	
 	-m : 기본값은 'fast' 다
@@ -58,16 +63,16 @@
 			
 			
 	#실제 명령어
-	pg_ctl stop -D /usr/local/postgresql-14.12/data # -m 옵션 없으면 기본 -m fast
+	pg_ctl stop -D $PGDATA # -m 옵션 없으면 기본 -m fast
 	
-	pg_ctl stop -D /usr/local/postgresql-14.12/data -m smart -w
+	pg_ctl stop -D $PGDATA -m smart -w
 	
-	pg_ctl stop -D  /usr/local/postgresql-14.12/data -m immediate -w
+	pg_ctl stop -D  $PGDATA -m immediate -w
 	
 로그파일 지정해서 기동하기
 	
 	#디렉토리 만들기
-	mkdir /usr/local/postgresql-14.12/data/svc01/logs
+	mkdir /usr/local/postgresql-14.12/data/lnxi/logs
 	
-	pg_ctl -D /usr/local/postgresql-14.12/data/svc01 \
-	 -l /usr/local/postgresql-14.12/data/svc01/logs/logfile start
+	pg_ctl -D /usr/local/postgresql-14.12/data/lnxi \
+	 -l /usr/local/postgresql-14.12/data/lnxi/logs/logfile.log start
