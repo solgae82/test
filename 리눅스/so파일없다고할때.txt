@@ -101,7 +101,7 @@
 	LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
 	export LD_LIBRARY_PATH
 
-	저장 후 환경변수 갱신
+	#저장 후 환경변수 갱신
 	source ~/.bash_profile 
 
 	그런데 이런 방법은 그리 권장되는 것은 아닌듯 싶다. 
@@ -133,8 +133,8 @@
 	아니면 so 파일을 /usr/local/bin 과 같은 곳으로 이동시키거나 link 를 만들어 준다. 
 	
 	그런데 일반적으로 프로그램은 여러 개의 so 파일이 사용하게 되므로 
-	하나 옮기거나 링크 만들어도 또 다른 so 파일에서 동일한 에러가 날 수 있으므로 
-	ld.so.conf 파일에 그 경로를 집어 넣는 것이 좋아 보인다. 
+	하나 옮기거나 링크 만들어도 또 다른 so 파일에서 동일한 에러가 날 수 있으므로(파일 보단 경로로..)
+	ld.so.conf 파일에 그 경로를 집어 넣는 것이 좋아 보인다.(또는 ld.so.conf.d/추가경로.conf)  
 	혹은 LD_LIBRARY_PATH 에 그 경로를 덧붙이거나. 
 
 	그런데 locate 로 했는데 정말로 원하는 so 파일이 없는 것이라면, 

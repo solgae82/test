@@ -1,22 +1,95 @@
-ldconfig는 runtime때 여러 위치에 존재하는 shared object, 
-쉽게말해 동적 라이브러리를 연결해주는 dynamic linker를 설정하는 command이다. 
 
-여기서 runtime dynamic linker는 /lib/ld.so 이고, 
-어떤 shared object가 필요한지는 실행파일이 알려준다.
+[so파일없다고할때.txt] 파일과 연관있음.
+-------------------
+ld.so	
+	: (동적)공유 라이브러리(so ,shared object)를 연결해주는 
+		runtime dynamic linker
+	
+		/lib/ld.so
+	
+	이 링커는 /etc/ld.so.cache 캐시 파일을 읽어서 연결 반영한다
+	
+ldconfig
+	
+	ldconfig는 리눅스에서 공유 라이브러리(*.so)의 최신 버전을 인식하고, 
+	프로그램 실행 시 필요한 동적 링킹 캐시(/etc/ld.so.cache)를 업데이트하여 
+	라이브러리 로딩을 최적화하는 명령어입니다. 
+	
+	새로운 라이브러리 설치 또는 설정 변경(ld.so.conf) 후 필수적으로 실행해야 합니다. 
+		
+		# so 파일 설정 후 
+		$ ldconfig
+		
+	기능: 
+		1) /etc/ld.so.conf 및 /etc/ld.so.conf.d/ 
+			디렉토리의 설정 파일을 읽어 라이브러리 경로를 탐색합니다.
+	
+		2) 공유 라이브러리에 대한 심볼릭 링크를 업데이트하여 최신 버전을 가리키도록 합니다.
+	
+		3) 최종적으로 /etc/ld.so.cache 캐시 파일을 갱신하여 
+			링커(ld.so)가 빠른 속도로 라이브러리를 찾게 합니다.
+	
+	일반적으로 시스템 디렉토리 쓰기 권한이 필요하여 루트(root) 권한으로 실행해야 합니다. 
+	
+	주요 옵션:
+		ldconfig -v (Verbose): 현재 설정 중인 디렉토리와 라이브러리 링크를 상세히 출력.
+		ldconfig -p (Print): 현재 캐시에 저장된 라이브러리 목록을 출력
 
-ldd /bin/ls 을 실행해보면 ls가 동작하기위해 필요한 so들 목록이 나오고, 
-해당 so파일을 어느 경로에 있는걸 가져올껀지도 보여준다. 
+	
+ldd 
+	컴파일 한 프로그램에 link가 잘 되었는지 확인하기 위한 command.
 
-/etc/ld.so.conf는 이 경로를 지정해주는 설정파일.
+		ldd /bin/ls # ls 프로그램 link 목록 출력
+		
+------------------- so 파일 설정하기
 
-ldconfig: 자신이 사용중인 머신에 새로운 library를 설치한 후 머신이 인식하기 위한 dynamic linking table을 업데이트.
+so 파일 찾는 순서
+	1.system default
+	2.LD_LIBRARY_PATH 
+	3.하드코딩된 소스에 컴파일된 binary
+	
+1) system default
+	
+	일반적인 so 파일의 system default 경로는 
+		/usr/local/bin
+		/usr/bin
+	이다. 
+	이는 /etc/ld.so.conf 에 정의 되어 있다.
+			
+		$ more /etc/ld.so.conf
+		include ld.so.conf.d/*.conf
+		/usr/local/bin
+		/usr/bin
+	
+	/etc/ld.so.conf 파일에 탐색 경로를 추가할 수도 있겠으나, 
+	그 보다는 위 파일 내용에서 보여지듯이,
+	/etc/ld.so.conf.d/ 디렉토리에 *.conf 파일로 추가하는게 좋다
+	  
+		vi /etc/ld.so.conf.d/mysql-x64.so
+		/usr/lib/mysql	# mysql관련 *.so 경로
+		:wq
+		
+	# so 설정 적용
+		
+		ldconfig
+		
+2) LD_LIBRARY_PATH
+	: 많은 설명에서 자주 보던 os 환경변수 추가방법.(그러나 권장되지는 않는다)
+	: 이왕이면 해당 프로그램 실행할 user를 생성한 후 
+		생성한 user의 .bash_profile에 설정하는 법이 선호된다.
+		(해당 유저만 실행할 수 있게)
+		
+	vi ~/.bash_profile 
+	LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH
 
-ldd: 컴파일을 한 프로그램에 link가 잘 되었는지 확인하기 위한 command. 
---------------------------------------------------------------------
-
-# vi /etc/ld.so.conf
-/web/httpd/lib <-경로추가
-/web/httpd/modules <-경로추가
-:wq
-
-ldconfig  <-변경내용 적용(업데이트)
+	#저장 후 환경변수 갱신
+	source ~/.bash_profile
+	
+3) 하드코딩된 소스에 컴파일된 binary
+	뭐 특별히 설명할게 없지만, 
+	혹시 하드 코딩된 주소를 알아내게 되었다면, 
+	컴파일한 *.so 를 그 주소 경로의 '같은 이름.so' 로 위치시키는 수밖에 없다.
+	
+	
+		
