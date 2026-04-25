@@ -1,0 +1,171 @@
+톰캣 연동 설정할때 server.xml 에 Connector 태그 속성 중 
+allowedRequestAttributesPattern="ajp 용 requst 속성명" 옵션을 설정하는 경우 이야기다.
+
+아파치에서 톰캣으로 ajp 연동시 약속된 표준 속성명이 아닌 속성명(커스텀된 환경변수 속성명)을 전달할 경우에 설정한다
+
+	1. 아파치에서 커스텀 환경변수 속성인 'my_attr=abc'(http 형식 비유) 라는 
+		ajp 통신용 requst 속성명을 톰캣에서 전달 
+		
+		: http 아니고 ajp통신 프로토콜이므로 파라미터명이 아닌 '속성명'이라 칭함.
+		: 결국 http의 '파라미터명=값' 과 비슷한 request 요청
+		
+	2. 톰캣이 server.xml의 <Connector /> 의 allowedRequestAttributesPattern 확인
+		
+		allowedRequestAttributesPattern="my_attr"
+		
+	3. 등록 허락된 커스텀 request 속성명이므로 프로그램에서 호출 사용가능
+
+		request.getAttribute("my_attr"); // abc
+		
+	4. 만약 허용되지 않은 커스텀명 'my_attr2'를 보냈다면?
+	
+		request.getAttribute("my_attr2"); //null
+
+	# 이런 간단한 설정 뜻을 이해하기 위해 
+	구글 검색, 블로그 검색, 등등 공부하고 이해 안가서 헤메다가, 
+	결국은 제미나이에게서 제대로 된 답을 얻었다
+
+	(인터넷엔 이해하기 힘든 마구 꼬인 잘못된 정보들도 많다. 그 중 하나가 이것이다)
+	
+역사) 왜 이렇게 하나? (제미나이 답변)
+	2020년 이전의 톰캣은 아파치가 주는 모든 속성을 다 받아줬습니다. 
+	그런데 해커들이 이를 악용해 톰캣 내부의 민감한 파일(web.xml 등)을 읽어가는 취약점(Ghostcat)이 발견되었죠.
+	그래서 톰캣은 보안 강화를 위해 "우리가 미리 약속한 기본 정보 외에는, 
+	네가 명시적으로 '허용'한다고 패턴을 적어주지 않으면 일단 다 의심하고 버리겠다"는 전략을 취하게 된 것입니다.
+
+secretRequired="true"와 함께 사용: 
+	allowedRequestAttributesPattern은 톰캣 9.0.31 이상, 8.5.51 이상에서 
+	Ghostcat 보안 이슈(CVE-2020-1938) 해결을 위해 AJP 포트를 외부로 노출할 때 
+	secret 설정과 함께 필수적으로 설정하는 것이 좋습니다.
+	
+------------------- AJP 요청 속성들
+
+아파치(Apache)와 같은 프록시 서버에서 톰캣(Tomcat)으로 전달하는 AJP 요청 속성들은 크게 
+	
+	1) 기본 정보 (표준속성)
+	2) SSL 관련 정보 (표준속성)
+	3) 사용자가 직접 정의한 커스텀 속성 (allowedRequestAttributesPattern 등록 대상) 
+	
+정보로 나뉩니다. 
+
+기본정보, SSL 관련 정보는 약속된 표준 속성이므로  
+allowedRequestAttributesPattern 등록과 관계없이 사용가능.
+
+커스텀 속성만 톰캣의 
+server.xml > connector > allowedRequestAttributesPattern
+속성에 등록해야 프로그램 내부에서 전달된 속성명 사용가능.
+
+
+1. 기본 전달 속성 (표준속성, allowedRequestAttributesPattern 등록 불필요)
+
+	AJP 프로토콜 통신 시 별도 설정 없이도 전달되는 기본적인 표준 속성들. 
+	 
+	원격 정보: 클라이언트 IP(remote_addr), 호스트명(remote_host), 포트 번호(remote_port).
+	서버 정보: 서버 이름(server_name), 서버 포트(server_port).
+	요청 상세: HTTP 메서드(GET, POST 등), 요청 URI, 프로토콜 버전. 
+ 
+2. SSL/보안 관련 속성 (표준속성, allowedRequestAttributesPattern 등록 불필요)
+	
+	HTTPS 통신을 아파치에서 종료(SSL Termination)하고 톰캣으로 넘길 때 전달되는 표준 속성들. 
+	 
+	javax.servlet.request.cipher_suite: 사용된 암호화 스위트.
+	javax.servlet.request.key_size: 암호화 키 길이.
+	javax.servlet.request.ssl_session: SSL 세션 ID.
+	javax.servlet.request.X509Certificate: 클라이언트 인증서 정보.
+	
+	AJP_LOCAL_ADDR: AJP 요청을 수신한 서버(톰캣)의 IP
+	AJP_REMOTE_PORT: AJP 요청을 보낸 서버(아파치)의 소켓 포트
+	AJP_SSL_PROTOCOL: 아파치 서버에서 사용 중인 SSL/TLS 프로토콜 버전 
+	 
+3. 사용자 정의 속성 (커스텀 속성, allowedRequestAttributesPattern 속성에 등록해야함)
+
+	운영 환경에서 가장 주의 깊게 설정해야 하는 부분입니다. 
+	아파치 설정에서 명시적으로 추가하여 톰캣의 request.getAttribute()로 꺼내 쓰는 데이터들입니다. 
+
+	mod_jk 사용 시: 'JkEnvVar' 지시어를 사용하여 아파치의 환경 변수를 톰캣 속성으로 넘깁니다.
+	
+	mod_proxy_ajp 사용 시: 환경 변수 이름 앞에 AJP_ 접두사를 붙이면 자동으로 전달됩니다.
+	
+
+4. 주의사항
+
+	Ghostcat 방어: 
+		위와 같은 커스텀 속성들을 톰캣에서 정상적으로 받으려면, 
+		allowedRequestAttributesPattern 정규식에 해당 속성 이름들이 포함되어야 합니다.
+
+	예약된 속성: 
+		AJP_LOCAL_ADDR, AJP_REMOTE_PORT 등 AJP_로 시작하는 
+		특정 이름들은 시스템에서 예약하여 사용하므로 혼동에 주의해야 합니다. 
+
+------------------- 아파치 커스텀 요청 설정법
+
+	1) mod_jk 방식
+
+		전통적으로 많이 사용하는 방식으로, JkEnvVar 지시어를 사용합니다.
+
+		아파치 설정 (Apache httpd.conf 등):
+				
+			# 아파치 환경 변수 설정
+			SetEnv CLIENT_TYPE "MOBILE"
+
+			# 톰캣(AJP)으로 넘길 변수 지정
+			JkEnvVar CLIENT_TYPE
+
+		톰캣 설정: 
+			allowedRequestAttributesPattern="CLIENT_TYPE"
+			
+		프로그램 사용:
+			requst.getAttribute("CLIENT_TYPE"); // MOBILE
+			
+		특징: 
+			톰캣의 allowedRequestAttributesPattern 설정 시 
+			CLIENT_TYPE이라는 이름 그대로 인식되므로 이를 정규식에 포함해야 합니다.
+			
+	2) mod_proxy_ajp 방식
+	
+		아파치 기본 모듈을 활용하는 방식으로, AJP_ 접두사를 활용합니다.
+
+		아파치 설정(Apache httpd.conf 등):
+
+			# 변수명 앞에 반드시 AJP_를 붙임
+			SetEnv AJP_CLIENT_TYPE "MOBILE"
+			
+		톰캣 설정: 
+			allowedRequestAttributesPattern="AJP_CLIENT_TYPE"
+		
+		프로그램 사용:
+			requst.getAttribute("CLIENT_TYPE"); // MOBILE
+		
+		특징:
+			아파치에서 AJP_를 붙여서 보내면, 톰캣 내부에서는 AJP_가 제거된 CLIENT_TYPE으로 읽힙니다.
+			하지만 보안 패턴(allowedRequestAttributesPattern)을 체크할 때는 
+			AJP_가 포함된 AJP_CLIENT_TYPE을 기준으로 검사하므로 정규식 설정 시 주의가 필요합니다.
+
+		
+-------------------allowedRequestAttributesPattern 설정 예제
+
+정규식 표현을 쓴다.
+파이프(|) 문자를 사용하여 여러 패턴을 OR 조건으로 허용합니다.
+
+		
+	1. 설정 미지정: 기본값은 null로, 모든 커스텀 속성 차단.
+	
+	2. 가장 안전한 설정 (권장): 특정 속성만 허용하도록 정규식 작성.	
+		allowedRequestAttributesPattern="CLIENT_TYPE" 
+	
+	3. 특정 허용 설정  '|' 로 설정
+		allowedRequestAttributesPattern="MY_ADDR|MY_PORT|MY_SSL_PROTOCOL"
+		
+	4. 정규표현식 :
+		# 'CLIENT_' 로 시작하는 속성명 허용.
+		allowedRequestAttributesPattern="CLIENT_.*"
+		
+		# 알파벳, 숫자, 점(.), 하이픈(-)만 허용.				
+		allowedRequestAttributesPattern="[a-zA-Z0-9\.\-]+"
+			
+		# MY_ADDR|MY_PORT 와 'CERT' 로 시작하는 속성 허용
+		allowedRequestAttributesPattern="MY_ADDR|MY_PORT|CERT_.*"
+		
+	5. 모든 속성 허용(권장하지 않음 , [x])
+		allowedRequestAttributesPattern=".*"
+
