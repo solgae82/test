@@ -45,6 +45,7 @@ secretRequired="true"와 함께 사용:
 	1) 기본 정보 (표준속성)
 	2) SSL 관련 정보 (표준속성)
 	3) 사용자가 직접 정의한 커스텀 속성 (allowedRequestAttributesPattern 등록 대상) 
+		- 사용자 또는 일부 와스(WAS) 벤더에서만 사용하는 비표준 확장 속성
 	
 정보로 나뉩니다. 
 
@@ -149,6 +150,8 @@ server.xml > connector > allowedRequestAttributesPattern
 
 		
 	1. 설정 미지정: 기본값은 null로, 모든 커스텀 속성 차단.
+		null이라는 것은 "표준적인 정보(신분증) 외에 
+		네가 임의로 만든 듣도 보도 못한 속성(정규식에 없는 것)은 절대 안 받아주겠다"는 엄격한 보안 선언.
 	
 	2. 가장 안전한 설정 (권장): 특정 속성만 허용하도록 정규식 작성.	
 		allowedRequestAttributesPattern="CLIENT_TYPE" 
