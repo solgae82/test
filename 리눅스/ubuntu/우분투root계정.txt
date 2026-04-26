@@ -1,0 +1,39 @@
+우분투는 기본적으로 root 계정 로그인이 비활성화되어 있다.
+
+설치시 입력했던 계정이 'dong'이고 dong으로 로그인 했고,
+root 권한으로 명령하고 싶다면
+
+	sudo 명령어
+	
+로 root권한 명령을 실행하는게 기본이다.
+
+근데 귀찮단 말이지?
+완전 root로 바꿔서 하고 싶다면 아래와 같이 한다.
+	dong@ubuntu$ sudo su - root
+	[sudo] password for dong: #dong 패스워드를 넣는다
+	root@ubuntu:~#
+
+잘 생각해보면 우분투를 설치를 했지만 비밀번호 지정은 안했다. 
+비어 있는 상태로 root로 로그인 할 수 없게 되어 있다.
+
+그래서 
+	dong@ubuntu$ su - 
+
+하면 아무것도 작동 되지 않는다. 일부러 로그인 못하게 하는 것 같다.
+
+레드헷 리눅스처럼 하고 싶다면 아래와 같이 root 패스워드를 설정해준다.
+
+	dong@ubuntu$ sudo passwd root
+	[sudo] password for dong: #dong 패드워드
+	New password:	# root 패스워드
+	Retype new password:	# root 패스워드 재입력
+	passwd: password updated successfully
+	
+그리고 
+	
+	dong@ubuntu$ su -
+	Password:
+	root@ubuntu#
+	
+로그인 되는 것을 확인 할 수 있다.
+

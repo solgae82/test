@@ -1,10 +1,16 @@
 dpkg 는 레드헷 계열의 rpm과 비슷한 저수준 패키지 도구이다
 
-apt / apt-get: Debian/Ubuntu 계열에서 dpkg를 기반으로 동작
+apt(신) / apt-get(구): Debian/Ubuntu 계열에서 dpkg를 기반으로 동작
 	
-	apt는 apt-get과 apt-cache의 주요 기능을 통합하여 사용하기 편하게 만든 고수준 도구이며, 
-	apt-get은 스크립트 작성에 적합한 저수준 도구입니다.
-	
-	일반 사용자는 apt를 사용하는게 더 좋다
+apt는 apt-get과 apt-cache의 주요 기능을 통합하여 사용하기 편하게 만든 고수준 도구이며, 
+apt-get은 스크립트 작성에 적합한 저수준 도구입니다.
 
+일반 사용자는 apt를 사용하는게 더 좋다
 
+레드헷 계열과 비교하면 이런 느낌이다
+
+	레드헷	우분투
+	-------------
+	rpm	dpkg
+	yum	apt-get
+	dnf	apt

@@ -79,7 +79,7 @@ WSL 핵심 특징
 
 
 	wsl --install # 처음 설치할때 요걸로 , 윈도우 11에서 2버전으로 설치됨
-	# wsl --update # wsl 치된 버전이 1이라면 최신 버전으로 업그레이드
+	# wsl --update # wsl 설치된 버전이 1이라면 최신 버전으로 업그레이드
 	
 	# 이미 설치된 우분투 wsl 버전 2로 변경
 	wsl --set-version Ubuntu-24.04 2
@@ -87,17 +87,12 @@ WSL 핵심 특징
 	# 기본 wsl 버전 2로 설정
 	wsl --set-default-version 2
 	
-------------------- wsl 명령어 모음
-
-주요 WSL 명령어 및 동작:
-wsl: 기본 리눅스 배포판을 실행.
-wsl --install: WSL 및 기본 리눅스 배포판(Ubuntu) 설치.
-wsl -l -v (또는 --list --verbose): 설치된 배포판 목록과 WSL 버전(1 또는 2) 확인.
-wsl -d <배포판이름>: 특정 배포판으로 WSL 실행.
-wsl --shutdown: 실행 중인 모든 WSL 배포판 종료.
-wsl --update: WSL 커널 업데이트.
-wsl --unregister <배포판이름>: 설치된 배포판 삭제 및 데이터 초기화.
-wsl --help : 모든 사용 가능한 명령어 출력
-wsl --set-default-version 2 : 디폴트 wsl 버전 2 설정
-wsl --set-version Ubuntu-24.04 2 : 설치된 Ubuntu-24.04 wsl 버전 2로 변경
-wsl --shutdown : 실행중인 모드 배포판 끄기
+	# 기본 리눅스 버전 변경
+	wsl --set-default Ubuntu-24.04
+	
+	# 변경된 wsl 정보 확인 ( '*' 표시가 wsl 연결 기본 배포판)
+	wsl -l -v
+	  NAME              STATE           VERSION
+	* Ubuntu-24.04      Running         2
+	  docker-desktop    Running         2
+	
