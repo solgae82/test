@@ -15,3 +15,7 @@ wsl --shutdown : 실행중인 모드 배포판 끄기
 # 배포판 로그인
 wsl --user root # 기본 배포판 root로 로그인
 wsl -d Ubuntu24-04 --user root # Ubuntu24-04 지정해서 로그인
+
+# 배포판 삭제
+wsl --unregister Ubuntu-24.04
+
