@@ -1,0 +1,85 @@
+대부분의 현대적인 리눅스 배포판(Ubuntu, Fedora, Mint 등)에서는 
+설치 과정에서 생성한 초기 계정이 기본적으로 sudo 권한을 갖도록 설정됩니다. 
+
+따라서 별도의 visudo 설정을 하지 않아도 sudo 명령어를 바로 사용할 수 있는 경우가 많습니다. 
+
+하지만 배포판과 설치 옵션에 따라 예외가 존재합니다.
+
+1. 자동으로 sudo 사용이 가능한 경우
+
+	Ubuntu/Debian 계열: 
+		설치 시 생성한 계정은, root 패스워드를 따로 설정하지 않았다면, 
+		해당 계정은 자동으로 sudo 그룹에 포함되어 sudo 권한을 갖습니다.
+	
+	RHEL/CentOS/Rocky Linux: 
+		설치 시 생성한 계정은 보통 wheel 그룹에 포함되며, 
+		/etc/sudoers 설정 파일에서 
+		%wheel ALL=(ALL) ALL 주석이 해제되어 있어 
+		sudo 사용이 가능합니다.
+		(wheel 그룹이 sudo 그룹으로 설정되어 있다는 뜻)
+
+2. 별도 설정이 필요한 경우 (예외)
+
+	Debian(서버 설치 등): 
+		설치 시 root 패스워드를 별도로 입력했다면, 
+		초기 생성한 일반사용자 계정은 자동으로 sudoers에 등록되지 않을 수 있습니다.
+
+	Arch Linux: 
+		기본적으로 사용자에게 sudo 권한을 자동으로 부여하지 않으므로, 
+		설치 후 직접 wheel 그룹에 추가하거나 visudo로 등록해야 합니다.
+
+보안이 강화된 설정: 일부 인프라 설치 환경에서는 자동으로 sudo 권한을 주지 않습니다. 
+
+3. sudo 권한 확인 방법
+	
+	1) 터미널에서 다음 명령어를 입력하여 sudo 그룹에 속해 있는지 확인합니다.
+
+		# Rocky10에서 명령
+		$ groups
+		dong wheel
+
+	2) 결과에 sudo (Ubuntu) 또는 wheel (RedHat 계열)이 보인다면 
+	visudo 설정 없이 사용 가능합니다.
+
+	3) sudo [명령어] 입력 시 패스워드를 물어보고 정상 실행되면 권한이 있는 것입니다. 
+
+
+요약: 대부분 자동이지만, 설치 시 root 패스워드를 따로 설정했다면 확인이 필요할 수 있습니다.
+
+------------------- visudo 란 뭔가?
+
+/etc/sudoers 라는 파일이 sudo 권한을 설정하는 파일이다
+(etc/sudoers.d/ 디렉토리에 계정파일도 포함)
+
+vi로 직접 편집해도 되겠지만, 에러 나면 안되는 중요한 파일이라서  
+vi와 유사한 visudo 라는 별로의 명령어로 편집하게 해서 안전하게 편집할 수 있다
+
+	용도: /etc/sudoers 파일을 안전하게 수정 (문법 오류 검사 기능).
+
+	실행: 
+		# root나  sudo권한 있는 계정만 편집 가능
+		[root@web-server1 ~]# visudo
+		또는
+		[dong@web-server1 ~]$ sudo visudo 
+
+vi 와 사용법은 같다
+편집시 문법 오류가 나면 저장 되지 않는다.
+
+(예제1)
+	
+	$ sudo visudo
+	# tomcat 계정 sudo권한 부여 추가
+	tomcat ALL=(ALL:ALL) ALL
+	:wq
+
+	# 수정 저장 후 tomcat 계정으로 sudo 명령 가능!
+(예제2)
+	#계정파일로 등록 (계정명으로 파일 생성)
+	$ sudo visudo -f /etc/sudoers.d/tomcat2
+	tomcat2 ALL=(ALL:ALL) ALL
+	:wq
+	
+	# 계정파일 생성 편집 저장 후 tomcat2 계정으로 sudo 명령 가능!
+
+
+	

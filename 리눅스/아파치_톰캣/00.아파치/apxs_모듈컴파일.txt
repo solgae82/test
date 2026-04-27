@@ -1,3 +1,7 @@
+
+아파치 설치하면
+아파치홈/bin/ 디렉토리에 'apxs' 라는 프로그램이 있다
+
 apxs (APache eXtenSion)는 아파치 HTTP 서버의 확장 모듈을 컴파일하고 설치하는 도구로, 
 DSO(Dynamic Shared Object)를 지원하는 아파치 환경에서 
 모듈을 동적으로 로딩하여 사용할 수 있게 합니다. 
@@ -9,10 +13,10 @@ DSO(Dynamic Shared Object)를 지원하는 아파치 환경에서
 	
 	apxs -i -a -c mod_sample.c 
 	
-위 명령어를 사용하여 모듈을 
+위 명령어를 사용하여 모듈 소스를 컴파일 및 설치  
 	-c : 컴파일 
 	-i : 설치 , 아파치홈/modules/mod_sample.so
-	-a : httpd.conf에 LoadModule 지시어를 자동으로 추가
+	-a : httpd.conf 파일에 LoadModule 지시어를 자동으로 추가
 	
 컴파일 단계: 
 	소스 코드(.c)를 아파치 모듈(.so)로 변환하는 과정으로, 
