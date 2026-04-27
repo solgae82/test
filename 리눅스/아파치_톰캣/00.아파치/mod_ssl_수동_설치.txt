@@ -1,0 +1,130 @@
+Apache의 mod_ssl.so 모듈을 DSO(Dynamic Shared Object, 동적 공유 객체) 방식으로 설치하면, 
+아파치를 재컴파일하거나 재설치하지 않고도 모듈만 컴파일하여 필요할 때 
+LoadModule로 로드할 수 있어 유지보수가 매우 효율적입니다. 
+
+예를 들어 웹서버 운영 중 SSL 기능이 필요해졌을 때 아파치 재컴파일 없이 
+모듈만 추가/로드하여 SSL 설정을 적용할 수 있습니다. 
+
+아파치홈/modules 디렉토리의 mod_so 모듈:
+	아피치 시작 또는 재시작할때 DSO 모듈을 동적으로 로딩하는 핵심 모듈
+	
+(DSO) mod_ssl.so 설치하는 2기지 방식이 있다
+	
+	1) 아파치 컴파일 설치시 추가 옵션으로 모든 모듈들 설치해 놓기
+	2) 필요할때 apxs라는 프로그램을 이용해서 수동 컴파일 후 설치 
+
+다음은 ssl 모듈 설치 , 설정 적용하는 법을 2가지 방식으로 살펴본다.
+컴파일 및 모듈 설치 부분만 2가지 방식을 나눠서 설명하고,
+ssl 설정 적용은 2가지 모두에 동일하다.
+
+-------------------
+
+ssl 사전 필요 도구 설치
+	
+	# CentOS/RHEL
+	yum install -y openssl-devel
+
+	# Ubuntu/Debian
+	apt-get install -y libssl-dev
+
+
+방식 1) 아파치 컴파일 설치시 추가 옵션으로 모든 모듈들 설치해 놓기
+
+	1. 아파치 컴파일 설치 시에 옵션으로 모듈 컴파일 
+		
+		아파치 컴파일 설치 시 
+		--enable-ssl=shared 또는 
+		--enable-mods-shared=all 옵션을 사용하여 
+		mod_ssl.so 파일을 생성합니다.
+		
+		--enable-mods-shared 선택 옵션:
+		
+			all: 아파치에서 제공하는 모든 모듈을 동적 모듈로 빌드합니다. 
+				일반적으로 가장 많이 사용되는 설정 방식입니다.
+			
+			most: 대부분의 모듈을 동적 모듈로 빌드합니다. 
+				필수적인 모듈들을 포함하여 거의 모든 기능을 지원합니다.
+			
+			few: 가장 필수적인 소수의 모듈만 동적으로 빌드합니다.
+			
+			'mod1 mod2': 
+				특정 모듈(예: rewrite, so)만 선택하여 동적으로 빌드합니다. 
+ 
+	2. 아파치홈/conf/httpd.conf 파일 모듈 활성화(입력 또는 주석해제) 
+		LoadModule ssl_module modules/mod_ssl.so
+		
+	※ 이렇게 아파치 설치시 옵션으로 미리 컴파일 추가 설치해 놓으면 
+	필요시 활성화 설정만 하면 된다(이미 컴파일 되어 설치된 상태)
+
+방식 2) 필요할때 apxs라는 프로그램을 이용해서 수동 컴파일 후 설치
+		
+	(소스 디렉토리) : /usr/local/src/httpd-2.4.66
+	
+	(설치 아파치홈) : /usr/local/src/apache-2.4.66
+	
+	mod_ssl.c 소스는 어디에?
+		: 소스 컴파일 설치했다면 그 소스/modules/ssl 디렉토리에 있다
+		: 없다면 톰캣사이트에 가서 소스 다운로드 받아야한다.
+	
+	apxs 는 어디에?
+		: 설치한 아파치홈/bin/apxs  	
+		
+	(빠른 요약)
+		mod_ssl.c 가 있는 (소스 디렉토리)/modules/ssl 디렉토리로 이동해서   
+		설치한 /usr/local/apache-2.4.66/bin/apxs 도구로 컴파일.		
+		
+		
+	1. 컴파일 및 모듈 설치 , 활성화
+	
+		# mod_ssql.c 소스 디렉토리로 이동
+		
+			cd /usr/local/src/httpd-2.4.66/modules/ssl 
+		
+		# 아파치홈/bin/apxs 를 이용해서 
+		# mod_ssql.c 컴파일(-c) 및 모듈배치 (-i) + 자동 구성파일 추가 (-a) 
+		
+			/usr/local/apache-2.4.66/bin/apxs -i -a -c mod_ssl.c
+		
+		-----------------------------------------
+		# 만일 컴파일만 하고 설치 및 httpd.conf 설정 추가를 수동으로 할거면 
+		# 아래와 같이 직접
+			
+			# 모듈 파일 복사
+			cp ./mod_ssl.so /usr/local/apache-2.4.66/modules/
+				
+			# 아파치홈/conf/httpd.conf 에 설정 추가
+			LoadModule ssl_module modules/mod_ssl.so
+		-----------------------------------------
+	
+------------------- 모듈 설치 후 SSL 설정
+
+1. httpd.conf 의 ssl 설정 파일 주석 해제	
+	
+	Include conf/extra/httpd-ssl.conf
+	
+2. httpd-ssl.conf 설정
+
+	<VirtualHost _default_:443>
+	    DocumentRoot "/home/web" # 웹 사이트 경로
+	    ServerName www.example.com:443    # 도메인 설정
+
+	    SSLEngine on
+	    SSLCertificateFile "ServerRoot기준상대경로가능/conf/ssl/web/certificate.crt"      # 인증서 파일
+	    SSLCertificateKeyFile "ServerRoot기준상대경로가능/conf/ssl/web/private.key"      # 개인키 파일
+	    SSLCertificateChainFile "ServerRoot기준상대경로가능/conf/ssl/web/ca-bundle.crt" # 체인 인증서(필요시)
+	</VirtualHost>
+
+3. 설정구문 검사
+	/usr/local/apache2/bin/apachectl configtest
+
+4. 서비스 재시작: 
+	# 아파치 서버 재시작하여 모듈을 적용. 
+	/usr/local/apache-2.4.66/bin/apachectl -k restart
+	
+5. 모듈 로드 확인
+	
+	/usr/local/apache2/bin/apachectl -M | grep ssl
+	
+	ssl_module (shared) # 로드 확인
+
+
