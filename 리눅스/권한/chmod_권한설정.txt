@@ -1,0 +1,48 @@
+
+	
+# 출력 의미 보기
+ls -alh
+-rwxrw-r--.  2 root root 4.0K Mar 22  2014 aa.txt
+	     
+	(권한영역)
+	-: 파일이며
+	rwx: [파일소유자:읽기,쓰기,실행]
+	rw-: [그룹:읽기,쓰기,-]
+	r--: [other:읽기,-,-]
+	'.': SELinux 보안 컨텍스트(권한표시_마지막문자.txt 참조)
+	-----------
+	2		: 링크수
+	root		: 소유자
+	root		: 소유그룹
+	4.0K		: 용량
+	Mar 22 2014	: 2014.03.22 최종 수정일
+	aa.txt		: 파일명
+
+-------------------맨 처음 문자 의미
+
+-:파일
+d:디렉토리
+b:블록 디바이스
+c:문자 디바이스
+l:링크
+
+------------------- 권한계산
+
+r[4]w[2]x[1] = 7
+r[4]w[2]-[0] = 6
+r[4]-[0]-[0] = 4
+
+-------------------
+
+$ chmod 776 aa.txt	#허가권 변경하기
+
+$ ls -alh
+-rwxrwxrw-.  2 root root 4.0K Mar 22  2014 aa.txt
+
+또는
+
+chomd 777 aa.txt	: -rwxrwxrwx
+chmod u-rwx aa.txt	: ----rwxrwx
+chmod g+rw-x aa.txt	: ----rw-rwx
+chmod o+r-wx aa.txt	: ----rw-r--
+
