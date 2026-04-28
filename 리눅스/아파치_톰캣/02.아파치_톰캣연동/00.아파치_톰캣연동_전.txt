@@ -1,9 +1,10 @@
-연동 순서
+연동 순서 (Rocky 10기준)
+
 	1.아파치 설치
 		apr
 		apr-util
 		apr-iconv
-		pcre2 
+		pcre2 #Rocky 10엔 이게 필요
 
 		등 사전 설치해서 컴파일시 사용
 

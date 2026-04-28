@@ -94,27 +94,13 @@ Rocky 10 리눅스는 기본 모듈 중 pcre2를 써야한다!
 	--with-pcre2=/usr/local/pcre2-10.47/bin/pcre2-config \
 	--with-mpm=event
 
-	# enable-mpms-shared=all, with-mpm=event 꼭 지정해라. 고성능으로 톰캣 연동하려면..
+	# enable-mpms-shared=all, with-mpm=event 꼭 지정해라. 
+	# (고성능으로 톰캣 연동하려면..)
 	
 	make && make install
 	
 	ls /usr/local # apache2.4.66 디렉토리 생성되었는지 확인 
-	
-	===================
-	아파치 소스 컴파일 시 SSL(--enable-ssl) 설정을 빼먹었다면 
-	기본적으로 재컴파일하는 것이 가장 확실하고 권장되는 방법입니다.
-	
-	현재 위 설치는 
-	mod_ssl 모듈이 (DSO 방식, Dynamic Shared Object, 동적 공유 객체) 
-	방식으로 나중에 추가 가능한 방법으로 컴파일 되게 되어 있다. (연결 설정만 하면 되는 상태)
-	(enable-mods-shared=all , 모든 모듈 컴파일)
-	
-	혹시 (--enable-ssl) 설정 빼먹고 설치된 상태라면,
-	따로 '아파치홈/bin/apxs 도구로 ssl 모듈 컴파일해서 추가 설정 가능하다 
-	(검색해서 적용하라)
-	
-	다른 모듈들도 나중에 따로 DSO 방식으로 설치할 수 있다.
-	
+		
 9. 방화벽 오픈
 	firewall-cmd --permanent --list-ports # 열린 포트 목록 확인
 	firewall-cmd --list-services # 열린 서비스 목록 확인
@@ -137,8 +123,7 @@ Rocky 10 리눅스는 기본 모듈 중 pcre2를 써야한다!
 
 	#설정 후 설정파일 잘 적용되었는지 테스트
 	/usr/local/apache2.4.66/bin/apachectl configtest
-	
-	Syntax OK #이렇게 나와야 설정이 이상 없다는 뜻이다
+	Syntax OK	#이렇게 나와야 설정이 이상 없다는 뜻이다
 	
 11. 기동/재시작/종료
 
