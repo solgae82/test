@@ -48,9 +48,10 @@ WSL 핵심 특징
 	
 	wsl --install Ubuntu-24.04 # 최신 배포판으로 설치
 		
-		#설치 후 생성할 기본 사용자와 패스워드 물어봄. 입력 생성 후 계속 설치된 Ubuntu-24.04 실행 상태
+		#설치 후 생성할 기본 사용자와 패스워드 물어봄. 
+		#사용자/pw 입력 생성 후 설치된 Ubuntu-24.04 안 실행 상태이다
 			
-		# 우분투 최신 상태 만들기
+		# 설치된 우분투 최신 상태 만들기
 		sudo apt update
 		sudo apt upgrade 
 		
@@ -77,20 +78,19 @@ WSL 핵심 특징
 	 NAME			STATE           VERSION
 	 Ubuntu-24.04		Stopted		1
 
-
-	wsl --install # 처음 설치할때 요걸로 , 윈도우 11에서 2버전으로 설치됨
-	# wsl --update # wsl 설치된 버전이 1이라면 최신 버전으로 업그레이드
+	wsl --update # wsl 설치된 버전이 1이라면 최신 버전으로 업그레이드
 	
-	# 이미 설치된 우분투 wsl 버전 2로 변경
-	wsl --set-version Ubuntu-24.04 2
 	
 	# 기본 wsl 버전 2로 설정
 	wsl --set-default-version 2
 	
-	# 기본 리눅스 버전 변경
+	# 이미 설치된 우분투 wsl 버전 2로 변경
+	wsl --set-version Ubuntu-24.04 2
+		
+	# wsl이 사용할 기본 리눅스 버전 선택 변경
 	wsl --set-default Ubuntu-24.04
 	
-	# 변경된 wsl 정보 확인 ( '*' 표시가 wsl 연결 기본 배포판)
+	# 변경된 wsl 정보 확인 ( '*' 표시가 wsl 연결 기본 리눅스 배포판)
 	wsl -l -v
 	  NAME              STATE           VERSION
 	* Ubuntu-24.04      Running         2
