@@ -4,8 +4,7 @@
 -------------------
 
 - ipconfig	
-	
-	
+		
 	ipconfig /all # 모든 네트워크 디바이스 정보 출력
 	
 	ipconfig /release
@@ -19,8 +18,8 @@
 		
 	ipconfig /resisterdns
 		: 컴퓨터의 DHCP IP 갱신, DNS 서버에 현재컴이름 재등록.
-	
-	
+		
+		
 - ping
 	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
 	
@@ -36,10 +35,12 @@
 	
 	netstat -ano
 	
+	#리슨만 필터링해서 보기
 	netstat -ano | findstr "LISTEN"
 	
 	#TCP 프로토콜 연결만 확인
 	netstat -p tcp 
+	
 	
 - tracert
 	
@@ -51,7 +52,9 @@
 	#호스트 이름 확인 안하고 출력(빠른 검색)
 	tracert -d www.aladin.co.kr 
 	
+	
 - route
+
 	로컬 IP 라우팅 테이블을 조회, 추가, 삭제, 수정하는 명령줄 도구입니다. 
 	네트워크 트래픽이 목적지에 도달하는 경로를 수동으로 설정하거나 변경하여, 
 	특정 대역폭을 특정 네트워크 인터페이스(게이트웨이)로 
@@ -91,6 +94,7 @@
 	
 		route -f 
 		
+		
 - arp 
 	내 컴 ARP(Address Resolution Protocol) 캐시 테이블을 출력.
 	(IP 주소와 MAC 주소 매핑 정보 확인)
@@ -99,8 +103,8 @@
 	
 	
 - nslookup
-	DNS 서버를 통해 도메인 네임에 대한 IP 주소를 조회.
 
+	DNS 서버를 통해 도메인 네임에 대한 IP 주소를 조회.
 
 	#구글 도메인 질의
 	nslookup www.google.com 
@@ -118,13 +122,12 @@
 - netsh
 	윈도우 netsh(Network Shell)는 명령 프롬프트(CMD)나 파워쉘에서 
 	로컬 또는 원격 네트워크 설정을 조회, 변경, 관리 및 진단하는 강력한 도구.
-	
-	이런 설정 명령들은 관리자 권한으로 해야한다.
+	관리자 권한으로 실행해야한다.
 	
 	요 녀석은 따로 정리해야한다.(내용이 많다)
 	
+	
 ------------------- 자주쓰이는 명령어
-
 
 # 네트워크 port 8080 상태 확인
 netstat -an | findstr :8080
@@ -134,7 +137,6 @@ netstat -bano
 
 # 네트워크 port와 연결 프로그램 + TCP 만 출력
 netstat -banop tcp 
-
 
 # PID '8512' 번의 프로그램명 출력
 tasklist /fi "PID eq 8512" 

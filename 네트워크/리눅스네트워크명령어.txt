@@ -1,0 +1,135 @@
+설정의 느낌이다 싶으면 'root 권한'으로 해야한다.
+출력(보기)의 느낌이다 싶으면 일반권한도 가능하다.
+그러나 왠만하면 root 권한으로 하는게 좋다.
+-------------------
+
+- ifconfig	
+	
+		
+		
+- ping
+	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
+	
+	요즘은 ICMP 프로토콜을 방확벽에서 막아 놓은 경우가 있다.
+	클라이언트든 응답서버역할이든, 자체 ping을 사용할 수 있게 오픈 되어 있어야한다.
+	(복잡한 방법으로 풀어줘야 한다, 검색으로 해결하자)
+		
+	ping 192.168.111.3
+	
+	
+- netstat 
+
+	프로그램과 네트워크 연결 상태, 포트 정보, 라우팅 테이블 등을 확인하는 진단 도구입니다
+	크게 두가지 카테고리로 나뉜다.
+		
+	1. Active Internet connections (출력모드)
+		: 활성화 된 인터넷 커넥션 카테고리, 주로 TCP/UDP 정보
+		
+	2. Active UNIX domain sockets (출력모드)
+		: 활성화된 유닉스 도메인 소켓 정보, 유닉스 내부 통신
+	
+	
+	(소켓상태)
+	- ESTABLISHED: 외부프로그램과 리눅스와 연결된 상태
+	
+	- TIME_WAIT: 연결이 종료되었으나, 
+		유실된 패킷이 뒤늦게 도착하는 것에 대비해 임시로 대기하고 있는 상태.
+	
+	- SYN_SENT: 내 컴퓨터가 외부 서버에 연결을 요청하고 응답을 기다리는 상태.
+	
+	- CLOSE_WAIT: 상대방이 연결을 종료했으며, 
+		내 컴퓨터의 프로세스도 연결 종료 처리를 진행 중인 상태.
+	
+	
+	(출력모드) 
+		1) servers and established : 리스닝 서버 + ESTABLISHED (모두 출력)
+		2) w/o servers : without servers 즉, ESTABLISHED만 출력
+		3) only servers : 리스닝 서버만 출력	
+	
+	(자주쓰는 옵션)
+	-a, --all               display all sockets / (servers and established)
+	-n, --numeric           don't resolve names / (w/o servers)
+				(도메인 출력 하지 않기에 속도가 빠른 옵션, 기본 리스닝서버 출력 안함)
+	-p, --programs          display PID/Program name for sockets
+	-l, --listening		display listening server sockets / (only servers)
+	
+	-t : TCP만 출력
+	-u : UDP만 출력
+	
+	--------------------- 기본
+	# 모든 열린 소켓포트 보기 (servers and established)
+	netstat -an
+	
+	# PID/Program 명 포함 출력
+	netstat -anp 
+	
+	# (w/o servers, 리스닝 서버제외(without) 출력)
+	netstat -np	
+	
+	# (only servers, 리스닝되는 서버만 출력)
+	netsat -nlp 
+	--------------------- 많이 쓰는 옵션
+	
+	# (only server + TCP)
+	netstat -nltp 
+	
+	# (servers and established + TCP)
+	netstat -anltp	
+	
+	
+	netstat -nlpt | grep :80
+	
+	
+- ss
+	netstat 대체 명령어
+	대체로 옵션도 같다라고 생각하자
+	
+	ss -nlt
+	ss -nlpt 
+	
+	
+- tracert
+	
+	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
+	목적지까지 경유하는 라우터들의 연결 정보를 보여준다
+	
+	
+	
+	
+- route
+
+	로컬 IP 라우팅 테이블을 조회, 추가, 삭제, 수정하는 명령줄 도구입니다. 
+	네트워크 트래픽이 목적지에 도달하는 경로를 수동으로 설정하거나 변경하여, 
+	특정 대역폭을 특정 네트워크 인터페이스(게이트웨이)로 
+	강제 라우팅할 때 사용되는 핵심 네트워킹 명령어.
+	
+	주로 내부망과 외부 인터넷을 분리하여 사용하거나, 
+	특정 네트워크 경로의 우선순위(메트릭)를 조정해야 할 때 사용된다
+		
+		
+- arp 
+	내 컴 ARP(Address Resolution Protocol) 캐시 테이블을 출력.
+	(IP 주소와 MAC 주소 매핑 정보 확인)
+	
+		arp -a
+	
+	
+- nslookup
+
+	DNS 서버를 통해 도메인 네임에 대한 IP 주소를 조회.
+
+	#구글 도메인 질의
+	nslookup www.google.com 
+	서버:    kns.kornet.net
+	Address:  168.126.63.1
+	..
+	
+	# 구글 DNS서버 사용해서, 구글 도메인 질의
+	nslookup www.google.com 8.8.8.8 	
+	서버:    dns.google
+	Address:  8.8.8.8
+	..
+	
+	
+	
+------------------- 자주쓰이는 명령어
