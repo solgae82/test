@@ -1,0 +1,144 @@
+설정의 느낌이다 싶으면 '관리자 권한'으로 해야한다.
+출력(보기)의 느낌이다 싶으면 일반권한도 가능하다.
+왠만하면 관리자 권한으로 하는게 좋다.
+-------------------
+
+- ipconfig	
+	
+	
+	ipconfig /all # 모든 네트워크 디바이스 정보 출력
+	
+	ipconfig /release
+		: DHCP 서버와의 연결 잠시 해제(IP 반납)
+		
+	ipconfig /renew
+		: DHCP 서버에게 IP반납 후 새 IP주소 받기
+		
+	ipconfig /flushdns
+		: DNS 캐시 기록 모두 삭제 
+		
+	ipconfig /resisterdns
+		: 컴퓨터의 DHCP IP 갱신, DNS 서버에 현재컴이름 재등록.
+	
+	
+- ping
+	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
+	
+	요즘은 ICMP 프로토콜을 방확벽에서 막아 놓은 경우가 있다.
+	클라이언트든 응답서버역할이든, 자체 ping을 사용할 수 있게 오픈 되어 있어야한다.
+	(복잡한 방법으로 풀어줘야 한다, 검색으로 해결하자)
+		
+	ping -t 192.168.111.3
+	
+	
+- netstat 
+	윈도우즈 프로그램과 네트워크 연결 상태, 포트 정보, 라우팅 테이블 등을 확인하는 진단 도구입니다
+	
+	netstat -ano
+	
+	netstat -ano | findstr "LISTEN"
+	
+	#TCP 프로토콜 연결만 확인
+	netstat -p tcp 
+	
+- tracert
+	
+	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
+	목적지까지 경유하는 라우터들의 연결 정보를 보여준다
+	
+	tracert www.aladin.co.kr
+	
+	#호스트 이름 확인 안하고 출력(빠른 검색)
+	tracert -d www.aladin.co.kr 
+	
+- route
+	로컬 IP 라우팅 테이블을 조회, 추가, 삭제, 수정하는 명령줄 도구입니다. 
+	네트워크 트래픽이 목적지에 도달하는 경로를 수동으로 설정하거나 변경하여, 
+	특정 대역폭을 특정 네트워크 인터페이스(게이트웨이)로 
+	강제 라우팅할 때 사용되는 핵심 네트워킹 명령어.
+	
+	주로 내부망과 외부 인터넷을 분리하여 사용하거나, 
+	특정 네트워크 경로의 우선순위(메트릭)를 조정해야 할 때 사용되며, 
+	반드시 관리자 권한으로 명령 프롬프트나 PowerShell을 실행해야 합니다
+	
+	(출력)
+		route print	# ip4/ip6 모든 라우트 테이블 출력
+		route print -4	# ip4 라우트 테이블 출력
+		route print -6	# ip6 라우트 테이블 출력
+		
+	(경로추가)
+	형식: route add [netowrk 대역] mask [서브넷마스크] [gateway 주소]
+	
+		route add 10.20.30.0 mask 255.255.255.0 192.168.1.1
+	
+	(경로변경)
+	형식 : route change [네트워크 대역] mask [서브넷마스크] [gateway 주소]
+	
+		route change 10.20.30.0 mask 255.255.255.0 192.168.1.2
+	
+	(경로삭제)
+	형식 : rout delete [네트워트 대역]
+	
+		 route delete 10.20.30.0		
+	
+	(영구설정)
+		-p 옵션 사용하면 컴 재부팅시에도 라우팅 항목 유지한다
+		예) 
+		route -p add 10.20.30.0 mask 255.255.255.0 192.168.1.1
+
+	(라우팅초기화)
+	모든 라우팅 테이블 항목을 삭제하고 기본 설정으로 되돌립니다
+	
+		route -f 
+		
+- arp 
+	내 컴 ARP(Address Resolution Protocol) 캐시 테이블을 출력.
+	(IP 주소와 MAC 주소 매핑 정보 확인)
+	
+		arp -a
+	
+	
+- nslookup
+	DNS 서버를 통해 도메인 네임에 대한 IP 주소를 조회.
+
+
+	#구글 도메인 질의
+	nslookup www.google.com 
+	서버:    kns.kornet.net
+	Address:  168.126.63.1
+	..
+	
+	# 구글 DNS서버 사용해서, 구글 도메인 질의
+	nslookup www.google.com 8.8.8.8 	
+	서버:    dns.google
+	Address:  8.8.8.8
+	..
+	
+	
+- netsh
+	윈도우 netsh(Network Shell)는 명령 프롬프트(CMD)나 파워쉘에서 
+	로컬 또는 원격 네트워크 설정을 조회, 변경, 관리 및 진단하는 강력한 도구.
+	
+	이런 설정 명령들은 관리자 권한으로 해야한다.
+	
+	요 녀석은 따로 정리해야한다.(내용이 많다)
+	
+------------------- 자주쓰이는 명령어
+
+
+# 네트워크 port 8080 상태 확인
+netstat -an | findstr :8080
+
+# 네트워크 port와 연결 프로그램 보기 추가 (-b)
+netstat -bano 
+
+# 네트워크 port와 연결 프로그램 + TCP 만 출력
+netstat -banop tcp 
+
+
+# PID '8512' 번의 프로그램명 출력
+tasklist /fi "PID eq 8512" 
+
+# 파워셀 , 리모트 서버 포트 8080 접근 체크, 텔넷 대체
+Test-NetConnection 192.168.111.6 -Port 80
+
