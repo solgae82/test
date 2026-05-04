@@ -5,8 +5,117 @@
 
 - ifconfig	
 	
+	# 네트워크 인터페이스 모두 보기(IP,subnet,broadcast)
+	# 게이트웨이 확인은 'ip r' or 'route -n' 으로 해야한다
+	ifconfig 	
+	
+	# ens160 네트워크인터페이스 비활성화
+	ifconfig ens160 down
+	
+	# ens160 네트워크인터페이스 활성화
+	ifconfig ens160 up
+	
+	#인터페이스 설정 ,임시적 설정이라 재부팅하면 이전으로 되돌아간다
+	ifconfig ens160 192.168.0.6 netmask 255.255.255.0 
+	ifconfig ens160 up	
+	
+	
+- ip
+	요즘 리눅스는 이 명령어 추천한다
+	
+	ip 명령어로 설정한 내용은 시스템을 재부팅하면 모두 초기화됩니다. 
+	설정을 영구적으로 적용하려면 OS 환경에 맞는 네트워크 설정 파일
+	(NetworkManager, netplan 등)을 수정해야 합니다.
+	
+	----------- addr (ip 주소 조회 & 관리) 
+	
+	# 네트워크 인터페이스 모두 보기
+	ip addr
+		ens160
+		..
+		inet 192.168.111.6/24 brd 192.168.111.255 
+		..
 		
+	# ens160 네트워크 인터페이스만 보기
+	ip addr show ens160 , ip addr show dev ens160
+	
+	# 수동으로 ip 추가하기
+	ip addr add 192.168.111.29/24 dev ens160
+	
+	# 수동으로 ip 삭제
+	 ip addr del 192.168.111.29/24 dev ens160
+	
+	----------- link (네트워크 인터페이스 제어)
+	
+	# 모든 네트워크 상태 + MAC주소 확인
+	ip link show
+	
+	# ens160 네트워크 인터페이스 상태+MAC주소 확인
+	ip link show ens160
+	
+	# ens160 인터페이스 비활성화
+	ip link ens160 down
+	
+	# ens160 인터페이스 활성화
+	ip link ens160 up
+	
+	
+	----------- route (라우팅테이블, 게이트웨이 조회&관리)
+	
+	# 라우팅 테이블 & 게이트웨이 조회
+	ip route , ip route show, ip r
+	
+	# (네트워크:192.168.111.0/24),(gw:192.168.111.2),(ip:192.168.111.6) 
+	default via 192.168.111.2 dev ens160 proto static metric 100
+	192.168.111.0/24 dev ens160 proto kernel scope link src 192.168.111.6 metric 100 
+
+	# 기본게이트웨이 지정(추가)
+	ip route add default via 192.168.111.3 dev ens160
 		
+	# 기본게이트웨이 삭제
+	ip route del default via 192.168.111.3 dev ens160
+	
+	# 라우팅 추가 
+	# (목적지가 10.20.30.0 ~ 255 범위일때 192.168.111.3 게이트웨이로 라우팅)
+	ip route add 10.20.30.0/24 via 192.168.111.3 dev ens160
+
+	# 라우팅 추가
+	# (특정목적지'172.16.5.10' 일때 192.168.11.3 게이트웨이로 라우팅)
+	ip route add 172.16.5.10 via 192.168.111.3 dev ens160
+	
+	# 라우팅 삭제(목적지만 주소만 정확히 지정)
+	ip route del 10.20.30.0/24
+	ip route del 172.16.5.10
+	
+	----------- neighbor, neigh (arp 대체명령어) 
+	
+	#기본 조회
+	ip neigh
+	ip neigh show	 
+	
+	#ip4 arp 테이블만 조회
+	ip -4 neigh
+	
+	#ip6 arp 테이블만 조회
+	ip -6 neigh
+	
+	#특정 인터페이스만 조회
+	ip neighbor show dev ens160
+	
+	# 추가
+	ip neigh add 192.168.0.50 lladdr 00:11:22:33:44:55 dev ens161 
+		
+	# 변경 (Link-Layer Address = lladdr)
+	ip neigh replace 192.168.0.50 lladdr 00:11:22:33:44:55 dev ens161 
+	ip neigh change 192.168.0.50 lladdr 00:11:22:33:44:55 dev ens161 
+	
+	# 삭제
+	ip neigh del 192.168.0.50 dev ens161
+	
+	# 연결된 모든 ARP 테이블 캐시 삭제
+	ip neigh flush all
+	
+	
 - ping
 	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
 	
@@ -19,6 +128,8 @@
 	
 - netstat 
 
+	최신 리눅스에는 ss 명령어를 권한다.
+	
 	프로그램과 네트워크 연결 상태, 포트 정보, 라우팅 테이블 등을 확인하는 진단 도구입니다
 	크게 두가지 카테고리로 나뉜다.
 		
@@ -88,48 +199,171 @@
 	ss -nlpt 
 	
 	
-- tracert
+- traceroute
 	
-	ICMP 프로토콜 타입 '8'번 메시지로 에코를 요청하는 명령어.
+	사용법 : traceroute [옵션] [도메인 또는 IP]
+	
 	목적지까지 경유하는 라우터들의 연결 정보를 보여준다
 	
+	최신 리눅스에는 삭제된 상태 , 따로 설치해야함. 
+		(우분투)sudo apt-get install traceroute
+		(Rocky)sudo dnf install traceroute
+			
+		
+	윈도우의 tracert와 달리, 기본적으로 UDP 패킷을 사용하여 경로를 추적합니다.
+	목적지 라우터로부터 응답을 받을 때는 
+	ICMP "Port Unreachable" 또는 "Time Exceeded" 
+	메시지를 받아 처리합니다.
+		
+	(옵션)
+	-n: 도메인 이름 해석(DNS)을 하지 않고 IP 주소만 표시하여 속도 빠름.
+	-I: UDP 대신 ICMP Echo 패킷을 사용하여 윈도우 tracert처럼 동작.
 	
+	(예제)
+	traceroute  -n www.google.com
+
+
+- tracepath 
+
+	최신 리눅스에 'traceroute' 를 대체하는 기본 장착 라우팅 추적 명령어.
 	
+	사용법 : tracepath [목적지_IP_또는_도메인]
 	
+	tracepath www.google.com
+
+
 - route
 
-	로컬 IP 라우팅 테이블을 조회, 추가, 삭제, 수정하는 명령줄 도구입니다. 
-	네트워크 트래픽이 목적지에 도달하는 경로를 수동으로 설정하거나 변경하여, 
-	특정 대역폭을 특정 네트워크 인터페이스(게이트웨이)로 
-	강제 라우팅할 때 사용되는 핵심 네트워킹 명령어.
+	리눅스의 route 명령어는 커널의 IP 라우팅 테이블을 조회하고 조작(추가/삭제)하는 도구입니다. 
+	최근 리눅스 배포판에서는 route 대신 ip route 명령어를 더 권장하지만, 
+	여전히 많은 환경에서 레거시 명령어로 널리 사용됩니다.
+	
+	커널 라우팅 테이블을 관리하여 특정 네트워크나 호스트로 가는 경로를 지정할 수 있으며, 
+	'netstat -nr' 또는 'ip route' 명령어로도 동일한 정보를 확인할 수 있습니다.
 	
 	주로 내부망과 외부 인터넷을 분리하여 사용하거나, 
-	특정 네트워크 경로의 우선순위(메트릭)를 조정해야 할 때 사용된다
-		
+	특정 네트워크 경로의 우선순위(메트릭)를 조정해야 할 때 사용됩니다.
+	
+	
+	(조회 옵션)
+	-n: 호스트 이름 대신 숫자 IP 주소로 표시 (빠른 확인)
+	-v: 상세 정보 출력
+	
+	# 기본 조회 (도메인/호스트명 변환 포함)
+	route
+
+	# 숫자로만 IP 주소 출력 (DNS 조회를 하지 않아 빠름)
+	route -n
+	
+	# 기본 게이트웨이 추가/삭제
+	route add default gw 192.168.111.3 dev ens160  
+	route del default gw 192.168.1.1 
+	
+	# 특정 IP 대역으로 가는 경로 수동 지정/삭제
+	# (192.168.10.0/24 대역으로 갈 때 10.10.10.1 게이트웨이를 타도록 설정)
+	route add -net 192.168.10.0 netmask 255.255.255.0 gw 10.10.10.1 dev ens160
+	route del -net 192.168.10.0 netmask 255.255.255.0
+	
+	# 특정 IP 경로 수동 지정/삭제
+	route add -host 192.168.10.50 gw 10.10.10.1
+	route del -host 192.168.10.50
+	
+	# 특정 IP 경로 차단
+	route add -net 192.168.5.0 netmask 255.255.255.0 reject
+	
+	---------------------
+	# 최신 스타일의 대체 명령어 (iproute2)
+	ip route show						# 조회
+	ip route add 192.168.10.0/24 via 10.10.10.1 dev ens160	# 추가
+	ip route del 192.168.10.0/24				# 삭제
+	
 		
 - arp 
-	내 컴 ARP(Address Resolution Protocol) 캐시 테이블을 출력.
-	(IP 주소와 MAC 주소 매핑 정보 확인)
+	리눅스의 arp 명령어는 ARP(Address Resolution Protocol),현재 로컬  
+	캐시 테이블을 조회하고 조작하는 도구 (IP 주소와 MAC 주소 매핑 정보 확인)
+	최신 리눅스 배포판에서는 ip neighbor(ip neigh) 명령어로 대체되는 추세
 	
-		arp -a
+	#조회
+	arp -n
+	
+		(필드설명)
+		Address: 상대방의 IP 주소 
+		HWtype: 네트워크 종류 (대부분 ether로 표시) 
+		HWaddress: 상대방의 MAC 주소 
+		Flags Mask: C (동적 학습됨), M (정적/수동 입력됨)
+		Iface: 연결된 네트워크 인터페이스 (ens160)
+	
+	#static 추가/삭제
+	arp -s 192.168.0.50 00:11:22:33:44:55
+	arp -d 192.168.0.50
 	
 	
+
 - nslookup
 
 	DNS 서버를 통해 도메인 네임에 대한 IP 주소를 조회.
+	최신 리눅스에는 제거된 상태 (대체 명령어: dig)
+	
+	배포판별 설치법
+		(우분투)	apt-get install dnsutils
+		(로키) dnf install bind-utils
+		
+	
+	기본 도메인 조회: nslookup [도메인명] 
+		(예): nslookup google.com
+	
+	특정 DNS 서버 지정 조회: nslookup [도메인명] [DNS서버IP] 
+		(예): nslookup google.com 8.8.8.8
+	
+	레코드 타입 지정 (MX, NS 등): nslookup -type=[유형] [도메인명] 
+		
+		A (Address): 도메인 이름을 IPv4 주소로 변환. 기본값입니다.
+			nslookup -type=a google.com
+			
+		AAAA: 도메인 이름을 IPv6 주소로 변환.
+			nslookup -type=aaaa google.com
+			
+		MX (Mail Exchanger): 도메인의 메일 서버 정보를 조회.
+			nslookup -type=mx google.com
+			
+		NS (Name Server): 도메인의 권한 있는 네임 서버를 조회.
+			nslookup -type=ns google.com
+			
+		CNAME (Canonical Name): 도메인의 실제 별칭(Alias)을 조회.
+			nslookup -type=cname blog.example.com
+			
+		TXT (Text): 도메인에 대한 텍스트 정보(SPF, 인증 등)를 조회.
+			nslookup -type=txt google.com
+			
+		SOA (Start of Authority): 도메인의 도메인 핵심 설정 및 관리자 정보 조회.
+			nslookup -type=soa google.com
+		
+				
+	역방향 조회 (IP -> 도메인): nslookup [IP주소] 
+		(예): nslookup 142.250.206.238
+	
+	
+- dig
 
-	#구글 도메인 질의
-	nslookup www.google.com 
-	서버:    kns.kornet.net
-	Address:  168.126.63.1
-	..
+	nslookup 대체 명령어
 	
-	# 구글 DNS서버 사용해서, 구글 도메인 질의
-	nslookup www.google.com 8.8.8.8 	
-	서버:    dns.google
-	Address:  8.8.8.8
-	..
+	기본 도메인 조회: 
+		dig google.com (A 레코드 조회)
 	
+	간단한 결과만 보기: 
+		dig google.com +short
 	
+	특정 레코드 타입 지정: 
+		dig google.com mx (MX 레코드 조회) 
+		dig google.com ns (NS 레코드)
+		
+	특정 DNS 서버 지정: 
+		dig @8.8.8.8 google.com (구글 DNS로 질의)
+	
+	역방향 조회 (IP로 도메인 찾기): 
+		dig -x 8.8.8.8
+	
+	추적 (Trace): 
+		dig google.com +trace (루트 네임서버부터 도메인 해석 경로 추적)
 	
 ------------------- 자주쓰이는 명령어
