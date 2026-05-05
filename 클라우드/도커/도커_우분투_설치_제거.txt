@@ -1,0 +1,148 @@
+아래는 우분투 24.04 버전에서 도커 설치 절차이다.
+
+설치 참조 페이지: 
+https://docs.docker.com/engine/install/ubuntu/#uninstall-docker-engine
+
+크게 4가지 설치법이 있다.
+	바이너리 설치 (폐쇄망 가능) <-요건 복잡해서 설명에서 뺐다
+	deb설치 (폐쇄망 가능)
+	패키지 자동툴로 설치(인터넷 돼야함)
+	편의 스크립트 설치(인터넷 돼야함)
+
+root로 설치해야한다.(도커는 root가 기본이다)
+
+설치 전 이전 버전이 있다면 제거하는 것을 기본 안내하고 있다.
+
+무조건 아래 명령 실행(root), 이전 버전 제거
+root@ubuntu-server:~# apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)
+
+
+-------------------  (deb로 설치하기,폐쇄망일때)
+
+
+다운로드전에 설치할 우분투 코드네임을 확인한다
+
+1. root로 로그인, 코드네임 확인
+	root@ubuntu-server:~# lsb_release -a
+	No LSB modules are available.
+	Distributor ID: Ubuntu
+	Description:    Ubuntu 24.04.4 LTS
+	Release:        24.04
+	Codename:       noble
+
+	코드 네임이 'noble' 임을 알 수 있다.
+	
+
+2. 다운로드 (noble 코드네임으로 찾아 들어간다)
+
+	코드네임 'noble' 명의 디렉토리로 들어간다
+	amd64(인텔포함) 아키텍쳐을 사용한다.
+
+	https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/
+	
+	(아래 5개 파일 다운로드)
+	containerd.io_2.2.3-1~ubuntu.24.04~noble_amd64.deb		(컨테이너 런타임)
+	docker-buildx-plugin_0.33.0-1~ubuntu.24.04~noble_amd64.deb	(빌드 플러그인)
+	docker-ce_29.4.2-2~ubuntu.24.04~noble_amd64.deb			(도커엔진)
+	docker-ce-cli_29.4.2-2~ubuntu.24.04~noble_amd64.deb		(명령줄 인터페이스)
+	docker-compose-plugin_5.1.3-1~ubuntu.24.04~noble_amd64.deb	(컴포즈 플러그인)
+
+3. 파일 우분투에 업로드
+	SFTP 프로그램을 이용해서 /usr/local/src 에 업로드
+
+4. 설치
+	업로드 위치로 가서 dpkg 로 다운로드 받은 파일 모두 설치한다.
+
+	root@ubuntu-server:~# cd /usr/local/src
+	root@ubuntu-server:~# dpkg -i ./containerd.io_2.2.3-1~ubuntu.24.04~noble_amd64.deb \
+	./docker-buildx-plugin_0.33.0-1~ubuntu.24.04~noble_amd64.deb \
+	./docker-ce-cli_29.4.2-2~ubuntu.24.04~noble_amd64.deb \
+	./docker-ce_29.4.2-2~ubuntu.24.04~noble_amd64.deb \
+	docker-compose-plugin_5.1.3-1~ubuntu.24.04~noble_amd64.deb
+
+5. 설치 확인
+	: 설치하자마자 도커가 실행 된 것을 확인할 수 있다.
+	: 또한 systemctl 로 등록되어서 systemctl 명령어로 제어 할 수 있다
+	: 리눅스 재시작해도 자동 시작되게 설정되어있다.
+		
+		systemctl [status/start/stop/restart] docker
+		
+	systemctl status docker
+	● docker.service - Docker Application Container Engine
+	Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled; preset: e>
+	Active: active (running) since Mon 2026-05-04 18:57:17 KST; 10min ago
+	..
+	
+6. 테스트
+	root@ubuntu-server:~# docker images  # 이미지 확인
+	root@ubuntu-server:~# docker run hello-world # 도커 image 다운로드 후 run, 메시지 확인
+	Hello from Docker!
+	..
+	root@ubuntu-server:~# docker images # 설치된 이미지 확인
+	
+	
+7. 도커 Root 디렉토리 확인
+	root@ubuntu-server:~# docker info | grep "Docker Root Dir"
+	Docker Root Dir: /var/lib/docker
+	
+	
+-------------------  (apt 리포지토리 이용한 설치,인터넷 가능할때)
+
+1. Docker apt저장소를 설정합니다.
+	(아래 내용은 분석해 봐야할 주제다.뭔지 모르지만 저렇게 하라고 한다 ㅋ)
+	
+	# Add Docker's official GPG key:
+	root@ubuntu-server:~# apt update
+	root@ubuntu-server:~# apt install ca-certificates curl
+	root@ubuntu-server:~# install -m 0755 -d /etc/apt/keyrings
+	root@ubuntu-server:~# curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+	root@ubuntu-server:~# chmod a+r /etc/apt/keyrings/docker.asc
+
+	# Add the repository to Apt sources:
+	root@ubuntu-server:~# tee /etc/apt/sources.list.d/docker.sources <<EOF
+	Types: deb
+	URIs: https://download.docker.com/linux/ubuntu
+	Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+	Components: stable
+	Architectures: $(dpkg --print-architecture)
+	Signed-By: /etc/apt/keyrings/docker.asc
+	EOF
+
+	root@ubuntu-server:~# apt update
+	
+2. apt 설치
+
+	root@ubuntu-server:~# apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+	
+3. 설치 후 체크 (설치 후 자동실행 되고, 재부팅시에도 자동 실행등록됨) 
+
+	systemctl status docker
+	
+------------------- (편의 스크립트 사용 설치, 인터넷 가능할때)
+	
+	# 제일 짧고 깔끔한 설치법
+
+	curl -fsSL https://get.docker.com -o get-docker.sh
+	sh get-docker.sh
+
+------------------- 도커 엔진 제거하기
+
+1. Docker Engine, CLI, containerd 및 Docker Compose 패키지를 제거합니다.
+
+	~# apt purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+
+
+2. 호스트의 이미지, 컨테이너, 볼륨 또는 사용자 지정 구성 파일은 자동으로 삭제되지 않습니다. 
+	모든 이미지, 컨테이너 및 볼륨을 삭제하려면 다음 단계를 따르세요.
+
+	~# rm -rf /var/lib/docker
+	~# rm -rf /var/lib/containerd
+
+
+3. 소스 목록 및 키링을 제거합니다.
+
+	~# rm /etc/apt/sources.list.d/docker.sources
+	~# rm /etc/apt/keyrings/docker.asc
+
+수정된 설정 파일은 수동으로 삭제해야 합니다.
+

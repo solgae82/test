@@ -208,7 +208,8 @@
 	최신 리눅스에는 삭제된 상태 , 따로 설치해야함. 
 		(우분투)sudo apt-get install traceroute
 		(Rocky)sudo dnf install traceroute
-			
+	
+	대체 기본 명령어로 tracepath 가 있다.	
 		
 	윈도우의 tracert와 달리, 기본적으로 UDP 패킷을 사용하여 경로를 추적합니다.
 	목적지 라우터로부터 응답을 받을 때는 
@@ -220,7 +221,7 @@
 	-I: UDP 대신 ICMP Echo 패킷을 사용하여 윈도우 tracert처럼 동작.
 	
 	(예제)
-	traceroute  -n www.google.com
+	traceroute -n www.google.com
 
 
 - tracepath 
