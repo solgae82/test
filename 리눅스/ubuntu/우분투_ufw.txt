@@ -1,0 +1,11 @@
+레드햇 계열은 firewalld / iptables 를 사용하지만,
+우분투는 ufw (Uncomplicated Firewall)를 기본 사용.
+
+ufw --version
+ufw allow ssh #ssh 허용
+ufw allow 80/tcp #tcp 80 포트 허용
+
+ufw enable # 방화벽 활성화 , disable=비활성화
+systemctl enable ufw #방화벽 자동 활성화
+
+ufw status verbose #룰 상태 확인
