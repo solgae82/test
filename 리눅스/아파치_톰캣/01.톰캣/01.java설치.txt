@@ -1,11 +1,11 @@
 
 
 /usr/local/jdk11.0.0.2
-에 java 소스 디렉토리 위치시킨면 기본 설치 끝
+에 java 소스 디렉토리 위치시키면 기본 설치 끝
 
 ----centos 에서 root 전역 설치
 
-1. root에 환경변수 셋팅
+1. root로 환경변수 셋팅
 
 	#전역 profile에 java 환경변수 추가
 	[root@localhost local]# vi /etc/profile
@@ -43,8 +43,6 @@
 		export JAVA_HOME=/usr/local/jdk11.0.0.2
 
 	:wq
-	
-	#같은 디렉토리의 다른 실행 .sh와 같은 권한으로 변경
 	
 	chmod 750 setenv.sh	#tomcat 권한인지도 확인.
 	

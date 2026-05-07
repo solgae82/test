@@ -1,24 +1,30 @@
-java 설치 후 설치해야 진행한다 
+java 설치 후 톰캣 설치 진행한다 
 
 .zip .tar.gz 등을 받으면 리눅스용 또는 윈도우용 모두 해당된다.
 왜냐면 톰캣은 자바프로그램이므로..(jvm에서 돌아가는 프로그램)
 widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 설치되는 형식인 것이다.
 
+설치는 압축 풀면 끝. 
+나머진 설정
 
-1. tomcat 사용자 생성 , (실행,정지,권한등 모든 액션은 tomcat 계정으로 할 수 있게 하기 위해)
+#톰캣 홈 디렉토리
+	/usr/local/apache-tomcat-9.0.113
+	
+1. tomcat 사용자 생성 
+	
+	:실행,정지,권한등 모든 액션은 tomcat 계정으로 할 수 있게 하기 위해
 	
 	adduser tomcat
 	
-2. /usr/local/apache-tomcat-9.0.113 <= 톰캣 디렉토리(tar 압축해제) 
-	
-	cd /usr/local
-	chown -R tomcat:tomcat apache-tomcat-9.0.113 #톰캣으로 사용자:그룹 변경
-	
-3. /usr/local/jdk11.0.0.2 <= java 디렉토리(tar 압축해제)
-	: tomcat이 실행할 수 있게 권한 줘야한다 (모든 앱이 실행할 수 있게 해놓는다)
-	(ex: chown -R tomcat:tomcat등)
+2. 톰캣 홈 디렉토리, tomcat으로 권한 설정 
 
-4. setenv.sh 생성 java 설정
+	chown -R tomcat:tomcat /usr/localapache-tomcat-9.0.113 
+	
+3. java 홈 디렉토리, tomcat으로 권한 설정
+	
+	chown -R tomcat:tomcat /usr/local/jdk11.0.0.2 <= 
+	
+4. setenv.sh 생성 JAVA_HOME 설정
 	
 	(톰캣 8이상은 JAVA_HOME 환경변수만 설정해주면 된다.)
 	
@@ -32,17 +38,16 @@ widows.zip 등으로 되어 있는 것은 윈도우용 설치프로그램으로 
 
 	:wq
 	
-	#같은 디렉토리의 다른 실행 .sh와 같은 권한으로 변경
-	
 	chmod 750 setenv.sh	#tomcat 권한인지도 확인.
 
-
 5. firewall(방화벽에) 에 8080포트 허가 (root 계정으로 해야한다)
+
 	firewall-cmd --permanent --zone=public --add-port=8080/tcp
 	firewall-cmd --reload #재시작
 
 6. 포트확인
-	netstat -ntl <=  열린 포트 확인
+
+	netstat -nlt <=  tcp 열린 포트 확인
 
 7. 톰캣 시작/종료
 	

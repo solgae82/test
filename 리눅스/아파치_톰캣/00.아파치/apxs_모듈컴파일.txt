@@ -7,11 +7,11 @@ DSO(Dynamic Shared Object)를 지원하는 아파치 환경에서
 모듈을 동적으로 로딩하여 사용할 수 있게 합니다. 
 
 컴파일 뿐 아니라 컴파일한 .so 모듈 배치 및 
-아파치 설정 파일(httpd.conf)에 모듈 추가 스크립트 추가 해준다
+아파치 설정 파일(httpd.conf)에 모듈 추가 (스크립트 추가) 해준다
 
 컴파일 및 설치 명령: 
 	
-	apxs -i -a -c mod_sample.c 
+	apxs -c -i -a mod_sample.c 
 	
 위 명령어를 사용하여 모듈 소스를 컴파일 및 설치  
 	-c : 컴파일 
@@ -22,6 +22,7 @@ DSO(Dynamic Shared Object)를 지원하는 아파치 환경에서
 	소스 코드(.c)를 아파치 모듈(.so)로 변환하는 과정으로, 
 	apxs -c mod_sample.c 명령어를 통해 
 	오브젝트 파일(.o)과 공유 객체(.so)를 생성합니다.
+
 설치 단계: 
 	apxs -i -a mod_sample.la 명령을 통해 
 	컴파일된 모듈을 아파치 모듈 디렉터리로 복사하고 설정을 업데이트합니다.
