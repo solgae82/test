@@ -1,0 +1,34 @@
+git root 로컬 폴더명을 변경하고 싶을때가 있다
+
+그냥 변경하면 된다.
+
+단. 새로운 커밋시 Git의 보안 업데이트(v2.35.2 이상) 
+무슨 업데이트 오류라는 메시지가 뜰텐데, 
+마지막에 써있는 해결법을 적용해주면 된다.
+
+(D:/test 를 D:/git_test 로 변경 후 커밋시 아래와 같은 메시지가 출력된다.)
+
+	fatal: detected dubious ownership in repository at 'D:/git_test'
+	'D:/git_test' is owned by:
+		(inconvertible) (S-1-5-21-213338337-3196610772-40042798-500)
+	but the current user is:
+		NOTEBOOK-DONG/notebook (S-1-5-21-1151447145-1597590620-1994763075-1001)
+	To add an exception for this directory, call:
+
+		git config --global --add safe.directory D:/git_test
+		
+저렇게 뜨면 마지막 문구를 적용해주면된다.
+
+	git config --global --add safe.directory D:/git_test
+	
+그리고 커밋하면 잘 커밋될 것이다.
+궁금해서 아래 명령을 해봤다.
+
+	$ git config --global --list
+	user.name=notesolgae82
+	user.email=kehdgur@kakao.com
+	safe.directory=D:/test
+	safe.directory=D:/git_test
+
+이렇듯 전에 폴더명도 관리되고 있었다.
+
