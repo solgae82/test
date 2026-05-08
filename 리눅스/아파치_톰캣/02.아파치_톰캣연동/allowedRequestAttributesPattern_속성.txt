@@ -12,8 +12,8 @@ allowedRequestAttributesPattern="ajp용 requst 허용 속성명/패턴"
 		아파치 -> ajp 프로토콜(my_attr=abc) -> 톰캣 내부 프로그램(.java , .jsp)
 			request.getAttribute("my_attr"); // abc
 	
-	위와 같이 쓰는 약속이 있단다. 
-	이 약속이 출발점이다.
+	위와 같이 쓰는 약속(프로토콜) 기능이 있단다. 
+	이 약속(프로토콜)이 출발점이다.
 
 (예를 들어보자)
 
@@ -60,7 +60,7 @@ allowedRequestAttributesPattern="ajp용 requst 허용 속성명/패턴"
 
 	secretRequired="true"	# 시크릿 키 사용 여부 
 	secret="1234"		# 아파치 설정 worker.tomcat01.secret=1234 에서 설정한 값과 동일하게
-	allowedRequestAttributesPattern="ajp용 requst 허용 속성명/패턴"
+	allowedRequestAttributesPattern="ajp용 request 허용 속성명/패턴"
 		
 ------------------- AJP 요청 속성들
 
@@ -167,7 +167,6 @@ server.xml > connector > allowedRequestAttributesPattern
 			
 			호출하여 쓸때는 'AJP_'제거한 이름으로 사용.
 
-		
 		
 ------------------- allowedRequestAttributesPattern 설정 다양한 예제
 
