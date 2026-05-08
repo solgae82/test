@@ -123,7 +123,7 @@ server.xml > connector > allowedRequestAttributesPattern
 
 ------------------- 아파치 커스텀 요청 설정법
 
-	1) mod_jk 방식
+	1) mod_jk 방식 (이 방식을 주로 쓴다)
 
 		전통적으로 많이 사용하는 방식으로, JkEnvVar 지시어를 사용합니다.
 
@@ -142,7 +142,7 @@ server.xml > connector > allowedRequestAttributesPattern
 			requst.getAttribute("CLIENT_TYPE"); // MOBILE
 			
 			
-	2) mod_proxy_ajp 방식
+	2) mod_proxy_ajp 방식 (이걸로 설정할 일 거의 없다)
 	
 		아파치 기본 모듈을 활용하는 방식으로, AJP_ 접두사를 활용합니다.
 
@@ -168,39 +168,45 @@ server.xml > connector > allowedRequestAttributesPattern
 			호출하여 쓸때는 'AJP_'제거한 이름으로 사용.
 
 		
+		
 ------------------- allowedRequestAttributesPattern 설정 다양한 예제
 
 정규식 표현을 쓴다.
 파이프(|) 문자를 사용하여 여러 패턴을 OR 조건으로 허용합니다.
 
 		
-	1. 설정 미지정: 기본값은 null로, 모든 커스텀 속성 차단.
+	1. 속성 설정 미지정: 기본값은 null로, 모든 커스텀 속성 차단.
 		null이라는 것은 "표준적인 정보(신분증) 외에 
 		네가 임의로 만든 듣도 보도 못한 속성(정규식에 없는 것)은 절대 안 받아주겠다"는 엄격한 보안 선언.
 	
-	2. 가장 안전한 설정 (권장): 특정 속성만 허용하도록 정규식 작성.	
+	2. 가장 안전한 설정 (권장): 특정 커스텀 속성만 허용하도록 정규식 작성.	
 		allowedRequestAttributesPattern="CLIENT_TYPE" 
 	
-	3. 특정 허용 설정  '|' 로 설정
+	3. 특정 커스텀 허용 설정  '|' 로 설정
 		allowedRequestAttributesPattern="MY_ADDR|MY_PORT|MY_SSL_PROTOCOL"
 		
 	4. 정규표현식 :
-		# 'CLIENT_' 로 시작하는 속성명 허용.
+		# 'CLIENT_' 로 시작하는 커스텀 속성명 허용.
 		allowedRequestAttributesPattern="CLIENT_.*"
 		
 		# 알파벳, 숫자, 점(.), 하이픈(-)만 허용.				
 		allowedRequestAttributesPattern="[a-zA-Z0-9\.\-]+"
 			
-		# MY_ADDR|MY_PORT 와 'CERT' 로 시작하는 속성 허용
+		# MY_ADDR|MY_PORT 와 'CERT' 로 시작하는 커스텀 속성명 허용
 		allowedRequestAttributesPattern="MY_ADDR|MY_PORT|CERT_.*"
 		
-	5. 모든 속성 허용(권장하지 않음 , [x])
+	5. 모든 커스텀 속성 허용(권장하지 않음 , [x])
 		allowedRequestAttributesPattern=".*"
+		
+	6. 모든 커스텀 속성 허용 안함(권장)
+		allowedRequestAttributesPattern="" #[1. 속성 설정 미지정] 과 같다.
+		
 
 ------------------- 왜 이렇게 분석하게 되었나?
 
 시발 좃같이 중구난방으로 설명해 놓은 블로그 글들이 너무 많아서 존나게 짜증나게 헷갈렸다.
 자기들도 정확히 모르면서 어설픈 예제를 써 놓고, 설명도 두리뭉실 부실하게 넘겨버린 글들..
+거기다 웃기게도 제미나이 녀석도 덩달아 헷갈리게 요약해주고 말이지.
 
 설정값에 
 이상한 대문자 단어에, javax 로 시작하는 패키지명에, 무슨 보안 설정 같은 단어 등.. 
@@ -210,21 +216,23 @@ server.xml > connector > allowedRequestAttributesPattern
 뭔 요상한 두리뭉실 설명 글들 뿐이더라.
 AI도 마찬가지고..
 
-일단 기능이 뭔지를 모르니 다 개소리일뿐인 것이였지.
+일단 기능이 뭔지를 모르니 다 개소리일뿐..
 
 표준 속성등은 약속된 거라 쓰지 않아도 되는데,
-버젓이 표준 속성등을 설정한 예제가 너무 많아서,
+버젓이 표준 속성등을 설정한 예제가 너무 많아서,(AI도 똑같이 알려줌)
 이게 대체 뭘 하는 기능이길래, 이렇게 다양한 형태의 값들이 있나 하고 짜증났었다.
-기능 설명은 없고, 뭔 쓸데없는 짐작하듯 잘난체 하는 개소리만 존나 많아.
+기능 설명은 없고, 뭔 쓸데없는 잘난체 하는 개소리만 존나 많아.
 
 뭘 질문해야할지도 난감하던 차에, 
 대체 저 기능이 어떤 거냐고 제미나이에게 하나씩 물어보니, 서서히 답이 나오더만..
 
 결론은,
-웹서버와 톰캣간에 기본 약속된 통신 속성명이 있고 
+웹서버와 톰캣간에 ajp 통신시 기본 약속된 ajp 통신 속성명이 있고 
 그 속성명을 통해 값을 전달할 수 프로토콜 기능이 있는데,
-커스텀 속성명과 값을 사용할 경우엔 예전에 허용 되었으나, 
+약속된 속성명이 아닌 커스텀 속성명과 값을 사용할 경우엔 
+예전에 허용 되었으나, 
 지금은 보안사항이 추가 되어 저런 속성들이 추가된 것이라고..
+
 그래서 그 전달 허용할 속성명을 적는 곳이라고 하면 될 것을.. 시발
 뭔 개 조빠는 글들만...
 
