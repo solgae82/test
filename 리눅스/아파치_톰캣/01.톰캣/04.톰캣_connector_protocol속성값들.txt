@@ -1,0 +1,63 @@
+------------------- 커넥터 protocol 값들
+
+아무것도 설치 안 했을때 기본값과
+APR 사용하기 위해 Tomcat Native library 설치했을 때로 나뉜다 
+
+톰캣단독(깡통):		org.apache.coyote.http11.Http11NioProtocol (=HTTP/1.1)
+톰캣단독(apr):		org.apache.coyote.http11.Http11AprProtocol
+아파치(apr)-톰캣연동:	org.apache.coyote.ajp.AjpAprProtocol
+
+-------------------
+
+0. server.xml  기본 체크 
+	: 상단에 apr 기본 리스너가 있어야한다.
+	
+	<Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+
+1. 기본 커넥터 (NIO/BIO)
+
+	:Tomcat Native Library가 설치 안했을때, 톰캣은 자바 기반의 기본 커넥터(보통 NIO)를 사용합니다
+	: HTTP/1.1 = org.apache.coyote.http11.Http11NioProtocol (같은 의미)
+	
+	(아래는 2개 예제는 같은 설정)
+	
+	
+	(server.xml)
+	
+		<Connector port="8080" 
+			   protocol="HTTP/1.1"  
+			   connectionTimeout="20000"
+			   redirectPort="8443" />
+			   
+		또는
+
+		
+		<Connector port="8080" 
+			   protocol="org.apache.coyote.http11.Http11NioProtocol"
+			   connectionTimeout="20000"
+			   redirectPort="8443" />
+
+2. APR 커넥터 (Native)
+
+	: Tomcat Native Library를 설치 후 APR 프로토콜 커넥터로 변경 사용
+	
+	- 톰캣(apr) 단독 운영시 protocol 설정값:
+		org.apache.coyote.http11.Http11AprProtocol
+		
+	- 아파치(apr)-톰캣 연동 운영시 protocol 설정값:
+		org.apache.coyote.ajp.AjpAprProtocol
+		
+	(server.xml)
+	
+		<!-- 톰캣(apr) 단독 운영시 -->
+		<Connector port="8080" 
+		   protocol="org.apache.coyote.http11.Http11AprProtocol" 
+		   connectionTimeout="20000"
+		   redirectPort="8443" />
+		   
+		<!-- 아파치(apr)-톰캣 연동 운영시 -->
+		<Connector port="8080" 
+		   protocol="org.apache.coyote.ajp.AjpAprProtocol" 
+		   connectionTimeout="20000"
+		   redirectPort="8443" />
+		   

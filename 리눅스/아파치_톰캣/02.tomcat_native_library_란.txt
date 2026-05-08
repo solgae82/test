@@ -1,6 +1,5 @@
 Tomcat Native Library(libtcnative)는 
-Tomcat이 APR(Apache Portable Runtime)을 사용하여 
-성능을 극대화할 수 있게 해주는 
+Tomcat에서 고성능 APR(Apache Portable Runtime) 기능을 사용하기 위한
 JNI(Java Native Interface) 기반의 C/C++ 라이브러리입니다
 
 (핵심 특징과 역할)
@@ -8,6 +7,12 @@ JNI(Java Native Interface) 기반의 C/C++ 라이브러리입니다
 	- APR 기반 Native Connector: 
 		Java의 Blocking I/O 대신 운영체제(OS)의 네이티브 기능을 직접 호출하여 
 		고성능을 제공하는 APR 기반 커넥터(Http11AprProtocol)를 사용하게 합니다.
+		
+		(톰캣 단독 운영, protocol속성값)
+		org.apache.coyote.http11.Http11AprProtocol
+		
+		(아파치-톰캣 연동 운영, protocol속성값)
+		org.apache.coyote.ajp.AjpAprProtocol
 		
 	- JNI Wrapper: 
 		자바 환경에서 C/C++로 작성된 APR 및 OpenSSL 라이브러리에 
@@ -40,8 +45,14 @@ JNI(Java Native Interface) 기반의 C/C++ 라이브러리입니다
 ------------------- 요약
 
 - Tomcat Native Library는 고성능 APR(Apache Portable Runtime)을 사용하기 위한 
-JNI(java native interface) 기반의 C/C++ 라이브러리.
+	JNI(java native interface) 기반의 C/C++ 라이브러리.
 
 - java 프로그램내에서 네이티브(.so) 모듈 기능을 사용하기 위해 
-JNI 기반의 (Tomcat Native Library)로 로드해서 사용한다 
+	JNI 기반의 (Tomcat Native Library)로 로드해서 사용한다 
 
+- Tomcat에서 APR 커넥터를 사용하려면 
+	APR 라이브러리, 
+	OpenSSL 라이브러리, 
+	그리고 이를 연결하는 Tomcat Native Library가 필요합니다
+	
+	
