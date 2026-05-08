@@ -3,8 +3,20 @@
 아파치 홈 : /usr/local/apache2.4/bin
 톰캣 홈 : /usr/local/apache-tomcat-9.0.113
 
+-------------------
 
+su - tomcat  # 톰캣계정으로 설치
+
+0. mod_jk 설치를 위한 tomcat-connectors 다운로드
+
+	cd /usr/local/src
+	wget https://dlcdn.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.50-src.tar.gz
+	
+	ls
+		tomcat-connectors-1.2.50-src.tar.gz
+	
 1. mod_jk 소스 컴파일 설치
+	
 	cd /usr/local/src
 
 	tar xvfz tomcat-connectors-1.2.50-src.tar.gz
@@ -31,11 +43,11 @@
 	cd /usr/local/apache2.4/conf
 	vi workers.propeties
 	
-	worker.list=tomcat01
-	worker.tomcat01.type=ajp13
-	worker.tomcat01.host=127.0.0.1	 #이거 중요
-	worker.tomcat01.port=8009
-	worker.tomcat01.secret=1234
+	worker.list=tomcat01 # tomcat01,tomcat02 지정가능
+	worker.tomcat01.type=ajp13	# 고정값
+	worker.tomcat01.host=127.0.0.1	#이거 중요(톰캣 커넥터 address 값과 동일하게)
+	worker.tomcat01.port=8009	#이거 중요(톰캣 커넥터 port 값과 동일하게)
+	worker.tomcat01.secret=1234	#이거 중요(톰캣 커넥터 secret 값과 동일하게)
 	
 3 run 디렉토리 만들기
 	cd /usr/local/apache2.4/
@@ -160,6 +172,8 @@
 		- context 태그를 설정하지 않았다면 
 		appBase(/home/tomcat/public)/ROOT 디렉토리가 기본 웹앱 홈이 된다.
 		
+9. 테스트 및 이슈
+
 ===================
 
 아파치 기동 , 톰캣 기동 후 테스트 해본다.
@@ -176,12 +190,13 @@ http://localhost/test.jsp
 	톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
 	
 ===================
+
 SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
 SELinux 완전 끄던가. 
 아니면 아래 명령으로 보안 설정을 한다
 (아파치의 톰캣포트 AJP 8009로 통신 허용)
 
-	setsebool -P httpd_can_network_connect 1
+	setsebool -P httpd_can_network_connect on
 	
 ===================
 

@@ -1,0 +1,74 @@
+
+SELinux(Security-Enhanced Linux) 
+환경에서 Apache와 같은 웹 서버(httpd) 프로세스가 네트워크에 접속할 수 있도록 
+허용하는 설정에 대해 숙지해놓자 (빡칠때를 대비해서)
+
+-------------------
+
+SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다면?
+SELinux 완전 끄던가. 
+아니면 아래 명령으로 보안 설정을 한다
+(아파치의 톰캣포트 AJP 8009로 통신 허용)
+
+	setsebool -P httpd_can_network_connect on
+
+설정 값 확인: 
+	getsebool httpd_can_network_connect
+
+전체 httpd 관련 정책 확인: 
+	getsebool -a | grep httpd
+
+------------------- 명령어 옵션 분석과 적용 상황 분석
+
+1. setsebool 명령어 구성 요소 분석
+
+	setsebool: 
+		SELinux의 불리언(Boolean) 설정 값을 변경하는 명령어입니다. 
+		시스템을 재부팅하거나 정책을 다시 로드하지 않고도 특정 보안 규칙을 
+		켜거나 끌 수 있습니다.
+		
+	-P: 
+		'Persistent'의 약자로, 설정을 영구적으로 적용하겠다는 의미입니다. 
+		이 옵션이 없으면 재부팅 후 설정이 초기화되지만, -P를 사용하면 
+		/etc/selinux/ 하위 설정 파일에 저장되어 부팅 시에도 유지됩니다.
+		
+	httpd_can_network_connect: 
+		제어하려는 특정 정책의 이름입니다.
+		
+	1 (또는 on): 
+		해당 기능을 활성화(Enable)한다는 뜻입니다. 
+		반대로 차단하려면 0 또는 off를 입력합니다.
+	
+2. setsebool 명령어가 필요한 상황
+
+	기본적으로 SELinux는 보안을 위해 웹 서버가 
+	외부 서버와 통신하는 것을 차단합니다. 
+	
+	따라서 다음과 같은 작업 시 
+	
+		- 리버스 프록시(Reverse Proxy) 구성: 
+			Apache가 WAS(Tomcat, Node.js 등)에 
+			요청을 전달할 때.
+			
+		- 외부 API 호출: 
+			PHP, Python 등의 웹 애플리케이션이 
+			외부 API 서버와 통신할 때.
+			
+		- 원격 DB 접속: 
+			웹 서버가 다른 서버에 있는 
+			데이터베이스(MySQL, PostgreSQL 등)에 연결할 때.
+			
+		- 메일 발송: 
+			웹 서버에서 SMTP 등을 이용해 외부로 메일을 보낼 때.
+			
+		
+	"Permission Denied" 
+		
+	또는 
+	
+	"503 Service Unavailable" 
+	
+	에러가 발생한다면 이 설정이 필요합니다.
+
+	
+		
