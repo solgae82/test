@@ -1,7 +1,7 @@
 <아파치 톰캣 연동을 위한 mod_jk 설치>
 
 아파치 홈 : /usr/local/apache2.4/bin
-
+톰캣 홈 : /usr/local/apache-tomcat-9.0.113
 
 1. 소스 컴파일 설치
 	cd /usr/local/src
@@ -72,10 +72,54 @@
 	 #아파치 홈 run 디렉토리에 
 		mod_jk.shm.6803  mod_jk.shm.6803.lock
 	파일이 생성되는지 확인해본다
-	
-6. 톰캣 server.xml 설정
-	vi 톰캣홈/conf
 
+============================= Tomcat Native Library 설치
+
+	(톰캣 설치시 Tomcat Native Library 까지 설치 안 되었다면 설치한다)
+	
+	1. Tomcat Native Library 컴파일 설치  
+				
+		cd /usr/local/tomcat-9.0.113/bin 
+		tar xvfz tomcat-native.tar.gz
+		ls 
+			tomcat-native-1.3.1-src # .gz 압축해제 디렉토리 확인
+			
+		cd tomcat-native-1.3.1-src/native
+
+		#설정 옵션을 자세히 보자 (검색해서 파악하면 좋다)
+		./configure --with-apr=/usr/local/apr-1.7.6/bin/apr-1-config \
+		--with-java-home=/usr/local/jdk-11.0.0.2 \
+		--with-ssl=yes
+
+		# 컴파일 및 설치
+		make && make install
+
+	2. Tomcat Native Library  arp/lib 설치 되었는지 확인 
+		:'libtcnative*' 라이브러리 파일들 생성 확인
+
+		ls /usr/local/apr-1.7.6/lib
+		
+			apr.exp      libapr-1.so        libtcnative-1.a   libtcnative-1.so.0
+			libapr-1.a   libapr-1.so.0      libtcnative-1.la  libtcnative-1.so.0.3.1
+			libapr-1.la  libapr-1.so.0.7.6  libtcnative-1.so  pkgconfig
+		
+		# 5개의 ''libtcnative..' 파일들이 설치되었음을 확인할 수 있다.
+		
+	3. 톰캣 실행 환경변수에 arp/lib 경로 추가
+		cd /usr/local/tomcat-9.0.113/bin
+		vi setenv.sh
+		..
+		JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/usr/local/apr-1.7.6/lib"
+		export JAVA_OPTS
+		:wq
+
+============================= Tomcat Native Library 설치/end
+
+6. 톰캣 server.xml 설정
+	vi /usr/local/apache-tomcat-9.0.113/conf/server.xml
+	
+	<Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+	
 	<!-- protocol="AJP/1.3" 을 protocol="org.apache.coyote.ajp.AjpAprProtocol" 변경 -->
 	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol"
 		address="127.0.0.1"	# worker.tomcat01.host=127.0.0.1 값과 일치해야함.
@@ -90,6 +134,11 @@
        <!--
 	기본 http 커넥터 포트는 비활성화 처리, 다른 Connector 모두 비활성화 처리 
 	<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443"/>
+	또는
+	<Connector port="8080" 
+           protocol="org.apache.coyote.http11.Http11AprProtocol" <!--톰캣단독설정시, APR 프로토콜로 변경 -->
+           connectionTimeout="20000"
+           redirectPort="8443" />
 	-->
 
 7. 홈 디렉토리 설정
@@ -97,11 +146,13 @@
 	아파치 documentroot 와 톰캣 appbase를 맞춰준다
 
 	아파치 DocumentRoot 를 톰캣 기본 웹앱 디렉토리인 ROOT를 바라보게 한다.
-
+	
+	(httpd.conf)
+	
 		DocumentRoot "/home/tomcat/public/ROOT"
 		<Directory "/home/tomcat/public/ROOT">
 
-	톰캣홈/conf/server.xml
+	(server.xml)
 		<Host name="localhost"  appBase="/home/tomcat/public"
 			    unpackWARs="true" autoDeploy="true">
 			    
@@ -131,4 +182,15 @@ SELinux 완전 끄던가.
 
 	setsebool -P httpd_can_network_connect 1
 	
+===================
+
+계속 에러가 나서 헤맸는데, 제미나이에게 물어봐서 해결했다
 	
+	아파치홈/conf/workers.propeties 의
+	
+		worker.tomcat01.host=127.0.0.1	 #이거 중요
+		
+	와 톰캣 Connector 의 address 속성값을 일치시켜야 했다
+	
+		address="127.0.0.1"
+		
