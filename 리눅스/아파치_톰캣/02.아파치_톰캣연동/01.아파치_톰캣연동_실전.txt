@@ -1,9 +1,10 @@
-<아파치 톰캣 연동을 위한 mod_jk 설치>
+<아파치 톰캣 연동 절차>
 
 아파치 홈 : /usr/local/apache2.4/bin
 톰캣 홈 : /usr/local/apache-tomcat-9.0.113
 
-1. 소스 컴파일 설치
+
+1. mod_jk 소스 컴파일 설치
 	cd /usr/local/src
 
 	tar xvfz tomcat-connectors-1.2.50-src.tar.gz
@@ -75,7 +76,7 @@
 
 ============================= Tomcat Native Library 설치
 
-	(톰캣 설치시 Tomcat Native Library 까지 설치 안 되었다면 설치한다)
+(톰캣 설치시 Tomcat Native Library 까지 설치 안 되었다면 아래 순서로 설치)
 	
 	1. Tomcat Native Library 컴파일 설치  
 				
@@ -105,7 +106,7 @@
 		
 		# 5개의 ''libtcnative..' 파일들이 설치되었음을 확인할 수 있다.
 		
-	3. 톰캣 실행 환경변수에 arp/lib 경로 추가
+	3. 톰캣 실행시 java 환경변수에 arp/lib 경로 추가
 		cd /usr/local/tomcat-9.0.113/bin
 		vi setenv.sh
 		..
@@ -113,7 +114,7 @@
 		export JAVA_OPTS
 		:wq
 
-============================= Tomcat Native Library 설치/end
+=============================  Tomcat Native Library 설치/end
 
 6. 톰캣 server.xml 설정
 	vi /usr/local/apache-tomcat-9.0.113/conf/server.xml
@@ -126,9 +127,9 @@
 		port="8009"
 		redirectPort="8443"
 		maxParameterCount="1000" 
-		secretRequired="true" 
-		secret="1234"
-		allowedRequestAttributesPattern=".*"  #요게 좀 확실히 알아봐야한다,명확하지 않다
+		secretRequired="true" # 시크릿 키 사용하겠다는 설정
+		secret="1234" # worker.tomcat01.secret=1234 에서 설정한 값과 동일하게
+		allowedRequestAttributesPattern=".*"  #이것도 이슈,'allowedR*.txt파일로 정리했다
        />
        
        <!--

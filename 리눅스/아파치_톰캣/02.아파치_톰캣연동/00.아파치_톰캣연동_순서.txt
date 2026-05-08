@@ -1,0 +1,34 @@
+1. 연동 전 필수 지식
+
+	[아파치_톰캣] 디렉토리의
+		00.AJP_란.txt
+		01.APR_이란.txt
+		02.tomcat_native_library_란.txt
+		03.LD_LIBRARY_PATH_변수와_JAVA_OPTS변수.txt
+		04.well-known_포트_기동문제.txt
+	
+	내용을 숙지하고 시작하자.
+
+2. 연동 순서 
+	리눅스 : (Rocky 10기준)
+			
+	1.아파치 설치 (apache2.4)
+		- apr
+		- apr-util
+		- apr-iconv
+		- pcre2 #Rocky 10엔 이 버전이 강제됨.(더 향상된 기능임)
+
+		모듈들을 사전 설치 후 아파치 컴파일시 설정 사용
+
+	2.톰캣 설치 (apache-tomcat-9.0.113)
+		- 기본설치
+		- native lib 컴파일 설치해서 고성능 APR 사용 가능하게 함
+	
+	3.아파치에 mod_jk 설치해서 톰캣 ajp connector 로 연결
+		- tomcat-connectors 컴파일해서 
+			아파치홈/modules에 mod_jk 설치
+		- 아파치에 톰캣과 통신할 workers.propeties 설정
+		- 아파치 홈에 run 디렉토리 만들기
+		- 아파치 http.conf에 사용할 모듈들 설정
+		- 톰캣 server.xml 커넥터 설정
+		
