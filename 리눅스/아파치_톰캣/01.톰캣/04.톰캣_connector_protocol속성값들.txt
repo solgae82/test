@@ -4,8 +4,11 @@
 APR 사용하기 위해 Tomcat Native library 설치했을 때로 나뉜다 
 
 톰캣단독(깡통):		org.apache.coyote.http11.Http11NioProtocol (=HTTP/1.1)
+
 톰캣단독(apr):		org.apache.coyote.http11.Http11AprProtocol
-아파치(apr)-톰캣연동:	org.apache.coyote.ajp.AjpAprProtocol
+
+아파치(apr)-(ajp)-톰캣(apr):	
+			org.apache.coyote.ajp.AjpAprProtocol
 
 -------------------
 
