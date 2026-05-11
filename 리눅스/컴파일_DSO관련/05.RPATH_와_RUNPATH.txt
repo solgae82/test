@@ -1,0 +1,111 @@
+리눅스에서 공유 라이브러리(.so 파일)를 실행 시점에 찾기 위해 실행 파일(ELF 바이너리) 
+내부에 저장하는 런타임 검색 경로를 RPATH와 RUNPATH라고 합니다. 
+
+gcc 컴파일시 옵션으로 사용됩니다
+
+이들은 프로그램이 시스템 기본 라이브러리 위치(/lib, /usr/lib) 외에 특정 위치에 있는 
+라이브러리를 로드해야 할 때 사용됩니다.
+
+1. RPATH (Run-time Search Path)
+
+	특징: 
+		구형 방식입니다.
+
+	우선순위: 
+		환경 변수 LD_LIBRARY_PATH보다 높은 우선순위를 가집니다.
+
+	문제점: 
+		RPATH가 설정되어 있으면 LD_LIBRARY_PATH로 라이브러리 위치를 
+		강제로 변경할 수 없어 디버깅이나 환경 설정이 어렵습니다.
+
+	설정 방법: 
+		컴파일 시 -Wl,-rpath,/path/to/lib 옵션을 사용합니다.
+
+2. RUNPATH (Run-time Search Path)
+
+	특징: 
+		최신 방식입니다. RPATH의 단점을 보완하기 위해 도입되었습니다.
+
+	우선순위: 
+		환경 변수 LD_LIBRARY_PATH보다 낮은 우선순위를 가집니다.
+	장점: 
+		LD_LIBRARY_PATH를 사용하여 실행 시점에 
+		라이브러리 경로를 유연하게 덮어쓸 수 있습니다.
+
+	설정 방법: 
+		컴파일 시 -Wl,-rpath,/path/to/lib와 함께 
+		--enable-new-dtags 옵션
+		(보통 gcc에서 -Wl,--enable-new-dtags로 사용)을 
+		추가하여 설정합니다
+		
+		
+3. 라이브러리 검색 순서 (동적 링커)실행 파일이 필요로 하는 
+.so 파일을 찾을 때 다음 순서로 검색합니다:
+
+	1) RPATH (RUNPATH가 없는 경우)
+	2) LD_LIBRARY_PATH (환경 변수)
+	3) RUNPATH (존재하는 경우)
+	4) /etc/ld.so.cache (캐시 파일)
+	5) 기본 경로 (/lib, /usr/lib 등
+
+참고: DT_RUNPATH가 존재하면 DT_RPATH는 무시됩니다.
+
+핵심 요약: RUNPATH를 사용하는 것이 더 권장되는 방식입니다.
+
+------------------- 실전 컴파일 코드 맛보기(여기까지 알 필요는 없지만..참조하라고)
+
+현대 리눅스 환경에서는 보통 
+--enable-new-dtags 옵션이 기본이므로(RUNPATH 모드), 
+-rpath를 사용하면 자동으로 RUNPATH로 설정됩니다.
+
+그래서 생겨난 옵션
+
+	--disable-new-dtags: 자동 RUNPATH 막기
+	--enable-new-dtags: 명시적 RUNPATH 적용
+
+으로 명시적으로 RPATH/RUNPATH 를 지정할 수 있습니다.
+
+1. RPATH
+
+	(형식)
+	gcc -o [실행파일이름] [소스파일.c] -L[라이브러리_디렉토리] -l[라이브러리명] \
+	-Wl,-rpath=[라이브러리_디렉토리]
+
+		--disable-new-dtags: 자동 RUNPATH 막기
+		-L: 링커가 컴파일 시점에 .so 파일을 찾을 디렉토리 지정.
+		-l: 라이브러리 이름 (예: libhello.so -> hello).
+		-Wl,option: 링커(ld)에게 option을 전달.
+		-rpath: 런타임 링커가 .so 파일을 찾을 절대 경로 또는 상대 경로 지정.
+		
+		
+	(예제)
+	gcc -o app main.c -L/home/user/libs -lmath -Wl,-rpath=/home/user/libs
+		
+		절대 경로: -Wl,-rpath,/opt/my/lib (시스템 고정 위치에 라이브러리가 있을 때)
+		상대 경로: -Wl,-rpath,'$ORIGIN/lib' (프로그램을 이동(Portable)하며 사용할 때)
+		여러 경로: -Wl,-rpath,'$ORIGIN/lib:/other/path ('여러 경로 지정 시 ':'연결 사용)
+		
+2. RUNPATH
+	(형식)
+	gcc -o [실행파일] [소스파일.c] -L[라이브러리경로] -l[라이브러리명] --enable-new-dtags \
+	-Wl,-rpath=[RUNPATH경로]
+
+		--enable-new-dtags: 명시적 RUNPATH 적용
+		
+
+3. 이미 빌드된 파일 검사 및 수정 방법
+	
+	- RPATH / RUNPATH 지정 상태 확인 (readelf)
+		
+		readelf -d my_program | grep -E '(RPATH|RUNPATH)'
+
+		# 출력 결과에 Library runpath: [..._]로 표기되면 RUNPATH가 적용된 상태입니다.
+	
+	- 바이너리 패치 도구로 사후 수정 (patelf)
+		
+		# RUNPATH 강제 수정/등록
+		patchelf --set-rpath '$ORIGIN/lib' my_program
+
+		# RPATH 형태로 강제 변경 (--to-rpath 이용)
+		patchelf --to-rpath my_program
+		

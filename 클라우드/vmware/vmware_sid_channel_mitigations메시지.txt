@@ -1,0 +1,11 @@
+VMware Workstation Pro에서 
+사이드 채널 완화(Side Channel Mitigations) 기능을 끄면 
+CPU 보안 취약점(Spectre 등)에 대한 보호가 해제되어 성능이 향상될 수 있습니다.
+
+가상서버 Off > 우클릭 > Settings... > Options 탭 > Advanced 선택:
+	[v]Enable side channel mitigations for Hyper-V enabled hosts <= 체크해제
+	
+	OK
+	
+다시 서버 실행하면 메시지 창이 뜨지 않는다.(성능 또한 향상)
+

@@ -1,0 +1,47 @@
+VMware Tools는 가상 머신(Guest OS)의 성능을 향상시키고 
+운영 효율성을 높여주는 필수 유틸리티 모음입니다. 
+(가상머신에 설치하는 vmware와 원할한 작동을 위해 연동하는 프로그램.)
+
+
+- 마우스 움직임 최적화(호스트-게스트 사이 자유로운 움직임) 
+- 화면 해상도 자동 조정
+- 호스트-게스트 간 파일 드래그 앤 드롭 및 복사/붙여넣기 
+- 호스트-게스트 간 시간 동기화 
+- 호스트(가상머신) 스냅샷 저장, 게스트OS 안전 종료/재부팅
+
+등의 기능을 제공하여 가상 환경을 물리 컴퓨터처럼 원활하게 만들어줍니다
+
+VMware에서 메뉴로 지원되는 운영체제가 있고, 안 되는 운영체제가 있다.
+(지원 되면 메뉴가 활성화 된다)
+쉽게 말하면,vmware 툴박스에서 메뉴로 지원되는데, 지원 안되는 운영체제 버전은 안된다
+
+설치방식:
+
+(VMware 메뉴 지원 될때)
+	VMware Workstation 'VM' -> 'Install VMware Tools'를 
+	선택하여 가상 CD-ROM으로 마운트한 후 설치를 진행
+
+(VMware 메뉴 지원 안 될때, 비활성화일때)
+	직접 프로그램 찾아서 다운로드 받은 후 가상머신 운영체제에 설치하면 된다.
+
+	우분투(24.04)
+		(GUI 사용시)
+		sudo apt install -y open-vm-tools-desktop
+		
+		(CLI 만 사용시)
+		sudo apt install -y open-vm-tools
+		
+		#설치 후
+		sudo reboot
+		
+	
+	Rocky(10.1)
+		(GUI 사용시)
+		sudo dnf install -y open-vm-tools-desktop
+
+		(CLI 만 사용시)
+		sudo dnf install -y open-vm-tools
+		
+		#설치 후 reboot
+		sudo reboot
+		
