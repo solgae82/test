@@ -1,0 +1,43 @@
+The following devices can be connnected to this virtual machine using the status  bar or choosing VM > Removable Devices:
+- Chicony HD Webcam
+- Realtek USB2.0-CRW
+- Intel 무선 Bluetooth
+
+Each device can be connected either to the host or to one virtual machine at a time.
+
+상태 표시줄 또는 VM > 이동식 장치를 선택하여 다음 장치를 
+이 가상 머신에 연결할 수 있습니다.
+- Chicony HD 웹캠
+- Realtek USB 2.0-CRW
+- Intel 무선 블루투스
+
+각 장치는 호스트 또는 한 번에 하나의 가상 머신에만 연결할 수 있습니다.
+---------
+You are running this virtual machine with side channel mitigations enabled. 
+Side channel mitigations provide enhanced security but also lower performance.
+
+To disable mitigations, 
+change the side channel mitigations setting in the advanced pannel of the virtual machine settings. 
+Refer to VMware KB article 79832 at https://kb.vmware.com/s/article/79832 for more details.
+
+현재 사이드 채널 완화 기능이 활성화된 상태로 가상 머신을 실행 중입니다. 
+사이드 채널 완화 기능은 보안을 강화하지만 성능을 저하시킬 수 있습니다.
+
+완화 기능을 비활성화하려면 가상 머신 설정의 고급 패널에서 사이드 채널 완화 설정을 변경하십시오. 
+자세한 내용은 VMware KB 문서 79832(https://kb.vmware.com/s/article/79832)를 참조하십시오.
+
+---------
+VMware Tools is no longer shipped with VMware Workstation for this guest perating system.
+
+Downlad it from https://packages-prod.broadcom.com/tools/frozen/linux/linux.iso and refer 
+to https://knowledge.broad.com/external/article?legacyId=1014294 for installing steps.
+
+No VMware Tools image exists for the guest operating system.
+
+
+이 게스트 운영 체제용 VMware Workstation에는 더 이상 VMware Tools가 포함되어 있지 않습니다.
+
+https://packages-prod.broadcom.com/tools/frozen/linux/linux.iso에서 VMware Tools를 다운로드하고, 
+설치 단계는 https://knowledge.broad.com/external/article?legacyId=1014294를 참조하십시오.
+
+이 게스트 운영 체제용 VMware Tools 이미지는 존재하지 않습니다.
