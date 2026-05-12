@@ -1,0 +1,251 @@
+<아파치 톰캣 연동 절차>
+
+아파치 홈 : /usr/local/apache2.4.66/bin
+톰캣 홈 : /usr/local/apache-tomcat-9.0.113
+
+
+mod_proxy_ajp.so를 이용한 연동 설정 방식 (이미 아파치에 설치된 상태)
+
+su - tomcat  # 톰캣계정으로 설치
+
+-------------------
+
+	
+1. 아파치 httpd.conf 설정
+	
+	# httpd.conf 추가 편집
+	cd /usr/local/apache2.4.66/conf
+	vi httpd.conf
+	ServerName 127.0.0.1
+	DocumentRoot "/home/tomcat/public/ROOT"
+	<Directory "/home/tomcat/public/ROOT">
+	..	
+	
+	# 주석해제
+	LoadModule proxy_module modules/mod_proxy.so
+	LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+	..
+	
+	--------------------- 방식 1. httpd.conf 하단에 추가
+	# 제일 하단에 추가
+	# 톰캣으로 보낼 프록시 설정 (ProxyPass)
+	# 기존에 설정했던 MaxRequestWorkers(2048) 자원에 맞게 프록시 풀을 최적화합니다.
+
+	# 1. 톰캣 연동 커넥션 풀 설정 (AJP 기준)
+	<Proxy "ajp://localhost:8009">
+	    ProxySet max=2048 ttl=60 keepalive=On
+	</Proxy>
+
+	# 2. 정적 파일 프록시 제외 설정 (반드시 ProxyPass / 보다 위에 작성)
+	# 이 경로들은 톰캣으로 보내지 않고 아파치가 직접 /usr/local/apache2.4.66/htdocs 에서 찾습니다.
+	ProxyPass /images !
+	ProxyPass /css !
+	ProxyPass /js !
+	ProxyPass /favicon.ico !
+
+	# 3. 나머지 모든 동적 요청을 톰캣으로 전달
+	# 톰캣으로 요청을 보낼 때만 비밀키 인증을 수행합니다.
+	ProxyPass / ajp://localhost:8009/ secret=1234
+	ProxyPassReverse / ajp://localhost:8009/
+
+
+	---------------------방식 2. vhost에 추가
+	# conf/httpd.conf 파일 내에서 아래 라인의 주석(#)을 제거합니다.
+		Include conf/extra/httpd-vhosts.conf
+	:wq
+	
+	vi /usr/local/apache2.4.66/conf/extra/httpd-vhosts.conf
+	<VirtualHost *:80>
+	    ServerName localhost
+	    DocumentRoot "/home/tomcat/public/ROOT"
+
+	    # AJP 프록시 풀 설정
+	    <Proxy "ajp://localhost:8009">
+		ProxySet max=2048 ttl=60 keepalive=On
+	    </Proxy>
+
+	    # [중요] 정적 콘텐츠 경로 제외 (아파치가 직접 처리)
+	    # ! 표시가 붙은 경로는 ProxyPass를 타지 않습니다.
+	    # (반드시 ProxyPass / 보다 위에 작성)
+	    ProxyPass /images !
+	    ProxyPass /css !
+	    ProxyPass /js !
+	    ProxyPass /favicon.ico !
+
+	    # 나머지 모든 요청은 톰캣으로 전달
+	    # 톰캣으로 요청을 보낼 때만 비밀키 인증을 수행합니다.
+	    ProxyPass / ajp://localhost:8009/ secret=1234
+	    ProxyPassReverse / ajp://localhost:8009/
+
+	    # 로그 파일 별도 관리
+	    ErrorLog "logs/localhost-error_log"
+	    CustomLog "logs/localhost-access_log" common
+	</VirtualHost>
+
+
+	--------------------- etc
+	
+	순서의 중요성: 
+		ProxyPass /images ! 처럼 특정 경로를 제외하는 설정은 
+		반드시 전체를 넘기는 ProxyPass / ... 설정보다 위쪽에 위치해야 합니다. 
+		아파치는 위에서부터 순서대로 규칙을 적용하기 때문입니다.
+	
+	디렉토리 권한: 
+		아파치가 정적 파일을 직접 읽으려면 htdocs 폴더와 하위 파일들에 대해 
+		아파치 실행 계정(daemon 등)이 읽기 권한을 가지고 있어야 합니다.
+		
+	확장자 기준 제외: 
+		만약 특정 폴더가 아니라 .jpg, .png 같은 확장자 기준으로 모두 제외하고 싶다면 
+		ProxyPassMatch 구문을 사용해야 합니다
+
+2. 설정 후 아파치 시작 (테스트)
+
+	
+	cd /usr/local/apache2.4.66/bin
+	
+	# 아파치 문법 에러 검사
+	apachectl configtest
+	
+	# 이상 없으면 시작
+	./apachectl start
+
+
+============================= Tomcat Native Library 설치
+
+(톰캣 설치시 Tomcat Native Library 까지 설치 안 되었다면 아래 순서로 설치)
+	
+	1. Tomcat Native Library 컴파일 설치  
+				
+		cd /usr/local/tomcat-9.0.113/bin 
+		tar xvfz tomcat-native.tar.gz
+		ls 
+			tomcat-native-1.3.1-src # .gz 압축해제 디렉토리 확인
+			
+		cd tomcat-native-1.3.1-src/native
+
+		#설정 옵션을 자세히 보자 (검색해서 파악하면 좋다)
+		./configure --with-apr=/usr/local/apr-1.7.6/bin/apr-1-config \
+		--with-java-home=/usr/local/jdk-11.0.0.2 \
+		--with-ssl=yes
+
+		# 컴파일 및 설치
+		make && make install
+
+	2. Tomcat Native Library(libtcnative)이  arp/lib 설치 되었는지 확인 
+		:'libtcnative*' 라이브러리 파일들 생성 확인
+
+		ls /usr/local/apr-1.7.6/lib
+		
+			apr.exp      libapr-1.so        libtcnative-1.a   libtcnative-1.so.0
+			libapr-1.a   libapr-1.so.0      libtcnative-1.la  libtcnative-1.so.0.3.1
+			libapr-1.la  libapr-1.so.0.7.6  libtcnative-1.so  pkgconfig
+		
+		# 5개의 ''libtcnative..' 파일들이 설치되었음을 확인할 수 있다.
+		
+	3. 톰캣 실행시 java 환경변수에 arp/lib 경로 추가
+	
+		cd /usr/local/tomcat-9.0.113/bin
+		vi setenv.sh
+		..
+		JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/usr/local/apr-1.7.6/lib"
+		export JAVA_OPTS
+		:wq
+
+=============================
+
+3. 톰캣 server.xml 설정
+	vi /usr/local/apache-tomcat-9.0.113/conf/server.xml
+	
+	<Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+	
+	<!-- protocol="AJP/1.3" 을 protocol="org.apache.coyote.ajp.AjpAprProtocol" 변경 -->
+	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol"
+		address="127.0.0.1"	# ProxyPass / ajp://localhost:8009/ 동일한 address
+		port="8009"		# ProxyPass / ajp://localhost:8009/ 동일한 port.
+		redirectPort="8443"
+		maxThreads="500"
+		minSpareThreads="50"
+		acceptCount="200"
+		maxParameterCount="10000" 
+		secretRequired="true"	# 시크릿 키 사용하겠다는 설정
+		secret="1234"		# worker.tomcat01.secret=1234 값과 동일하게.
+		allowedRequestAttributesPattern=""  #허용안함, (이것도 이슈,'allowedR*.txt파일로 정리)
+       />
+       
+       <!--
+	기본 http 커넥터 포트는 비활성화 처리, 다른 Connector 모두 비활성화 처리 
+	<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443"/>
+	또는
+	<Connector port="8080" 
+           protocol="org.apache.coyote.http11.Http11AprProtocol" <!--톰캣단독설정시, APR 프로토콜로 변경 -->
+           connectionTimeout="20000"
+           redirectPort="8443" />
+	-->
+
+
+	---------------------
+	[maxThreads] (기본값 200): 
+		동시에 처리할 수 있는 최대 워커 스레드 수. 
+		요청이 이 값을 넘으면 대기 상태가 됩니다.
+	[minSpareThreads] (기본값 4~10): 
+		유휴 상태로 유지하는 최소 스레드 수. 
+		트래픽 증가 시 즉시 처리할 수 있는 여유분입니다.
+	[acceptCount] (기본값 100): 
+		모든 스레드가 사용 중일 때 요청을 큐에 저장하는 대기 큐 크기. 
+		이 값을 넘으면 접속 거부됩니다.
+	[maxParameterCount] (기본값 10,000): 
+		GET/POST 요청에서 처리할 최대 파라미터 수. 
+		보안 및 성능을 위한 제한 값입니다
+	---------------------
+	
+4. 홈 디렉토리 설정
+
+	아파치 DocumentRoot 와 톰캣 appbase를 맞춰준다
+		:아파치 DocumentRoot 를 톰캣 기본 웹앱 디렉토리인 ROOT를 바라보게 한다.
+	
+	(httpd.conf)
+	
+		DocumentRoot "/home/tomcat/public/ROOT"
+		<Directory "/home/tomcat/public/ROOT">
+
+		# vhost.conf 일때
+		<VirtualHost *:80>
+		    ..
+		    DocumentRoot "/home/tomcat/public/ROOT"
+		    
+		    
+	(server.xml)
+		<Host name="localhost"  appBase="/home/tomcat/public"
+			    unpackWARs="true" autoDeploy="true">
+			    
+		- context 태그를 설정하지 않았다면 
+		appBase(/home/tomcat/public)/ROOT 디렉토리가 기본 웹앱 홈이 된다.
+		
+5. 테스트 및 이슈
+
+===================
+
+아파치 기동 , 톰캣 기동 후 테스트 해본다.
+http://localhost/index.html
+http://localhost/test.jsp
+
+===================
+
+연동이 잘 되지 않는다면 로그를 잘 봐야한다.
+	
+	아파치 홈/logs/error_log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
+	아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
+	톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
+	톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
+	
+===================
+
+SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
+SELinux 완전 끄던가. 
+아니면 아래 명령으로 보안 설정을 한다
+(아파치의 톰캣포트 AJP 8009로 통신 허용)
+
+	setsebool -P httpd_can_network_connect on
+	
+
+		
