@@ -1,39 +1,41 @@
 
+고성능 APR(Apache Portable Runtime) 기능을 쓰기 위해서
+톰캣에서는 Tomcat Native Library 라는 JNI 라이브러리를 사용한다
 
-Tomcat Native Library 는 APR(Apache Portable Runtime)을 사용한다.
-
-	APR <- Tomcat Native Library
+	APR <- Tomcat Native Library(libtcnative)
 
 그러므로 APR이 먼저 설치되어 있어야 한다.(그래야 쓰지)
+그리고 (Tomcat Native Library)를 컴파일한 라이브러리를 
+apr홈/lib에 설치하고 그 apr홈/lib 경로를 java 경로에 추가해서 
+APR을 사용한다.
 
 APR은 
 아파치에도 설정해서 사용할 수 있고,(컴파일시 설정)
 톰캣단독으로 설정해서 사용 할 수도 있다.
 
-설치 흐름은 아래와 같다.
+APR 설치 후 톰캣 연동 흐름은 아래와 같다.
 
 톰캣 단독으로 설치할때는 
 	
-	1.apr(apr-util,apr-iconv)설치  
+	1.apr(apr-util)설치  
 	2.(Tomcat Native Library) 컴파일 설치
 		apr홈/lib 에 'libtcnative*' 파일들 생성 확인.
-	3.톰캣 실행 환경변수에 apr/lib 추가 설정
+	3.톰캣 실행 환경변수에 apr홈/lib 추가 설정
 	4.톰캣 server.xml 설정 연동
 	<Connector protocol="org.apache.coyote.http11.Http11AprProtocol" ../>	
 	
 아파치와 톰캣 연동할 때는 아파치 설치시 apr 연동 설치 되었을테니
 	
-	1.apr(apr-util,apr-iconv) 설치 홈 경로 파악
+	1.apr(apr-util) 설치 홈 경로 파악
 	2.(Tomcat Native Library) 컴파일 설치.
 		apr홈/lib 에 'libtcnative*' 파일들 생성 확인.
-	3.톰캣 실행 환경변수에 apr/lib 추가 설정
+	3.톰캣 실행 환경변수에 apr홈/lib 추가 설정
 	4.톰캣 server.xml 설정 연동
 	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol" ../>
 	
 
 톰캣 Server.xml의 <Connector/> 태그 속성 protocol 값을 유심히 보면 
 서로 다른 클래스명 설정이 보인다. 
-톰캣 단독설치와 아파치 연동 설치시 설정한 프로토콜 클래스명이 다르다.
 (※이것이 중요한 핵심 포인트다)
 
 APR 설치 후 
@@ -49,9 +51,11 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 아래는 톰캣 단독 설치시 
 (Tomcat Native Library)를 설치하고 설정하는 과정을 정리했다.
 
-※ 아파치-톰캣 연동은 [02.아파치_톰캣연동] 디렉토리를 참조하자
+아래 과정까지 성공해야, 아파치 연동시에도 편해진다.
 
--------------------1.apr(apr-util,apr-iconv) 설치
+(※ 아파치-톰캣 연동은 [02.아파치_톰캣연동] 디렉토리를 참조하자)
+
+-------------------1.apr(apr-util) 설치
 
 1. 사전 도구 설치
 	dnf -y install gcc gcc-c++ make expat-devel
@@ -81,7 +85,8 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 	cd /usr/local/src
 	tar xvfz apr-util-1.6.3.tar.gz
 	
-	cd apr-util-1.6.3
+	cd apr-util-1.6.3/navtive
+	
 	./configure --prefix=/usr/local/apr-util-1.6.3 \
 	--with-apr=/usr/local/apr-1.7.6
 	
@@ -89,19 +94,6 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 	
 	ls /usr/local # apr-util-1.6.3 디렉토리 생성되었는지 확인
 	
-5. apr-iconv 설치
-	
-	cd /usr/local/src
-	tar xvfz apr-iconv-1.2.2.tar.gz
-	
-	cd apr-iconv-1.2.2
-	./configure --prefix=/usr/local/apr-iconv-1.2.2 \
-	--with-apr=/usr/local/apr-1.7.6
-	
-	make && make install
-	
-	ls /usr/local # apr-iconv-1.2.2 디렉토리 생성되었는지 확인
-
 
 -------------------2.(Tomcat Native Library) 설치 
 
@@ -113,7 +105,6 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 		libapr-1.a  libapr-1.so  libapr-1.so.0.7.6
 
 2. 컴파일 & 설치 
-	su - tomcat
 	
 	cd /usr/local/tomcat-9.0.113/bin 
 	tar xvfz tomcat-native.tar.gz
@@ -123,7 +114,8 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 	cd tomcat-native-1.3.1-src/native
 
 	#설정 옵션을 자세히 보자 (검색해서 파악하면 좋다)
-	./configure --with-apr=/usr/local/apr-1.7.6/bin/apr-1-config \
+	./configure --prefix=/usr/local/apr-1.7.6 \
+	--with-apr=/usr/local/apr-1.7.6/bin/apr-1-config \
 	--with-java-home=/usr/local/jdk-11.0.0.2 \
 	--with-ssl=yes
 
@@ -141,7 +133,7 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 	# 5개의 ''libtcnative..' 파일들이 설치되었음을 확인할 수 있다.
 
 
--------------------3.톰캣 실행시 java 환경변수에 apr/lib 추가 설정
+-------------------3.톰캣 실행시 java 환경변수에 apr홈/lib 추가 설정
  
 두가지 설정법이 있다. (1번이 나은 방법)
 
@@ -170,7 +162,9 @@ native 라이브러리이므로 압축 해제후 컴파일해서 설치해야한
 	export LD_LIBRARY_PATH		
 	:wq	
 	
-------------------- 4.톰캣 server.xml 설정 연동
+	ldconfig
+	
+------------------- 4.톰캣 server.xml 설정 APR 연동
 
 Tomcat AJP Connector 설정 변경 (server.xml)
 : protocol="HTTP/1.1" 커네터를 찾아서
@@ -179,7 +173,7 @@ Tomcat AJP Connector 설정 변경 (server.xml)
 	cd /usr/local/tomcat-9.0.113/conf
 	vi server.xml
 	..
-		
+	<!-- 톰캣 단독 서버 설정 -->
 	<Connector port="8080" 
            protocol="org.apache.coyote.http11.Http11AprProtocol" #이전값: HTTP/1.1
            connectionTimeout="20000"
@@ -188,17 +182,31 @@ Tomcat AJP Connector 설정 변경 (server.xml)
 	
 ------------------- 테스트
 
-# 아파치 기동 후 톰캣 기동 , 톰캣 로그를 확인해서 설정 확인. 
-
-/usr/local/apache2.4.66/bin/apachectl -k start  #아파치 기동
-
-/usr/local/tomcat-9.0.113/bin/starup.sh #톰캣 기동
+cd /usr/local/tomcat-9.0.113/bin 
+./starup.sh #톰캣 기동
 
 tail -f /usr/local/tomcat-9.0.113/logs/catalina.out #로그 확인
 	
 	'Loaded Apache Tomcat Native library'
 	
 등의 메시지가 나오면 Tomcat Native library 설정이 제대로 된것이다
-	
+
+./shutdown.sh # 톰캣 정지 
+
+------------------- 테스트 2 (이 방법이 더 편하다, 로그까지 출력해준다)
+/usr/local/apache2.4.66/bin/configtest.sh
+
+	["http-apr-8080"]을(를) 초기화합니다. <= 설정한 apr을 사용한다는 것
+
+INFO: APR 버전 [1.7.6]을(를) 사용한, APR 기반 Apache Tomcat Native 라이브러리 [1.3.1]을(를) 로드했습니다.
+5월 12, 2026 7:43:42 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
+INFO: APR 용량정보들: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+5월 12, 2026 7:43:42 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
+INFO: APR/OpenSSL 설정: useAprConnector [false], useOpenSSL [true]
+5월 12, 2026 7:43:42 오후 org.apache.catalina.core.AprLifecycleListener initializeSSL
+INFO: OpenSSL이 성공적으로 초기화되었습니다: [OpenSSL 3.5.1 1 Jul 2025]
+5월 12, 2026 7:43:42 오후 org.apache.coyote.AbstractProtocol init
+INFO: 프로토콜 핸들러 ["http-apr-8080"]을(를) 초기화합니다.
+
 
 	   

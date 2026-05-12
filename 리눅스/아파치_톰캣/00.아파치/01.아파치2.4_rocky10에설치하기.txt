@@ -1,7 +1,8 @@
 Rocky 10 리눅스는 기본 모듈 중 pcre2를 써야한다!
 
-event MPM(Multi-Processing Module) 방식으로 설치
-su - tomcat # 톰캣 계정으로 설치
+최신 event MPM(Multi-Processing Module) 방식으로 설치
+
+root 계정으로 설치 후 설치 디렉토리를 tomcat:tomcat 권한으로 모두 변경한다
 
 1. 사전 도구 설치
 	
@@ -42,23 +43,15 @@ su - tomcat # 톰캣 계정으로 설치
 	tar xvfz apr-util-1.6.3.tar.gz
 	
 	cd apr-util-1.6.3
-	./configure --prefix=/usr/local/apr-util-1.6.3 --with-apr=/usr/local/apr-1.7.6
+	./configure --prefix=/usr/local/apr-util-1.6.3 \
+		--with-apr=/usr/local/apr-1.7.6 \
+		--with-iconv
 	make && make install
 	
 	ls /usr/local # apr-util-1.6.3 디렉토리 생성되었는지 확인
 	
-5. apr-iconv 설치
 	
-	cd /usr/local/src
-	tar xvfz apr-iconv-1.2.2.tar.gz
-	
-	cd apr-iconv-1.2.2
-	./configure --prefix=/usr/local/apr-iconv-1.2.2 --with-apr=/usr/local/apr-1.7.6
-	make && make install
-	
-	ls /usr/local # apr-iconv-1.2.2 디렉토리 생성되었는지 확인
-	
-6. pcre2 설치
+5. pcre2 설치
 	
 	cd /usr/local/src
 	unzip pcre2-10.47.zip
@@ -72,45 +65,47 @@ su - tomcat # 톰캣 계정으로 설치
 	
 	ls /usr/local # pcre2-10.47 디렉토리 생성되었는지 확인
 	
-7. openssl 위치 확인
+6. openssl 위치 확인
 	
 	whereis openssl
 	openssl: /usr/include/openssl
 	
-8. apache 설치
+7. apache 설치
 	
 	cd /usr/local/src
 	tar xvfz httpd-2.4.66.tar.gz
 	
 	cd httpd-2.4.66
 		
-	./configure --prefix=/usr/local/apache2.4.66 \
-	--enable-so --enable-rewrite --enable-proxy \
+	./configure --prefix=/usr/local/apache-2.4.66 \
+	--enable-so \
+	--enable-rewrite \
+	--enable-proxy \
+	--enable-expires \
+	--enable-ssl \
+	--with-ssl=/usr/include/openssl \
 	--enable-mods-shared=all \
-	--enable-modules=shared --enable-modules=ssl \
-	--enable-mpms-shared=all --enable-expires \
-	--enable-ssl=/usr/include/openssl \
+	--enable-mpms-shared=all \
+	--with-mpm=event \
 	--with-apr=/usr/local/apr-1.7.6 \
 	--with-apr-util=/usr/local/apr-util-1.6.3 \
-	--with-apr-iconv=/usr/local/apr-iconv-1.2.2 \
-	--with-pcre2=/usr/local/pcre2-10.47/bin/pcre2-config \
-	--with-mpm=event
+	--with-pcre2=/usr/local/pcre2-10.47/bin/pcre2-config
 
 	# enable-mpms-shared=all, with-mpm=event 꼭 지정해라. 
 	# (고성능 apr 사용과, 현대적 event MPM 방식)
 	
 	make && make install
 	
-	ls /usr/local # apache2.4.66 디렉토리 생성되었는지 확인 
+	ls /usr/local # apache-2.4.66 디렉토리 생성되었는지 확인 
 		
 	
-9. httpd.conf 설정
+8. httpd.conf 설정
 	
-	cd cd /usr/local/apache2.4.66/conf
+	cd cd /usr/local/apache-2.4.66/conf
 	vi httpd.conf
 	
 		# ServerName 주석 풀고 'localhost' 설정
-		ServerName localhost
+		ServerName localhost:80
 		
 		..
 		
@@ -123,9 +118,16 @@ su - tomcat # 톰캣 계정으로 설치
 		# Various default settings
 		Include conf/extra/httpd-default.conf #주석해제
 		
+		
+		..
+		# 웹홈 설정
+		DocumentRoot "/home/tomcat/public/ROOT"
+		<Directory "/home/tomcat/public/ROOT">
+		..
+		
 	:wq
 	
-	cd cd /usr/local/apache2.4.66/conf/extra
+	cd cd /usr/local/apache-2.4.66/conf/extra
 	vi httpd-default.conf
 	
 		#최적화 설정
@@ -140,13 +142,28 @@ su - tomcat # 톰캣 계정으로 설치
 	리스너 스레드의 부하를 줄입니다
 	---------------------
 	
+	웹홈 기본 테스트 설정시 :
 	
-10. httpd-mpm.conf 설정
+		메인 호스트 방식:
+		(conf/httpd.conf)
+		
+			DocumentRoot "/home/tomcat/public/ROOT"
+			<Directory "/home/tomcat/public/ROOT">
+			
+		가상호스트 방식: 
+		(conf/extra/httpd-vhosts.conf)
+			
+			<VirtualHost *:80>
+			    ..
+			    DocumentRoot "/home/tomcat/public/ROOT"
+			    
+	
+9. httpd-mpm.conf 설정
 
 	최신 Event MPM 을 사용하므로 아래 설정을 추가한다  
 	(운영 서버 사양(RAM 8GB~16GB 기준)
 	
-	vi /usr/local/apache2.4.66/conf/extra/httpd-mpm.conf
+	vi /usr/local/apache-2.4.66/conf/extra/httpd-mpm.conf
 	<IfModule mpm_event_module>
 	    # 서버가 시작할 때 생성할 초기 자식 프로세스 수
 	    StartServers             5
@@ -181,13 +198,13 @@ su - tomcat # 톰캣 계정으로 설치
 	ServerLimit와 MaxRequestWorkers를 비례하여 증설하십시오.
 	---------------------
 	
-11. 설정 파일 체크 
+10. 설정 파일 체크 
 
 	# 설정 후 설정파일 잘 적용되었는지 테스트
-	/usr/local/apache2.4.66/bin/apachectl configtest
+	/usr/local/apache-2.4.66/bin/apachectl configtest
 	Syntax OK	#이렇게 나와야 설정이 이상 없다는 뜻이다
 	
-12. 방화벽 오픈
+11. 방화벽 오픈
 
 	firewall-cmd --permanent --list-ports # 열린 포트 목록 확인
 	firewall-cmd --list-services # 열린 서비스 목록 확인
@@ -198,12 +215,12 @@ su - tomcat # 톰캣 계정으로 설치
 	#방화벽 재시작
 	firewall-cmd --reload
 	
-13. 기동/재시작/종료
+12. 기동/재시작/종료
 
 	-k 옵션 : 원래 기동시 기본 옵션이다(대부분 생략해도 동작하게 되어있다고 한다)
 	
 	# 기동 테스트
-	cd /usr/local/apache2.4.66/bin	
+	cd /usr/local/apache-2.4.66/bin	
 	
 	./apachectl -k start	# 시작
 	./apachectl -k restart	# 재시작
@@ -217,3 +234,4 @@ su - tomcat # 톰캣 계정으로 설치
 	...
 	Server MPM:     event 
 	
+
