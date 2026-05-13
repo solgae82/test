@@ -6,6 +6,8 @@
 
 mod_jk + workers.properties 방식 연동 설정
 
+(mod_jk 소스인 'tomcat-connectors-1.2.50-src' 를 다운로드 받아서 컴파일 설치한다)
+
 su - tomcat  # 톰캣계정으로 설치
 
 -------------------
@@ -215,39 +217,44 @@ su - tomcat  # 톰캣계정으로 설치
 		
 9. 테스트 및 이슈
 
-===================
+	===================
 
-아파치 기동 , 톰캣 기동 후 테스트 해본다.
-http://localhost/index.html
-http://localhost/test.jsp
+	아파치 기동 , 톰캣 기동 후 테스트 해본다.
+	http://localhost/index.html
+	http://localhost/test.jsp
 
-===================
+	===================
 
-연동이 잘 되지 않는다면 로그를 잘 봐야한다.
-	
-	아파치 홈/logs/mod_jk.log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
-	아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
-	톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
-	톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
-	
-===================
-
-SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
-SELinux 완전 끄던가. 
-아니면 아래 명령으로 보안 설정을 한다
-(아파치의 톰캣포트 AJP 8009로 통신 허용)
-
-	setsebool -P httpd_can_network_connect on
-	
-===================
-
-계속 에러가 나서 헤맸는데, 제미나이에게 물어봐서 해결했다
-	
-	아파치홈/conf/workers.propeties 의
-	
-		worker.tomcat01.host=127.0.0.1	 #이거 중요
+	연동이 잘 되지 않는다면 로그를 잘 봐야한다.
 		
-	와 톰캣 Connector 의 address 속성값을 일치시켜야 했다
-	
-		address="127.0.0.1"
+		아파치 홈/logs/mod_jk.log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
+		아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
+		톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
+		톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
 		
+	===================
+
+	SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
+	SELinux 완전 끄던가. 
+	아니면 아래 명령으로 보안 설정을 한다
+	(아파치의 톰캣포트 AJP 8009로 통신 허용)
+
+		setsebool -P httpd_can_network_connect on
+		
+	===================
+
+	계속 에러가 나서 헤맸는데, 제미나이에게 물어봐서 해결했다
+		
+		아파치홈/conf/workers.propeties 의
+		
+			worker.tomcat01.host=127.0.0.1	 #이거 중요
+			
+		와 톰캣 Connector 의 address 속성값을 일치시켜야 했다
+		
+			address="127.0.0.1"
+		
+6. 연동 테스트 성공했다면, 허용된 톰캣 방화벽 8080 포트를 다시 막아 놓자
+	sudo firewall-cmd --permanent --zone=public --remove-port=8080/tcp
+	sudo firewall-cmd --reload
+
+

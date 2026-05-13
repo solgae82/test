@@ -1,16 +1,21 @@
 
+/usr/local 에 설치할 것이므로,
+root 계정으로 설치 후 설치 디렉토리를 tomcat:tomcat 권한으로 모두 변경한다
 
-/usr/local/jdk11.0.0.2
+
+/usr/local/jdk-11.0.0.2
 에 java 소스 디렉토리 위치시키면 기본 설치 끝
 
 ----centos 에서 root 전역 설치
 
-1. root로 환경변수 셋팅
+1. root로 전역 환경변수 셋팅  
+	
+	(전역으로 호출할 필요가 있을 경우만 설정하면 된다)
 
 	#전역 profile에 java 환경변수 추가
 	[root@localhost local]# vi /etc/profile
 	
-	export JAVA_HOME=/usr/local/jdk11.0.0.2
+	export JAVA_HOME=/usr/local/jdk-11.0.0.2
 	export CLASSPATH="."
 	export PATH="$PATH:$JAVA_HOME/bin"
 
@@ -22,7 +27,7 @@
 	java version "jdk11.0.0.2"
 	
 	[root@localhost local]# which java
-	/usr/local/jdk11.0.0.2/bin/java
+	/usr/local/jdk-11.0.0.2/bin/java
 
 ---- 톰캣에 java 설정
 
@@ -32,7 +37,7 @@
 	
 	(톰캣 8이상은 JAVA_HOME 환경변수만 설정해주면 된다.)
 	
-	자바 홈 : /usr/local/jdk11.0.0.2 #소유권한은 tomcat:tomcat
+	자바 홈 : /usr/local/jdk-11.0.0.2 #소유권한은 tomcat:tomcat
 	
 	su - tomcat # 톰캣계정으로 생성한다
 	
@@ -40,7 +45,7 @@
 	vi setenv.sh
 	
 		#!/usr/bin/bash
-		export JAVA_HOME=/usr/local/jdk11.0.0.2
+		export JAVA_HOME=/usr/local/jdk-11.0.0.2
 
 	:wq
 	

@@ -17,10 +17,12 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 	
 1. 아파치 httpd.conf 설정
 	
+	--------------------- 사용할 모듈 주석 해제
 	# httpd.conf 추가 편집
 	cd /usr/local/apache-2.4.66/conf
 	vi httpd.conf
-	ServerName 127.0.0.1
+	
+	ServerName 127.0.0.1:80
 	DocumentRoot "/home/tomcat/public/ROOT"
 	<Directory "/home/tomcat/public/ROOT">
 	..	
@@ -30,18 +32,21 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 	LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
 	..
 	
-	--------------------- 방식 1. httpd.conf 하단에 추가
+	# 아래는 두가지 방식 중 한가지 선택해서 설정.
+	
+	--------------------- (mod_proxy_ajp 설정방식 1). httpd.conf 하단에 추가
+	
 	# 제일 하단에 추가
 	# 톰캣으로 보낼 프록시 설정 (ProxyPass)
 	# 기존에 설정했던 MaxRequestWorkers(2048) 자원에 맞게 프록시 풀을 최적화합니다.
 
 	# 1. 톰캣 연동 커넥션 풀 설정 (AJP 기준)
-	<Proxy "ajp://localhost:8009">
+	<Proxy "ajp://127.0.0.1:8009">
 	    ProxySet max=2048 ttl=60 keepalive=On
 	</Proxy>
 
 	# 2. 정적 파일 프록시 제외 설정 (반드시 ProxyPass / 보다 위에 작성)
-	# 이 경로들은 톰캣으로 보내지 않고 아파치가 직접 /usr/local/apache-2.4.66/htdocs 에서 찾습니다.
+	# 이 경로들은 톰캣으로 보내지 않고 아파치가 직접 찾습니다.
 	ProxyPass /images !
 	ProxyPass /css !
 	ProxyPass /js !
@@ -49,22 +54,23 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 
 	# 3. 나머지 모든 동적 요청을 톰캣으로 전달
 	# 톰캣으로 요청을 보낼 때만 비밀키 인증을 수행합니다.
-	ProxyPass / ajp://localhost:8009/ secret=1234
-	ProxyPassReverse / ajp://localhost:8009/
+	ProxyPass / ajp://127.0.0.1:8009/ secret=1234
+	ProxyPassReverse / ajp://127.0.0.1:8009/
 
 
-	---------------------방식 2. vhost에 추가
+	--------------------- (mod_proxy_ajp 설정방식 2). vhost에 추가
+	
 	# conf/httpd.conf 파일 내에서 아래 라인의 주석(#)을 제거합니다.
 		Include conf/extra/httpd-vhosts.conf
 	:wq
 	
 	vi /usr/local/apache-2.4.66/conf/extra/httpd-vhosts.conf
 	<VirtualHost *:80>
-	    ServerName localhost
+	    ServerName 127.0.0.1
 	    DocumentRoot "/home/tomcat/public/ROOT"
 
 	    # AJP 프록시 풀 설정
-	    <Proxy "ajp://localhost:8009">
+	    <Proxy "ajp://127.0.0.1:8009">
 		ProxySet max=2048 ttl=60 keepalive=On
 	    </Proxy>
 
@@ -78,12 +84,12 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 
 	    # 나머지 모든 요청은 톰캣으로 전달
 	    # 톰캣으로 요청을 보낼 때만 비밀키 인증을 수행합니다.
-	    ProxyPass / ajp://localhost:8009/ secret=1234
-	    ProxyPassReverse / ajp://localhost:8009/
+	    ProxyPass / ajp://127.0.0.1:8009/ secret=1234
+	    ProxyPassReverse / ajp://127.0.0.1:8009/
 
 	    # 로그 파일 별도 관리
-	    ErrorLog "logs/localhost-error_log"
-	    CustomLog "logs/localhost-access_log" common
+	    ErrorLog "logs/127.0.0.1-error_log"
+	    CustomLog "logs/127.0.0.1-access_log" common
 	</VirtualHost>
 
 
@@ -112,8 +118,8 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 		ProxyPassMatch ^/.*\.(gif|jpg|png|css|js|ico)$ !
 
 		# 2. 나머지 모든 요청은 톰캣으로 전달 (AJP 및 비밀키 적용)
-		ProxyPass / ajp://localhost:8009/ secret=1234
-		ProxyPassReverse / ajp://localhost:8009/
+		ProxyPass / ajp://127.0.0.1:8009/ secret=1234
+		ProxyPassReverse / ajp://127.0.0.1:8009/
 
 
 2. 설정 후 아파치 시작 (테스트)
@@ -136,15 +142,15 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 	
 	<!-- protocol="AJP/1.3" 을 protocol="org.apache.coyote.ajp.AjpAprProtocol" 변경 -->
 	<Connector protocol="org.apache.coyote.ajp.AjpAprProtocol"
-		address="127.0.0.1"	# ProxyPass / ajp://localhost:8009/ 동일한 address
-		port="8009"		# ProxyPass / ajp://localhost:8009/ 동일한 port.
+		address="127.0.0.1"	# ProxyPass / ajp://127.0.0.1:8009/ 동일한 address
+		port="8009"		# ProxyPass / ajp://127.0.0.1:8009/ 동일한 port.
 		redirectPort="8443"
 		maxThreads="500"
 		minSpareThreads="50"
 		acceptCount="200"
 		maxParameterCount="10000" 
 		secretRequired="true"	# 시크릿 키 사용하겠다는 설정
-		secret="1234"		# worker.tomcat01.secret=1234 값과 동일하게.
+		secret="1234"		# ProxyPass / ajp://127.0.0.1:8009/ secret=1234 값과 동일하게.
 		allowedRequestAttributesPattern=""  #허용안함, (이것도 이슈,'allowedR*.txt파일로 정리)
        />
        
@@ -191,7 +197,7 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 		    
 		    
 	(server.xml)
-		<Host name="localhost"  appBase="/home/tomcat/public"
+		<Host name="127.0.0.1"  appBase="/home/tomcat/public"
 			    unpackWARs="true" autoDeploy="true">
 			    
 		- context 태그를 설정하지 않았다면 
@@ -199,49 +205,55 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 		
 5. 테스트 및 이슈
 
-=================== 기동 테스트
+	=================== 기동 테스트
 
-# 아파치 테스트 
-/usr/local/apache-2.4.66/bin/apachectl configtest
-Syntax OK
+	# 아파치 테스트 
+	/usr/local/apache-2.4.66/bin/apachectl configtest
+	Syntax OK
 
-# 톰캣 테스트
-/usr/local/tomcat-9.0.113/bin/ configtest.sh
+	# 톰캣 테스트
+	/usr/local/tomcat-9.0.113/bin/configtest.sh
 
-INFO: APR 버전 [1.7.6]을(를) 사용한, APR 기반 Apache Tomcat Native 라이브러리 [1.3.1]을(를) 로드했습니다.
-5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
-INFO: APR 용량정보들: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
-5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
-INFO: APR/OpenSSL 설정: useAprConnector [false], useOpenSSL [true]
-5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener initializeSSL
-INFO: OpenSSL이 성공적으로 초기화되었습니다: [OpenSSL 3.5.1 1 Jul 2025]
-5월 12, 2026 8:30:36 오후 org.apache.coyote.AbstractProtocol init
-INFO: 프로토콜 핸들러 ["ajp-apr-127.0.0.1-8009"]을(를) 초기화합니다.
-5월 12, 2026 8:30:36 오후 org.apache.catalina.startup.Catalina load
-INFO: [450] 밀리초 내에 서버가 초기화되었습니다.
+		["ajp-apr-127.0.0.1-8009"] <= 요게 나와야 한다
+		
+	INFO: APR 버전 [1.7.6]을(를) 사용한, APR 기반 Apache Tomcat Native 라이브러리 [1.3.1]을(를) 로드했습니다.
+	5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
+	INFO: APR 용량정보들: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+	5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener lifecycleEvent
+	INFO: APR/OpenSSL 설정: useAprConnector [false], useOpenSSL [true]
+	5월 12, 2026 8:30:35 오후 org.apache.catalina.core.AprLifecycleListener initializeSSL
+	INFO: OpenSSL이 성공적으로 초기화되었습니다: [OpenSSL 3.5.1 1 Jul 2025]
+	5월 12, 2026 8:30:36 오후 org.apache.coyote.AbstractProtocol init
+	INFO: 프로토콜 핸들러 ["ajp-apr-127.0.0.1-8009"]을(를) 초기화합니다.
+	5월 12, 2026 8:30:36 오후 org.apache.catalina.startup.Catalina load
+	INFO: [450] 밀리초 내에 서버가 초기화되었습니다.
 
-=================== 실제 테스트
+	=================== 실제 테스트
 
-아파치 기동 , 톰캣 기동 후 테스트 해본다.
-http://localhost/index.html
-http://localhost/test.jsp
+	아파치 기동 , 톰캣 기동 후 테스트 해본다.
+	http://localhost/index.html
+	http://localhost/test.jsp
 
-===================
+	===================
 
-연동 잘 되지 않는다면 로그를 잘 봐야한다.
-	
-	아파치 홈/logs/error_log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
-	아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
-	톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
-	톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
-	
-===================
+	연동 잘 되지 않는다면 로그를 잘 봐야한다.
+		
+		아파치 홈/logs/error_log # 아파치&톰캣 연동 에러 메시지가 여기에 있다.
+		아파치 홈/logs/access_log # http 상태 정보를 확인할 수 있다.
+		톰캣 홈/logs/catalina.out # jsp 로그를 볼 수 있다.
+		톰캣 홈/logs/localhost_access_log # jsp access 로그를 볼 수 있다.
+		
+	===================
 
-SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
-SELinux 완전 끄던가. 
-아니면 아래 명령으로 보안 설정을 한다
-(아파치의 톰캣포트 AJP 8009로 통신 허용)
+	SELinux 가 아파치 네트워크 연결을 차단하면 503에러가 발생한다.
+	SELinux 완전 끄던가. 
+	아니면 아래 명령으로 보안 설정을 한다
+	(아파치의 톰캣포트 AJP 8009로 통신 허용)
 
-	setsebool -P httpd_can_network_connect on
+		setsebool -P httpd_can_network_connect on
 	
  
+6. 연동 테스트 성공했다면, 허용된 톰캣 방화벽 8080 포트를 다시 막아 놓자
+	sudo firewall-cmd --permanent --zone=public --remove-port=8080/tcp
+	sudo firewall-cmd --reload
+
