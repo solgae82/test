@@ -1,13 +1,15 @@
-<아파치 톰캣 연동 절차>
+<아파치 톰캣 연동 (mod_jk) 절차>
+mod_jk + workers.properties 를 이용한 연동 설정 방식
 
-아파치 홈 : /usr/local/apache2.4/bin
-톰캣 홈 : /usr/local/apache-tomcat-9.0.113
+아파치 서버 (설치 상태)
+	mod_jk.so 모듈 설치 (전)
+	아파치 홈 : /usr/local/apache-2.4.66/bin
 
-
-mod_jk + workers.properties 방식 연동 설정
-
-(mod_jk 소스인 'tomcat-connectors-1.2.50-src' 를 다운로드 받아서 컴파일 설치한다)
-
+톰캣 서버 (설치 상태)
+	(Tomcat native library)로 apr 사용 가능한 상태
+	톰캣 홈 : /usr/local/apache-tomcat-9.0.113
+	
+	
 su - tomcat  # 톰캣계정으로 설치
 
 -------------------

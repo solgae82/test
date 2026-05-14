@@ -35,7 +35,7 @@ APR 설치 후 톰캣 연동 흐름은 아래와 같다.
 	
 
 톰캣 Server.xml의 <Connector/> 태그 속성 protocol 값을 유심히 보면 
-서로 다른 클래스명 설정이 보인다. 
+서로 다른 패키지명.클래스명 설정이 보인다. 
 (※이것이 중요한 핵심 포인트다)
 
 APR 설치 후 
@@ -179,21 +179,11 @@ Tomcat AJP Connector 설정 변경 (server.xml)
            connectionTimeout="20000"
            redirectPort="8443" />
        
-	
-------------------- 테스트
 
-cd /usr/local/tomcat-9.0.113/bin 
-./starup.sh #톰캣 기동
+------------------- 5.테스트 
 
-tail -f /usr/local/tomcat-9.0.113/logs/catalina.out #로그 확인
-	
-	'Loaded Apache Tomcat Native library'
-	
-등의 메시지가 나오면 Tomcat Native library 설정이 제대로 된것이다
+# 기동전 테스트이다. 로그까지 출력되니 일석이조!
 
-./shutdown.sh # 톰캣 정지 
-
-------------------- 테스트 2 (이 방법이 더 편하다, 로그까지 출력해준다)
 /usr/local/apache2.4.66/bin/configtest.sh
 
 	["http-apr-8080"]을(를) 초기화합니다. <= 설정한 apr을 사용한다는 것
@@ -208,5 +198,16 @@ INFO: OpenSSL이 성공적으로 초기화되었습니다: [OpenSSL 3.5.1 1 Jul 
 5월 12, 2026 7:43:42 오후 org.apache.coyote.AbstractProtocol init
 INFO: 프로토콜 핸들러 ["http-apr-8080"]을(를) 초기화합니다.
 
+------------------- 6.기동 테스트
 
-	   
+cd /usr/local/tomcat-9.0.113/bin 
+./starup.sh #톰캣 기동
+
+tail -f /usr/local/tomcat-9.0.113/logs/catalina.out #로그 확인
+	
+	'Loaded Apache Tomcat Native library'
+	
+등의 메시지가 나오면 Tomcat Native library 설정이 제대로 된것이다
+
+./shutdown.sh # 톰캣 정지
+

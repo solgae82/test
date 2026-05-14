@@ -1,19 +1,17 @@
-<아파치 톰캣 연동 절차>
+<아파치 톰캣 연동 (mod_proxy_ajp) 절차>
 mod_proxy_ajp.so를 이용한 연동 설정 방식 (이미 아파치에 설치된 상태)
 
-아파치 홈 : /usr/local/apache-2.4.66/bin
-톰캣 홈 : /usr/local/apache-tomcat-9.0.113
+아파치 서버 (설치 상태)
+	mod_proxy_ajp.so 모듈 사용 가능 상태
+	아파치 홈 : /usr/local/apache-2.4.66/bin
 
+톰캣 서버 (설치 상태)
+	(Tomcat native library)로 apr 사용 가능한 상태
+	톰캣 홈 : /usr/local/apache-tomcat-9.0.113
 
-아파치 서버
-mod_proxy_ajp.so 모듈 사용 가능 상태
-
-
-톰캣 서버
-(Tomcat native library)로 apr 사용 가능한 상태
+su - tomcat  # 톰캣계정으로 설치
 
 -------------------
-
 	
 1. 아파치 httpd.conf 설정
 	
@@ -123,7 +121,6 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 
 
 2. 설정 후 아파치 시작 (테스트)
-
 	
 	cd /usr/local/apache-2.4.66/bin
 	
@@ -132,7 +129,6 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 	
 	# 이상 없으면 시작
 	./apachectl start
-
 
 
 3. 톰캣 server.xml 설정
@@ -180,6 +176,7 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 		보안 및 성능을 위한 제한 값입니다
 	---------------------
 	
+	
 4. 홈 디렉토리 설정
 
 	아파치 DocumentRoot 와 톰캣 appbase를 맞춰준다
@@ -202,6 +199,7 @@ mod_proxy_ajp.so 모듈 사용 가능 상태
 			    
 		- context 태그를 설정하지 않았다면 
 		appBase(/home/tomcat/public)/ROOT 디렉토리가 기본 웹앱 홈이 된다.
+		
 		
 5. 테스트 및 이슈
 
