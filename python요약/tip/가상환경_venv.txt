@@ -1,8 +1,13 @@
 
-운영체제에 설치된 여러 버전 파이썬 중 3.12 버전을 설정해서 가상환경 셋팅하는 방법이다
+<vscode 코드 가상환경 설정>
+
+vscode IDE로 운영체제에 설치된 여러 버전 파이썬 중 
+3.12 버전을 설정해서 가상환경 셋팅하는 방법이다
 
 vscode 설정 기준이다.
 (vscode에서 일단 파이썬 파일 한개는 열고 가상환경 설정 시작해야 우측 아래에 선택 화면이 뜬다.)
+
+-------------------
 
 1. vscode 시작
 
@@ -14,21 +19,21 @@ vscode 설정 기준이다.
 3. vscode 터미널 열어서(powershell)
 
 		
-	py -3.12 -m venv venv
+	$ py -3.12 -m venv venv
 	
 	
 	#프로젝트 폴더에 venv 폴더가 생성되었는지 확인
 	
 4. 가상 환경 활성화 (매번 새로 열때마다 해야함)
 	
-	venv\Scripts\activate
+	$ venv\Scripts\activate
 	
 	#가상 환경이 활성화되면 터미널 창 앞에 (venv)라는 기호가 추가됨
 	
 5. 만약 (venv) 가상환경 프롬프트가 나오지 않는다면, powershell 실행 정책 변경
 	
-	- powershell 관리자 모드로 실행
-	- 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser' 실행
+	# powershell 관리자 모드로 실행
+	$ 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser' 실행
 	
 	설정 변경 후 '4번' 다시 실행
 	
@@ -49,7 +54,7 @@ vscode 설정 기준이다.
 	- 선택 박스 중 'Python: Select Interpreter' 를 선택해서 
 	원하는 파이썬 버전 선택해서 사용
 	
-	ex) Python 3.12 (64-bit) C:\python\3.12.4\pythoe.exe
+	ex) Python 3.12 (64-bit) C:\python\3.12.4\python.exe
 	
 
 8. 가상환경 비활성화
@@ -65,15 +70,5 @@ vscode 설정 기준이다.
 	
 	ctrl + shift + p
 	(Python 3.12 (64-bit) C:\python\3.12.4\python.exe) #선택
-	
-9. requirements.txt
-
-	#텍스트 파일로 모든 모듈 목록 텍스트 파일로 저장
-	pip freeze > requirements.txt
-	
-	Django==4.2.7
-	requests==2.31.0
-	numpy==1.24.3
-	pandas==2.0.3
 	
 	
