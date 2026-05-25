@@ -1,0 +1,12 @@
+
+형식 docker tag [현재이미지명:버전] [계정명/현재이미지명:버전]
+
+-------------------
+
+$ docker tag my-flask-app:1.0 solgae/my-flask-app:1.0
+
+$ docker images # 확인
+
+$ docker login
+
+$ docker push solgae/my-flask-app:1.0 # 업로드 후 도커허브에 가서 확인.

@@ -4,7 +4,8 @@ https://hub.docker.com/
 # 로그인 후 'python3' 리포지토리 생성
 	#리포지토리명, '아이디/리포지토리명'
 	리포지토리명 : solgae/python3
-
+	(이거 안해도 push할때 자동으로 리포지토리 만들어진다)
+	
 # 컨테이너 만들기
 	$ docker run -it --name my-python ubuntu  #컨테이너 만들고 내부로 들어감
 	root@0439a96064b9:/# apt update && apt install -y python3 #파이썬 3설치한 컨테이너로 변경됨.
@@ -36,7 +37,7 @@ https://hub.docker.com/
 # 도커 허브 로그인 후 생성한 이미지(solgae/python3:1.0) push 
 	
 	# push 명령으로 리포지토리에 push
-	> docker push solgae/python3:1.0
+	$ docker push solgae/python3:1.0
 	
 	The push refers to repository [docker.io/solgae/python3]
 	21d1a25134cd: Pushed
