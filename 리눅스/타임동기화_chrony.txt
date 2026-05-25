@@ -1,6 +1,40 @@
-타임 동기화 서비스를 chronyd 또는 timesyncd 를  쓰는지 알아내기
+------------------- 시스템 기본 타임 동기화 데몬 확인하기
+1. Chrony (크로니): 최신 대부분의 리눅스 배포판에서 기본 시간 동기화 데몬
+2. systemd-timesyncd: systemd 기반 시스템에 기본 내장된 가벼운 시간 동기화 데몬
+
+타임 동기화 서비스 중 chronyd 또는 timesyncd 를  쓰는지 알아내기
 
 ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
+
+------------------- Chrony 장점
+
+1. 가상화 서버(VM)의 고질병 해결
+	
+	rdate는 명령어를 실행하는 '그 순간' 딱 한 번만 시간을 맞추고 끝납니다.
+
+	가상 서버는 호스트 PC의 자원 상황에 따라 미세하게 시계가 멈추거나 느려지는 고질병이 있습니다. 
+	rdate를 쓰면 몇 시간 뒤 또 시간이 틀어져서 매번 크론탭(Crontab)에 등록해야 했습니다 
+
+	Chrony는: 
+	서비스로 상시 돌면서 시간이 아주 미세하게 틀어질 때마다 티 안 나게 실시간으로 계속 교정해 줍니다
+
+2. "시간이 거꾸로 가면 프로그램이 미쳐요" (보안과 안정성)
+	
+	rdate는 시간이 10분 틀어져 있으면 과감하게 시간을 10분 뒤로 휙 돌려버립니다.
+	시간을 사용하는 소프트웨어는 큰 혼란에 빠질 수 있음.
+
+	Chrony는: 
+	시간이 틀어지면 시계 초침을 임시로 아주 미세하게 빠르게 달리게 하거나 느리게 달리게 조절해서 
+	시스템 쇼크 없이 자연스럽게 시간을 맞춥니다.
+
+3. rdate는 너무 낡은 옛날 기술 (보안 취약) 
+
+	rdate가 쓰는 프로토콜(RFC 868)은 1983년에 만들어진 유물입니다. 
+	암호화나 검증 기능이 전혀 없어서 해커가 중간에 시간 값을 조작해서 보내는 공격에 무방비.
+
+	Chrony는: 
+	현대 표준인 NTP(Network Time Protocol) 및 최신 암호화 규격을 사용하여 시간 서버가 
+	진짜 보라넷이 맞는지 검증하므로 안전합니다.
 
 ------------------- chronyd
 
@@ -9,7 +43,14 @@ sudo timedatectl status
 	..
 	System clock synchronized: yes # yes/no 확인
 	
-# 동기화 서버 상태 확인 , '^*' 붙은 녀석 찾기(동기화 증거)
+	
+# 어떤 동기화 데몬을 쓰는지 확인
+ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
+
+# chronyd 데몬 활성화 확인
+sudo systemctl status chronyd
+
+# 동기화 데몬 클라이언트(c) 로 상태 확인 , '^*' 붙은 녀석 찾기(동기화 증거)
 sudo chronyc sources -v
 
 
@@ -17,7 +58,7 @@ sudo chronyc sources -v
 sudo vi /etc/chrony.conf
 	..
 	#pool 2.rocky.pool.ntp.org iburst
-	server time.bora.net ibrust
+	server time.bora.net iburst
 	
 	:wq #저장
 	
@@ -27,7 +68,7 @@ sudo vi /etc/chrony.conf
 # 데몬 재시작
 sudo systemctl restart chronyd
 
-# 즉시 동기화 
+# 즉시 동기화 , 클라이언트(c)로 명령
 sudo chronyc -a makestep
 
 # [추가] 시간대를 한국 시간으로 고정하기

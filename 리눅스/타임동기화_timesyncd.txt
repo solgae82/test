@@ -1,0 +1,43 @@
+systemd-timesyncd는 리눅스 시스템에서 제공하는 가볍고 단순한 시간 동기화 서비스
+
+# 1. 데몬 활성화 확인
+	
+	$ systemctl status systemd-timesyncd
+
+# 2. 시간 동기화가 활성화(Active) 확인
+
+	$ timedatectl status # 또는 timedatectl 
+	..
+	System clock synchronized: yes
+	NTP service: active 
+	
+# 3. 데몬 동기화 정보 보기
+	(현재 어떤 NTP 서버와 연결되어 있고, 시간 오차가 얼마나 되는지 상세 정보를 출력)
+	
+	$ timedatectl timesync-status
+	
+# 4. time.bora.net 으로 시간서버 지정하는 법
+	
+	sudo vi /etc/systemd/timesyncd.conf
+	..	
+	[Time]
+	NTP=time.bora.net
+
+	:wq
+	
+	# 편집 후 구문 검사 (아무 출력도 없으면 검사 통과)
+	systemd-analyze verify /lib/systemd/system/systemd-timesyncd.service
+	
+# 5. 데몬 재시작
+	sudo systemctl restart systemd-timesyncd
+
+# 6. 즉시 동기화 
+	systemd-timesyncd는 백그라운드에서 서서히 시간을 맞추기 때문에, 
+	즉시 수동 동기화를 강제하려면 NTP 기능을 껐다가 다시 켜야 합니다.
+	
+	sudo timedatectl set-ntp false # off 
+	sudo timedatectl set-ntp true # on
+	
+# [추가] 시간대를 한국 시간으로 고정하기
+sudo timedatectl set-timezone Asia/Seoul
+
