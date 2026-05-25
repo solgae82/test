@@ -44,8 +44,9 @@ ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
 # 동기화 서버 사용하는지 확인
 sudo timedatectl status
 	..
-	System clock synchronized: yes # yes/no 확인
-
+	System clock synchronized: yes
+	NTP service: active
+	
 # chronyd 데몬 활성화 확인
 sudo systemctl status chronyd
 
