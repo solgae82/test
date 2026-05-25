@@ -1,0 +1,37 @@
+
+시간 동기화를 확인하려고 'timedatectl' 명령어를 사용하면 
+아래 처럼 메시지가 나올 경우가 있다
+
+
+ $ timedatectl
+      Local time: 화 2026-05-26 00:54:19 KST
+  Universal time: 월 2026-05-25 15:54:19 UTC
+        RTC time: 화 2026-05-26 00:54:19
+       Time zone: Asia/Seoul (KST, +0900)
+     NTP enabled: yes
+NTP synchronized: yes
+ RTC in local TZ: yes
+      DST active: n/a
+
+Warning: The system is configured to read the RTC time in the local time zone.
+         This mode can not be fully supported. It will create various problems
+         with time zone changes and daylight saving time adjustments. The RTC
+         time is never updated, it relies on external facilities to maintain it.
+         If at all possible, use RTC in UTC by calling
+         'timedatectl set-local-rtc 0'.
+	 
+	 
+--------- 알려준대로 
+
+	timedatectl set-local-rtc 0 
+
+을 하고 다시
+	
+	timedatectl 
+	
+하면 경고 메시지가 사라지고
+RTC time이 UTC 기준으로 바뀐것을 확인할 수 있을 것이다.
+
+(리눅스에서는 하드웨어 시계(RTC) 기준을 UTC에 맞추는게 국룰이란다, 그래서 맞춰주는 명령을 실행한 것)
+
+

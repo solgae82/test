@@ -1,8 +1,8 @@
 yum -y install rdate
 
-rdate -s bora.net
+rdate -s time.bora.net
 
-위에것으로 잘 안되면 아래 것들중 하나 골라서 한다
+위에 것으로 잘 안되면 아래 시간 서버 도메인들중 하나 골라서 설정한다
 
  zero.bora.net
  time2.kriss.re.kr
@@ -18,5 +18,8 @@ date && clock -r && clock -w (바뀐 것 확인)
 
 1. Chrony (크로니): 최신 대부분의 리눅스 배포판에서 기본 시간 동기화 데몬
 2. systemd-timesyncd: systemd 기반 시스템에 기본 내장된 가벼운 시간 동기화 데몬
+
+로키10 (Chrony)
+우분투24.04 (systemd-timesyncd) 
 
 등을 사용한다.

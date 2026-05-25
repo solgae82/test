@@ -2,6 +2,11 @@
 [root@zetawiki ~]# date
 Sun Nov 17 08:49:12 PST 2013 <-태평양 표준시(PST)로 되어 있음
 
+시간 설정은 서버에서 매우 중요하다
+
+아래 모은 정보는 옛날 동기화 설정법이다. 참조만 하자
+'타입동기화' 폴더의 파일들을 읽어보자. 중요하다
+-------------------
 한국표준시로 변경 (/etc/localtime 을 Seoul로 링크해준다)
 [root@zetawiki ~]# ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 [root@zetawiki ~]# date
@@ -21,10 +26,17 @@ hwclock --systohc
 date
 hwclock
 
-------------------------------------------------//한방에 설정
+------------------- 한방에 설정
 시간대 KST로, 시스템 시간 맞추고, hwclock까지 맞춤
 ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 rdate -s time.bora.net
 hwclock --systohc
 date
 hwclock
+-------------------
+
+위 정보는 흘러간 옛날 방법이다.
+지금은 저렇게 안한다.
+
+'타입동기화' 폴더의 파일들을 읽어보자
+
