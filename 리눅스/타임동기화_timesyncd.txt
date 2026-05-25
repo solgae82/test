@@ -21,7 +21,7 @@ ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
 	
 # 4. time.bora.net 으로 시간서버 지정하는 법
 	
-	sudo vi /etc/systemd/timesyncd.conf
+	$ sudo vi /etc/systemd/timesyncd.conf
 	..	
 	[Time]
 	NTP=time.bora.net
@@ -29,18 +29,24 @@ ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
 	:wq
 	
 	# 편집 후 구문 검사 (아무 출력도 없으면 검사 통과)
-	systemd-analyze verify /lib/systemd/system/systemd-timesyncd.service
+	sudo systemd-analyze verify /lib/systemd/system/systemd-timesyncd.service
 	
 # 5. 데몬 재시작
-	sudo systemctl restart systemd-timesyncd
+	$ sudo systemctl restart systemd-timesyncd
 
+	#설정 정보 잘 되었는지 확인
+	$ timedatectl timesync-status
+	Server: 203.248.240.140 (time.bora.net)
+	..
+	
+	
 # 6. 즉시 동기화 
 	systemd-timesyncd는 백그라운드에서 서서히 시간을 맞추기 때문에, 
 	즉시 수동 동기화를 강제하려면 NTP 기능을 껐다가 다시 켜야 합니다.
 	
-	sudo timedatectl set-ntp false # off 
-	sudo timedatectl set-ntp true # on
+	$ sudo timedatectl set-ntp false # off 
+	$ sudo timedatectl set-ntp true # on
 	
 # [추가] 시간대를 한국 시간으로 고정하기
-sudo timedatectl set-timezone Asia/Seoul
+$ sudo timedatectl set-timezone Asia/Seoul
 
