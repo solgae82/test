@@ -1,5 +1,8 @@
 systemd-timesyncd는 리눅스 시스템에서 제공하는 가볍고 단순한 시간 동기화 서비스
 
+# 어떤 동기화 데몬을 쓰는지 확인
+ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
+
 # 1. 데몬 활성화 확인
 	
 	$ systemctl status systemd-timesyncd
