@@ -1,0 +1,32 @@
+타임 동기화 서비스를 chronyd 또는 timesyncd 를  쓰는지 알아내기
+
+ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
+
+------------------- chronyd
+
+# 동기화 서버 사용하는지 확인
+sudo timedatectl status
+	..
+	System clock synchronized: yes # yes/no 확인
+	
+# 동기화 서버 상태 확인 , '^*' 붙은 녀석 찾기(동기화 증거)
+sudo chronyc sources -v
+
+
+# time.bora.net 서버 변경
+sudo vi /etc/chrony.conf
+	..
+	#pool 2.rocky.pool.ntp.org iburst
+	server time.bora.net ibrust
+	
+	:wq #저장
+	
+# 구문 검사 테스트 
+	sudo chronyd -p # 테스트
+	
+# 데몬 재시작
+sudo systemctl restart chronyd
+
+# 즉시 동기화 
+sudo chronyc -a makestep
+
