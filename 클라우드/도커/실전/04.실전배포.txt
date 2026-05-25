@@ -72,11 +72,11 @@
 	
 3. 리눅스 서버 
 	$ cd /home/solgae
+		
+	# 최종 운영에 적용할 실행용 docker-compose.yml 파일 생성 
+	# 기본 이미지 옵션을 덮어쓰기 하면서 컨테이너 생성
 	
-	# 실행용 컴포즈 파일 생성 
-	# 이미지 생성할때 옵션을 덮어쓰기 하면서 컨테이너 생성
-	
-	vi docker-compose.yml
+	$ vi docker-compose.yml
 	services:
 	  flask-web:
 	    image: solgae/my-flask-app:1.0
@@ -90,18 +90,25 @@
 
 	# 항상 docker-compose.yml 파일 있는 곳에 와서 실행해야 함.
 
-	docker compose up # 최조 처음 실행
+	$ docker compose up --build -d  # 도커 이미지 만들고 컨테이너 실행
 
 	#운영
-	docker compose stop	# 정지
-	docker compose start	# 시작
-	docker compose restart  # 재시작
+	$ docker compose stop	# 정지
+	$ docker compose start	# 시작
+	$ docker compose restart  # 재시작
 
 -------------------
+
 예전에 되었지만, 지금은 안되는 명령어
 ❌ docker-compose ... (2023년 공식 종료된 구버전 V1 명령어)
 ⭕ docker compose ... (띄어쓰기! 현재 표준이자 앞으로 계속 쓸 최신 V2 명령어)
 
-gunicorn 사용시 여러개 워커 프로세서로 인해 발생하는 (나오다 안 나오다가)문제가 있을 수 있다
-# --workers=1 옵션을 추가합니다.(성능 저하를 감수 해야할 코드)
+gunicorn 사용시 여러개 워커 프로세서로(멀티-프로세스) 구동할 수 있다.
+# --workers=1 옵션이 기본입니다, 
+# 1개일때는 에러가 안 나다가, 여러개를 실행하면 예상치 못한 오류가 나올 수도 있다(당연하다)
+# DB를 사용하면 해결된다. 또는 redis, 또는 JWT가 파이썬 기본이 된다.
+# (자바 구조와 다르다)
+
 CMD ["gunicorn", "--workers=1", "--bind", "0.0.0.0:5000", "server:app"]
+CMD ["gunicorn", "--workers=9", "--bind", "0.0.0.0:5000", "server:app"]
+
