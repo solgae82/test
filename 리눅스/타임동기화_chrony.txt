@@ -30,3 +30,5 @@ sudo systemctl restart chronyd
 # 즉시 동기화 
 sudo chronyc -a makestep
 
+# [추가] 시간대를 한국 시간으로 고정하기
+sudo timedatectl set-timezone Asia/Seoul
