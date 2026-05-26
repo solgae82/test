@@ -76,4 +76,7 @@ sudo systemctl restart chronyd
 sudo chronyc -a makestep
 
 # [추가] 시간대를 한국 시간으로 고정하기
-sudo timedatectl set-timezone Asia/Seoul
+$ sudo timedatectl set-timezone Asia/Seoul
+$ sudo timedatectl # 확인
+..
+Time zone: Asia/Seoul (KST, +0900)
