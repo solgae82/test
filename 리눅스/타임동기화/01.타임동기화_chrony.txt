@@ -1,11 +1,6 @@
-------------------- 시스템 기본 타임 동기화 데몬 확인하기
+------------------- 최신 시스템 기본 타임 동기화 데몬
 1. Chrony (크로니): 최신 대부분의 리눅스 배포판에서 기본 시간 동기화 데몬
 2. systemd-timesyncd: systemd 기반 시스템에 기본 내장된 가벼운 시간 동기화 데몬
-
-타임 동기화 서비스 중 chronyd 또는 timesyncd 를  쓰는지 알아내기
-
-ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
-
 ------------------- Chrony 장점
 
 1. 가상화 서버(VM)의 고질병 해결
@@ -39,22 +34,32 @@ ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
 ------------------- chronyd
 
 # 어떤 동기화 데몬을 쓰는지 확인
-ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
+	
+	$ ps -ef | grep -E "chronyd|timesyncd" | grep -v grep
 
 # 동기화 서버 사용하는지 확인
-sudo timedatectl status
+	
+	$ sudo timedatectl status
 	..
 	System clock synchronized: yes
 	NTP service: active
-	
+
+	# System clock synchronized: no 일경우	
+	$ sudo timedatectl set-ntp yes
+	$ sudo systemctl restart chronyd
+	$ timedatectl status # 다시 확인
+
 # chronyd 데몬 활성화 확인
-sudo systemctl status chronyd
+	
+	$ sudo systemctl status chronyd
 
 # 동기화 데몬 클라이언트(c) 로 상태 확인 , '^*' 붙은 녀석 찾기(동기화 증거)
-sudo chronyc sources -v
+
+	$ sudo chronyc sources -v
 
 # time.bora.net 서버 변경
-sudo vi /etc/chrony.conf
+	
+	$ sudo vi /etc/chrony.conf
 	..
 	#pool 2.rocky.pool.ntp.org iburst
 	server time.bora.net iburst
@@ -62,21 +67,25 @@ sudo vi /etc/chrony.conf
 	:wq #저장
 	
 # 구문 검사 테스트 
-	sudo chronyd -p # 테스트
+	
+	$ sudo chronyd -p # 테스트
 	
 # 데몬 재시작
-sudo systemctl restart chronyd
 
-	#  설정 확인
-	sudo chronyc sources -v
+	$ sudo systemctl restart chronyd
+
+	# 설정 확인
+	$ sudo chronyc sources -v
 	..
 	^* time.bora.net 
 
 # 즉시 동기화 , 클라이언트(c)로 명령
-sudo chronyc -a makestep
+
+	$ sudo chronyc -a makestep
 
 # [추가] 시간대를 한국 시간으로 고정하기
-$ sudo timedatectl set-timezone Asia/Seoul
-$ sudo timedatectl # 확인
-..
-Time zone: Asia/Seoul (KST, +0900)
+	
+	$ sudo timedatectl set-timezone Asia/Seoul
+	$ sudo timedatectl # 확인
+	..
+	Time zone: Asia/Seoul (KST, +0900)

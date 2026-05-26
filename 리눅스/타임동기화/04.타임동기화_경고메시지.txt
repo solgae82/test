@@ -21,7 +21,7 @@ Warning: The system is configured to read the RTC time in the local time zone.
          'timedatectl set-local-rtc 0'.
 	 
 	 
---------- 알려준대로 
+--------- 메시지에서 알려준대로 적용 
 
 	timedatectl set-local-rtc 0 
 
