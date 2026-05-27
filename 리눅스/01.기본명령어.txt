@@ -202,29 +202,50 @@ ls -al
 	-rwxrwxrw-. 1 dong dong 18601 May  6  2018 aa.txt
 
 ---------// 링크
-하드링크와 소프트링크(symbolic link)가 있다
-하드링크는 inode를 공유한다 
-심볼릭 링크는 inode를 공유하지 않고 원본파일 파일포인터를 가지고 가르키고 있다(윈도우 바로가기 아이콘처럼)
+	하드링크와 심볼릭링크(symbolic link)가 있다
+	하드링크
+		- 개념: 원본 inode를 공유. 
+		- 원본삭제 시: 원본이 삭제되어도 하드링크파일은 존재.
+		- 파일 크기: 원본 파일과 동일(데이터영역 공유,이름만 다른 상태)
+		- 대상 제한: 파일만 가능.
+		- 디스크/파티션: 같은 디스크/파티션 에만 생성 가능.
+	심볼릭 링크 
+		- 개념: inode를 공유하지 않고 원본파일 경로로 포인팅(윈도우 바로가기 아이콘처럼)
+		- 원본삭제 시: 링크가 끊어져서 사용할 수 없음.
+		- 파일 크기: 원본 파일 경로 문자열 길이만큼 작음.
+		- 대상 제한: 파일 및 디렉토리 모두 적용 가능.
+		- 디스크/파티션: 다른 디스크/파티션 에도 생성 가능.
 
-형식 : ln [-s] 원본파일및디렉토리 링크파일명 
+	형식 : 
+		하드링크: ln 원본파일명 링크파일명 
+		심볼릭링크: ln [-s] 원본디렉토리파일명 링크디렉토리파일명 
+		
+	# 테스트 예제(aa 파일)
+	ls -ali # inode 출력
+		260613 -rw-r--r--. 2 root root    5 May  6  2018 aa
 
-ls -ali # inode 출력
-	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa
+	#-------- 하드링크
+	ln aa hard_link_aa	#하드링크 생성
+	ls -ali
+		260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
+		260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa
 
-ln aa hard_link_aa	#하드링크 생성
-	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
-	260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa # inode가 같다
+	# aa를 편집하면 hard_link_aa 내용도 똑같이 바뀐다
+	# 같은 데이터 영역에 두개의 이름이 있는 상태
+	# 원본 파일을 삭제해도 하드링크파일은 당연히 남아있다 
+	# 남아 있는 하드링크파일 마저 지워야 데이터가 모두 사라진다.
 
-# aa를 편집하면 hard_link_aa 내용도 똑같이 바뀐다
 
-ln -s aa symbolic_link_aa	 #심볼릭 링크 생성
+	#---------- 심볼릭 링크 (윈도우 단축 아이콘과 같은 개념)
+	ln -s aa symbolic_link_aa	 #심볼릭 링크 생성
+	ls -ali
+		260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
+		260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa
+		260624 lrwxrwxrwx. 1 root root    2 Nov 18 21:33 symbolic_link_aa -> aa
 
-ls -ali
-	260613 -rw-r--r--. 2 root root    5 May  6  2018 aa	
-	260613 -rw-r--r--. 2 root root    5 May  6  2018 hard_link_aa			# inode가 같다
-	260624 lrwxrwxrwx. 1 root root    2 Nov 18 21:33 symbolic_link_aa -> aa		# inode가 다르다
-
-원본을 옮기면 심볼릭링크는 원본을 가르킬 수가 없어서 에러 표시 된다!
+	# 다른 inode를 가지고 있는 독립 파일(링크 경로만 가지고 있음)
+	# symbolic_link_aa -> aa 처럼 '->' 표시로 심볼릭 링크임을 나타낸다.
+	# 원본을 옮기면 심볼릭링크는 원본을 가르킬 수 없어서 에러 표시 된다! (윈도우 단축 아이콘과 같다)
 
 ---------// RPM
 #설치
