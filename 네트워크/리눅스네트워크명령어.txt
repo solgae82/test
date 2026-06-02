@@ -3,6 +3,47 @@
 그러나 왠만하면 root 권한으로 하는게 좋다.
 -------------------
 
+빠른 요약 
+
+	네트워크 테스트 
+		
+		ping 192.168.111.3
+	
+	ip 주소 확인, netmask 확인
+		
+		ifconfig
+		ip a
+		
+	라우트 테이블조회, gateway 확인
+	
+		netstat -nr
+		route -n
+		ip r
+		
+	라우트 경로 추적
+	
+		traceroute -n www.google.com
+		tracepath www.google.com
+	
+	arp 조회
+	
+		arp -n
+		ip n
+		
+	네임서버 조회
+	
+		nslookup google.com 
+		dig google.com
+		
+	현재 열린 TCP포트 확인
+		
+		netstat -nlt
+		netstat -nltu # TCP + UDP 
+		
+		ss -nlt
+		ss -nltu
+		
+-------------------
 - ifconfig	
 	
 	# 네트워크 인터페이스 모두 보기(IP,subnet,broadcast)
@@ -179,6 +220,9 @@
 	
 	# (only servers, 리스닝되는 서버만 출력)
 	netsat -nlp 
+	
+	# (게이트웨이 검색)
+	netstat -nr
 	--------------------- 많이 쓰는 옵션
 	
 	# (only server + TCP)
@@ -254,6 +298,7 @@
 	route
 
 	# 숫자로만 IP 주소 출력 (DNS 조회를 하지 않아 빠름)
+	# 게이트웨이 확인 가능
 	route -n
 	
 	# 기본 게이트웨이 추가/삭제
@@ -367,4 +412,4 @@
 	추적 (Trace): 
 		dig google.com +trace (루트 네임서버부터 도메인 해석 경로 추적)
 	
-------------------- 자주쓰이는 명령어
+

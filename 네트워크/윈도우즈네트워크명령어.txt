@@ -3,6 +3,40 @@
 왠만하면 관리자 권한으로 하는게 좋다.
 -------------------
 
+빠른 요약 
+
+	네트워크 테스트 
+		
+		ping 192.168.111.3
+	
+	ip 주소 확인, netmask, gatway 확인
+		
+		ipconfig
+		
+		
+	라우트 테이블조회, gateway 확인
+	
+		route print -4	# ip4 라우트 테이블 출력
+		
+	라우트 경로 추적
+	
+		tracert -d www.aladin.co.kr 
+	
+	arp 조회
+	
+		arp -a
+		
+	네임서버 조회
+	
+		nslookup google.com 
+		
+	현재 열린 TCP포트 확인
+			
+		netstat -an
+		netstat -an | findstr :8080 
+
+	
+-------------------
 - ipconfig	
 	
 	#(ip,subnet,gw)
@@ -143,6 +177,6 @@ netstat -banop tcp
 # PID '8512' 번의 프로그램명 출력
 tasklist /fi "PID eq 8512" 
 
-# 파워셀 , 리모트 서버 포트 8080 접근 체크, 텔넷 대체
+# 파워셀 , 리모트 서버 포트 8080 접근 체크 (텔넷 port 체크 대체)
 Test-NetConnection 192.168.111.6 -Port 80
 
