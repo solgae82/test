@@ -1,4 +1,5 @@
 ------------------- buildx
+<멀티 플랫폼 빌드를 위한 차세대 확장 빌드 도구>
 
 buildx는 도커가 제공하는 "차세대 확장 빌드 도구"입니다.
 멀티 플랫폼 빌드를 해도 우리 눈에는 여러 개의 이미지가 아니라, 
@@ -15,8 +16,22 @@ buildx는 도커가 제공하는 "차세대 확장 빌드 도구"입니다.
 
 ------------------- 실전
 
-# 두 가지 CPU 구조(인텔용, 맥북/ARM용)를 한 번에 빌드해서 도커에 배포하는 명령어
-docker buildx build --platform linux/amd64,linux/arm64 -t 내계정/flask-app:1.0 --push .
+# (윈도우/intel)에서 두 가지 CPU 구조(인텔용, 맥북/ARM용)를 Multi-Platform 빌드해서 도커에 배포하기
 
-# 내 컴퓨터(윈도우)에서 실행하지만, 리눅스 서버용(arm64)으로 구워서 로컬에 저장하는 명령어
-docker buildx build --platform linux/arm64 -t my-flask-app:linux-version --load .
+	docker buildx build --platform linux/amd64,linux/arm64 -t 내계정/flask-app:1.0 --push .
+
+# (윈도우/intel)에서 (리눅스/arm64)용으로 빌드해서 도커에 배포하기
+
+	docker buildx build --platform linux/arm64 -t 내계정/flask-app:1.0 --push .
+
+# (윈도우/intel)에서 (리눅스/arm64)으로 로컬 이미지로 생성 저장하는 명령어
+# 빌드한 이미지 파일은 윈도우 도커에서는 안 돌아간다(당연)
+	
+	docker buildx build --platform linux/arm64 -t my-flask-app:linux-version --load .
+
+	# 리눅스 업로드용 파일 만들기
+	docker save -o flask-app.tar my-flask-app:linux-version 
+
+	# 리눅스에 파일 업로드 후 설치
+	docker load -i flask-app.tar 
+

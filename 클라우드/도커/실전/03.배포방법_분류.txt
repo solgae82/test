@@ -1,73 +1,108 @@
+
+<buildx란.txt> <= 요 파일 미리 읽고 오면 좋다
+
+-------------------
+
 도커의 진정한 강력함인 "한 번만 빌드하고, 어디서나 실행한다 
 (Build Once, Run Anywhere)"는 개념이 있다
 
 그러나 실제론 CPU 아키텍쳐에 따라서 결과물이 달라진다.
 
-크게 보면 제작환경 CPU 와 실행될 곳 CPU가 같은 종류냐, 아니냐로 구분된다
-같은 종류 아키텍쳐 CPU라면 그냥 pc에서 이미지 빌드하고 서버에 이미지 설치하면 된다.
+배포 기준을 보면 
+	
+	"제작환경 CPU 와 배포될 곳 CPU가 같은 종류냐, 아니냐"
+	
+로 구분된다
 
-다른 종류 아키텍쳐라면 실행될 곳에 맞는 옵션을 주고 빌드한다.
-또는 그 실행환경에 가서 직접 빌드한다.
+빌드환경과 배포환경이 같은 종류 아키텍쳐 CPU라면,
+예를 들어 pc에서 빌드 후 리눅스 서버 배포를 할 경우엔,
+그냥 pc 도커에서 이미지 빌드하고 그 이미지로 리눅스 서버 도커에 이미지 설치하면 된다.
 
-------------------- 이미지 (윈도우 도커 빌드 -> 리눅스 도커) 배포
+그러나,
+다른 CPU 아키텍쳐용 이미지를 만들때는 build 명령어가 아닌 'buildx' 를 사용해서 이미지를 만든다
+(build 명령과 마찬가지로 빌드 환경에는 당연히 Dockerfile이 있어야 한다.)
+
+빌드환경과 배포환경 CPU 아키텍쳐가 서로 다르다면 buildx 명령어로 배포될 CPU 에 맞는 옵션을 주고 빌드한다.
+
+또는 그 배포환경 리눅스 서버에 가서 소스와 .Dockerfile 옮기고 직접 빌드해도 된다.
+
+-------------------CPU 아키텍쳐 같을때, 이미지 (윈도우 도커 빌드 -> 리눅스 도커) 배포 하기
 
 CPU 아키텍쳐가 같다면 윈도우 도커에 빌드한 이미지도 리눅스 도커에서 실행된다.
-(CPU 아키텍쳐 다르다면 옵션을 줘서 이미지 빌드해야한다.)
 
-이미지 배포는 크게 3가지 방법이 있다
-(CPU 아키텍쳐가 서로 맞다고 가정)
+1. Docker Hub 배포 방식
 
-	1. PC 로 이미지 빌드 > Doucker Hub에 배포  
-		> 사용할 환경(리눅스)에서 pull로 다운 받아서 사용.
+	# 일반 빌드(.Dockerfile) 로 이미지 생성(추천)
+	docker build -t  solgae/my-flask-app:1.0 .
 		
-	2. 폐쇄망일 경우 
+	# 또는 컨테이너에서 새로운 이미지 생성(이력이 없어서 안 좋다)
+	docker commit -m "flask app" -a "dong" my-flask-app solgae/my-flask-app:1.0
+
+	----------- 도커허브 배포
+	
+	# 로그인
+	$ docker login
+	
+	# push 명령으로 리포지토리에 push
+	$ docker push solgae/my-flask-app:1.0
+	
+	-----------도커허브 pull
+	
+	$ docker pull solgae/my-flask-app:1.0
+
+2. 폐쇄망일 경우 
+	
+	# PC (이미지 빌드): 
+	docker save -o flask-app.tar my-flask-app:1.0
+	
+	# flask-app.tar 업로드 후 리눅스에 업로드 후 리눅스 도커 이미지로 로드
+	docker load -i flask-app.tar
+	
+3. 실행될 리눅스에서 직접 (.Dockerfile) 도커 이미지 빌드
+	
+	
+-------------------CPU 아키텍쳐 다를때, 이미지 (윈도우 도커 -> 리눅스 도커) 배포 하기
+
+윈도우 도커 데스크탑엔 애뮬레이션(QEMU)이 내장되어서, 다른 CPU 아키텍쳐로 빌드할 수 있다
+(다만, 다른 CPU 아키텍쳐라면 빌드 성능은 저하할 수 밖에 없다)
+
+	빌드환경 : pc윈도우/amd64
+	배포환경 : 리눅스/arm64 
+
+로 CPU 환경이 다를때 기준으로 살펴보자
+
+※ pc 도커에서 arm64 옵션으로 빌드하면 pc 도커에서는 이미지 사용할 수 없다
+(아키텍쳐가 다르니 당연하다)
+	
+1. Docker Hub 배포 방식
+
+	# Multi-Platform 빌드 후 도커허브 배포
+	docker buildx build --platform linux/amd64,linux/arm64 -t solgae/multi-flask-app:1.0 --push .
+	
+	# arm64 아키텍쳐로 빌드 후 도커허브 배포
+	docker buildx build --platform linux/arm64 -t solgae/flask-app:linux-1.0 --push .
+	
+	-----------도커허브 pull
+	
+	$ docker pull solgae/multi-flask-app:1.0
+	# 또는
+	$ docker pull solgae/flask-app:linux-1.0
+	
+2. 폐쇄망일 경우
+
+	--load 옵션: 이미지 생성 후 로컬 경로에 저장
+	
+	# 해당 CPU 아키텍쳐로 빌드
+	docker buildx build --platform linux/arm64 -t solgae82/flask-app:linux-1.0 --load .
 		
-		# PC (이미지 빌드): 
-		docker save -o flask-app.tar [내_이미지_이름]
-		
-		# flask-app.tar > 리눅스에 업로드 후
-		docker load -i flask-app.tar
-		
-	3. 실핼될 리눅스에서 직접 (Dockerfile 등을 이용) 도커 이미지 빌드
+	# PC (이미지 빌드): 
+	docker save -o flask-app.tar solgae82/flask-app:linux-1.0
 	
-	
-------------------- 이미지 (윈도우 도커 -> 리눅스 도커, CPU 아키텍쳐 다를때) 배포 개념
-
-	1. CPU가 다른 PC 환경과 리눅스 환경 맞게 이미지 배포하는 방법
-	
-		- Docker Hub 이용 방식
-			- 윈도우 도커 데스크탑엔 애뮬레이션(QEMU)이 내장되어서, 
-			다른 CPU 아키텍쳐로 빌드해도 돌아간다(pc에서 성능은 저하)
-			
-			- Multi-Platform 빌드 방식을 이용하면 두 환경 모두 만족하는 이미지 빌드 가능			
-			
-		- 폐쇄망
-			 Multi-Platform 빌드 방식으로 특정 환경으로 이미지 빌드
-	
-	2. 리눅스 도커에서 직접 이미지 빌드
-		폐쇄망일 경우에는 리눅스 도커에서 직접 이미지 빌드도 대안적인 방법.
-
-------------------- 이미지 (윈도우 도커 -> 리눅스 도커, CPU 아키텍쳐 다를때) 빌드 배포 실전 코드
-
-PC 와 리눅스 CPU  환경이 다를때
-(pc: amd64 , 리눅스: arm64)
-
-1. Docker Hub 배포
-
-	# 두 가지 CPU 구조(인텔용, 맥북/ARM용)를 한 번에 빌드해서 도커에 배포하는 명령어
-	docker buildx build --platform linux/amd64,linux/arm64 -t 내계정/flask-app:1.0 --push .
-
-2. 폐쇄망 배포
-	--load 옵션: 이미지 생성 후 로컬에 저장
-	
-	# 내 컴퓨터(윈도우)에서 실행하지만, 리눅스 서버용(arm64)으로 구워서 로컬에 저장하는 명령어
-	docker buildx build --platform linux/arm64 -t my-flask-app:linux-version --load .
-	
-	# 리눅스 폐쇄망 배포용 .tar 만들기
-	docker save -o flask-app.tar my-flask-app:linux-version
-
-	# 리눅스 (업로드 후) 도커 배포:
+	# flask-app.tar 업로드 후 리눅스에 업로드 후 리눅스 도커 이미지로 로드
 	docker load -i flask-app.tar
 	
 	# 이미지 설치 확인
 	docker images
+	
+3. 실행될 리눅스에서 직접 (.Dockerfile 이용) 도커 이미지 빌드
+	
