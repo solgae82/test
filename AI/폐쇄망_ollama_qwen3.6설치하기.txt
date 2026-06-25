@@ -1,0 +1,37 @@
+폐쇄망 내부 시스템 구축 절차 (인터넷이 차단된 내부 PC에서 실행)
+
+허깅페이스에서 Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-IQ3_M.gguf (IQ3_M), 15GB 다운로드
+	https://huggingface.co/HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive
+
+1단계: Ollama 오프라인 설치
+	1.반입한 OllamaSetup.exe를 실행하여 Ollama를 설치합니다.
+	2.설치가 끝나면 윈도우 작업 표시줄 오른쪽 아래(트레이 아이콘)에서 Ollama 아이콘을 마우스 우클릭한 뒤 
+	[Quit]을 눌러 실행 중인 Ollama를 완전히 종료합니다.
+		
+		이유: 폐쇄망에서는 모델 등록 시 디스크 복사 연산이 일어나므로, 
+		백그라운드 서비스를 확실히 끄고 터미널에서 제어하는 것이 안전합니다.
+	
+2단계: 파일 배치 및 Modelfile 작성
+	1.폐쇄망 PC 내부의 적절한 경로(예: C:\LocalAI)에 폴더를 만들고, 
+	반입한 .gguf 모델 파일을 넣습니다.
+
+	2.해당 폴더 안에 텍스트 문서(메모장)를 새로 만들고 이름을 확장자 없이 Modelfile로 변경합니다.
+	3.메모장으로 Modelfile을 열어 아래 내용을 붙여넣고 저장합니다.
+	
+		# 가져올 로컬 파일 경로 지정
+		FROM ./Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-IQ3_M.gguf
+
+		# VRAM에 여유가 있으므로 긴 문맥을 기억할 수 있도록 확장 설정
+		PARAMETER num_ctx 32768
+			
+
+3단계: Ollama 수동 빌드 및 로컬 실행
+	1.Modelfile이 있는 폴더 내부 빈 공간에서 Shift + 마우스 우클릭을 눌러 [터미널에서 열기] 또는 [여기에 PowerShell 창 열기]를 선택합니다.
+
+	2.터미널에 아래 명령어를 입력하여 로컬 디스크 기반의 모델 생성을 시작합니다.
+		
+		ollama create qwen3.6-airgap -f Modelfile
+
+	3.등록이 완료되면 외부 통신 없이 순수 오프라인 상태로 AI 모델을 실행합니다.
+
+		ollama run qwen3.6-airgap
