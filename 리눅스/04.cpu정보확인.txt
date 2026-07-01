@@ -1,0 +1,34 @@
+- 몇 비트인지 확인
+arch
+	x86_64
+
+getconf LONG_BIT
+	x86_64
+
+uname -m
+	x86_64
+
+
+-  cpu정보 확인
+cat /proc/cpuinfo
+
+- cpu 코어전체 갯수
+grep -c processor /proc/cpuinfo
+
+
+- cpu(물리적) 갯수
+grep ^processor /proc/cpuinfo | wc -l
+
+- cpu 당(물리적갯수) 코어 갯수
+grep "cpu cores" /proc/cpuinfo | tail -1
+
+- 실시간 cpu 사용률 체크
+top
+
+	Shift + P: CPU 사용률이 높은 순서대로 프로세스 정렬
+	Shift + M: 메모리 사용률이 높은 순서대로 프로세스 정렬
+	1 (숫자): 전체 CPU 평균이 아닌 모든 코어별 개별 사용량으로 화면 전환
+	c: 프로세스의 전체 실행 경로 및 명령어 확인
+	k: 프로세스 종료 (Kill). 누른 후 종료할 PID 입력
+	q: top 명령어 종료
+
