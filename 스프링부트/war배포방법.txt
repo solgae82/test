@@ -1,0 +1,64 @@
+cp land.war land.war.bak
+
+1. 클래스 배포
+	jar uf land.war \
+	  WEB-INF/classes/egovframework/land/adm/user/web/UserMngController.class
+  
+  
+2. jsp 배포
+
+	jar uf land.war \
+	  WEB-INF/classes/egovframework/land/adm/user/web/UserMngController.class \
+	  WEB-INF/classes/egovframework/config/EgovConfigSecurity.class \
+	  'WEB-INF/classes/egovframework/config/EgovConfigSecurity$1.class' \
+	  WEB-INF/jsp/변경파일.jsp
+	  
+3. 업데이트 후 검사
+
+	jar tf land.war > /dev/null # 아무것도 안 나오면 검사 성공, 뭔가 나오면 문제
+	unzip -t land.war # 압축파일의 모든 엔트리 검사(CRC 검사)
+	
+	jar tf land.war | grep UserMngController # 클래스가 잘 들어갔는지 확인
+
+4. Servlet JAR 존재 여부 확인
+
+	jar tf land.war | grep -Ei 'servlet-api|tomcat-servlet'
+	
+	
+-------------------
+
+# 1. 변경 파일 삽입
+jar uf land.war ...
+
+# 2. 변경 파일 존재 확인
+jar tf land.war | grep UserMngController
+jar tf land.war | grep EgovConfigSecurity
+
+# 3. WAR 무결성 확인
+jar tf land.war > /dev/null
+unzip -t land.war
+
+# 4. 가능하면 로컬에서 기동
+java -jar land.war
+
+
+-------------------
+
+# 1. WAR 안에 뭐가 있는지 보기
+jar tf land.war
+
+# 2. 수정파일 삽입 (★★★★★)
+jar uf land.war ...
+
+# 3. WAR가 정상인지 확인
+jar tf land.war > /dev/null
+
+# 4. 압축 무결성 검사
+unzip -t land.war
+
+# 5. 수정파일이 들어갔는지 확인
+jar tf land.war | grep UserMngController
+
+# 6. 백업
+cp land.war land.war.bak
+
