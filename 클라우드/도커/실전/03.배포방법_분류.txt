@@ -52,7 +52,7 @@ CPU 아키텍쳐가 같다면 윈도우 도커에 빌드한 이미지도 리눅�
 
 2. 폐쇄망일 경우 
 	
-	# PC (이미지 빌드): 
+	# PC (도커 세이브): 
 	docker save -o flask-app.tar my-flask-app:1.0
 	
 	# flask-app.tar 업로드 후 리눅스에 업로드 후 리눅스 도커 이미지로 로드
@@ -95,7 +95,7 @@ CPU 아키텍쳐가 같다면 윈도우 도커에 빌드한 이미지도 리눅�
 	# 해당 CPU 아키텍쳐로 빌드
 	docker buildx build --platform linux/arm64 -t solgae82/flask-app:linux-1.0 --load .
 		
-	# PC (이미지 빌드): 
+	# PC (도커 세이브): 
 	docker save -o flask-app.tar solgae82/flask-app:linux-1.0
 	
 	# flask-app.tar 업로드 후 리눅스에 업로드 후 리눅스 도커 이미지로 로드

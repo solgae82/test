@@ -29,9 +29,27 @@ buildx는 도커가 제공하는 "차세대 확장 빌드 도구"입니다.
 	
 	docker buildx build --platform linux/arm64 -t my-flask-app:linux-version --load .
 
-	# 리눅스 업로드용 파일 만들기
+	# 리눅스 업로드용 파일 만들기 (도커 세이브)
 	docker save -o flask-app.tar my-flask-app:linux-version 
 
 	# 리눅스에 파일 업로드 후 설치
 	docker load -i flask-app.tar 
 
+
+------------------- 명령어 해석
+
+docker buildx build --platform linux/arm64 -t my-flask-app:linux-version --load .
+
+해석:
+	--platform linux/arm64: 
+		빌드할 타깃 OS와 CPU 아키텍처를 linux/arm64로 지정합니다. 
+		(예: Apple M1/M2/M3 칩, AWS Graviton 인스턴스, 라즈베리파이4 등에서 실행할 이미지)
+
+	-t my-flask-app:linux-version: 
+		생성될 이미지의 이름(태그)을 my-flask-app:linux-version으로 지정합니다.
+
+	--load: 
+		빌드 완료된 이미지를 원격 저장소(Docker Hub 등)에 올리지 않고, 
+		현재 명령어를 실행 중인 로컬 도커 데몬(Docker Engine)에 저장합니다.
+
+	.: 빌드 컨텍스트 경로로, 현재 디렉토리에 있는 Dockerfile과 소스코드를 사용해 빌드하라는 뜻입니다.
