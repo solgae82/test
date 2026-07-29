@@ -1,20 +1,64 @@
-
 <전체 설정 2곳 , 프로젝트 설정 3곳의 먹이사슬 구조>
+
 
 -------------------(상식 1)
 
+[이클립스는 자체 내장 컴파일러(ECJ)를 쓴다]
+
+자바의 정석대로라면 컴파일을 위해 JDK 내부의 javac.exe라는 프로그램이 필요합니다.
+하지만 이클립스는 놀랍게도 오라클의 javac를 쓰지 않고, 
+이클립스 재단이 자체적으로 만든 자바 컴파일러(ECJ - Eclipse Compiler for Java)를 
+프로그램 내부에 품고 있습니다.
+
+결과: 이클립스는 Installed JREs 메뉴에 진짜 순수한 JRE(실행만 되는 것)를 등록해 주어도, 
+자신이 가진 내장 컴파일러(ECJ)를 돌려서 컴파일을 성공시켜 버립니다. 
+그래서 메뉴 이름이 JRE여도 개발이 가능했던 것입니다.
+
+[하지만 정석은 JDK를 등록하는 것]
+
+자체 컴파일러가 있다고 해도, 실제 현업에서는 Installed JREs 메뉴에 
+JRE 폴더가 아닌 JDK 폴더 경로를 등록하는 것이 절대적인 정석입니다.
+
+이유: 자바 개발을 하다 보면 소스 코드 컴파일 외에도 자바 공식 문서(src.zip 소스 코드 보기), 
+디버깅 기능, 혹은 메이븐(Maven)/그레이들(Gradle) 같은 빌드 도구 연동이 필요한데, 
+이 도구들은 이클립스 내장 컴파일러가 아니라 진짜 JDK의 기능들을 요구하기 때문입니다.
+
+
+[이클립스 내장 컴파일러의 마법]
+
+오라클 표준 JDK의 컴파일러(javac)는 자기가 Java 17 버전이면 Java 17 문법으로만 
+컴파일할 수 있습니다.
+
+하지만 이클립스의 자체 컴파일러(ECJ)는 매우 똑똑해서 
+"하나의 컴파일러 프로그램이 하위 버전 문법을 모두 흉내 낼 수 있는 능력"을 가지고 있습니다.
+
+만약 내 이클립스가 최신 버전이라 내장 컴파일러가 Java 21까지 지원한다면, 
+이 컴파일러 하나가 Java 1.4 버전부터 5, 6, 7, 8, 11, 17, 21까지의 문법을 
+모두 지원할 수 있습니다.
+
+그래서 Java > Compiler > JDK Compliance 메뉴를 눌러보면 내 PC에 깔려있지도 않은 
+온갖 자바 버전들이 리스트에 전부 나오는 것입니다.
+
+-------------------(상식 2)
+
+[이클립스 자체 구동용 JDK/JRE와, 개발용 JDK/JRE는 다르다]
+
 과거버전들:
+	[이클립스 구동용]
 	- eclipse.ini 에 -vm 옵션으로 이클립스 구동용 jdk 프로그램을 지정했었다.
 		(이런 형식으로)
 		-vm
 		D:\JAVA\bin\javaw.exe
 
+	[개발 실행용]
 	- Window > Preferenece > Java > Installed JREs 도 과건엔 직접 JDK를 등록해 줬었다.
 
 
 최근 버전들
+	[이클립스 구동용]
 	- eclipse.ini 에 -vm 옵션을 주지 않아도 기본 내장된 JDK로 구동된다.
 	
+	[개발 실행용]
 	- Window > Preferenece > Java > Installed JREs 도 기본 내장된 JRE 가 1개 등록되어 있다.
 	
 		(예)
@@ -28,20 +72,28 @@
 	3. 시스템 자바 확인: 만약 내장 자바가 없는 구버전 이클립스라면, 그제야 내 컴퓨터 시스템 변수(PATH나 JAVA_HOME)에 등록된 자바를 찾아 나섭니다
 
 
--------------------(상식 2)
+요약:
 
-과거 방식: eclipse.ini 파일에 -vm으로 구동용 JDK 경로를 수동 지정해야 했고, 
-Installed JREs도 개발자가 직접 추가해야 했습니다.
+	과거 방식: 
+		eclipse.ini 파일에 -vm으로 구동용 JDK 경로를 수동 지정해야 했고, 
+		Installed JREs도 개발자가 직접 추가해야 했습니다.
 
-현재 방식: -vm 설정을 생략해도 이클립스 내부에 자체 내장된 JDK 경로를 기본으로 바라보며, 
-Installed JREs에도 이 내장 JRE가 자동으로 등록되어 제공됩니다.
+	현재 방식: 
+		-vm 설정을 생략해도 이클립스 내부에 자체 내장된 JDK 경로를 기본으로 바라보며, 
+		Installed JREs에도 이 내장 JRE가 자동으로 등록되어 제공됩니다.
 
-변화의 이유: 말씀하신 대로 Eclipse JustJ 프로젝트 덕분입니다. 
-이클립스 재단에서 자바 미설치 사용자의 진입 장벽을 낮추고 구동 안정성을 확보하기 위해 배포판에 JustJ JRE를 기본 포함하기 시작한 결과입니다.
+	변화의 이유: 
+		말씀하신 대로 Eclipse JustJ 프로젝트 덕분입니다. 
+		이클립스 재단에서 자바 미설치 사용자의 진입 장벽을 낮추고 구동 안정성을 확보하기 위해 
+		배포판에 JustJ JRE를 기본 포함하기 시작한 결과입니다.
 
-컴파일러 특징: 짚어주신 것처럼 이클립스는 예전이나 지금이나 Oracle JDK/OpenJDK의 javac 대신, 
-자체 내장된 ECJ(Eclipse Compiler for Java)를 사용해 코드를 실시간으로 컴파일합니다. 
-Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 표준 라이브러리(API) 코드를 참조할 때 사용됩니다.
+	컴파일러 특징: 
+		이클립스는 예전이나 지금이나 Oracle JDK/OpenJDK의 javac 대신, 
+		자체 내장된 ECJ(Eclipse Compiler for Java)를 사용해 코드를 
+		실시간으로 컴파일합니다. 
+		
+		Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 
+		자바 표준 라이브러리(API) 코드를 참조할 때 사용됩니다.
 
 ----------- JDK, JRE 등 설정할 포인트들(5곳)
 
@@ -90,7 +142,7 @@ Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 �
 	프로젝트 설정은 전체 설정을 덮어쓸 수 있습니다.
 	
 
-------------------- 1. 전체 설정 2곳
+------------------- 1. 전체 설정 2곳, 자세히 보기
 
 
 1) Installed JREs 
@@ -159,8 +211,9 @@ Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 �
 		이 경우 개발자가 컴파일러 메뉴에 와서 직접 11로 또 바꿔줘야 합니다.
 
 	
-------------------- 2. 프로젝트 설정 3곳	
+	※ 이 옵션은 [전체 설정] 과 [프로젝트 설정] 에도 있고, [프로젝트 설정]이 최우선이 됩니다.
 	
+------------------- 2. 프로젝트 설정 3곳 , 자세히 보기
 	
 프로젝트에서 설정 3곳 나눈 이유
 	
@@ -171,7 +224,8 @@ Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 �
 		한계: 
 			만약 Java Compiler만 있고 Build Path가 없다면, 
 			이클립스는 문법 검사는 통과시켜도 
-			"실제 String 클래스 부품이 없어서 컴파일을 완료할 수 없습니다"라는 에러를 냅니다.
+			"실제 String 클래스 부품이 없어서 컴파일을 완료할 수 없습니다"라는 
+			에러를 냅니다.
 		
 	Java Compiler (문법 검사관):
 		
@@ -183,8 +237,96 @@ Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 �
 			얘는 문법만 볼 뿐, 실제 코드를 실행할 때 필요한 
 			String.class, List.class 같은 자바 기본 부품들이 컴퓨터 어디에 
 			박혀있는지는 전혀 관심이 없습니다.
+			
+		※ 이 옵션은 [전체 설정] 과 [프로젝트 설정] 에도 있고, [프로젝트 설정]이 전체설정을 덮어씁니다.
+		
 						
 	Project Facets (프로젝트 성격 정의관):
+	
+		하는 일: 
+			이 프로젝트가 단순한 자바 프로그램인지, 
+			웹 사이트(Web)인지, 앱인지 프로젝트의 정체성과 스펙을 결정합니다.
+			
+			
+프로젝트 설정 3곳은 '어디에' 저장될까요?
+
+	이클립스 전체 설정은 내 컴퓨터 깊숙한 곳(Workspace 폴더 내부)에 저장되지만, 
+	프로젝트 설정 3곳은 내가 만든 프로젝트 폴더 바로 안에 파일로 직접 저장됩니다.
+	지금 보시는 프로젝트 폴더를 윈도우 탐색기로 열어보시면 숨겨진 파일과 폴더들이 있습니다.
+
+	.classpath 파일: 
+		내가 설정한 Java Build Path와 Order and Export 정보가 텍스트로 적혀있습니다.
+		
+	.settings/org.eclipse.jdt.core.prefs 파일: 
+		내가 설정한 Java Compiler 버전과 그 자동 잠금 체크박스 정보가 적혀있습니다.
+		
+	.settings/org.eclipse.wst.common.project.facet.core.xml 파일: 
+		내가 설정한 Project Facets의 기술 블록 규격들이 적혀있습니다.
+		
+
+프로젝트 설정 (3곳) 더 자세히 파헤쳐 보기
+
+	언제나 이 3개 옵션은 서로 맞춰줘야 한다.
+	
+	1. Java Build Path (부품 공급관)
+	
+		프로젝트 우클릭 > properties > Java Build Path > Libraries > Jar and class folders on the build path:
+		여기에서 Add Library > JRE System Libary 를 선택하면 System libary 에 3개의 선택 상자가 나온다
+		
+		[] Excution environment: 표준 실행 환경 규격 등록
+			JRE System Library [JavaSE-1.8] , [JavaSE-11] 등으로 규격화된 표시가 나온다
+			
+			예) JRE System Library [JavaSE-1.8]
+			
+			[이클립스가 가진 '자바 버전 가이드북']
+			- 오직 내가 다운로드한 '이클립스 버전'이 세상에 태어날 때 알고 있던 자바 표준 스펙들의 명단 가이드북이다
+			- 이클립스 탄생 이후의 버전은 당연히 모른다(가지고 있지 않다)
+			- 내가 최신 JDK를 깔아서 JREs에 등록한 것과는 별개다.
+			
+			작동방식: 
+			이곳에 표시된 표준을 선택하면, 
+			내가 전체 JREs에서 설정한(Window>Preferenece>Java>Installed JREs) 
+			JRE의 설정에 가서 알아서 해당 버전의 찾아서 연결한다. 없으면 (unbound)표시가 난다
+				
+				
+			자동 연동:
+			프로젝트 우클릭 > properties > Java Compiler :
+				[v] Enable project specific settings
+				JDK Compliance 
+					[v] Use compliance from environment 'JavaSE-1.8' on the "Java Build Path'
+					Compiler Compliance level: [1.8] <= 고정 비활성화
+					
+			(의미는 표준 실행규격으로 등록되었고, JREs에도 해당 버전이 있으므로, 문법 검사도 'JavaSE-1.8' 로 맞춰서 하겠다며,
+			이클립스가 자동 고정한[비활성화] 상태)
+			
+		[] Alternate JRE: Window > prefernece > Java > Installed JREs 에 등록한 JREs 목록에서 
+			이 플젝을 위한 JRE로 바꿀 수 있음.
+			
+			이 모드로 등록하면 
+			프로젝트 우클릭 > properties > Java Compiler : 
+				JDK Compliance 
+				Compiler compliance level: [선택 버전] 을 수동으로 맞춰야한다.
+		
+		[] : Window > prefernece > Java > Installed JREs 에 기본 선택된 JREs 환경
+		
+			이 모드로 등록하면 
+			프로젝트 우클릭 > properties > Java Compiler : 
+				JDK Compliance 
+				Compiler compliance level: 1.8 로 선택되어 있고, 수동으로 변경할 수 있게 되어있다.
+
+			
+	2. Java Compiler (문법 검사관)
+	
+		JRE System Libary 의 버전과 compiler compliance level 을 정확히 맞춰야한다.
+		과거에는 직접 수동으로 맞춰야 했지만, Java Build Path > JRE System Libary 등록시 
+	
+			[] Excution environment: 표준 실행 환경 규격 
+			
+		이 추가 되었고, 저 옵션으로 설정하면, 이클립스가 자동으로 compiler compliance level 을 [자동 고정 비활성화] 시켜준다.
+		
+		※ 이 옵션은 [전체 설정] 과 [프로젝트 설정] 에도 있고, [프로젝트 설정]이 전체설정을 덮어씁니다.
+		
+	3. Project Facets (프로젝트 성격 정의관)
 	
 		하는 일: 
 			이 프로젝트가 단순한 자바 프로그램인지, 
@@ -199,42 +341,12 @@ Installed JREs는 주로 컴파일된 클래스를 실행(Run)하거나 자바 �
 			Project Facets이 가로막아서며 "야! 웹 스펙은 최신인데 자바 버전이 왜 이렇게 낮아? 앞뒤가 안 맞잖아!" 
 			하고 프로젝트 전체에 빨간색 X 에러(Facet Error)를 때려버리는 것입니다.
 			
-			
-프로젝트 설정 3곳은 '어디에' 저장될까요?
-
-	이클립스 전체 설정은 내 컴퓨터 깊숙한 곳(Workspace 폴더 내부)에 저장되지만, 
-	프로젝트 설정 3곳은 내가 만든 프로젝트 폴더 바로 안에 파일로 직접 저장됩니다.
-	지금 보시는 프로젝트 폴더를 윈도우 탐색기로 열어보시면 숨겨진 파일과 폴더들이 있습니다.
-
-	.classpath 파일: 
-		내가 설정한 Java Build Path와 Order and Export 정보가 텍스트로 적혀있습니다.
-	.settings/org.eclipse.jdt.core.prefs 파일: 
-		내가 설정한 Java Compiler 버전과 그 자동 잠금 체크박스 정보가 적혀있습니다.
-	.settings/org.eclipse.wst.common.project.facet.core.xml 파일: 
-		내가 설정한 Project Facets의 기술 블록 규격들이 적혀있습니다.
+		요약:
+			이 프로젝트가 웹(Dynamic Web Module)인지 단순 자바 프로그램인지 
+			성격을 규정하고 웹 서버(Tomcat) 스펙과 자바 버전의 최종 궁합을 감시함. 
+			이 셋의 버전이 일치해야 에러가 안 남.
+		
 		
 
-자세히 파헤쳐 보기
-
-	프로젝트 우클릭 > properties > Java Build Path > Libraries > Jar and class folders on the build path:
-		여기에서 Add Library > JRE System Libary 를 선택하면 System libary 에 3개의 선택 상자가 나온다
-		
-		[] Excution environment: 표준 실행 환경 규격 등록
-			JavaSE-1.8 , JavaSE-11 등으로 규격화된 표시가 나온다
-			
-			[이클립스가 가진 '자바 버전 가이드북']
-			- 오직 내가 다운로드한 '이클립스 버전'이 세상에 태어날 때 알고 있던 자바 표준 스펙들의 명단 가이드북이다
-			- 이클립스 탄생 이후의 버전은 당연히 모른다(가지고 있지 않다)
-			- 내가 최신 JDK를 깔아서 JREs에 등록한 것과는 별개다.
-			
-			작동방식: 
-			이곳에 표시된 표준을 선택하면, 
-			내가 전체 JREs에서 설정한(Window>Preferenece>Java>Installed JREs) 
-			JRE의 설정에 가서 알아서 해당 버전의 찾아서 연결한다. 없으면 (unbound)표시가 난다
-				
-			
-		[] Alternate JRE: Window > prefernece > Java > Installed JREs 에 등록한 JREs 목록에서 
-			이 플젝을 위한 JRE로 바꿀 수 있음.
-		
-		[] : Window > prefernece > Java > Installed JREs 에 기본 선택된 JREs 환경
-
+	※ 무조건 Java Build Path, Java Compiler, Project Facets 의 JDK 버전을 통일 시켜야한다.
+	
