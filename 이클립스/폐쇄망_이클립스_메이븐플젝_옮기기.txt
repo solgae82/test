@@ -1,0 +1,102 @@
+<폐쇄망에 maven 리포지토리 옮기고 이클립스에 maven 플젝 import 하기>
+
+
+구조
+	C:\myApp\
+		- eclipse
+		- maven
+			- apache-maven-3.9.16
+			- repository
+			- settings.xml
+			
+		- workspace
+			- moneyHouse
+
+1. 이클립스 복사해서 eclipse 디렉토리에 위치
+2. 이동시킬 maven repository 복사 해서 repostitory 에 복사 이동
+3. 메이븐 플젝인 moneyHouse 디렉토리 복사 이동
+
+
+복사한 repository에 가서 리포지토리 초기화
+
+	(이클립스 켜지 말고 OFF 상태에서 작업해야 한다)
+	순수 maven library 구조만 남기고 이전 플젝에 연결된 찌꺼기 정보 모두 삭제하기
+	
+	repository 디토리에서 아래 검색어로 나오는 모든 파일들 모두 삭제
+	
+	- *.lastUpdated
+	- _remote.repositories
+	
+	
+	이 작업을 해야, maven 플젝을 이클립스 import시 제대로 설정되게 된다.
+	(이거 빼먹고 import하면 java build path가 엉망이 될 것이다)
+	
+
+settings.xml
+
+	<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+		  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	  
+	  <localRepository>C:/myApp/maven/repository</localRepository>
+	  
+	  <mirrors>
+			<mirror>
+				<id>local-mirror</id>
+				<name>Local Offline Mirror</name>
+				<url>file://C:/myApp/maven/repository</url>
+				<mirrorOf>*</mirrorOf>
+			</mirror>
+	  </mirrors>
+	  <offline>true</offline>
+	</settings>
+	
+
+이클립스 Maven 설정
+
+	Window > Preferences > Maven : [v] Offline 
+
+	Window > Preferences > Maven > Installations : [Add 버튼]
+		C:\myApp\maven\apache-maven-3.9.16 
+		
+		[Apply]
+		
+	Window > Preferences > Maven > User Settings > User Settings :
+		C:\myApp\maven\apache-maven-3.9.16\settings.xml
+		
+		Local Repository : C:/myApp/maven/repository
+		
+		[Apply and Close]
+	
+	
+프로젝트 workspace/moneyHouse/pom.xml
+
+	<repositories>
+		<!-- 이전 설정들 모두 주석 처리 또는 삭제 -->
+		<repository>
+			<id>local-mirror</id>
+			<name>Local Offline Mirror</name>
+			<url>file://C:/lnxiApp/maven/repository</url>
+		</repository>
+	<repositories>
+	
+	
+이클립스에서 플젝 import 하기
+
+	File > import > Maven > Exsting Maven Projects > Root Directory: 
+		C:\myApp\workspace\moneyHouse
+		
+		
+	[finish]
+	
+
+플젝 Maven Update
+
+	프로젝트 > Maven > Update Project :
+		[v] Offline
+		
+		[v] Force Update of Snapshots/Releases
+		
+		
+	[OK]
+	
