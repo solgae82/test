@@ -1,0 +1,54 @@
+<폐쇄망 이클립스 네트워크 차단 설정>
+
+기본 네트워크 차단
+	Window>Preferences>General>Network Connections
+
+		Active Providor: Manual 로 변경
+		
+		Proxy enties:
+		
+			HTTP, HTTPS 더블클릭
+				Host: 127.0.0.1
+				Port: 7777
+				
+			(가상으로 설정하는 것이다. 저렇게 하면 밖으로 안 나간다고 한다)
+			
+		Proxy bypass
+			localhost, 127.0.0.1 / Manual 만 빼고 모두 삭제
+			
+	또는
+	eclipse.ini 에 직접 박아 넣기
+	
+	-vmargs 
+	..(기존 설정들)..
+	
+	#윈도우 시스템 프록시 설정을 이클ㄹ립스가 긁어가지 않도록 차단
+	-Djava.net.useSystemProxies=false
+	
+	# 이클립스 코어 파일전송(업데이트 체크등) 네트워크 기능 억제
+	-Djava.eclipse.ecf.provider.filetransfer.excludeContributors=true
+	-Dorg.eclipse.update.reconcile=false
+		
+
+유효성 검사(Validator) 네트워크 차단
+
+	[전체설정]
+	Window>Preferences>Validation :
+		[v] Suspend all validatros (Validator 모두 차단)
+
+	또는
+	
+	[프로젝트 설정]
+	프로젝트 우클릭>Properties>Validation:
+		[v] Suspend all validators 
+		또는 
+		아래 Validator 선택창에서 맘에 안 드는 녀석만 골라 비활성화 해도 된다.
+
+Oomph 네트워크 접속 skip 설정
+	Window>Preferences>Oomph>Setup Taks : 
+		[v] Skip automatic task execustion at starup time
+
+
+Maven 오프라인 설정
+	Window>Prefernces>Maven : 
+		[v] Offline 체크
