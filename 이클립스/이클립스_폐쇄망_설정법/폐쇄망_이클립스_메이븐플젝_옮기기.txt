@@ -1,5 +1,7 @@
 <폐쇄망에 maven 리포지토리 옮기고 이클립스에 maven 플젝 import 하기>
 
+폐쇄망에 maven 플젝 셋팅하려면, 로컬 고정 repository 셋팅을 해야한다.
+그 방법을 알아냈고, 여기에 정리한다.
 
 구조
 	C:\myApp\
@@ -12,17 +14,18 @@
 		- workspace
 			- moneyHouse
 
-1. 이클립스 복사해서 eclipse 디렉토리에 위치
-2. 이동시킬 maven repository 복사 해서 repostitory 에 복사 이동
-3. 메이븐 플젝인 moneyHouse 디렉토리 복사 이동
+1. 이클립스 복사해서 eclipse 디렉토리에 위치(경로길이 문제가 나면, zip파일로 압축 이동해야한다)
+2. 이동시킬 maven repository 복사 해서 maven/repostitory 디렉토리 에 복사 이동
+3. 메이븐 플젝인 moneyHouse 디렉토리 workspace 디렉토리에 복사 이동
 
+------------------- 설정 시작
 
 복사한 repository에 가서 리포지토리 초기화
 
 	(이클립스 켜지 말고 OFF 상태에서 작업해야 한다)
 	순수 maven library 구조만 남기고 이전 플젝에 연결된 찌꺼기 정보 모두 삭제하기
 	
-	repository 디토리에서 아래 검색어로 나오는 모든 파일들 모두 삭제
+	repository 디토리에서 아래 검색어로 나오는 모든 파일들 모두 삭제 (ctrl + f)
 	
 	- *.lastUpdated
 	- _remote.repositories
@@ -90,7 +93,7 @@ settings.xml
 	[finish]
 	
 
-플젝 Maven Update
+플젝 Maven Update (Alt + F5)
 
 	프로젝트 > Maven > Update Project :
 		[v] Offline
