@@ -36,8 +36,9 @@
 
 	4) 생성된 이미지 확인 및 실행
 	
+		docker images
+	
 		docker run -it my-ubuntu-git:v1
-
 	
 		
 4. 주의사항 및 권장사항 (중요)

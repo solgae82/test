@@ -1,0 +1,65 @@
+이미지를 tar 묶어 단일 파일로 내보내기를 하고 
+다른 도커 시스템에 수동 이미지 등록 가능하다 
+
+	save : 이미지 내보내기
+	load : 이미지 등록하기
+
+------------------- save 
+4가지 빌드 방식 모두 최종 결과물은 '도커 이미지'로 동일하기 때문에 
+전부 docker save -o app.tar로 내보낼 수 있습니다.
+
+다만, 방식에 따라 주의해야 할 실무적인 차이점이 딱 하나씩 있습니다. 
+나중에 파일이 안 뽑히거나 꼬이는 것을 방지하기 위해 
+각 방식별 핵심 체크포인트를 정리합니다.
+
+
+1. commit 이미지 ➡️ save 가능
+
+	특징: 
+		가장 정석적으로 잘 됩니다.
+	체크포인트: 
+		커밋할 때 태그 지정을 안 하면 <none> 이미지(댕글링 이미지)가 됩니다. 
+		save 명령어에는 가급적 명확한 이름과 태그를 주는 것이 좋습니다.
+
+	(예제)
+	docker save -o commit-app.tar my-ubuntu-git:v1
+
+2. build 이미지 ➡️ save 가능
+
+	특징: 
+		가장 널리 쓰이는 표준 방식입니다.
+	체크포인트: 
+		Dockerfile 빌드가 성공적으로 끝나고 docker images 목록에 
+		정상 등록된 상태라면 아무 문제 없이 저장됩니다.
+		
+	(예제)
+	docker save -o build-app.tar web-server-build:latest
+
+3. buildx 이미지 ➡️ (⚠️ 주의 필요)
+
+	특징: 
+		buildx는 기본적으로 빌드한 이미지를 로컬 도커 엔진이 아니라 자체 내장 캐시 공간에 보관하거나, 
+		바로 Docker Hub 같은 원격 저장소로 밀어 넣습니다(--push).
+		
+	체크포인트: 
+		로컬에서 docker save를 하려면, buildx 명령어를 칠 때 --output type=docker 
+		옵션을 주어 로컬 도커 엔진 이미지 목록으로 먼저 빼내야 합니다.
+		
+	(예제)
+	# 로컬 도커 엔진으로 이미지를 가져오도록 빌드 (이후 save 가능)
+	docker buildx build --output type=docker -t buildx-app:v1 .
+	docker save -o buildx-app.tar buildx-app:v1
+
+4. compose 이미지 ➡️ (⚠️ 주의 필요)
+
+	특징: 
+		컴포즈는 단일 이미지가 아니라 여러 개의 이미지를 한 번에 빌드합니다. 
+		(예: db 이미지와 app 이미지)
+		
+	체크포인트: 
+		docker save 명령어는 여러 개의 이미지를 하나의 .tar 파일로 묶어서 저장하는 기능을 지원합니다. 
+		따라서 컴포즈로 만들어진 이미지 이름들을 나열하여 한 번에 묶어주면 됩니다.
+		
+	(예제)
+	# 컴포즈가 생성한 여러 이미지를 하나의 tar 파일로 통째로 묶기
+	docker save -o compose-all-apps.tar compose-test-app:latest compose-test-db:latest

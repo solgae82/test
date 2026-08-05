@@ -1,0 +1,22 @@
+도커/03_생활코딩_build.txt 를 참조하라
+
+-------------------
+
+1) Dockerfile 설게도 생성
+
+	$ cd /home/dong
+
+	$ vi ./Dockerfile
+	FROM ubuntu:20.04
+	:wq
+
+2) 이미지 빌드 (끝에 현재 디렉토리를 뜻하는 점 '.' 필수)
+
+	$ docker build -t web-server-build .
+
+3) 생성한 도커 이미지 확인 
+
+	$ docker images
+	..
+	web-server-build:latest   b02bf99d6aa1        109MB         27.5MB
+

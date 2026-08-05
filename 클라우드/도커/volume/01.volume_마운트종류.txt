@@ -1,0 +1,207 @@
+도커 데이터 저장방식은 크게 3가지가 있다.
+	
+	볼륨 (Volumes): 
+		도커가 완전히 제어하고 관리하는 호스트 내 공간(/var/lib/docker/volumes/)에 
+		데이터를 저장합니다. 가장 안전하고 권장되는 방식입니다
+	
+	바인드 마운트 (Bind Mounts): 
+		사용자가 지정한 호스트 시스템의 특정 파일이나 디렉터리 경로를 컨테이너에 직접 연결합니다. 
+		소스 코드 실시간 수정(개발 환경) 등에 주로 쓰입니다.
+	
+	tmpfs 마운트 (tmpfs Mounts): 
+		호스트 파일시스템이 아닌 호스트의 메모리(RAM)에만 데이터를 임시로 저장합니다. 
+		컨테이너 종료 시 데이터가 사라집니다.
+
+
+(이 중에서 가장 활용도가 높은 2개를 중심으로 volume을 이해하자)
+
+-----------------------------
+
+[Docker] 도커 데이터 영구 저장: 볼륨 마운트 vs 바인드 마운트
+
+	도커 컨테이너는 기본적으로 삭제되면 내부 데이터도 함께 사라집니다. 
+	이를 방지하고 데이터를 영구 보존하기 위해 볼륨 마운트와 바인드 마운트를 사용합니다. 
+	모두 docker run -v 옵션으로 지정합니다.
+
+	# 기본 구조
+	-v <호스트_영역>:<컨테이너_내부_경로>
+
+1. 한눈에 보는 핵심 차이점
+
+
+구분        | 볼륨 마운트 (Volume)                      | 바인드 마운트 (Bind Mount)
+------------------------------------------------------------------------------------------------
+관리 주체    | 도커 엔진이 직접 관리                        | 사용자(호스트 시스템)가 직접 관리
+------------------------------------------------------------------------------------------------
+호스트 경로   | 리눅스 기준: /var/lib/docker/volumes/     | 사용자가 지정한 임의 경로 (예: C:\mysql, /home/dong)
+------------------------------------------------------------------------------------------------
+보안 및 성능  | 도커가 격리 관리하여 안전하고 성능이 최적화됨        | 호스트 파일에 직접 접근하므로 보안 주의 필요 
+------------------------------------------------------------------------------------------------
+*데이터 특징  | 빈 볼륨 연결 시 컨테이너 내부 데이터가 볼륨으로 복사됨  | 호스트 기준으로 작동하여 컨테이너 데이터를 덮어씀 (주의)
+------------------------------------------------------------------------------------------------
+주요 용도    | DB 데이터, 운영 환경(Production) 데이터 보존    | 소스 코드 실시간 반영, 개발 환경(Development)
+------------------------------------------------------------------------------------------------
+
+	※ 위에 보다시피 [*데이터 특징] 부분이 중요 포인트다. (복사 방향 주의)
+		볼륨 마운트: 호스트 빈볼륨 <- (최초 1회 복사) <- 연결된 컨테이너 내부 데이터 
+		바인드마운트:  호스트 경로 ->  연결된 컨테이너 내부 데이터
+			
+	(이 부분 토픽은 '02.volume_종류별_복사방향.txt'로 따로 정리한다)
+	
+2. 볼륨 마운트 (Volume) 상세 및 명령어
+
+	도커 엔진이 관리하는 별도의 저장 공간을 생성하여 컨테이너와 연결하는 방식입니다.	
+	
+	1) 볼륨 생성 및 조회
+	
+		# 1. 'my-data'라는 이름의 도커 볼륨 생성
+		docker volume create my-data
+
+		# 2. 생성된 볼륨 목록 확인
+		docker volume ls
+
+		# 3. 볼륨의 상세 정보(실제 호스트 저장 경로 등) 확인
+		docker volume inspect my-data
+		# -> "Mountpoint": "/var/lib/docker/volumes/my-data/_data" 확인 가능
+	
+	
+	2) 볼륨 연결 실행
+	
+		docker run --name db -d -v my-data:/var/mysql mysql
+
+	
+	
+	3) 볼륨 안전 삭제 프로세스
+		
+		컨테이너가 종료되어도 볼륨은 자동으로 지워지지 않고 남아있습니다. 
+		특히 이름이 없는 익명 볼륨(Anonymous Volume)들이 쌓이기 쉽습니다.
+		
+		# 1. 사용 중이지 않은 모든 '익명 볼륨' 일괄 삭제 (사용자 정의 명명 볼륨은 보호됨)
+		docker volume prune
+
+		# 2. 사용자가 직접 명시해서 만든 볼륨 수동 삭제
+		docker volume rm my-data
+
+3. 바인드 마운트 (Bind Mount) 상세 및 명령어
+
+	호스트 PC에 존재하는 특정 폴더/파일을 컨테이너 내부와 다이렉트로 연결하는 방식입니다.	
+	
+	1) 바인드 마운트 실행
+		
+		# Windows 환경 예시
+		docker run --name db -d -v C:\mysql:/var/mysql mysql
+
+		# Linux 환경 예시 (현재 디렉토리 연동 시 $(pwd) 활용)
+		docker run --name app -d -v "$(pwd)/app_data:/var/www/html" wordpress
+
+	⚠️ 바인드 마운트 사용 시 치명적인 주의사항
+	
+	데이터 덮어쓰기 현상: 
+		컨테이너 내부에 이미 데이터가 들어있더라도, 비어있는 호스트 디렉토리를 바인드 마운트해 버리면 
+		호스트 기준으로 동기화되어 컨테이너 안의 기존 데이터가 보이지 않게(초기화) 됩니다. 
+		반드시 연결할 호스트 폴더 상태를 확인해야 합니다.
+		
+	사용자 관리 책임: 
+		사용자가 호스트에서 실수로 폴더를 지우면 컨테이너 내의 데이터도 즉시 파괴되므로 
+		백업 관리를 철저히 해야 합니다
+	
+요약 및 실무 가이드
+	
+	"데이터의 안전한 보관과 성능이 중요하다" 
+		➡️ docker volume 기반의 볼륨 마운트 사용 
+		(예: MySQL, PostgreSQL 등 DB 데이터)
+	
+	"내가 작성 중인 코드를 컨테이너에 실시간 반영해야 한다" 
+		➡️ 호스트 경로를 지정하는 바인드 마운트 사용 (예: 소스 코드, 설정 파일 공유)
+	
+------------------- 실전 코드 보기
+
+1) 볼륨 마운트 (volume 생성 및 관리)
+
+	# 볼륨 호스트에 생성
+
+		$ docker volume create my-data
+
+	# 생성된 볼륨 조회
+
+		$ docker volume ls
+		
+		DRIVER    VOLUME NAME
+		local     2c80599bd9cfa95318d8c7ead8e5b60a2359666145945a7d3b983ae75502368f
+		local     5c718f4d86f56d74e21cbed7a0c59f454406ad7550615c2baf9faad4f0717ee7
+		local     7b2e340c41779f03fcd07a271fcdca0c0cf0d0734e5843efed137612699b64d6
+		local     8aaf8c1ae5b173aa2c9955ad05bac848e7997cf9b7a2f6201c5e0945023996a7
+		local     9f3e86e75ceb32ad34eb27aac128edd75386155fe0ce8462bed87e924c9f3645
+		local     12ccc4ae9c3391c3c5c4900984c8ac92269a5e166861cbd709b288fcbd7072b1
+		local     61d531b937a135cc9c6a3728ddcd2211fe96b880a8516656a87714d81ed6b74e
+		local     a4d3ae27ad81242c13d27ecb8c78e0bb9ec964cef50f828e4d5efd9464c6bc40
+		local     a770f12e4a9ac8decfce60117e43ad5c3c3e3a3d7c62e7399e27a8648987af39
+		local     my-data
+
+
+	#생성된 볼륨 정보 보기
+		$ docker volume inspect my-data
+		[
+		    {
+			"CreatedAt": "2026-02-24T22:58:53Z",
+			"Driver": "local",
+			"Labels": null,
+			"Mountpoint": "/var/lib/docker/volumes/my-data/_data",
+			"Name": "my-data",
+			"Options": null,
+			"Scope": "local"
+		    }
+		]
+
+	#생성한 my-data 볼륨 <-> 생성 컨테이너에 연결
+		# run 명령시 -v 옵션으로 설정
+		- v옵션 : (호스트 디렉토리):(컨테이너 안 앱 저장디렉토리)
+		
+		$ docker run --name db -v my-data:/var/mysql mysql
+
+
+	#사용하지 않는 볼륨 삭제
+	
+		$docker volume prune
+		
+		WARNING! This will remove anonymous local volumes not used by at least one container.
+		Are you sure you want to continue? [y/N] y
+		Deleted Volumes:
+		12ccc4ae9c3391c3c5c4900984c8ac92269a5e166861cbd709b288fcbd7072b1
+		8aaf8c1ae5b173aa2c9955ad05bac848e7997cf9b7a2f6201c5e0945023996a7
+		7b2e340c41779f03fcd07a271fcdca0c0cf0d0734e5843efed137612699b64d6
+		5c718f4d86f56d74e21cbed7a0c59f454406ad7550615c2baf9faad4f0717ee7
+		a4d3ae27ad81242c13d27ecb8c78e0bb9ec964cef50f828e4d5efd9464c6bc40
+		2c80599bd9cfa95318d8c7ead8e5b60a2359666145945a7d3b983ae75502368f
+		61d531b937a135cc9c6a3728ddcd2211fe96b880a8516656a87714d81ed6b74e
+		9f3e86e75ceb32ad34eb27aac128edd75386155fe0ce8462bed87e924c9f3645
+		a770f12e4a9ac8decfce60117e43ad5c3c3e3a3d7c62e7399e27a8648987af39
+		
+		
+	# 볼륨 다시 조회
+
+		$ docker volume ls #(사용자가 생성한 볼륨은 남아있다)
+		DRIVER    VOLUME NAME
+		local     my-data
+	
+	# 사용자 볼륨 수동 삭제 
+		
+		$ docker volume rm my-data
+		my-data
+	
+	# 볼륨 다시 조회
+	
+		$ docker volume ls 
+		DRIVER    VOLUME NAME
+	
+2) 바인드 마운트
+
+	직접 호스트의 특정 위치로 영구데이터 관리하고 싶을때 사용.
+	만약 컨테이너에 데이터가 이미 쌓여있는데, 비어 있는 호스트 디렉토리를 run -v 옵션으로 연결한다면,
+	호스트 기준으로 덮어써지므로 주의!!
+
+		# run 명령시 -v 옵션으로 설정
+		- v옵션 : (호스트 디렉토리):(컨테이너 안 앱 저장디렉토리)
+		
+		$ docker run --name db -v C:\mysql:/var/mysql mysql
+	

@@ -1,0 +1,25 @@
+도커/02_생활코딩_commit.txt 를 참조하자
+
+-------------------
+
+	
+1) 컨테이너 실행
+
+	docker run -it --name my-container ubuntu:20.04
+
+2) 컨테이너 내부 수정 (예: 패키지 설치)
+
+	apt-get update && apt-get install -y git
+	
+
+3) 변경 사항을 새 이미지로 저장
+
+	docker commit -m "install git" -a "dong" my-container my-ubuntu-git:v1
+
+
+4) 생성된 이미지 확인 및 실행
+
+	docker images
+	
+	docker run -it my-ubuntu-git:v1
+

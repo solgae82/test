@@ -1,0 +1,114 @@
+[Docker] 도커 볼륨 마운트 데이터 백업 및 복구 가이드
+
+도커 볼륨은 도커 엔진 보호 영역에 저장되므로 호스트에서 직접 접근하기 어렵습니다. 
+따라서 임시 컨테이너(Busybox)를 생성하여 볼륨과 호스트 경로를 동시에 연결한 뒤 
+데이터를 압축/해제하는 방식을 사용합니다.
+
+(바인드 마운트는 사용자가 알아서 백업하면 된다)
+
+---------
+핵심 원리 (징검다리 컨테이너 활용)
+	임시 컨테이너 생성: 
+		압축 명령만 수행하고 자동으로 사라질 임시 컨테이너(--rm)를 실행합니다.
+	양방향 마운트: 
+		임시 컨테이너에 ① 백업할 도커 볼륨과 ② 백업 파일이 저장될 호스트 폴더를 동시에 연결합니다.
+		
+	데이터 전달: 컨테이너 안에서 볼륨의 데이터를 압축하여 호스트 폴더로 내보냅니다.
+
+(!!백업/복구할땐 볼륨과 연결된 컨테이너는 정지 후 작업해야한다.)
+
+--------- (백업 실습)
+
+#아래와 같은 상황의 컨테이너와 연결된 볼륨을 백업해보자
+
+	$ docker volume create my-volume
+	$ docker volume ls
+	DRIVER    VOLUME NAME
+	local     my-volume
+	
+	# my-volume과 연결한 컨테이너 생성
+	$ docker run --name ws1 -v my-volume:/usr/local/apache2/htdocs/ -p 8080:80 httpd
+	
+
+# 백업 전 확인
+	
+	# 안전한 백업을 위해 데이터 쓰기 작업이 발생하지 않도록 대상 컨테이너를 반드시 정지해야 합니다.
+	
+	# 백업할 컨테이너 실행여부 확인
+	$ docker ps
+	
+	CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS         PORTS                                     NAMES
+	ba6e5388b9fb   httpd     "httpd-foreground"   4 minutes ago   Up 2 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   ws1
+	
+	# 백업하기 위해 정지
+	$ docker stop ws1
+	
+	# 정지 되었는지 확인
+	$ docker ps
+	
+# 백업
+	# busybox 이미지를 임시 컨테이너로 사용
+	# 임시 컨테이너 생성 후 임시 컨테이너 안에서 백업 명령을 사용해서 백업, 처리 끝나면 임시 컨테이너 삭제
+	
+	$ docker run --rm -v my-volume:/source -v D:\docker\ws1_backup:/target busybox \
+	tar czvf /target/backup.tar.gz -C /source .
+	
+	
+	
+	---------------------
+	🔍 백업 명령어 상세 해부 (왜 이렇게 쓰나요?)
+	
+	--rm: 컨테이너가 백업 명령(tar)을 마치면 시스템에서 자동으로 삭제되도록 설정합니다. (찌꺼기 방지)
+	-v my-volume:/source: 백업할 도커 볼륨을 임시 컨테이너 내부의 /source 폴더에 연결합니다.
+	-v D:\docker\ws1_backup:/target: 백업 파일이 저장될 PC의 실제 경로를 임시 컨테이너 내부의 /target 폴더에 연결합니다.
+	
+	busybox: 리눅스 기본 명령어가 내장된 초경량(약 5MB) 이미지로, 임시 작업용으로 가장 적합합니다.
+	
+	tar czvf /target/backup.tar.gz -C /source .: 컨테이너 내부에서 실행할 실제 압축 명령어입니다.
+		c (Create): 새 압축 파일 생성
+		z (gzip): gzip 형태로 압축
+		v (Verbose): 압축 진행 과정을 화면에 출력
+		f (File): 저장될 파일명 지정 (/target/backup.tar.gz)
+		-C /source . : 
+			아주 중요한 옵션입니다. /source 디렉토리로 이동(-C)한 뒤, 그 안의 현재 내용들(.)을 압축하라는 뜻입니다. 
+			(이 옵션이 없으면 압축 파일 안에 source/라는 상위 폴더까지 통째로 들어가서 나중에 복구할 때 경로가 꼬입니다.)
+	---------------------
+	
+# 백업 경로(호스트), D:\docker\ws1_backup 확인
+	
+	
+	cd D:\docker\ws1_backup
+	dir
+		backup.tar.gz
+		
+		
+--------- (복구 실습)
+
+복구도 백업과 원리는 같다. 방향만 다른 뿐이다
+(해당 볼륨을 사용하는 컨테이너를 중지하고 복원해야한다)
+
+	$ docker run --rm -v my-volume:/source -v D:\docker\ws1_backup:/target busybox \
+	tar xzvf /target/backup.tar.gz -C /source
+	
+	
+	---------------------
+	🔍 복구 명령어 상세 해부
+	
+	tar xzvf /target/backup.tar.gz -C /source: 압축을 푸는 명령어입니다.
+	x (Extract): 압축 해제
+	-C /source: 
+		압축을 풀 때 타깃 디렉토리를 /source(도커 볼륨과 연결된 곳)로 지정하여, 
+		볼륨 내부에 파일들이 바로 풀리도록 합니다.
+	---------------------
+	
+---------
+
+한 눈에 보는 백업/복구 데이터 흐름도
+
+백업 (Backup)
+	[my-volume] ➡️ 컨테이너 내부 /source ➡️ tar czvf ➡️ 컨테이너 내부 /target 
+	➡️ [D:\docker\ws1_backup\backup.tar.gz]
+	
+복구 (Restore)
+	[D:\docker\ws1_backup\backup.tar.gz] ➡️ 컨테이너 내부 /target ➡️ tar xzvf 
+	➡️ 컨테이너 내부 /source ➡️ [my-volume]
