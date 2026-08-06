@@ -20,7 +20,7 @@
 
 ------------------- 설정 시작
 
-복사한 repository에 가서 리포지토리 초기화
+복사한 repository에 가서 리포지토리 초기화 (!!! 매우 중요)
 
 	(이클립스 켜지 말고 OFF 상태에서 작업해야 한다)
 	순수 maven library 구조만 남기고 이전 플젝에 연결된 찌꺼기 정보 모두 삭제하기
@@ -30,10 +30,11 @@
 	- *.lastUpdated
 	- _remote.repositories
 	
-	
-	이 작업을 해야, maven 플젝을 이클립스 import시 제대로 설정되게 된다.
-	(이거 빼먹고 import하면 java build path가 엉망이 될 것이다)
-	
+	---------------------
+	이 작업을 제일 처음으로 해야, maven 플젝을 이클립스 import시 제대로 설정되게 된다.
+	이거 빼먹고 import하면 java build path가 엉망이 될 것이고, 
+	쓸데없는 에러 복구 노력으로 진이 빠질 것이다.
+	---------------------
 
 settings.xml
 
