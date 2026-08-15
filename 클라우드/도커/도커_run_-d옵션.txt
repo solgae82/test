@@ -1,0 +1,9 @@
+지속적으로 실행되는 프로그램에는 보통 -d 옵션을 사용한다.
+
+	docker run -d --name ws1 httpd
+	
+일회성 작업이나 프로세스 로그를 확인해야할 경우(1회성)는 -d 옵션 없이 컨테이너 실행 후 바로 종료
+
+	# ws1 컨테이너만 생성 후 바로 종료(/bin/bash로 덮어 실행했기에 서버 실행 안됨)
+	docker run -it --name ws1 httpd /bin/bash 
+	

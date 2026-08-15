@@ -42,7 +42,7 @@ docker hub(registry) -> (pull) -> image -> (run) -> container
 	
 # httpd 이미지를 'ws1' 이라는 이름을 설정 후 run하기
 	
-	docker run --name ws1 httpd
+	docker run -d --name ws1 httpd
 	
 # 컨테이너 프로세서 목록 보기 (컨테이너 리스트 확인 겸용)
 	
@@ -82,10 +82,15 @@ docker hub(registry) -> (pull) -> image -> (run) -> container
 	
 # 컨테이너 내부 shell로 명령하기(컨테이너 실행 후 가능)
 
+	# 생성된 컨테이너 내부에 들어가서 /bin/sh 실행
 	docker exec -it ws1 /bin/sh  # or /bin/bash
 	
-	# pwd # 컨테이너 내부에서 /bin/sh 쉘로 내린 pwd 명령
-	# exit # 컨테이너 내부에서 /bin/sh 쉘로 종료 명령 (빠져나오기) 
+		# pwd # 컨테이너 내부에서 /bin/sh 쉘로 내린 pwd 명령
+		# exit # 컨테이너 내부에서 /bin/sh 쉘로 종료 명령 (빠져나오기) 
+	
+	
+	# run 실행 후(컨테이너만 생성 후 정지) 바로 컨테이너 내부 들어가기
+	docker run -it --name ws1 httpd /bin/sh
 
 # volume 설정 (컨테이너와 호스트 파일시스템 연결)
 	#run 할때 설정한다
