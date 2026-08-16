@@ -1,5 +1,21 @@
 <폐쇄망 이클립스 네트워크 차단 설정>
 
+Maven 오프라인 설정
+	Window>Prefernces>Maven : 
+		[v] Offline 체크
+		
+Window>Preferences>XML (Wild Web Developer):
+	: [] Download external resources like referenced DTD, XSD <= 체크 해제
+	
+	> Validation & Resoulution:
+				
+		(네트워크 검사 및 유효성 검사는 필요없다! 일때)
+		[] Enable validation  <= 체크 해제  
+		
+		또는 (네트워크 검사 빼고, 유효성 문법 검사 기능은 살리고 싶다)
+		
+		severity when document has no associated grammar : ignore 변경
+		
 기본 네트워크 차단 (!!! 이 설정은 왠만하면 하지 말자)
 	Window>Preferences>General>Network Connections
 
@@ -28,9 +44,7 @@
 	# 이클립스 코어 파일전송(업데이트 체크등) 네트워크 기능 억제
 	-Djava.eclipse.ecf.provider.filetransfer.excludeContributors=true
 	-Dorg.eclipse.update.reconcile=false
-		
-		
-		
+			
 	---------------------
 	!!! 주의
 	
@@ -66,6 +80,3 @@ Oomph 네트워크 접속 skip 설정
 		[v] Skip automatic task execustion at starup time
 
 
-Maven 오프라인 설정
-	Window>Prefernces>Maven : 
-		[v] Offline 체크
