@@ -1,0 +1,98 @@
+
+만약 폐쇄망에서 XML 자동완성(어시스트) 기능이 꼭 필요하다면? (원리)
+	: 관련 dtd,xsd 파일등을 다운로드 받아서 'url=로컬다운로드경로/dtd.xsd'로 
+	매핑해 놓으면 네트워크가 되지 않아도 로컬경로 파일(dtd.xsd)을 연결해 
+	xml 자동완성(어시스트) 기능을 쓸 수 있게 된다.
+
+(설정 위치)
+
+	Window > Preferences > XML > XML Catalog
+
+(등록 방법)
+
+	XML Catalog 등록:
+		외부에서 해당 xsd나 dtd 파일을 수동으로 다운로드하여 
+		폐쇄망 PC로 가져옵니다.
+	
+	이클립스 설정(Preferences) > XML > XML Catalog 메뉴로 이동합니다.
+	
+	User Specified Entries를 선택하고 Add... 버튼을 눌러, 
+	Catalog Entry 메뉴의
+	가져온 파일(로컬 경로)과 고유 식별자(URI)를 매핑해 두면 
+	인터넷 연결 없이도 완벽하게 동작합니다.
+	
+	예)
+	Location: 사용자가 다운로드 받은 로컬 경로/mybatis.dtd
+		
+	Key Type: Public ID
+
+	Key: -//mybatis.org//DTD Mapper 3.0//EN	
+	
+	
+------------------- XML Catalog 상세 설정
+1. DTD 선언 방식
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org">
+	
+	Public ID: -//mybatis.org//DTD Mapper 3.0//EN
+	System ID: http://mybatis.org
+	
+	(이클립스 Catalog에 등록할 때는 더 명확한 기준인 Public ID를 선택한다)
+
+	(Add XML Catalog Element):
+	
+		Location: 사용자가 다운로드 받은 로컬 경로/mybatis.dtd
+		
+		Key Type: Public ID
+
+		Key: -//mybatis.org//DTD Mapper 3.0//EN
+		
+2. XSD Schema 선언 방식
+
+<beans xmlns="http://springframework.org"
+       xsi:schemaLocation="http://springframework.org 
+                           http://springframework.org/spring-beans.xsd">
+
+	스프링 같은 스키마 방식은 Public ID라는 개념을 쓰지 않고, 
+	오직 인터넷 주소(URL) 형태의 네임스페이스와 주소만 사용합니다.
+
+	따라서 이클립스에게 *"인터넷 주소(URI)를 감지하면 내가 지정한 로컬 파일로 연결해줘"
+	*라고 말해야 하기 때문에 URI를 선택하는 것입니다. 
+
+
+	(Add XML Catalog Element):
+	
+		Location: 사용자가 다운로드 받은 로컬 경로/spring-beans.xsd
+		
+		Key Type: URI
+
+		Key: http://springframework.org/spring-beans.xsd
+		
+------------------- etc
+
+플젝별로 등록해야할 dtd, xsd 파일은 제한적이다.
+(그러므로 수동 등록할만 하다)
+
+1. mybatis (2개)
+
+	Config용 DTD: mybatis-3-config.dtd (전체 설정 파일용)
+	Mapper용 DTD: mybatis-3-mapper.dtd (SQL 쿼리 작성 파일용)
+
+2. Spring Framework 관련 (약 5~8개 내외)
+
+	스프링 역시 버전(XSD)별로 한 번씩만 등록하면 됩니다. 
+	주로 사용하는 기능에 따라 아래 항목들만 등록해주면 
+	거의 모든 설정 파일이 커버됩니다.
+
+	등록 예)
+		Beans (기본 필수): spring-beans.xsd
+		
+		Context (어노테이션 스캔 등): spring-context.xsd
+		
+		AOP (공통 기능 분리): spring-aop.xsd
+		
+		TX (트랜잭션 설정): spring-tx.xsd
+		
+		MVC (웹 설정): spring-mvc.xsd 또는 spring-webmvc.xsd
+		
+		(선택) Security나 Batch 등을 쓰신다면 1~2개 더 추가
