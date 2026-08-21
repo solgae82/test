@@ -1,0 +1,8 @@
+-------------------원본에서 jar 뽑기
+실행한 위치에 WEB-INF 디렉토리가 생기고 그 안에 같은 위치에 jar 파일들이 위치하게 된다
+
+jar xf 원본/lnxi.war WEB-INF/lib/tomcat-embed-core-9.0.83.jar
+jar xf 원본/lnxi.war WEB-INF/lib/tomcat-embed-el-9.0.83.jar
+jar xf 원본/lnxi.war WEB-INF/lib/tomcat-embed-jasper-9.0.83.jar
+jar xf 원본/lnxi.war WEB-INF/lib-provided/tomcat-embed-websocket-9.0.83.jar
+jar xf 원본/lnxi.war WEB-INF/classpath.idx

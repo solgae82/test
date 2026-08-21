@@ -1,0 +1,57 @@
+Spring Boot Executable WAR 내 Embedded Tomcat 수동 교체 사례
+
+1. 정상 WAR : Tomcat 9.0.83
+2. zip -d로 Tomcat JAR 4개 삭제
+3. 9.0.121 삽입 + classpath.idx 변경
+   → 기동 성공 / 웹 요청 500
+   → getHttpServletMapping() NoSuchMethodError
+
+4. 다시 9.0.83으로 원복
+   → 동일 500
+   ★ Tomcat 버전 자체가 원인이 아님을 확인
+
+5. 원본 WAR에서 zip -d 없이
+   기존 9.0.83 파일명 유지
+   실제 내용만 9.0.121 JAR로 jar -uvf0 업데이트
+
+6. 결과
+   → Apache Tomcat/9.0.121 확인
+   → Spring Boot 정상 기동
+   → DispatcherServlet 정상
+   → 웹 요청/DB 처리 정상
+
+핵심 교훈:
+Executable WAR의 nested JAR를 함부로 삭제 후 재삽입하지 말 것.
+가능하면 소스에서 의존성을 변경하여 정상 재빌드/배포할 것.
+
+-------------------
+톰캣 버전 9.0.83 > 9.0.121 로 바꾸기
+
+어설프게 zip 파일등을 사용하지 마라!
+파일 삭제도 하지말고, 오로지 업데이트만 한다
+
+9.0.83 파일이름도 그대로 유지하고, 내용물만 9.0.121인 jar파일을 준비해서 
+그 위치 그대로 덮어써야한다.
+
+------------------- 윈도우즈에 다운로드 후 작업 
+
+work/tomcat/WEB-INF
+	/lib
+		tomcat-embed-core-9.0.83.jar (내용은 9.0.121 버전)
+		tomcat-embed-el-9.0.83.jar (내용은 9.0.121 버전)
+		tomcat-embed-jasper-9.0.83.jar (내용은 9.0.121 버전)
+	/lib-provided
+		tomcat-embed-websocket-9.0.83.jar (내용은 9.0.121 버전)
+
+$ jar -uvf0 lnxi.war WEB-INF/lib/tomcat-embed-*.jar
+adding: WEB-INF/lib/tomcat-embed-core-9.0.83.jar(in = 3738560) (out= 3738560)(stored 0%)
+adding: WEB-INF/lib/tomcat-embed-el-9.0.83.jar(in = 263516) (out= 263516)(stored 0%)
+adding: WEB-INF/lib/tomcat-embed-jasper-9.0.83.jar(in = 657072) (out= 657072)(stored 0%)
+
+
+$ jar -uvf0 lnxi.war WEB-INF/lib-provided/tomcat-embed-*.jar
+adding: WEB-INF/lib-provided/tomcat-embed-websocket-9.0.83.jar(in = 289374) (out= 289374)(stored 0%)
+
+
+
+
