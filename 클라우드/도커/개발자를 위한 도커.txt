@@ -24,10 +24,10 @@ docker container run
 	은 같은 명령어이다.
 	(Management Command 생략가능), 예: container
 
-이미지, 컨테이너 metadata
+이미지, 컨테이너 와  metadata
 
 	이미지는 압축파일 + metadata로 구성된다
-	컨테이너도 이미지의  압축파일 + metadata를 복사해서 구성된다
+	컨테이너도 이미지의  압축파일 + metadata를 복사해서 구동된다
 
 이미지 metadata 확인
 
@@ -38,23 +38,36 @@ docker container run
 	docker container inspect ws1
 	
 이미지 metadata 중 Cmd 속성 변경해서 실행하기
+	
+	실행시 이미지명 다음에 cmd '실행명령어'를 입력한다.
+	없으면, 이미지 metadata에 설정된 '실행명령어'가 실행된다.
 
-	(기본 실행을 덮어써서 실행하기, 출력을 위해 -d 없이 실행)
-	docker run --name ws2 nginx cat /usr/share/nginx/html/index.html
+	(기본 실행을 덮어써서 실행하기, 바로 출력을 위해 -d 없이 실행)
+	docker run --name ws1 nginx cat /usr/share/nginx/html/index.html
 	
 		..index.html 출력 후 프로세스 종료
 	
-	>docker container inspect ws2
-	.. # 기본 실행에서 변경된 메타데이터 확인
+	>docker container inspect ws1
+	.. # 컨테이너 실행 상태에서 메타데이터 확인
 	"Cmd": [
                 "cat",
                 "/usr/share/nginx/html/index.html"
             ],
 	    
+	: 생성된 컨테이너의 Cmd 명령어가 실행 변경된 것을 확인할 수 있다.     
+	    
+	    
 이미지 metadata 중 Env 속성 변경해서 실행하기
 
 	(기본 COLOR=red를 'blue'로 변경)
 	docker run -d --name ws2 -p 8081:3000 --env COLOR=blue devwikirepo/envnodecolorapp
+	
+	>docker container inspect ws2
+	.. # 컨테이너 실행 상태에서 메타데이터 확인
+	"Env": [
+                "COLOR=blue",
+               ..
+            ],
 
 컨테이너 생명주기
 	컨테이너: ws1
@@ -81,8 +94,6 @@ docker stats (컨테이너 리소스 사용량 조회)
 	CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT     MEM %     NET I/O        BLOCK I/O         PIDS
 	7736e8c50e6b   ws1       0.00%     17.74MiB / 15.33GiB   0.11%     1.7kB / 126B   14.5MB / 12.3kB   17
 	
-이미지 레지스트리
-
 이미지 저장공간	
 	로컬 스토리지
 		도커가 설치가 호스트OS의 스토리지
@@ -93,7 +104,12 @@ docker stats (컨테이너 리소스 사용량 조회)
 			- 클라우드 서비스
 			
 		퍼블릭 레지스트리: 도커허브
-		
+	
+도커허브 로그인/로그아웃
+
+	docker login
+	docker logout
+	
 이미지 이름규칙
 	
 	레지스트리주소/프로젝트명/이미지명:이미지태그
@@ -131,7 +147,7 @@ docker stats (컨테이너 리소스 사용량 조회)
 	
 이미지 버전
 	
-	Docker Officail: 공식 이미지
+	Docker Official: 공식 이미지
 	DHI(Docker Hardened Images)
 		: '다이어트와 보안 방탄조끼를 입힌 도커 이미지'
 	stable: 안정적 버전
@@ -140,15 +156,14 @@ docker stats (컨테이너 리소스 사용량 조회)
 		
 	
 docker tag: 이미지에 새로운 tag 부여
+		
+	본인의 도커허브 개인 저장소에 올리려면 반드시 '내ID/이미지명:태그' 형태로 
+	이미지 이름을 새로 만들어서 push 해야 합니다.
 	
-	도커는 이미지 이름에 /가 없으면 이를 공식 이미지 저장소인 
-	library/solgae로 인식하여 업로드를 시도합니다. 
+	커스텀 이미지 아니더라도 tag 명령어로 새로운 이름의 태그를 달아서 
+	자신의 계정에 업로드할 수 있습니다.
 	
-	본인의 개인 저장소에 올리려면 반드시 내ID/이미지명:태그 형태로 
-	이미지 이름을 새로 만들어주셔야 합니다.
-	
-	실습)
-	
+	실습)	
 	docker pull nginx
 	docker tag nginx:latest solgae/myNginx:1.0
 	docker push solgae/myNginx:1.0
