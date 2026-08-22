@@ -185,3 +185,32 @@ docker tag: 이미지에 새로운 tag 부여
 	예)
 	docker commit -m "edited index.html by solgae" -c "CMD [\"nginx\",\"-g\",\"daemon off;\"]" ws1 solgae/commitnginx 
 	
+
+이미지 빌드
+	도커는 lac 방법론을 활용해 도커파일(Dockerfile)이라는 파일로 파일 시스템의 상태를 정의하고, 
+	이를 기반으로 이미지를 만듭니다.
+	
+	빌드명령어 형식)
+	docker build -t [이미지명] [도커파일 경로]
+	
+		$ docker built -t solgae/my-nginx:latest .
+	
+	[도커파일 경로] root에 'Dockerfile'이 위치해야 이 파일을 도커가 읽고 빌드합니다.
+	
+	
+Dockerfile 지시어
+	FROM '베이스 이미지명'
+	COPY [커스텀 소스파일경로] [복사할 경로]
+	CMD ["명령어"]
+	
+	: CMD 명령어는 metadata의 CMD 필드에 저장된다.
+	
+	(실제코드)
+	Dockerfile: 
+		FROM nginx:1.23
+		COPY index.html /usr/share/nginx/html/index.html
+		CMD ["nginx", "-g", "daemon.off;"]
+		
+	
+		
+	
