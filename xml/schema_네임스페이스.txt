@@ -1,0 +1,42 @@
+
+-------------- 기본 예시 
+
+<beans xmlns="http://springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://springframework.org/schema/contenxt"
+       xsi:schemaLocation="http://springframework.org/schema/beans http://springframework.org/spring-beans-4.0.xsd
+                           http://springframework.org/schema/contenxt http://springframework.org/spring-context-4.0.xsd">
+
+    <!-- 이 내부가 XML 구조와 규칙에 맞게 작성되어야 합니다 -->
+</beans>
+
+xmlns="http://springframework.org/schema/beans" (식별자 네임스페이스)
+xmlns:context="http://springframework.org/schema/contenxt" (식별자 네임스페이스)
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" : 값 고정,  이 XML 파일이 XSD 스키마(문법 검사기)를 
+기반으로 작성되었다는 것을 알리는 특수 태그 그룹
+(xsi:schemaLocation, 또는 xsi:noNamespaceSchemaLocation 속성과 관련있다)
+
+xsi:schemaLocation="{네임스페이스} {xsd경로}" 또는 "{xsd경로(접두사 없을때)}
+
+xid:noNamespaceSchemaLocation="내가 만든.xsd"
+
+------------------------------------- 커스텀 만들기
+
+<beans xmlns="http://my.org/bean"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://my.org/context"
+       xsi:schemaLocation="http://my.org/bean schema_bean.xsd
+	http://my.org/context schema_context.xsd"
+       >
+
+----schema_bean.xsd---
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://my.org/bean" 
+xmlns:tns="http://my.org/bean" elementFormDefault="qualified">
+
+----schema_contenxt.xsd---
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://my.org/context" 
+xmlns:tns="http://my.org/context" elementFormDefault="qualified">
