@@ -1,0 +1,66 @@
+# 이터러블(iterable)에 자주 쓰는 공용 도구들(함수)
+filter() map()
+max() min() sum()
+zip()
+all() any()
+enumerate()
+reversed()
+sorted()
+list()      # 정확히는 변환/생성자
+
+# 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
+a[0]
+a.append(x)
+a.insert(i, x)
+a[i] = x
+
+del a[i]  
+a.remove(x)
+a.pop(i)
+a.clear()
+
+a.extend(iterable)
+a.index(x)
+
+a.copy()
+a.reverse()
+a.sort()
+
+-- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (12개)
+d = {"boy": "소년"} # 예제
+
+d.get("boy")
+d["girl"] = "소녀"
+d["boy"] = "청소년"
+
+del d["boy"]
+d.pop("boy")        # ← 값이 아니라 key
+d.popitem()
+d.clear()
+
+d.update(...)
+d.setdefault(...)
+
+d.keys()
+d.values()
+d.items()
+
+-- 셋(Set)에 자주 쓰는 CRUD,메서드 및 키워드들 (10개)
+
+s.add(x)
+s.remove(x)
+s.discard(x)
+s.pop()
+s.clear()
+s.update(...)
+
+# 집합 연산
+s.union(...)
+s.intersection(...)
+s.difference(...)
+# 또는 |  &  -
+
+-- 튜플(Tuple)에 자주 쓰는 CRUD,메서드 및 키워드들 (3개)
+t[0]
+t.count(x)
+t.index(x)
