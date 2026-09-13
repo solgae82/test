@@ -6,7 +6,10 @@ all() any()
 enumerate()
 reversed()
 sorted()
+
 list()      # 정확히는 변환/생성자
+tuple()     # 정확히는 변환/생성자
+set()       # 정확히는 변환/생성자
 
 # 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
 a[0]
