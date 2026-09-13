@@ -19,10 +19,10 @@ a.remove(x)
 a.pop(i)
 a.clear()
 
+a.copy()
 a.extend(iterable)
 a.index(x)
 
-a.copy()
 a.reverse()
 a.sort()
 
