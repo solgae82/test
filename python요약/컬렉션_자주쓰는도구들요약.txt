@@ -32,6 +32,7 @@ a.sort()
 -- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (12개)
 d = {"boy": "소년"} # 예제
 
+d['boy']
 d.get("boy")
 d["girl"] = "소녀"
 d["boy"] = "청소년"
