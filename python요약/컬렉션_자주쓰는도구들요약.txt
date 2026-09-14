@@ -19,7 +19,7 @@ a[i] = x
 
 del a[i]  
 a.remove(x)
-a.pop(i)
+a.pop() a.pop(i) 
 a.clear()
 
 a.copy()
