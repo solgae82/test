@@ -29,7 +29,7 @@ a.index(x)
 a.reverse()
 a.sort()
 
--- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (12개)
+-- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
 d = {"boy": "소년"} # 예제
 
 d['boy']
