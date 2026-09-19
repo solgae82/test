@@ -1,0 +1,11 @@
+크로스플랫폼 GUI/앱 프레임워크라는 별도 윈도우 프로그래밍 세계가 있다 → Qt, Flutter, .NET MAUI 등
+
+Qt:
+	C++ 중심, 오래된 강자, 데스크톱·임베디드까지 폭넓음
+
+Flutter:
+	Dart 중심, 비교적 현대적, 모바일에서 출발해 데스크톱/웹까지 확장
+
+.NET MAUI: 
+	C#/XAML 하나로 
+	Windows + macOS + iOS + Android를 노리는 크로스플랫폼 

@@ -38,8 +38,8 @@ d["girl"] = "소녀"
 d["boy"] = "청소년"
 
 del d["boy"]
-d.pop("boy")        # ← 값이 아니라 key
-d.popitem()
+d.pop("boy")    # ← 값이 아니라 key
+d.popitem()	# 마지막 뽑기
 d.clear()
 
 d.update(...)
@@ -52,11 +52,11 @@ d.items()
 -- 셋(Set)에 자주 쓰는 CRUD,메서드 및 키워드들 (10개)
 
 s.add(x)
-s.remove(x)
-s.discard(x)
+s.remove(x)	# 요소값 업으면 에러
+s.discard(x)	# 요소값 없어도 에러 안남
 s.pop()
 s.clear()
-s.update(...)
+s.update(...)	# 다른 자료집합(리스트,튜플,딕셔너리,set등) 추가 가능
 
 # 집합 연산
 s.union(...)

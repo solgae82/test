@@ -1,0 +1,111 @@
+응용프로그램은 하드웨어의 주인이 아니다.
+운영체제가 자원을 관리하고, 프로그램은 OS가 허용한 통로를 통해 사용한다.
+OS = “내 구역에서 놀 거면 내 규칙대로 놀아.”
+
+	응용프로그램 ↔ OS ↔ 하드웨어
+
+Windows(OS) = 건물주
+프로세스 = 세입자
+Win32 API = 관리사무소 창구
+MFC / WinForms = 관리사무소 이용을 편하게 해주는 대행업체
+WPF = 인테리어 자유도가 엄청 높은 세입자 ㅋㅋ
+
+--------------다른 언어들의 윈도우 프로그래밍 접근 대략적인 구조
+Python ─┐
+C++ ────┤
+C# ─────┤ → 각자의 GUI 계층 → Windows가 제공하는 기반 → OS
+VB ─────┤
+Delphi ─┘
+
+--------------
+MS 윈도우 프로그래밍 
+
+	<등장 시기 기준 대표 기술의 흐름>
+	Win32 API → MFC → WinForms → WPF → UWP → WinUI 3 + Windows App SDK
+
+Win32 API: 
+	근본. 
+	HWND, 메시지 루프, user32.dll 같은 OS와 가장 가까운 층. 
+	지금도 살아 있고 현대 Windows 앱의 밑바닥에도 여전히 존재한다.
+
+MFC: 
+	C++에서 Win32를 객체지향적으로 좀 편하게 쓰려고 감싼 프레임워크.
+
+WinForms: 
+	.NET/C# 시대. 
+	Visual Basic처럼 폼에 컨트롤 올리고 이벤트 붙이는 RAD 방식. 
+	내부적으로 User32/GDI+ 같은 Windows UI 기술을 감싸고 있다.
+
+WPF: 
+	.NET + XAML. WinForms보다 UI/렌더링 구조를 크게 바꾼 세대.
+
+UWP: 
+	Windows 10 시절 MS가 밀었던 현대 앱 플랫폼. 
+	여기서 WinRT/XAML 계열이 중요해짐.
+
+WinUI 3 + Windows App SDK: 
+	2026년 현재 MS가 새 네이티브 Windows 데스크톱 앱에 공식 권장하는 방향. 
+	C# 또는 C++ + XAML을 사용한다. UWP는 현재 유지관리 모드이고 신규 앱에는 WinUI 3을 권장한다
+
+
+<연대기 + 구조도>
+   Windows
+   │
+   ├── 전통 Desktop 계열
+   │      ├── Win32
+   │      ├── MFC
+   │      ├── WinForms
+   │      └── WPF
+   │
+   └── 현대 Windows 앱 계열
+          ├── WinRT
+          ├── UWP
+          └── Windows App SDK
+                 └── WinUI 3
+			      
+<별도 추진 다른 가지>
+	크로스플랫폼 GUI/앱 프레임워크라는 별도 윈도우 프로그래밍 세계가 있다 → Qt, Flutter, .NET MAUI 등
+	
+-------------- 비유들 1
+Win32 = 원조 물
+MFC = C++ 수도꼭지
+WinForms = .NET 수도꼭지
+WPF = 자체 정수장·배관까지 만든 놈
+
+Win32 API = 상수도 본관
+MFC = 그 물을 거의 그대로 끌어다 쓰는 오래된 원조집
+WinForms = 수도관은 같은 계통인데 .NET식 주방으로 개조한 집
+WPF = 아예 최신식 주방을 새로 차렸는데, 건물 자체는 여전히 Windows 땅에 있음 ㅋㅋ
+
+------------- <MFC , WinForms 구조>
+
+                    Windows
+                       │
+                  Win32 API
+                 (공식 OS API)
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+         MFC                    WinForms
+      C++용 래핑                 .NET용 래핑
+          │                         │
+ CWnd, CDialog...          Form, Button, TextBox...
+          │                         │
+          └──── Win32와 매우 밀접 ──┘
+
+
+-------------- <WPF 구조>
+
+                    Windows
+                       │
+          Win32 + DirectX 등
+                       │
+                      WPF
+              자체 UI/렌더링 체계 (주로 DirectX 사용)
+                       │
+          Window, Button, XAML...
+
+-------------- 비유들 2
+MFC / WinForms = Win32 친척
+WPF = Windows 집안이긴 한데 독립해서 살림 차린 자식
+Win32 = 아직도 땅문서를 들고 있는 할아버지.
