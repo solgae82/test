@@ -1,6 +1,7 @@
 # 이터러블(iterable)에 자주 쓰는 공용 도구들(함수)
+iter()
 filter() map()
-max() min() sum()
+max() min() sum() len()
 zip()
 all() any()
 enumerate()
@@ -9,62 +10,65 @@ sorted()
 
 list()      # 정확히는 변환/생성자
 tuple()     # 정확히는 변환/생성자
+dict()      # 정확히는 변환/생성자
 set()       # 정확히는 변환/생성자
 
-# 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
-a[0]
-a.append(x)
-a.insert(i, x)
-a[i] = x
+# 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (14개)
+ls[0]   # 가져오기
+ls.append(x)
+ls.insert(i, x)
+ls[i] = '추가'
 
-del a[i]  
-a.remove(x)
-a.pop() a.pop(i) 
-a.clear()
+del ls[i]  
+ls.remove(x)
+ls.pop() ls.pop(i) 
+ls.clear()
 
-a.copy()
-a.extend(iterable)
-a.index(x)
+ls.copy()
+ls.extend(iterable)
+ls.index(x)
 
-a.reverse()
-a.sort()
+ls.reverse()
+ls.sort()
 
 -- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
 d = {"boy": "소년"} # 예제
 
-d['boy']
+d['boy']    # 가져오기
 d.get("boy")
-d["girl"] = "소녀"
-d["boy"] = "청소년"
+
+d["girl"] = "소녀"  # 추가
+d["boy"] = "청소년" # 수정
 
 del d["boy"]
 d.pop("boy")    # ← 값이 아니라 key
-d.popitem()	# 마지막 뽑기
+d.popitem()	    # 마지막 뽑기
 d.clear()
 
-d.update(...)
-d.setdefault(...)
+d.update(boy=소년) # 업데이트
+d.setdefault(k,v)
 
 d.keys()
 d.values()
 d.items()
 
--- 셋(Set)에 자주 쓰는 CRUD,메서드 및 키워드들 (10개)
+-- 셋(Set)에 자주 쓰는 CRUD,메서드 및 키워드들 (9개)
 
 s.add(x)
+s.update(iterable)	# 다른 자료집합(리스트,튜플,딕셔너리,set등) 추가 가능
+
 s.remove(x)	# 요소값 업으면 에러
 s.discard(x)	# 요소값 없어도 에러 안남
 s.pop()
 s.clear()
-s.update(...)	# 다른 자료집합(리스트,튜플,딕셔너리,set등) 추가 가능
 
 # 집합 연산
 s.union(...)
 s.intersection(...)
 s.difference(...)
-# 또는 |  &  -
+# 또는 |  &  - 
 
 -- 튜플(Tuple)에 자주 쓰는 CRUD,메서드 및 키워드들 (3개)
-t[0]
+t[0]	# 가져오기
 t.count(x)
 t.index(x)
