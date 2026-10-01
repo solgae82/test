@@ -14,19 +14,19 @@ dict()      # 정확히는 변환/생성자
 set()       # 정확히는 변환/생성자
 
 # 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (14개)
-ls[0]   # 가져오기
-ls.append(x)
-ls.insert(i, x)
-ls[i] = '추가'
+ls[i]   # 가져오기
+ls.append(v)
+ls.insert(i, v)
+ls[i] = '수정'
 
 del ls[i]  
-ls.remove(x)
+ls.remove(v)
 ls.pop() ls.pop(i) 
 ls.clear()
 
 ls.copy()
 ls.extend(iterable)
-ls.index(x)
+ls.index(v)
 
 ls.reverse()
 ls.sort()
@@ -34,19 +34,19 @@ ls.sort()
 -- 딕셔너리(Dictionary)에 자주 쓰는 CRUD,메서드 및 키워드들 (13개)
 d = {"boy": "소년"} # 예제
 
-d['boy']    # 가져오기
-d.get("boy")
+d['boy']        # 가져오기
+d.get("boy")    # 가져오기
 
-d["girl"] = "소녀"  # 추가
-d["boy"] = "청소년" # 수정
+d["girl"] = "소녀"  # 추가(키가 있으면 업데이트)
+d.setdefault(k,v)   # 추가(키가 있으면 추가 하지 않음) 
+
+d["boy"] = "수정"   # 수정
+d.update(boy=소년)  # 수정
 
 del d["boy"]
 d.pop("boy")    # ← 값이 아니라 key
 d.popitem()	    # 마지막 뽑기
 d.clear()
-
-d.update(boy=소년) # 업데이트
-d.setdefault(k,v)
 
 d.keys()
 d.values()
@@ -54,11 +54,11 @@ d.items()
 
 -- 셋(Set)에 자주 쓰는 CRUD,메서드 및 키워드들 (9개)
 
-s.add(x)
+s.add(v)
 s.update(iterable)	# 다른 자료집합(리스트,튜플,딕셔너리,set등) 추가 가능
 
-s.remove(x)	# 요소값 업으면 에러
-s.discard(x)	# 요소값 없어도 에러 안남
+s.remove(v)	    # 요소값 없으면 에러
+s.discard(v)	# 요소값 없어도 에러 안남
 s.pop()
 s.clear()
 
@@ -69,6 +69,6 @@ s.difference(...)
 # 또는 |  &  - 
 
 -- 튜플(Tuple)에 자주 쓰는 CRUD,메서드 및 키워드들 (3개)
-t[0]	# 가져오기
+t[i]    # 가져오기
 t.count(x)
 t.index(x)
