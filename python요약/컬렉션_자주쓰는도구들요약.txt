@@ -45,7 +45,7 @@ d.update(boy='소년')  # 키값이 존재하면 수정, 없으면 추가,{'girl
 
 del d["boy"]
 d.pop("boy")    # ← 값이 아니라 key
-d.popitem()	    # 마지막 뽑기
+d.popitem()	# 마지막 뽑기
 d.clear()
 
 d.copy()
@@ -59,9 +59,9 @@ d.items()
 s.add(v)
 s.update(iterable)	# 다른 자료집합(리스트,튜플,딕셔너리,set등) 추가 가능
 
-s.remove(v)	    # 요소값 없으면 에러
+s.remove(v)	# 요소값 없으면 에러
 s.discard(v)	# 요소값 없어도 에러 안남
-s.pop()
+s.pop()		# 랜덤 뽑기
 s.clear()
 
 s.copy()
@@ -74,5 +74,25 @@ s.difference(...)
 
 -- 튜플(Tuple)에 자주 쓰는 CRUD,메서드 및 키워드들 (3개)
 t[i]    # 가져오기
-t.count(x)
-t.index(x)
+t.count(v)
+t.index(v)
+
+------------------- 초기화 tip
+리스트
+	ls = []
+	ls = list()
+	
+튜플 
+	t = ()
+	t = tuple()
+	
+	t = (1,) # 한개만 요소가 있을 경우 마지막에 ','로 튜플 선언
+	t = (1) # 이건 그냥 숫자 1 대입한 것임. t=1
+	
+딕셔너리
+	d = {} # 딕셔너리 초기화, 셋은 없음
+	d = dict()
+	
+셋
+	# s = {} # (x) 이건 딕셔너리 선언임. 셋 선언은 키워드 초기화 못함.
+	s = set() # 셋 초기화는 이것 뿐임.
