@@ -16,7 +16,7 @@ set()       # 정확히는 변환/생성자
 # 리스트(List)에 자주 쓰는 CRUD,메서드 및 키워드들 (14개)
 ls[i]   # 가져오기
 ls.append(v)
-ls.insert(i, v)
+ls.insert(i, v) # 마지막 inex 이상으로 설정하면 추가됨
 ls[i] = '수정'
 
 del ls[i]  
