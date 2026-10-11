@@ -22,13 +22,13 @@ TCP/IP 4 Layers
 OSI 7 Layers
 			
 	7.응용계층 (Application Layer)
-		데이터단위(PDU) : 데이터(message)
+		데이터단위(PDU): 데이터(message)
 	
 	6.표현계층 (Presentation Layer)	
-		데이터단위(PDU) : 데이터(message)
+		데이터단위(PDU): 데이터(message)
 	
 	5.세션계층 (Session Layer)
-		데이터단위(PDU) : 데이터(message)
+		데이터단위(PDU): 데이터(message)
 	
 	4.전송계층 (Tranport Layer)
 		대표장비: L4 스위치
