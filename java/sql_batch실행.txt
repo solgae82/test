@@ -1,0 +1,101 @@
+<대량 insert 시>
+DB connection pooling으로 insert 쿼리를 100건 날린다고 가정.
+
+1. 한건 insert 하고 DB connection 반납-> 다음 새 Connection으로 insert 처리 반복 하는 방식
+2. 한 Connection 에서 insert 100개 모두 실행
+
+둘 중 어느게 나을까(성능)?
+
+정답 '2번'
+(상식적으로 생각하는게 답, 커넥션 교체도 비용이 엄청나다.)
+
+
+
+------------------- mysql 설정
+# DB 연결 정보 예시
+# mysql 에슨 rewriteBatchedStatements=true 를 추가해줘야 한다
+
+jdbc:mysql://localhost:3306/your_database?rewriteBatchedStatements=true&useSSL=false&serverTimezone=UTC
+
+------------------- java 코드
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+public class MySqlBatchInserter {
+
+    // 실무에서 대량 처리 시 가장 권장되는 배치 단위 (1,000 ~ 5,000건 사이가 적당)
+    private static final int BATCH_SIZE = 1000; 
+
+    public void insertLargeData(List<Product> productList) {
+        String url = "jdbc:mysql://localhost:3306/your_database?rewriteBatchedStatements=true";
+        String user = "your_username";
+        String password = "your_password";
+
+        String sql = "INSERT INTO product (name, price) VALUES (?, ?)";
+
+        // Try-with-resources 구문으로 Connection과 PreparedStatement 자동 자원 반납
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // 1. 수동 커밋 모드로 전환 (하나의 트랜잭션으로 묶기 위함)
+            conn.setAutoCommit(false); 
+
+            int count = 0;
+
+            for (Product product : productList) {
+                pstmt.setString(1, product.getName());
+                pstmt.setInt(2, product.getPrice());
+                
+                // 2. 현재 데이터를 드라이버 메모리(Batch)에 추가
+                pstmt.addBatch(); 
+                count++;
+
+                // 3. 설정한 배치 사이즈(1,000건)에 도달하면 DB로 전송하고 메모리 클리어
+                if (count % BATCH_SIZE == 0) {
+                    pstmt.executeBatch();  // 🔥 1,000건 묶음을 한 방에 DB로 전송
+                    pstmt.clearBatch();    // 🧼 드라이버 내부의 배치 메모리 즉시 비우기 (메모리 누수 방지)
+                }
+            }
+
+            // 4. 배수(1000, 2000 등)로 떨어지지 않고 남은 찌꺼기 데이터(예: 마지막 345건) 처리
+            if (count % BATCH_SIZE != 0) {
+                pstmt.executeBatch();
+                pstmt.clearBatch();
+            }
+
+            // 5. 전체 데이터 정상 삽입 완료 시 최종 커밋
+            conn.commit(); 
+            System.out.println("총 " + count + "건 Batch Insert 성공!");
+
+        } catch (SQLException e) {
+            System.err.println("데이터 삽입 중 오류 발생! 롤백을 진행합니다. 원인: " + e.getMessage());
+            // 에러 발생 시 데이터 정합성을 위해 롤백 처리 필요 (실무 필수)
+            // 별도의 rollback 로직이나 트랜잭션 관리자가 처리하도록 연계
+        }
+    }
+}
+-------------------
+
+💡 핵심 코드 짚어보기
+
+• conn.setAutoCommit(false);
+
+	• 기본값인 자동 커밋을 끄지 않으면 1건 들어갈 때마다 
+	DB가 하드디스크에 기록을 시도하므로 배치를 쓰는 의미가 사라집니다. 
+	
+	무조건 꺼야 합니다.
+	
+• pstmt.executeBatch();
+	• 메모리에 가득 쌓인 데이터를 드라이버가 튜닝된 쿼리 형태로 압축하여 
+	MySQL 서버로 웅장하게 발송합니다.
+	
+• pstmt.clearBatch();
+
+	• 메모리 클리어의 핵심입니다. 
+	이걸 해주지 않으면 앞서 보낸 데이터가 PreparedStatement 객체 내부에 계속 남아있어, 
+	데이터가 수십만 건일 때 Java 서버의 Heap 메모리가 터지게 됩니다. 
+	
+	전송 직후 바로 비워주는 것이 정석입니다.
