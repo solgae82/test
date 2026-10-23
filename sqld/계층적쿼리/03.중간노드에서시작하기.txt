@@ -1,0 +1,43 @@
+desc tbl_shop_menu;
+
+이름             널?       유형           
+-------------- -------- ------------ 
+MENU_ID        NOT NULL NUMBER       
+MENU_NAME      NOT NULL VARCHAR2(30) 
+PARENT_MENU_ID          NUMBER  
+
+=================== 테스트 전체 데이터 구조
+select * from tbl_shop_menu;
+
+(결과)
+MENU_ID MENU_NAME PARENT_MENU_ID
+-----------------------
+100000	도서	(null)
+101000	국내도서	100000
+102000	외국도서	100000
+103000	경제/경영	101000
+104000	정치/사회	101000
+101010	서양도서	102000
+101020	기타언어	102000
+
+=================== 중간 노드에서 시작하기
+
+SELECT
+    MENU_ID,
+    MENU_NAME as menu_nm,
+    PARENT_MENU_ID as p_menu_id,
+    SYS_CONNECT_BY_PATH(menu_name, '>') as path,
+    level as lv
+FROM TBL_SHOP_MENU
+START WITH MENU_ID = 101000	-- 국내도서 트리에서 시작
+CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+
+(결과)
+
+MENU_ID MENU_NM P_MENU_ID PATH LV
+--------------------------------------------------
+101000	국내도서	100000	>국내도서		1
+103000	경제/경영	101000	>국내도서>경제/경영	2
+104000	정치/사회	101000	>국내도서>정치/사회	2
+
+※ '국내도서' 트리 외의 행은 제외된다.

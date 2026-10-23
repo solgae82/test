@@ -1,0 +1,63 @@
+desc tbl_shop_menu;
+
+이름             널?       유형           
+-------------- -------- ------------ 
+MENU_ID        NOT NULL NUMBER       
+MENU_NAME      NOT NULL VARCHAR2(30) 
+PARENT_MENU_ID          NUMBER  
+
+=================== 테스트 전체 데이터 구조
+select * from tbl_shop_menu;
+
+(결과)
+MENU_ID MENU_NAME PARENT_MENU_ID
+-----------------------
+100000	도서	(null)
+101000	국내도서	100000
+102000	외국도서	100000
+103000	경제/경영	101000
+104000	정치/사회	101000
+101010	서양도서	102000
+101020	기타언어	102000
+
+=================== 계층적 질의 기본 구조
+select 
+menu_id
+, lpad('>', 3 * (level-1)) || menu_name as menu_nm
+,parent_menu_id as p_menu_id
+,level as lv -- 트리 레벨 1~N
+,CONNECT_BY_ROOT menu_name as root_nm -- 도서
+,SYS_CONNECT_BY_PATH(menu_name, '>') as path -- >도서>국내도서>경제/경영
+,connect_by_isleaf as isleaf -- 마지막 잎새 여부 (1,0)
+from tbl_shop_menu
+start with parent_menu_id is null -- 트리 첫 시작 조건
+connect by prior menu_id = parent_menu_id -- 현재행 값과 다음행 값 트리 연결
+order siblings by menu_name asc -- 트리구조 만든 후 레벨별 오름차순 정리
+
+(결과)
+menu_id menu_nm	p_menu_id lv root_nm path isleaf
+------------------------------------------------------------------
+100000	도서		(null)	1	도서	>도서
+101000	  >국내도서	100000	2	도서	>도서>국내도서
+103000	     >경제/경영	101000	3	도서	>도서>국내도서>경제/경영
+104000	     >정치/사회	101000	3	도서	>도서>국내도서>정치/사회
+102000	  >외국도서	100000	2	도서	>도서>외국도서
+101020	     >기타언어	102000	3	도서	>도서>외국도서>기타언어
+101010	     >서양도서	102000	3	도서	>도서>외국도서>서양도서
+
+(기본 한 세트 구조)
+START WITH:	탐색을 시작할 행 지정
+CONNECT BY:	부모·자식 연결 조건 지정
+PRIOR:	연결 조건에서 이전 단계(부모 또는 자식) 행을 가리킴
+LEVEL:	탐색 깊이 표시 (시작 행이 1)
+
+(기타)
+CONNECT_BY_ROOT → 최상위 시작 노드의 값
+SYS_CONNECT_BY_PATH → 시작 노드부터 현재 노드까지의 경로
+CONNECT_BY_ISLEAF → 말단 노드 여부 (1이면 말단)
+ORDER SIBLINGS BY → 같은 부모를 가진 형제 노드끼리 정렬
+
+(구분)
+의사 컬럼: LEVEL, CONNECT_BY_ISLEAF 
+연산자: CONNECT_BY_ROOT
+함수: SYS_CONNECT_BY_PATH

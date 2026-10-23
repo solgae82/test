@@ -1,0 +1,79 @@
+desc tbl_shop_menu;
+
+이름             널?       유형           
+-------------- -------- ------------ 
+MENU_ID        NOT NULL NUMBER       
+MENU_NAME      NOT NULL VARCHAR2(30) 
+PARENT_MENU_ID          NUMBER  
+
+=================== 테스트 전체 데이터 구조
+select * from tbl_shop_menu;
+
+(결과)
+MENU_ID MENU_NAME PARENT_MENU_ID
+-----------------------
+100000	도서	(null)
+101000	국내도서	100000
+102000	외국도서	100000
+103000	경제/경영	101000
+104000	정치/사회	101000
+101010	서양도서	102000
+101020	기타언어	102000
+
+=================== CONNECT BY에 추가 조건 넣기
+SELECT
+    MENU_ID,
+    MENU_NAME as menu_nm,
+    PARENT_MENU_ID as p_menu_id,
+    SYS_CONNECT_BY_PATH(menu_name, '>') as path,
+    level as lv
+FROM TBL_SHOP_MENU
+START WITH PARENT_MENU_ID IS NULL
+CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+       AND MENU_NAME <> '국내도서'; -- 추가 조건
+       
+(결과)
+
+MENU_ID MENU_NM P_MENU_ID PATH LV
+--------------------------------------------------
+100000	도서	(null)	>도서			1
+102000	외국도서	100000	>도서>외국도서		2
+101010	서양도서	102000	>도서>외국도서>서양도서	3
+101020	기타언어	102000	>도서>외국도서>기타언어	3
+
+=================== WHERE 절에 추가 조건 넣기
+SELECT
+    MENU_ID,
+    MENU_NAME as menu_nm,
+    PARENT_MENU_ID as p_menu_id,
+    SYS_CONNECT_BY_PATH(menu_name, '>') as path,
+    level as lv
+FROM TBL_SHOP_MENU
+where MENU_NAME <> '국내도서' -- 계층 정렬된 후 '국내도서' 만 제외
+START WITH PARENT_MENU_ID IS NULL
+CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+
+(결과)
+
+MENU_ID MENU_NM P_MENU_ID PATH LV
+--------------------------------------------------
+100000	도서	(null)	>도서			1
+103000	경제/경영	101000	>도서>국내도서>경제/경영	3
+104000	정치/사회	101000	>도서>국내도서>정치/사회	3
+102000	외국도서	100000	>도서>외국도서		2
+101010	서양도서	102000	>도서>외국도서>서양도서	3
+101020	기타언어	102000	>도서>외국도서>기타언어	3
+
+※ 계층형 결과 나온 후 MENU_NM = '국내도서' 인 행만 제거
+
+=================== 처리 순서
+
+1. FROM 및 조인 처리
+2. CONNECT BY로 계층 관계 탐색 (START WITH로 시작점 지정)
+3.WHERE 조건으로 행 필터링
+
+(추가)
+CONNECT BY 절에 OR도 사용 가능하지만, 순환 오류 발생할 여지가 있으므로 사용하지 말자
+
+	AND → 연결 조건을 더 엄격하게 제한
+	OR → 연결 가능한 경우를 확대

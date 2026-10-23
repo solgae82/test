@@ -1,0 +1,57 @@
+desc tbl_shop_menu;
+
+이름             널?       유형           
+-------------- -------- ------------ 
+MENU_ID        NOT NULL NUMBER       
+MENU_NAME      NOT NULL VARCHAR2(30) 
+PARENT_MENU_ID          NUMBER  
+
+=================== 테스트 전체 데이터 구조
+select * from tbl_shop_menu;
+
+(결과)
+MENU_ID MENU_NAME PARENT_MENU_ID
+-----------------------
+100000	도서	103000
+101000	국내도서	100000
+103000	경제/경영	101000
+
+
+=================== 순환 참조 관련 명령어
+CONNECT_BY_ISCYCLE은 CONNECT BY NOCYCLE과 함께 사용해야 함.
+
+	CONNECT_BY_ISCYCLE : 순환참조가 생기는 행이면 1 표시, 나머지는 0 (의사컬럼)
+	NOCYCLE: 순환참조가 발생하면 탐색 중단 (키워드)
+
+=================== 순환 참조 에러
+SELECT
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU_ID AS P_MENU_ID,
+    LEVEL    
+FROM TEST_MENU
+START WITH MENU_ID = 100000
+CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID;
+
+(결과)
+위 쿼리를 실행하면 순환참조(무한루프)로 인해 에러가 발생한다
+	ORA-01436: CONNECT BY의 루프가 발생되었습니다
+	01436. 00000 -  "CONNECT BY loop in user data"
+	
+=================== 순환 참조 감지 및 탐색 중단
+SELECT
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU_ID AS P_MENU_ID,
+    LEVEL,
+    CONNECT_BY_ISCYCLE AS IS_CYCLE
+FROM TEST_MENU
+START WITH MENU_ID = 100000
+CONNECT BY NOCYCLE PRIOR MENU_ID = PARENT_MENU_ID;
+
+(결과)
+MENU_ID MENU_NAME P_MENU_ID LEVEL IS_CYCLE
+--------------------------------------------------
+100000	>도서			103000	1	0
+101000	>도서>국내도서		100000	2	0
+103000	>도서>국내도서>경제/경영	101000	3	1

@@ -1,0 +1,46 @@
+desc tbl_shop_menu;
+
+이름             널?       유형           
+-------------- -------- ------------ 
+MENU_ID        NOT NULL NUMBER       
+MENU_NAME      NOT NULL VARCHAR2(30) 
+PARENT_MENU_ID          NUMBER  
+
+=================== 테스트 전체 데이터 구조
+select * from tbl_shop_menu;
+
+(결과)
+MENU_ID MENU_NAME PARENT_MENU_ID
+-----------------------
+100000	도서	(null)
+101000	국내도서	100000
+102000	외국도서	100000
+103000	경제/경영	101000
+104000	정치/사회	101000
+101010	서양도서	102000
+101020	기타언어	102000
+
+=================== 다중 탐색
+
+SELECT
+    MENU_ID,
+    MENU_NAME as menu_nm,
+    PARENT_MENU_ID as p_menu_id,
+    SYS_CONNECT_BY_PATH(menu_name, '>') as path,
+    level as lv,
+    CONNECT_BY_ROOT MENU_NAME AS ROOT_NM
+FROM TBL_SHOP_MENU
+START WITH MENU_ID IN (101000, 102000) -- 국내도서, 외국도서 별로 탐색
+CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+ORDER SIBLINGS BY MENU_NAME;
+
+(결과)
+
+MENU_ID MENU_NM P_MENU_ID PATH LV ROOT_NM
+--------------------------------------------------
+101000	국내도서	100000	>국내도서		1	국내도서
+103000	경제/경영	101000	>국내도서>경제/경영	2	국내도서
+104000	정치/사회	101000	>국내도서>정치/사회	2	국내도서
+102000	외국도서	100000	>외국도서		1	외국도서
+101020	기타언어	102000	>외국도서>기타언어	2	외국도서
+101010	서양도서	102000	>외국도서>서양도서	2	외국도서
