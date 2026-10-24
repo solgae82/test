@@ -1,0 +1,183 @@
+윈도우 순위 함수: rank, dense_rank, row_number
+윈도우 집계 함수: sum, max, min, avg, count
+윈도우 행 순서 함수: first_value, last_value,lag, lead, nth_value
+윈도우 비율 함수: ratio_to_report, percent_rank, cume_dist, ntile
+
+-------------------
+
+1. RATIO_TO_REPORT
+	
+	- 전체 합계에서 현재 행의 값이 차지하는 비율
+	- RATIO_TO_REPORT(컬럼또는표현식): 반드시 파라미터 들어감
+	- ORDER BY 사용시 에러 (Oracle)
+	
+	[공식]	
+		현재행값 / 전체합계 = 비율
+	
+	[특징]
+	PARTITION BY가 없으면 전체 결과 집합 기준
+	PARTITION BY가 있으면 파티션별 합계 기준
+	ORDER BY는 OVER 안에 사용하지 않음,사용시 에러 (Oracle)
+	NULL이 없고 합계가 0이 아니면 파티션별 비율 합계는 1
+	
+	(실전)
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,round(ratio_to_report(salary) OVER(PARTITION by dept_name),2) "점유율"
+
+	from employees;
+
+
+	emp_name dept_name hire_date salary 점유율
+	------------------------------------------------------
+	Emma	Development	22/10/30	6500	0.29
+	Chris	Development	21/07/01	10000	0.44
+	Liam	Development	23/06/01	6200	0.27
+	Olivia	Planning	21/11/05	9500	0.36
+	Sophia	Planning	23/01/15	7500	0.28
+	Danial	Planning	22/08/22	9500	0.36
+	Sarah	Sales		22/03/15	7500	0.21
+	James	Sales		22/01/10	9000	0.25
+	Michale	Sales		22/03/20	7200	0.2
+	David	Sales		23/04/01	6000	0.17
+	Emily	Sales		23/02/10	6000	0.17
+
+2. PERCENT_RANK
+
+	- 순위의 상대적 위치
+	- 정렬된 데이터에서 현재 행의 순위가 전체 순위 범위 중 어느 위치에 있는지를 
+	0~1 사이의 값으로 나타내는 함수
+	- PERCENT_RANK() : 파라미터 없음	
+	- ORDER BY 사용 필수
+	
+	[공식]
+	
+		(rank - 1) / (전체행 수 - 1) = 0과 1사이값
+	
+	[특징] 
+	- 0 ~ 1 사이의 값
+	- 두개 이상이면 반드시 0 으로 시작 
+		- 한개만 있어도 반드시 0 반환(oracle)
+	- 최고(마지막) 순위은 보통 1
+		- 최고 순위(정렬상 마지막)에 동점자가 2명 이상이면 1이 나오지 않음.
+	- 같은 순위 -> 같은 비율
+	
+	
+	(실전)
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,percent_rank() OVER(
+		PARTITION by dept_name 
+		order by salary ASC
+		) "백분위_순위"
+
+	from employees;
+
+
+	emp_name dept_name hire_date salary 백분위_순위
+	------------------------------------------------------
+	Liam	Development	23/06/01	6200	0
+	Emma	Development	22/10/30	6500	0.5
+	Chris	Development	21/07/01	10000	1
+	Sophia	Planning	23/01/15	7500	0
+	Olivia	Planning	21/11/05	9500	0.5
+	Danial	Planning	22/08/22	9500	0.5
+	Emily	Sales		23/02/10	6000	0
+	David	Sales		23/04/01	6000	0
+	Michale	Sales		22/03/20	7200	0.5
+	Sarah	Sales		22/03/15	7500	0.75
+	James	Sales		22/01/10	9000	1
+	
+CUME_DIST
+	- 누적 분포 비율 (Cumulative Distribution)
+	- CUME_DIST() : 파라미터 없음
+	- ORDER BY 사용 필수
+	
+	[공식]
+	현재 파티션 전체 행 중 현재 값 이하(ASC) 또는 이상(DESC)인 행 수 ÷ 현재 파티션 전체 행 수
+		
+		(파티션 기준)
+		현재 값(포함) 이하 행 수 / 전체 행 수 (ASC 기준)
+		현재 값(포함) 이상 행 수 / 전체 행 수 (DESC 기준)
+	
+	[특징] 
+	- 0 초과 ~ 1 이하의 값
+	- 0은 절대 나오지 않음.(최소 1/N)
+	- 1은 반드시 나옴.
+	- 동점자는 같은 누적 비율
+	- 정렬상 마지막 값은 동점 여부와 관계없이 반드시 1
+	
+	select 
+		emp_name
+		,dept_name
+		,hire_date
+		,salary
+
+		,round(cume_dist() OVER(
+			PARTITION by dept_name 
+			order by salary ASC
+		),2) "누적분포비율"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 누적분포비율
+	------------------------------------------------------
+	Liam	Development	23/06/01	6200	0.33
+	Emma	Development	22/10/30	6500	0.67
+	Chris	Development	21/07/01	10000	1
+	Sophia	Planning	23/01/15	7500	0.33
+	Olivia	Planning	21/11/05	9500	1
+	Danial	Planning	22/08/22	9500	1
+	Emily	Sales		23/02/10	6000	0.4
+	David	Sales		23/04/01	6000	0.4
+	Michale	Sales		22/03/20	7200	0.6
+	Sarah	Sales		22/03/15	7500	0.8
+	James	Sales		22/01/10	9000	1
+
+	
+NTILE
+	- 정렬된 행들을 N개의 그룹으로 최대한 균등하게 나누고 그룹 번호를 부여하는 함수
+		NTILE(3) OVER (ORDER BY salary ASC)
+	- NTILE(3): 반드시 그룹으로 나눌 양의 정수 필요.
+	- ORDER BY 사용 필수
+	- 그룹 정렬된 상태로 NTILE [등급]을 또 나누는 것이다
+	
+	[공식]
+		전체 행 수 / 그룹 수 = 몫 (나머지는 앞쪽 그룹순으로 하나씩 배정)
+		
+	[특징]
+	- 나머지가 생겼을 경우, 앞쪽 그룹 순으로 나머지 1씩 추가한다
+	- 그룹별 행 수 차이는 최대 1개
+	- 동점자도 서로 다른 그룹으로 나뉠 수 있음 (RANK와 다름)
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,ntile(2) OVER(PARTITION by dept_name order by salary ASC) "등급타일"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 등급타일
+	------------------------------------------------------
+	Liam	Development	23/06/01	6200	1
+	Emma	Development	22/10/30	6500	1
+	Chris	Development	21/07/01	10000	2
+	Sophia	Planning	23/01/15	7500	1
+	Olivia	Planning	21/11/05	9500	1
+	Danial	Planning	22/08/22	9500	2
+	Emily	Sales		23/02/10	6000	1
+	David	Sales		23/04/01	6000	1
+	Michale	Sales		22/03/20	7200	1
+	Sarah	Sales		22/03/15	7500	2
+	James	Sales		22/01/10	9000	2

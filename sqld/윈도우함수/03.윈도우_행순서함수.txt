@@ -1,0 +1,178 @@
+윈도우 순위 함수: rank, dense_rank, row_number
+윈도우 집계 함수: sum, max, min, avg, count
+윈도우 행 순서 함수: first_value, last_value,lag, lead, nth_value
+윈도우 비율 함수: ratio_to_report, percent_rank, cume_dist, ntile
+
+------------------- 테스트 테이블
+
+EMP_NAME DEPT_NAME JOB_TITLE SALARY HIRE_DATE
+-----------------------------------------------------------------
+James	Sales		Manager			9000	22/01/10
+Sarah	Sales		Assistant Manager	7500	22/03/15
+Michale	Sales		Assistant Manager	7200	22/03/20
+Emily	Sales		Staff			6000	23/02/10
+David	Sales		Staff			6000	23/04/01
+Olivia	Planning	Manger			9500	21/11/05
+Danial	Planning	Assistant Manager	9500	22/08/22
+Sophia	Planning	Staff			7500	23/01/15
+Chris	Development	Manager			10000	21/07/01
+Emma	Development	Staff			6500	22/10/30
+Liam	Development	Staff			6200	23/06/01
+
+-------------------  행 순서 함수들
+행 순서 함수는 order by 절이 필요하다
+(order by절이 없어도 출력은 되지만, 명료하지 않다.)
+
+1. FIRST_VALUE
+	
+	- 그룹 정렬된 순서의 가장 첫번째 행 값 반환
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,first_value(emp_name) OVER(PARTITION by dept_name order by hire_date) "첫번째이름"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 첫번째이름
+	------------------------------------------------------
+	Chris	Development	21/07/01	10000	Chris
+	Emma	Development	22/10/30	6500	Chris
+	Liam	Development	23/06/01	6200	Chris
+	Olivia	Planning	21/11/05	9500	Olivia
+	Danial	Planning	22/08/22	9500	Olivia
+	Sophia	Planning	23/01/15	7500	Olivia
+	James	Sales		22/01/10	9000	James
+	Sarah	Sales		22/03/15	7500	James
+	Michale	Sales		22/03/20	7200	James
+	Emily	Sales		23/02/10	6000	James
+	David	Sales		23/04/01	6000	James
+	
+2. LAST_VALUE
+
+	- 그룹 정렬된 순서의 가장 마지막 행 값 반환
+	- 조심해야할 부분이 있다 (아래에 설명)
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,last_value(emp_name) OVER(PARTITION by dept_name order by hire_date) "마지막이름"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 마지막이름
+	------------------------------------------------------
+	Chris	Development	21/07/01	10000	Chris
+	Emma	Development	22/10/30	6500	Emma
+	Liam	Development	23/06/01	6200	Liam
+	Olivia	Planning	21/11/05	9500	Olivia
+	Danial	Planning	22/08/22	9500	Danial
+	Sophia	Planning	23/01/15	7500	Sophia
+	James	Sales		22/01/10	9000	James
+	Sarah	Sales		22/03/15	7500	Sarah
+	Michale	Sales		22/03/20	7200	Michale
+	Emily	Sales		23/02/10	6000	Emily
+	David	Sales		23/04/01	6000	David
+	
+	: 출력 결과를 보면 각행의 이름이 출력된다?
+	왜 그럴까?
+	order by 절의 디폴트를 기억하는가?
+	
+		RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+		
+	잘 생각해보면 왜 같은 행의 '이름'이 출력 되었는지 위 윈도윙절을 해석해보면 납득될 것이다.
+	
+	그래서 LAST_VALUE를 쓸 때는 의도적으로 windowing절을 확장해 줘야한다. 그것도 ROWS로..
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,last_value(emp_name) OVER(
+		PARTITION by dept_name 
+		order by hire_date
+		ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING    
+	    ) "마지막이름"
+
+	from employees;
+	
+	emp_name dept_name hire_date salary 마지막이름
+	------------------------------------------------------
+	Chris	Development	21/07/01	10000	Liam
+	Emma	Development	22/10/30	6500	Liam
+	Liam	Development	23/06/01	6200	Liam
+	Olivia	Planning	21/11/05	9500	Sophia
+	Danial	Planning	22/08/22	9500	Sophia
+	Sophia	Planning	23/01/15	7500	Sophia
+	James	Sales		22/01/10	9000	David
+	Sarah	Sales		22/03/15	7500	David
+	Michale	Sales		22/03/20	7200	David
+	Emily	Sales		23/02/10	6000	David
+	David	Sales		23/04/01	6000	David
+	
+3. LAG
+	- 이전 행값을 반환하는 함수
+	
+		LAG(컬럼, [오프셋,생략하면 1], [기본값,생략하면 NULL])
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,lag(emp_name,1,'없음') OVER(PARTITION by dept_name order by hire_date ASC) "이전1이름"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 이전1이름
+	------------------------------------------------------
+	Chris	Development	21/07/01	10000	없음
+	Emma	Development	22/10/30	6500	Chris
+	Liam	Development	23/06/01	6200	Emma
+	Olivia	Planning	21/11/05	9500	없음
+	Danial	Planning	22/08/22	9500	Olivia
+	Sophia	Planning	23/01/15	7500	Danial
+	James	Sales		22/01/10	9000	없음
+	Sarah	Sales		22/03/15	7500	James
+	Michale	Sales		22/03/20	7200	Sarah
+	Emily	Sales		23/02/10	6000	Michale
+	David	Sales		23/04/01	6000	Emily
+	
+4. LEAD
+	- 이후 행 값을 반환하는 함수
+	
+		LEAD(컬럼, [오프셋,생략하면 1], [기본값,생략하면 NULL])
+		
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,lead(emp_name,1,'없음') OVER(PARTITION by dept_name order by hire_date ASC) "이후1이름"
+
+	from employees;
+
+	emp_name dept_name hire_date salary 이후1이름
+	------------------------------------------------------
+	Chris	Development	21/07/01	10000	Emma
+	Emma	Development	22/10/30	6500	Liam
+	Liam	Development	23/06/01	6200	없음
+	Olivia	Planning	21/11/05	9500	Danial
+	Danial	Planning	22/08/22	9500	Sophia
+	Sophia	Planning	23/01/15	7500	없음
+	James	Sales		22/01/10	9000	Sarah
+	Sarah	Sales		22/03/15	7500	Michale
+	Michale	Sales		22/03/20	7200	Emily
+	Emily	Sales		23/02/10	6000	David
+	David	Sales		23/04/01	6000	없음
+	

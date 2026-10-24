@@ -1,0 +1,177 @@
+윈도우 순위 함수: rank, dense_rank, row_number
+윈도우 집계 함수: sum, max, min, avg, count
+윈도우 행 순서 함수: first_value, last_value,lag, lead, nth_value
+윈도우 비율 함수: ratio_to_report, percent_rank, cume_dist, ntile
+
+------------------- 테스트 테이블
+
+EMP_NAME DEPT_NAME JOB_TITLE SALARY HIRE_DATE
+-----------------------------------------------------------------
+James	Sales		Manager			9000	22/01/10
+Sarah	Sales		Assistant Manager	7500	22/03/15
+Michale	Sales		Assistant Manager	7200	22/03/20
+Emily	Sales		Staff			6000	23/02/10
+David	Sales		Staff			6000	23/04/01
+Olivia	Planning	Manger			9500	21/11/05
+Danial	Planning	Assistant Manager	9500	22/08/22
+Sophia	Planning	Staff			7500	23/01/15
+Chris	Development	Manager			10000	21/07/01
+Emma	Development	Staff			6500	22/10/30
+Liam	Development	Staff			6200	23/06/01
+
+-------------------  집계 함수들
+
+1. SUM
+
+	- sum(컬럼) 처럼 계산 컬럼을 넣어줘야 한다.
+	
+	- order by 절 없으면, 단순 그룹 합계를 계산한다
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,sum(salary) OVER(PARTITION by dept_name) "합계"
+
+	from employees;
+	
+	emp_name dept_name hire_date salary 합계
+	-----------------------------------------------------
+	Emma	Development	22/10/30	6500	22700
+	Chris	Development	21/07/01	10000	22700
+	Liam	Development	23/06/01	6200	22700
+	Olivia	Planning	21/11/05	9500	26500
+	Sophia	Planning	23/01/15	7500	26500
+	Danial	Planning	22/08/22	9500	26500
+	Sarah	Sales		22/03/15	7500	35700
+	James	Sales		22/01/10	9000	35700
+	Michale	Sales		22/03/20	7200	35700
+	David	Sales		23/04/01	6000	35700
+	Emily	Sales		23/02/10	6000	35700
+	
+	
+	- order by 절만 있다면,
+	현재행 기준 이전행들 포함한 누적 합계를 계산한다
+	
+		(왜냐면, order by 절의 기본 windowing절이 
+			
+			RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+		
+		이기 때문이다)
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,sum(salary) OVER(PARTITION by dept_name order by hire_date) "합계"
+
+	from employees;
+
+
+	emp_name dept_name hire_date salary 합계
+	-----------------------------------------------------
+	Chris	Development	21/07/01	10000	10000
+	Emma	Development	22/10/30	6500	16500
+	Liam	Development	23/06/01	6200	22700
+	Olivia	Planning	21/11/05	9500	9500
+	Danial	Planning	22/08/22	9500	19000
+	Sophia	Planning	23/01/15	7500	26500
+	James	Sales		22/01/10	9000	9000
+	Sarah	Sales		22/03/15	7500	16500
+	Michale	Sales		22/03/20	7200	23700
+	Emily	Sales		23/02/10	6000	29700
+	David	Sales		23/04/01	6000	35700
+	
+2. MAX , MIN
+	
+	- 그룹내 max(컬럼), min(컬럼) 계산
+		
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,max(salary) OVER(PARTITION by dept_name) "최고월급"
+	    ,min(salary) OVER(PARTITION by dept_name) "최저월급"
+	from employees;
+
+	emp_name dept_name hire_date salary 최고월급 최저월급
+	------------------------------------------------------------
+	Emma	Development	22/10/30	6500	10000	6200
+	Chris	Development	21/07/01	10000	10000	6200
+	Liam	Development	23/06/01	6200	10000	6200
+	Olivia	Planning	21/11/05	9500	9500	7500
+	Sophia	Planning	23/01/15	7500	9500	7500
+	Danial	Planning	22/08/22	9500	9500	7500
+	Sarah	Sales		22/03/15	7500	9000	6000
+	James	Sales		22/01/10	9000	9000	6000
+	Michale	Sales		22/03/20	7200	9000	6000
+	David	Sales		23/04/01	6000	9000	6000
+	Emily	Sales		23/02/10	6000	9000	6000
+	
+3. AVG
+	
+	- avg(컬럼)
+	- 그룹내 평균 반환
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,trunc(avg(salary) OVER(PARTITION by dept_name)) "평균월급"
+
+	from employees;
+	
+	emp_name dept_name hire_date salary 평균월급
+	-----------------------------------------------------
+	Emma	Development	22/10/30	6500	7566
+	Chris	Development	21/07/01	10000	7566
+	Liam	Development	23/06/01	6200	7566
+	Olivia	Planning	21/11/05	9500	8833
+	Sophia	Planning	23/01/15	7500	8833
+	Danial	Planning	22/08/22	9500	8833
+	Sarah	Sales		22/03/15	7500	7140
+	James	Sales		22/01/10	9000	7140
+	Michale	Sales		22/03/20	7200	7140
+	David	Sales		23/04/01	6000	7140
+	Emily	Sales		23/02/10	6000	7140
+	
+	※ 포인트
+	윈도우 함수 절: 윈도우 함수 over(..)
+	trunc(윈도우 함수 절) <= 이렇게 전체 인수를 넣어야 한다
+	
+4. COUNT
+
+	- count(*), count(컬럼)
+	- 그룹 내의 행 갯수 반환
+	
+	select 
+	    emp_name
+	    ,dept_name
+	    ,hire_date
+	    ,salary
+	    
+	    ,count(*) OVER(PARTITION by dept_name) "cnt"
+
+	from employees;	
+
+	emp_name dept_name hire_date salary 평균월급
+	-----------------------------------------------------
+	Emma	Development	22/10/30	6500	3
+	Chris	Development	21/07/01	10000	3
+	Liam	Development	23/06/01	6200	3
+	Olivia	Planning	21/11/05	9500	3
+	Sophia	Planning	23/01/15	7500	3
+	Danial	Planning	22/08/22	9500	3
+	Sarah	Sales		22/03/15	7500	5
+	James	Sales		22/01/10	9000	5
+	Michale	Sales		22/03/20	7200	5
+	David	Sales		23/04/01	6000	5
+	Emily	Sales		23/02/10	6000	5

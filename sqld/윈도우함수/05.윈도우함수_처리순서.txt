@@ -1,0 +1,21 @@
+-------------------
+일반 SELECT 쿼리 처리 순서
+	
+	1 FROM (테이블 조회 및 JOIN)
+
+	2 WHERE (행 필터링)
+
+	3 GROUP BY (그룹 생성)
+
+	4 HAVING (그룹 필터링)
+
+	5 SELECT (컬럼·표현식 계산 및 선택,윈도우 함수 포함)
+
+	6 ORDER BY (최종 결과 정렬)
+
+	(요약)
+	FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+-------------------
+
+윈도우 함수 (SELECT 절)
+	

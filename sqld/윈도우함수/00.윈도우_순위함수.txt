@@ -1,6 +1,0 @@
-윈도우 순위 함수: rank, dense_rank, row_number
-윈도우 집계 함수: sum, max, min, avg, count
-윈도우 행 순서 함수: first_value, last_value,lag, lead, nth_value
-윈도우 비율 함수: ratio_to_report, percent_rank, cume_dist, ntile
-
--------------------

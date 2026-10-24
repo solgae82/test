@@ -1,0 +1,150 @@
+윈도우 순위 함수: rank, dense_rank, row_number
+윈도우 집계 함수: sum, max, min, avg, count
+윈도우 행 순서 함수: first_value, last_value,lag, lead, nth_value
+윈도우 비율 함수: ratio_to_report, percent_rank, cume_dist, ntile
+
+------------------- 기본 
+
+반드시 OVER() 내부에 ORDER BY가 먼저 선언되어야만 뒤에 붙여서 사용 가능.
+
+------------------- rows / range
+ 
+
+• ROWS (물리적인 행의 개수)
+	
+	• 숫자로만 행을 셀 수 있기 때문에 모든 조합이 자유롭습니다. 
+	(예: 5 PRECEDING = 5행 전)
+
+• RANGE (논리적인 값의 범위)
+	
+	• ORDER BY에 지정된 컬럼의 '값'의 차이를 계산합니다.
+	
+	• 오라클에서 RANGE 3 PRECEDING 처럼 특정 수치를 쓰려면, 
+	ORDER BY 절에 오직 1개의 컬럼(숫자형 또는 날짜형)만 정렬되어 있어야 합니다. 
+	(문자열 컬럼이거나 정렬 컬럼이 2개 이상이면 
+	숫자로 범위를 더하고 뺄 수 없으므로 에러가 발생합니다.)
+	
+	• 단, UNBOUNDED나 CURRENT ROW 키워드만 사용하는 조합은 RANGE에서도 
+	정렬 컬럼 제한 없이 자유롭게 쓸 수 있습니다.
+
+------------------- 윈도우 범위
+
+• UNBOUNDED PRECEDING: 처음부터 (첫 번째 행부터)
+• 값 PRECEDING: 현재 기준 앞의 N번째 행까지 / 현재 값보다 N 작은 값까지
+• CURRENT ROW: 현재 행 / 현재 값
+• 값 FOLLOWING: 현재 기준 뒤의 N번째 행부터 / 현재 값보다 N 큰 값부터
+• UNBOUNDED FOLLOWING: 끝까지 (마지막 행까지)
+
+------------------- 연산 범위
+
+BETWEEN 연산으 반드시 [시작점]이 [끝점]보다 시간적으로나 물리적으로 앞선 시점이어야 합니다. 
+(예: BETWEEN 미래 AND 과거는 에러)
+
+ROWS, RANGE 모두 문법 구조는 동일하지만,
+rows 물리적 행 수 , range는 컬럼의 '값' 기준
+
+rows는 order by 로 정렬된 물리적 현재 행 위치 기준의 이전,이후의 범위를 윈도우(창)으로 보는 것.
+
+	
+	sum(sal)
+	over(
+		order by sal ASC -- 또는 DESC
+		ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+	)
+
+	위 윈도윙절 뜻은 정렬된 행의 현재행 위치의 2단계 이전까지를 윈도윙 하겠다는 뜻.
+
+
+range는 order by로 정렬된 현재 행 '값' 기준의 이전값, 이후값 범위를 윈도우(창)으로 보는 것.
+(위치가 아닌 값 기준, 동일 값이 있으면 행 이후라도 포함)
+
+	예를 들어 현재행 sal값이 '20' 이고
+	ASC 정렬일 경우,
+
+		sum(sal)
+		over(
+			order by sal ASC
+			RANGE BETWEEN 2 PRECEDING AND CURRENT ROW
+		)
+
+	위 윈도윙절 뜻은 현재행의 값인 20 기준, 18 ~20 범위안의 행만 윈도윙 하겠다는 뜻
+	(왜냐면 ASC 이니까 오름차순 정렬 이고, 2 PRECEDING 은 [20-2= 18] 이기에)
+	오름차순 정렬의 PRECEDING 은 같거나 작은 값이라는 뜻. 그러므로 마이너스 연산.
+
+	DESC 정렬일 경우는,
+
+		sum(sal)
+		over(
+			order by sal DESC
+			RANGE BETWEEN 2 PRECEDING AND CURRENT ROW
+		)
+		
+	위 윈도윙절 뜻은 현재행의 값인 20 기준, 20 ~ 22 범위안의 행만 윈도윙 하겠다는 뜻
+	(왜냐면 DESC 이니까 내림차순 정렬 이고, 2 PRECEDING 은 [20 + 2 = 22] 이기에)
+	내림차순 정렬의 PRECEDING 은 같거나 큰 값이라는 뜻. 그러므로 플러스 연산.
+
+	(요약)
+	- ASC → 현재 값 이하 전체
+	- DESC → 현재 값 이상 전체
+	같은 값은 현재 행보다 뒤에 있어도 포함된다.
+
+------------------- windowing 절 디폴트
+
+order by 절만 있고, windowing 절이 없다면, 기본 디폴트 
+	RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+이다.
+	
+	sum(sal)
+	over(
+		order by sal DESC
+		
+		-- RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW			
+	)
+
+※ RANGE 가 디폴트다
+
+------------------- BETWEEN 절 패턴 (ROW 기준)
+order by ASC,DESC 정렬 후 
+
+• 처음부터 현재까지 (기본값 패턴)
+	ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+
+• 처음부터 끝까지 (전체 범위)
+	ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+
+• 처음부터 내 앞의 N번째까지
+	ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+
+• 내 앞의 N번째부터 현재까지 (가장 흔한 이동평균/누적 패턴)
+	ROWS BETWEEN 2 PRECEDING AND CURRENT ROW (나를 포함한 최근 3개 행)
+
+• 내 앞의 N번째부터 내 뒤의 M번째까지
+	ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING (내 전행, 현재행, 다음행 총 3행)
+
+• 현재부터 끝까지
+	ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+
+• 현재부터 내 뒤의 M번째까지
+	ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING
+
+• 내 뒤의 N번째부터 끝까지
+	ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING
+	
+------------------- BETWEEN 생략형 단독 조합 (축약 문법)
+
+BETWEEN 키워드를 안 쓰고 단독으로만 적으면, 
+ 자동으로 AND CURRENT ROW(현재 행까지)를 끝점에 붙여서 해석합니다.
+ 
+• ROWS UNBOUNDED PRECEDING
+	• ➡️ BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW 와 동일 (처음부터 현재까지)
+	
+• ROWS 3 PRECEDING
+	• ➡️ BETWEEN 3 PRECEDING AND CURRENT ROW 와 동일 (3행 전부터 현재까지)
+	
+• ROWS CURRENT ROW
+	• ➡️ BETWEEN CURRENT ROW AND CURRENT ROW 와 동일 (현재 행만)
+
+⚠️ 주의: FOLLOWING 계열(1 FOLLOWING, UNBOUNDED FOLLOWING)은 단독으로 쓰면 에러가 납니다. 
+시작점이 현재 행보다 뒤일 수는 있지만, 
+끝점을 명시하지 않으면 자동으로 현재 행(CURRENT ROW)이 끝점이 되는데, 
+"미래부터 현재까지"라는 역방향 모순이 생기기 때문입니다.'
