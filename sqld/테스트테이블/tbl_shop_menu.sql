@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  ∆ƒ¿œ¿Ã ª˝º∫µ  - ¿œø‰¿œ-10ø˘-25-2026   
+--  ÌååÏùºÏù¥ ÏÉùÏÑ±Îê® - ÏùºÏöîÏùº-10Ïõî-25-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Table TBL_SHOP_MENU
@@ -18,13 +18,13 @@
   TABLESPACE "USERS" ;
 REM INSERTING into DONG.TBL_SHOP_MENU
 SET DEFINE OFF;
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (100000,'µµº≠',null);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101000,'±π≥ªµµº≠',100000);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (102000,'ø‹±πµµº≠',100000);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (103000,'∞Ê¡¶/∞Êøµ',101000);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (104000,'¡§ƒ°/ªÁ»∏',101000);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101010,'º≠æÁµµº≠',102000);
-Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101020,'±‚≈∏ææÓ',102000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (100000,'ÎèÑÏÑú',null);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101000,'Íµ≠ÎÇ¥ÎèÑÏÑú',100000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (102000,'Ïô∏Íµ≠ÎèÑÏÑú',100000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (103000,'Í≤ΩÏ†ú/Í≤ΩÏòÅ',101000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (104000,'Ï†ïÏπò/ÏÇ¨Ìöå',101000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101010,'ÏÑúÏñëÎèÑÏÑú',102000);
+Insert into DONG.TBL_SHOP_MENU (MENU_ID,MENU_NAME,PARENT_MENU_ID) values (101020,'Í∏∞ÌÉÄÏñ∏Ïñ¥',102000);
 --------------------------------------------------------
 --  DDL for Index TBL_SHOP_MENU_PK
 --------------------------------------------------------
