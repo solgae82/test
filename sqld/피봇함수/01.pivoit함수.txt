@@ -1,0 +1,42 @@
+
+pivot(
+	집계함수(집계할 컬럼)
+	for 피봇 컬럼
+	in (피봇 될 값1,피봇 될 값2..)
+)
+
+: 특정 컬럼의 행을 열로 변환
+
+------------------- 테스트 테이블
+
+	select * from tb_pivot;
+
+	nm subject score
+	-------------------
+	홍길동	math	90
+	홍길동	english	85
+	강감찬	math	90
+	강감찬	english	95
+	이순신	math	95
+	이순신	english	100
+
+------------------- pivot 함수
+
+(실전)
+	select * 
+	from tb_pivot
+	pivot(
+	    avg(score)		-- 반드시 집계함수 필요
+	    for subject in(	-- subject 컬럼 값들을 새로운 컬럼명으로 변환
+		'math' as math,
+		'english' as english
+	    )
+	)
+	;
+	
+(결과)
+	nm math english
+	--------------------
+	강감찬	90	95
+	홍길동	90	85
+	이순신	95	100

@@ -1,0 +1,50 @@
+
+unpivot(
+	값 컬럼 
+	for 이름 컬럼
+	in (unpivot 될 컬럼1,unpivot 될 컬럼2..)
+)
+
+: 특정 열(들)을 행으로 변환
+
+값 컬럼 : unpivot 될 컬럼에 있는 값들을 새로 담을 컬럼
+FOR 이름 컬럼 : unpivot될 컬럼명을 담을 새로운 컬럼
+IN : 행으로 변환하고 싶은 기존 컬럼들의 목록 지정
+
+!! 값 컬럼이 null인 행은 결과에서 제외된다
+(null을 포함하고 싶다면 'unpivot include nulls' 구문을 사용)
+
+------------------- 테스트 테이블
+
+	select * from tb_unpivot;
+
+	nm math english
+	-------------------
+	강감찬	90	95
+	홍길동	90	85
+	이순신	95	100
+
+------------------- pivot 함수
+
+(실전)
+	
+	select * 
+	from tb_unpivot
+	unpivot(
+	    score		--unpivot될 컬럼값들을 담을 새 컬럼명
+	    for subject in(	--unpivot될 컬럼명의 새로운 값 지정
+		math as 'math',
+		english as 'english'
+	    )
+	)
+	;
+	
+(결과)
+	nm subject score
+	--------------------------
+	강감찬	math	90
+	강감찬	english	95
+	홍길동	math	90
+	홍길동	english	85
+	이순신	math	95
+	이순신	english	100
