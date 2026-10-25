@@ -23,7 +23,7 @@ Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) value
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Michale','Sales','Assistant Manager',7200,to_date('22/03/20','RR/MM/DD'));
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Emily','Sales','Staff',6000,to_date('23/02/10','RR/MM/DD'));
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('David','Sales','Staff',6000,to_date('23/04/01','RR/MM/DD'));
-Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Olivia','Planning','Manger',9500,to_date('21/11/05','RR/MM/DD'));
+Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Olivia','Planning','Manager',9500,to_date('21/11/05','RR/MM/DD'));
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Danial','Planning','Assistant Manager',9500,to_date('22/08/22','RR/MM/DD'));
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Sophia','Planning','Staff',7500,to_date('23/01/15','RR/MM/DD'));
 Insert into DONG.EMPLOYEES (EMP_NAME,DEPT_NAME,JOB_TITLE,SALARY,HIRE_DATE) values ('Chris','Development','Manager',10000,to_date('21/07/01','RR/MM/DD'));

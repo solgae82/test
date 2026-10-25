@@ -1,0 +1,63 @@
+CUBE, ROLLUP 함수를 이용하면 요약정보라는 표시의 null 표시가 되는데,
+이게 요약정보라는 뜻의 null인지, 실제 데이터가 null인지 구분이 가질 않는다.
+
+이럴때 사용하는 함수가 GPOUPING 함수다
+SELECT 절에 사용하는 함수다.
+
+컬럼 기준 행이 집계 요약 행이면 1, 일반 행이면 0 을 반환한다
+
+------------------- 테스트 테이블
+select * from gf_employees;
+
+
+EMP_NAME DEPT_NAME JOB_TITLE SALARY
+----------------------------------------------------
+James	Sales		Manager			7000
+Sarah	Sales		Assistant Manager	6000
+Michale	Sales		Assistant Manager	5500
+Emily	Sales		Staff			4000
+David	Sales		Staff			4200
+Olivia	Planning	Manager			8000
+Danial	Planning	Assistant Manager	7500
+Sophia	Planning	Staff			5000
+Chris	Development	Manager			9000
+Emma	Development	Staff			6000
+Liam	Development	Staff			6200
+Dt.X	(null)		Intern			1000	# 추가
+
+------------------- GROUPING
+
+	GROUPING(컬럼) : 1개만 가능
+	
+(실전)
+	select  
+	    dept_name
+	    ,job_title
+	    ,sum(salary) as hap
+	    ,GROUPING(dept_name) as "dept_name요약여부"
+	    ,GROUPING(job_title) as "job_title요약여부"
+	from gf_employees 
+	GROUP BY rollup(dept_name,job_title)
+
+(결과)
+	DEPT_NAME JOB_TITLE HAP dept_name요약여부 job_title요약여부
+	----------------------------------------------------------
+	(null)		Intern			1000	0	0	# dept_name의 실데이터가 null
+	(null)		(null)			1000	0	1	# null(실데이터), 요약
+	Sales		Staff			8200	0	0
+	Sales		Manager			7000	0	0
+	Sales		Assistant Manager	11500	0	0
+	Sales		(null)			26700	0	1	# Sales , 요약 총계 
+	Planning	Staff			5000	0	0
+	Planning	Manager			8000	0	0
+	Planning	Assistant Manager	7500	0	0
+	Planning	(null)			20500	0	1	# Planning , 요약 총계
+	Development	Staff			12200	0	0
+	Development	Manager			9000	0	0
+	Development	(null)			21200	0	1	# Development, 요약 총계
+	(null)		(null)			69400	1	1	# 요약, 요약 = 총 요약 총계
+	
+------------------- 요약
+
+GROUPING(dept_name) 의 뜻은 dept_name 기준으로 
+그룹핑인가(1)? 아니면 일반 데이터인가?(0) 여부를 1과 0으로 반환

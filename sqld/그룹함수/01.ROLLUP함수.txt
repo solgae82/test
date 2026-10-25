@@ -1,0 +1,67 @@
+그룹 함수 : (ROLLUUP , CUBE , GPOUPING SETS)
+	- GPOUP BY절을 확장하는 함수
+	- 그룹별 소계, 총계등 조회 가능  
+	- 집계함수와 함께 사용되어진다
+	- 그룹에 참여한 컬럼만 select절에 포함 가능(group by절과 동일)
+	
+------------------- 테스트 테이블
+select * from gf_employees;
+
+
+EMP_NAME DEPT_NAME JOB_TITLE SALARY
+----------------------------------------------------
+James	Sales		Manager			7000
+Sarah	Sales		Assistant Manager	6000
+Michale	Sales		Assistant Manager	5500
+Emily	Sales		Staff			4000
+David	Sales		Staff			4200
+Olivia	Planning	Manager			8000
+Danial	Planning	Assistant Manager	7500
+Sophia	Planning	Staff			5000
+Chris	Development	Manager			9000
+Emma	Development	Staff			6000
+Liam	Development	Staff			6200
+
+------------------- ROLLUUP
+
+(출력)단계별 요약 정보
+	
+	ROLLUUP(A, B)
+	
+	- A와 B 모두 기준으로 상세 총계
+	- A 기준 중간 총계
+	- 기준 없이 전체 총 총계
+
+	※ 컬럼 순서가 중요하다(B , A)로 하면 B 중간 총계
+
+(실전)
+	select  
+	    dept_name
+	    ,job_title
+	    ,sum(salary) as hap			-- 집계함수
+	from gf_employees 
+	
+	GROUP BY ROLLUUP(dept_name, job_title)	-- gropu by  확장
+
+(결과)
+	DEPT_NAME JOB_TITLE HAP
+	---------------------------------------------
+	Sales		Staff			8200	# (Sales + Staff) 합계
+	Sales		Manager			7000
+	Sales		Assistant Manager	11500
+	Sales		(null)			26700
+	Planning	Staff			5000
+	Planning	Manager			8000
+	Planning	Assistant Manager	7500
+	Planning	(null)			20500
+	Development	Staff			12200
+	Development	Manager			9000
+	Development	(null)			21200   # Development 합계
+	(null)		(null)			68400	# 전체 합계
+	
+------------------- (요약)
+
+- A+B 그룹별 총계 
+- A그룹(dept_anme)별 중간 총계 
+- 전체 종계
+	
