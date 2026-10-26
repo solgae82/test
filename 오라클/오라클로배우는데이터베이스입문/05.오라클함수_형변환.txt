@@ -15,9 +15,49 @@
 	select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') from dual;	
 	// 2019-09-06 02:25:04
 
+-------------------
+
 to_char
 	숫자나, 날짜형식을 다양한 문자열로 변환
 
+	형식:	to_char(숫자형 or 날짜형[,출력 표현식])
+
+
+	----------- 기본
+	
+	select 
+		to_char(11) -- 11 (문자열) 
+		as c1 ,
+		
+		'|' || to_char(11,'99,999.00') -- |     11.00 (빈자리는 공백,문자열) 
+		as c2 ,
+		
+		to_char(123456, '99,999') -- ####### (데이터 > 표현식이면 #으로 출력됨) (문자열)
+		as c3
+	from dual;  
+	
+	
+	select 
+		to_char(sysdate) -- 26/10/26 (문자열)
+		as c1
+		to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') -- 2026-10-26 19:31:21 (문자열)
+		as ch2 
+	from dual; 
+		
+	
+	----------- 다양한 숫자형식 지정
+
+	select sal					//800
+	    ,to_char(sal, '$999,999')			//$800
+	    ,to_char(sal, 'L999,999')			//\800
+	    ,to_char(sal, '999,999.00')			//800,99
+	    ,to_char(sal, '000,999,999.00')		//000,000,800.00
+	    ,to_char(sal, '000999999.99')		// 000000800.00
+	    ,to_char(sal, '999,999.00')			//800.00
+	from emp  where sal=800; 
+	
+	----------- 다양한 날짜 표현
+	
 	월 표현
 	select sysdate,
 	    to_char(sysdate,'MM') as MM,
@@ -53,30 +93,31 @@ to_char
 	// 19/09/17	09	화	火	TUE
 
 	다양한 시간지정 형식
-	 select sysdate
-	    ,to_char(sysdate, 'HH24:MI:SS')
-	    ,to_char(sysdate, 'HH12:MI:SS AM')
-	    ,to_char(sysdate, 'HH:MI:SS P.M.')
+	 select sysdate				-- 9/09/17
+	    ,to_char(sysdate, 'HH24:MI:SS')	-- 21:50:12
+	    ,to_char(sysdate, 'HH12:MI:SS AM')	-- 09:50:12 오후
+	    ,to_char(sysdate, 'HH:MI:SS P.M.')	-- 09:50:12 오후
 	from dual;
-	// 19/09/17	21:50:12	09:50:12 오후	09:50:12 오후
-
-	 다양한 숫자형식 지정
-	select sal							//800
-	    ,to_char(sal, '$999,999')			//$800
-	    ,to_char(sal, 'L999,999')			//\800
-	    ,to_char(sal, '999,999.00')			//800,99
-	    ,to_char(sal, '000,999,999.00')		//000,000,800.00
-	    ,to_char(sal, '000999999.99')		// 000000800.00
-	    ,to_char(sal, '999,999.00')			//800.00
-	from emp  where sal=800;
-
+	
 
 to_number
-	문자열을 숫자형으로 변환
+
+	숫자형 문자열을 숫자형으로 변환
+	
+	형식:	to_number('숫자형 문자열'[,해석할 표현식])
+	
+	select to_number('1234') as d from dual; // 1234
+	
+	--select to_number('1,300') as d from dual; // 에러 (ORA-01722: invalid number)
 	select to_number('1,300', '999,999') from dual; // 1300
 	select to_number('1,300', '999,999') - to_number('700','999,999') from dual; // 600
 
 to_date
+
 	문자열을 date형식으로 변환
+	
+	형식:	to_date('날짜시간형식 문자열'[,해석할 표현식])
+	
+	select to_date('2018-04-04') from dual; // 18/04/04
 	select to_date('2018-04-04', 'YYYY-MM-DD') from dual; // 18/04/04 (date형으로 바뀐 것임)
 	select to_date('20180404', 'YYYYMMDD') from dual; // 18/04/04 (date형으로 바뀐 것임)
