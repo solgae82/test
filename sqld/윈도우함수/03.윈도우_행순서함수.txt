@@ -24,8 +24,13 @@ Liam	Development	Staff			6200	23/06/01
 (order by절이 없어도 출력은 되지만, 명료하지 않다.)
 
 1. FIRST_VALUE
-	
+
 	- 그룹 정렬된 순서의 가장 첫번째 행 값 반환
+	- 형식
+		first_value(컬럼): 파라미터 필수	
+	- order by 필수
+	
+	
 	
 	select 
 	    emp_name
@@ -54,7 +59,12 @@ Liam	Development	Staff			6200	23/06/01
 2. LAST_VALUE
 
 	- 그룹 정렬된 순서의 가장 마지막 행 값 반환
-	- 조심해야할 부분이 있다 (아래에 설명)
+	- 형식
+		last_value(컬럼): 파라미터 필수
+	- order by 필수
+	- 항상 범위를 확장해줘야한다 (아래에 설명)
+		- ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING 확장해줘야함.
+	
 	
 	select 
 	    emp_name
@@ -119,9 +129,12 @@ Liam	Development	Staff			6200	23/06/01
 	David	Sales		23/04/01	6000	David
 	
 3. LAG
-	- 이전 행값을 반환하는 함수
 	
-		LAG(컬럼, [오프셋,생략하면 1], [기본값,생략하면 NULL])
+	- 이전 행값을 반환하는 함수
+	- 형식
+		LAG(컬럼, [오프셋,생략하면 1], [행 없으면 반환할 기본값,생략하면 NULL])
+	- order by 필수
+	
 	
 	select 
 	    emp_name
@@ -149,9 +162,10 @@ Liam	Development	Staff			6200	23/06/01
 	
 4. LEAD
 	- 이후 행 값을 반환하는 함수
+	- 형식
+		LEAD(컬럼, [오프셋,생략하면 1], [행 없으면 반환할 기본값,생략하면 NULL])
+	- order by 필수
 	
-		LEAD(컬럼, [오프셋,생략하면 1], [기본값,생략하면 NULL])
-		
 	select 
 	    emp_name
 	    ,dept_name

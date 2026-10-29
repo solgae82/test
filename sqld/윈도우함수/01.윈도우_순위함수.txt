@@ -22,7 +22,12 @@ Liam	Development	Staff			6200	23/06/01
 -------------------  순위 함수들
 
 윈도우 순위 함수(RANK, DENSE_RANK, ROW_NUMBER)는 
+
+함수 파라미터가 없고,
+	RANK(), DENSE_RANK(), ROW_NUMBER()
+
 ORDER BY 절이 100% 필수입니다.
+
 
 1. RANK
 	select 

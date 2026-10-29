@@ -23,9 +23,12 @@ Liam	Development	Staff			6200	23/06/01
 
 1. SUM
 
-	- sum(컬럼) 처럼 계산 컬럼을 넣어줘야 한다.
-	
-	- order by 절 없으면, 단순 그룹 합계를 계산한다
+	- 그룹내 총합계 반환
+	- 형식
+		sum(컬럼): 파라미터 필수
+	- order by 절 없으면, 단순 그룹 합계를 계산, 반환
+	- 윈도윙 절 없으면 누적합계 계산, 반환
+		- range between unbounded and current row 가 기본
 	
 	select 
 	    emp_name
@@ -87,8 +90,11 @@ Liam	Development	Staff			6200	23/06/01
 	David	Sales		23/04/01	6000	35700
 	
 2. MAX , MIN
+
+	- 그룹내 최고값, 최저값 반환
+	- 형식
+		max(컬럼), min(컬럼): 파라미터 필수
 	
-	- 그룹내 max(컬럼), min(컬럼) 계산
 		
 	select 
 	    emp_name
@@ -116,8 +122,10 @@ Liam	Development	Staff			6200	23/06/01
 	
 3. AVG
 	
-	- avg(컬럼)
-	- 그룹내 평균 반환
+	- 그룹내 평균값 반환
+	- 형식
+		avg(컬럼): 파라미터 필수
+	
 	
 	select 
 	    emp_name
@@ -149,8 +157,10 @@ Liam	Development	Staff			6200	23/06/01
 	
 4. COUNT
 
-	- count(*), count(컬럼)
 	- 그룹 내의 행 갯수 반환
+	- 형식
+		count(*), count(컬럼): 파라미터 필수
+	
 	
 	select 
 	    emp_name

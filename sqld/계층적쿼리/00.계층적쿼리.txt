@@ -25,11 +25,14 @@ select
 menu_id
 , lpad('>', 3 * (level-1)) || menu_name as menu_nm
 ,parent_menu_id as p_menu_id
+
 ,level as lv -- 트리 레벨 1~N
 ,CONNECT_BY_ROOT menu_name as root_nm -- 도서
 ,SYS_CONNECT_BY_PATH(menu_name, '>') as path -- >도서>국내도서>경제/경영
 ,connect_by_isleaf as isleaf -- 마지막 잎새 여부 (1,0)
+
 from tbl_shop_menu
+
 start with parent_menu_id is null -- 트리 첫 시작 조건
 connect by prior menu_id = parent_menu_id -- 현재행 값과 다음행 값 트리 연결
 order siblings by menu_name asc -- 트리구조 만든 후 레벨별 오름차순 정리

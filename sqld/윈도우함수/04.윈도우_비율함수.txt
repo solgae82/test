@@ -8,8 +8,8 @@
 1. RATIO_TO_REPORT
 	
 	- 전체 합계에서 현재 행의 값이 차지하는 비율
-	- RATIO_TO_REPORT(컬럼또는표현식): 반드시 파라미터 들어감
-	- ORDER BY 사용시 에러 (Oracle)
+	- RATIO_TO_REPORT(컬럼): 반드시 파라미터 들어감
+	- ORDER BY : 사용 불가, 사용시 에러 (Oracle)
 	
 	[공식]	
 		현재행값 / 전체합계 = 비율
@@ -18,7 +18,11 @@
 	PARTITION BY가 없으면 전체 결과 집합 기준
 	PARTITION BY가 있으면 파티션별 합계 기준
 	ORDER BY는 OVER 안에 사용하지 않음,사용시 에러 (Oracle)
+		- (전쳬합계가 기준인데, 범위를 잡으면 안 되므로 아예 못하게 되어 있음)
 	NULL이 없고 합계가 0이 아니면 파티션별 비율 합계는 1
+		(null이 있다면)
+		• A(30) + B(20) + C(NULL) = 총합 50 (NULL은 합계에서 제외,sum() 함수를 쓰므로 )
+		• 비율: A(0.6) + B(0.4) + C(NULL) = null (이 뜻임 , C를 포함하지 말고 계산하면 1)
 	
 	(실전)
 	select 
