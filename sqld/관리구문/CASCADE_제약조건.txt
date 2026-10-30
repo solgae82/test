@@ -1,0 +1,102 @@
+<CASCADE 제약조건>
+
+• REVOKE / DROP 에 붙는 CASCADE CONSTRAINTS
+	• 도메인: DCL / DDL(권한/구조의 영역)
+	• 하는 일: 자식 테이블의 '외래키 선(제약조건)'만 툭 끊어버림.
+	• 결과: 자식 테이블의 데이터는 안전하게 살아남음.
+	
+• CREATE TABLE 할 때 심는 ON DELETE CASCADE
+	• 도메인: DML (데이터 내용물의 영역)
+	• 하는 일: 부모 데이터를 지울 때 연관된 '자식 데이터(행)'까지 추적해서 지움.
+	• 결과: 자식 테이블의 데이터가 함께 삭제됨.
+	
+------------------- REVOKE ... CASCADE CONSTRAINTS
+
+-- 사용자 A가 본인 스키마에 만든 자식 테이블
+CREATE TABLE A.자식테이블 (
+    seq NUMBER,
+    부모테이블_ID NUMBER,
+    
+    -- 🔗 바로 이 부분!
+    CONSTRAINT fk_to_parent FOREIGN KEY (부모테이블_ID) 
+    REFERENCES 내스키마.부모테이블(ID)
+);
+
+
+(관리자가 A 사용자의 부모테이블 REFERENCES 권한 취소 시도) 
+
+• REVOKE REFERENCES ON 부모테이블 FROM A; -- 에러
+	
+	"자식 제약조건이 참조하고 있습니다"
+	
+• REVOKE REFERENCES ON 부모테이블 FROM A CASCADE CONSTRAINTS;
+	
+	-- 🛠️ 오라클이 내부적으로 자동 실행하는 명령(제약조건 제거)
+	ALTER TABLE A.자식테이블 DROP CONSTRAINT fk_to_parent;
+
+	-- (제약조건 제거) 후 실행
+	REVOKE REFERENCES ON 부모테이블 FROM A;
+
+------------------- DROP ... CASCADE CONSTRAINTS
+
+-- 사용자 A가 본인 스키마에 만든 자식 테이블
+CREATE TABLE 자식테이블 (
+    seq NUMBER,
+    외래키_ID NUMBER,
+    
+    -- 🔗 바로 이 부분!
+    CONSTRAINT fk_to_parent FOREIGN KEY (외래키_ID) 
+    REFERENCES 부모테이블(ID)
+);
+
+
+• DROP TABLE 부모테이블; -- 에러
+	
+	"자식 제약조건이 참조하고 있습니다"
+	
+• DROP TABLE 부모테이블 CASCADE CONSTRAINTS;
+
+	-- 🛠️ 오라클이 내부적으로 자동 실행하는 매크로(제약조건 제거)
+	1. ALTER TABLE 자식테이블 DROP CONSTRAINT fk_to_parent; 
+		(자식의 외래키 감시장치를 먼저 파괴하고)
+	
+	2. DROP TABLE 부모테이블;
+		(방해물이 없어지자 부모 테이블을 깔끔하게 삭제)
+
+
+------------------- ON DELETE CASECADE
+
+1. 부모 테이블 (회원)
+	CREATE TABLE member (
+	    member_id VARCHAR2(20) PRIMARY KEY,
+	    name      VARCHAR2(50)
+	);
+
+2. 자식 테이블 (회원의 주문 내역)
+	CREATE TABLE orders (
+	    order_no  NUMBER PRIMARY KEY,
+	    member_id VARCHAR2(20),
+	    order_item VARCHAR2(100),
+	    
+	    -- ⭐ 바로 이 부분에 옵션을 심어둡니다!
+	    CONSTRAINT fk_order_member FOREIGN KEY (member_id) 
+	    REFERENCES member(member_id) ON DELETE CASCADE
+	);
+
+회원 등록 (부모)
+	INSERT INTO member VALUES ('hong', '홍길동');
+
+주문 등록 (자식)
+	INSERT INTO orders VALUES (1, 'hong', '맥북 에어');
+	INSERT INTO orders VALUES (2, 'hong', '마우스');
+
+
+부모 테이블에서 '홍길동' 회원 삭제
+	DELETE FROM member WHERE member_id = 'hong';
+
+최종 조회
+	• SELECT * FROM member; ➔ 결과: 0건 
+		(홍길동 삭제됨)
+		
+	• SELECT * FROM orders; ➔ 결과: 0건 
+		(홍길동이 주문했던 제품 함께 삭제됨)
