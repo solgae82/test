@@ -1,0 +1,25 @@
+Join 컬럼명이 동일할때, ON 절 대신 USING(컬럴명)을 사용할 수 있다.
+
+A full outer join B
+	
+	(아래와 같다) 
+	LEFT OUTER JOIN + RIGHT OUTER JOIN에서만 나오는 미매칭 행
+	
+Grouping Sets(A,B)
+	
+	group by A 결과와 group by B 결과를
+	UNION ALL 로 합친 결과와 같다
+	
+Cross Join
+	아래 쿼리는 모두 (카테시안 곱)을 생성한다
+	
+	select * from A cross join B;
+	select * from A, B; 
+	
+Keep()
+	min(sal) keep (dense_rank first order by deptno)
+		
+		first/last: 정렬 순서 중 처음 또는 마지막 그룹
+		
+	:first 설정으로 deptno 오름차순 정렬해서 1위로 나온 그룹(중복이 있을 수 있음)
+	중 min(sal)을 반환

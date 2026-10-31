@@ -1,0 +1,38 @@
+대전제 
+	NULL을 일반 비교 연산자(=, <>, !=, >, <)로 비교하면 결과는 UNKNOWN이다. 
+
+
+비교
+	(LOC 컬럼의 NULL 여부와 관계없이)
+	- LOC = NULL → UNKNOWN
+	- LOC != NULL → UNKNOWN
+	- LOC <> NULL → UNKNOWN
+논리
+	기억할 공식:
+	- TRUE OR UNKNOWN → TRUE
+	- FALSE OR UNKNOWN → UNKNOWN
+	- TRUE AND UNKNOWN → UNKNOWN
+	- FALSE AND UNKNOWN → FALSE # 특이점
+	
+비교(반드시)
+
+	LOC is NULL / LOC is not NULL
+	
+
+select * from dept where loc=null; -- 공집합
+select * from dept where loc=null AND loc is not null ; -- 공집합
+select * from dept where loc=null OR loc is not null ; -- 출력
+select * from dept where loc is not null OR loc=null ; -- 출력
+select * from dept where loc in ('BOSTON', null); -- 출력 (내부 OR 연산)
+select * from dept where loc not in ('BOSTON', null); -- 공집합 (내부 AND 연산)
+
+(요약)
+
+조건				논리 연산				결과
+------------------------------------------------------------------------------
+LOC = NULL			UNKNOWN				행 제외
+LOC = NULL AND LOC IS NOT NULL	UNKNOWN AND TRUE/FALSE		행 제외
+LOC = NULL OR LOC IS NOT NULL	UNKNOWN OR TRUE/FALSE		NULL 아닌 행 출력
+LOC IS NOT NULL OR LOC = NULL	TRUE/FALSE OR UNKNOWN		NULL 아닌 행 출력
+LOC IN ('BOSTON', NULL)		LOC = 'BOSTON' OR LOC = NULL	BOSTON 행 출력
+LOC NOT IN ('BOSTON', NULL)	LOC <> 'BOSTON' AND LOC <> NULL	행 제외
