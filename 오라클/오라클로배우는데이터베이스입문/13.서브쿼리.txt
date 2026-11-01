@@ -32,6 +32,9 @@
 		    group by deptno);
 
 	ANY, SOME 연산자(둘은 이름만 다른 같은 연산자)
+		
+		(!! 핵심 ANY = OR, ALL = AND)
+	
 		- ANY 또는 SOME (조건들..) 중 만족하는 값 하나만 있으면 true.
 		- '=' 연산을 하면 IN(..) 과 같다
 		
@@ -40,13 +43,31 @@
 			ANY(500, 1000, 2000) 값 중 일치하는 sal 값 행 모두 출력
 		
 		1000 > ANY (500, 1000, 2000) : ANY값에 열값인 1000 보다 작은 500이 있으므로 true.
+			
+			1000 > 500 → TRUE
+			1000 > 1000 → FALSE
+			1000 > 2000 → FALSE
+			(하나라도 TRUE니까 최종 TRUE)
+			
 			- sal > ANY(500, 1000, 2000)로 생각해보면, 
 			ANY(..)값 중 제일 작은 값인 500 보다 큰 sal 값 행 모두 출력
 		
 		2000 < ANY (500, 1000, 2000) : ANY값에 열값인 2000 보다 큰 값이 없으므로 false.
+			
+			2000 < 500 → FALSE
+			2000 < 1000 → FALSE
+			2000 < 2000 → FALSE
+			(하나라도 TRUE가 없으니 최종 FALSE)
+			
 			- sal < ANY(500, 1000, 2000)로 생각해보면, 
 			ANY(..)값 중 제일 큰 값인 2000 보다 작은 sal 값 행 모두 출력
 			
+		
+		(요약)
+		확장하면 아래 개념이 된다
+			> ANY → 최솟값만 넘으면 통과
+			< ANY → 최댓값보다 작으면 통과
+		
 		------------- 예제
 		
 		select sal from emp where deptno=30
@@ -62,12 +83,14 @@
 		
 	
 	ALL 연산자
+	
+		(!! 핵심 ANY = OR, ALL = AND)
 		- 서브쿼리의 모든 결과가 조건식에 맞아 떨어져야만 true
 		
 		select * from emp 
 		where sal < all(select sal from emp where deptno = 30);
 		: 서브쿼리 결과(1600,1250,1250,2850,1500,950) 값들보다 작은 값, 
-		가장 작은 값이 950보다 작은 조건열의 행이 출력된다.
+		가장 작은 값인 950보다 작은 조건열의 행이 출력된다.
 		
 		select * from emp 
 		where sal > all(select sal from emp where deptno = 30);

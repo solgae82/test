@@ -1,15 +1,23 @@
-
+특정 컬럼들을 새 컬럼의 '값'들로 변환
+2개의 새 컬럼 필요
+	- '값' 담을 새 컬럼
+	- '컬럼명' 담을 새 컬럼
+-------------------
 unpivot(
-	값 컬럼 
-	for 이름 컬럼
-	in (unpivot 될 컬럼1,unpivot 될 컬럼2..)
+	'값' 담을 새 컬럼 
+	for '컬럼명' 담을 새 컬럼
+	in (
+		컬럼명1 as '값1' ,
+		컬럼명2 as '값2' 
+		, ..
+	)
 )
 
 : 특정 열(들)을 행으로 변환
 
-값 컬럼 : unpivot 될 컬럼에 있는 값들을 새로 담을 컬럼
-FOR 이름 컬럼 : unpivot될 컬럼명을 담을 새로운 컬럼
-IN : 행으로 변환하고 싶은 기존 컬럼들의 목록 지정
+값 컬럼 : unpivot 될 컬럼안의 값들을 담을 새 컬럼명
+FOR 이름 컬럼 : unpivot될 컬럼명을 담을 새 컬럼명
+IN : 행으로 변환하고 싶은 기존 컬럼명들의 목록 지정
 
 !! 값 컬럼이 null인 행은 결과에서 제외된다
 (null을 포함하고 싶다면 'unpivot include nulls' 구문을 사용)
@@ -21,7 +29,7 @@ IN : 행으로 변환하고 싶은 기존 컬럼들의 목록 지정
 	nm math english
 	-------------------
 	강감찬	90	95
-	홍길동	90	85
+	홍길동	95	92.5
 	이순신	95	100
 
 ------------------- pivot 함수
@@ -31,10 +39,10 @@ IN : 행으로 변환하고 싶은 기존 컬럼들의 목록 지정
 	select * 
 	from tb_unpivot
 	unpivot(
-	    score		--unpivot될 컬럼값들을 담을 새 컬럼명
-	    for subject in(	--unpivot될 컬럼명의 새로운 값 지정
-		math as 'math',
-		english as 'english'
+	    score	--unpivot될 컬럼값들을 담을 새 컬럼명(score)
+	    for subject in(--unpivot될 컬럼명의 담을 새 컬럼명(subject)
+		math as 'math', -- math 컬럼명 'math'값으로 
+		english as 'eng' -- english 컬럼명 'eng' 값으로
 	    )
 	)
 	;
@@ -43,8 +51,8 @@ IN : 행으로 변환하고 싶은 기존 컬럼들의 목록 지정
 	nm subject score
 	--------------------------
 	강감찬	math	90
-	강감찬	english	95
-	홍길동	math	90
-	홍길동	english	85
+	강감찬	eng	95
+	홍길동	math	95
+	홍길동	eng	92.5
 	이순신	math	95
-	이순신	english	100
+	이순신	eng	100

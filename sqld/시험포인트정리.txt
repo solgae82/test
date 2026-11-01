@@ -4,9 +4,24 @@ Join 컬럼명이 동일할때, ON 절 대신 USING(컬럴명)을 사용할 수 
 
 A full outer join B
 	
-	(아래와 같다) 
-	LEFT OUTER JOIN + RIGHT OUTER JOIN에서만 나오는 미매칭 행
+	UNION 과 비슷해 보이지만, 같지 않다
+	(중복값 없을때는 Union과 같은  결과가 나오지만, 
+	중복 값이 있다면 다른 결과가 나온다.)
 	
+	(정확히는 아래와 같다) 
+	LEFT OUTER JOIN (Union All) RIGHT OUTER JOIN에서만 나오는 미매칭 행
+	
+	SELECT A.ID, B.ID
+	FROM A
+	LEFT OUTER JOIN B ON A.ID = B.ID
+
+	UNION ALL
+
+	SELECT A.ID, B.ID
+	FROM A
+	RIGHT OUTER JOIN B ON A.ID = B.ID
+	WHERE A.ID IS NULL;
+
 Grouping Sets(A,B)
 	
 	group by A 결과와 group by B 결과를
@@ -35,3 +50,31 @@ Keep()
 	
 	Sort Merge Join → 정렬 기반 조인
 		(양쪽을 조인 키 기준으로 정렬한 후 병합)
+		
+pivot
+	특정 컬럼 '값'들을 컬럼들로 (분해)변환
+	집계함수 필수
+unpivot
+	특정 컬럼들을 새 컬럼의 '값'들로 변환
+	2개의 새 컬럼 필요
+	
+
+group by 후 윈도우 함수 사용 가능하다.
+
+not in(..,null,..) 은 무조건 공집합
+
+3개 이상의 rollup(A,B,C) 는 (ABC),(A,B),(A),() 의 통계를 가진다.
+
+셀프 조인 문제는 연결 첫 지점, 끝 지점 파악 -> 컬럼명 확인 순으로 한다.
+
+group by 후 집계함수는 공집합은 '결과없음' 반환
+	
+group by 없는 집계함수 의 공집합일때 
+	count(*)=> 0 , count(sal)=> 0
+	sum(sal)=> null
+	max(sal)=> null
+	min(sal)=> null
+	avg(sal)=> null
+	
+count(*) == count(1) == count(23) 모두 같은 뜻.
+
