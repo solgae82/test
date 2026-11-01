@@ -78,3 +78,31 @@ group by 없는 집계함수 의 공집합일때
 	
 count(*) == count(1) == count(23) 모두 같은 뜻.
 
+OFFSET .. FETCH
+	
+	ORDER BY c1 DESC
+	offset 3 rows -- 3행 건너뛰고 4행부터 시작
+	fetch (first 또는 next) 5 rows only; -- 5행만 가져오기
+	
+	(first 또는 next) : 같은 표현이다. 의미 두지 말자
+	
+	문법	의미
+	------------------------
+	OFFSET 0 ROWS				건너뛰지 않음
+	FETCH FIRST 5 ROWS ONLY			처음 5행
+	FETCH NEXT 5 ROWS ONLY			처음 5행 (FIRST와 동일)
+	FETCH FIRST 5 ROWS WITH TIES		5번째 행과 정렬값이 같은 행도 포함
+	FETCH FIRST 10 PERCENT ROWS ONLY	전체 행의 10% (올림)
+
+	특히 **WITH TIES**가 시험에 나오기 좋아.
+
+	예를 들어 급여가 900, 800, 800, 800, 700이라면:
+	- FETCH FIRST 2 ROWS ONLY → 2행
+	- FETCH FIRST 2 ROWS WITH TIES → 4행 (800이 동점이므로)
+	
+	암기 한 줄: 
+		OFFSET = 건너뛰기, 
+		FETCH = 가져오기, 
+		WITH TIES = 동점까지.
+	
+	
