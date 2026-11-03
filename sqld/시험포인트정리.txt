@@ -177,3 +177,17 @@ CTAS(create table as select) 절로 복제시
 	- 컬럼명, 데이터타입, not null 만 복사됨
 	
 natual join은 select 절에 테이블 별칭을 붙일 수 없다.
+
+rollup(deptno) , cube(deptno) 처럼 한개일 경우는 같은 결과다
+	
+	select deptno, sum(sal) as "sum" from dept
+	group by rollup(deptno) -- cube(deptno) 결과와 같다
+	;
+	
+	deptno	sum
+	-----------
+	10	500 -- 부서 10의 합계
+	20	600 -- 부서 20의 합계
+	(NULL)  1100 -- 전쳬 합계
+	
+	
