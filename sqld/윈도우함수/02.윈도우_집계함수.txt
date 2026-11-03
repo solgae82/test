@@ -20,15 +20,37 @@ Emma	Development	Staff			6500	22/10/30
 Liam	Development	Staff			6200	23/06/01
 
 -------------------  집계 함수들
+기본 원칙
 
+order by 절 없을 경우 윈도우 프레임
+	: 그룹 전체가 윈도우 프레임이 된다 
+	(), (partion by) 있어도 원리는 같다
+
+	(ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+	
+	
+order by 절 있을 경우 기본 윈도우 프레임
+	: 현재행 기준 이전까지가 윈도우 프레임 
+	
+	(RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+	
+--------------------
 1. SUM
 
 	- 그룹내 총합계 반환
 	- 형식
 		sum(컬럼): 파라미터 필수
 	- order by 절 없으면, 단순 그룹 합계를 계산, 반환
-	- 윈도윙 절 없으면 누적합계 계산, 반환
-		- range between unbounded and current row 가 기본
+	- order by 절 있으면 누적합계 계산, 반환
+		
+		
+	-----------------------------------------
+	order by 절 없을경우
+	
+		그룹 전체가 윈도우 프레임이 된다
+			
+	(ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+		
 	
 	select 
 	    emp_name
@@ -55,14 +77,16 @@ Liam	Development	Staff			6200	23/06/01
 	Emily	Sales		23/02/10	6000	35700
 	
 	
-	- order by 절만 있다면,
-	현재행 기준 이전행들 포함한 누적 합계를 계산한다
+	-----------------------------------------
 	
-		(왜냐면, order by 절의 기본 windowing절이 
-			
-			RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+	- order by 절이 있다면?
+	정렬된 현재행 기준 이전행들값 포함한 누적 합계를 계산한다
+	
+	(왜냐면, order by 절의 기본 windowing절이 
 		
-		이기 때문이다)
+		RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+	
+	이기 때문이다)
 	
 	select 
 	    emp_name
