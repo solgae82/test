@@ -9,7 +9,6 @@
 
 ------------------- rows / range
  
-
 • ROWS (물리적인 행의 개수)
 	
 	• 숫자로만 행을 셀 수 있기 때문에 모든 조합이 자유롭습니다. 
@@ -27,7 +26,41 @@
 	• 단, UNBOUNDED나 CURRENT ROW 키워드만 사용하는 조합은 RANGE에서도 
 	정렬 컬럼 제한 없이 자유롭게 쓸 수 있습니다.
 
-------------------- 윈도우 범위
+------------------- window 프레임 디폴트
+
+아무것도 없거나, partition by만 있다면 기본 디폴트는,
+	
+	ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+	(변경 못 한다)
+	
+order by 절이 추가되면, 기본 디폴트도 자도 변경된다.
+그리고 window 프레임을 수동으로 조작할 수 있다.
+
+	(order by 절 추가시 기본 디폴트 자동 변경 됨)
+	RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+이다.
+	
+(설명 예)
+
+	----------- 기본
+	sum(sal)
+	over(
+				
+		-- 기본 디폴트: 
+		-- ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING			
+	)
+	
+	----------- order by 추가
+	
+	sum(sal)
+	over(
+		order by sal DESC
+		
+		-- order by 로 변경된 기본 디폴트: 
+		-- RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW			
+	)
+	
+------------------- 윈도우 범위 키워드들
 
 • UNBOUNDED PRECEDING: 처음부터 (첫 번째 행부터)
 • 값 PRECEDING: 현재 기준 앞의 N번째 행까지 / 현재 값보다 N 작은 값까지
@@ -35,7 +68,7 @@
 • 값 FOLLOWING: 현재 기준 뒤의 N번째 행부터 / 현재 값보다 N 큰 값부터
 • UNBOUNDED FOLLOWING: 끝까지 (마지막 행까지)
 
-------------------- 연산 범위
+------------------- 연산 범위 설정하기
 
 BETWEEN 연산으 반드시 [시작점]이 [끝점]보다 시간적으로나 물리적으로 앞선 시점이어야 합니다. 
 (예: BETWEEN 미래 AND 과거는 에러)
@@ -88,20 +121,7 @@ range는 order by로 정렬된 현재 행 '값' 기준의 이전값, 이후값 �
 	- DESC → 현재 값 이상 전체
 	같은 값은 현재 행보다 뒤에 있어도 포함된다.
 
-------------------- windowing 절 디폴트
 
-order by 절만 있고, windowing 절이 없다면, 기본 디폴트 
-	RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-이다.
-	
-	sum(sal)
-	over(
-		order by sal DESC
-		
-		-- RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW			
-	)
-
-※ RANGE 가 디폴트다
 
 ------------------- BETWEEN 절 패턴 (ROW 기준)
 order by ASC,DESC 정렬 후 
