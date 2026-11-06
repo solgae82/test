@@ -190,4 +190,4 @@ rollup(deptno) , cube(deptno) 처럼 한개일 경우는 같은 결과다
 	20	600 -- 부서 20의 합계
 	(NULL)  1100 -- 전쳬 합계
 	
-	
+group by 에서는 null도 하나의 독립 그룹으로 인정한다.
