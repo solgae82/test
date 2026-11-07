@@ -1,0 +1,76 @@
+셀프조인으로도 1차적 계층적 쿼리를 구현할 수 있다.
+복잡한 depth를 사용하게 될때, 계층적 쿼리를 사용하면 된다
+-------------------예제
+
+[test4 테이블]
+ID	MENU	PARENT_ID
+-------------------------
+100	가전	(null)
+101	냉장고	100
+102	세탁기	100
+200	문구	(null)
+201	볼펜	200
+
+
+------------------- 계층적 쿼리
+select 
+   b.*
+    
+    , level
+    ,CONNECT_BY_ROOT menu as root_nm -- 
+    ,sys_connect_by_path(menu,'>') as path2
+from 
+test4 b
+
+-- 순방향
+--start with parent_id is null
+--connect by prior id=  parent_id
+
+-- 역방향
+start with parent_id in (100,200) 
+connect by id = prior parent_id
+;
+
+-- prior 위치를 잘 살펴보기 바란다
+-- 순방향과 역방향 결과를 잘 비교해보라
+
+[순방향 결과]
+ID MENU PARENT_ID LEVEL root이름 메뉴경로
+--------------------------------------------------
+100	가전	(null)	1	가전	>가전
+101	냉장고	100	2	가전	>가전>냉장고
+102	세탁기	100	2	가전	>가전>세탁기
+200	문구	(null)	1	문구	>문구
+201	볼펜	200	2	문구	>문구>볼펜
+
+[역방향 결과]
+ID MENU PARENT_ID LEVEL root이름 메뉴경로
+--------------------------------------------------
+101	냉장고	100	1	냉장고	>냉장고
+100	가전	(null)	2	냉장고	>냉장고>가전
+102	세탁기	100	1	세탁기	>세탁기
+100	가전	(null)	2	세탁기	>세탁기>가전
+201	볼펜	200	1	볼펜	>볼펜
+200	문구	(null)	2	볼펜	>볼펜>문구
+
+------------------- 셀프조인 (계층형) 구현
+select * from test4 a, test4 b
+-- where a.id = b.parent_id; -- 순방향(b.parent_id = a.id 와 같다)
+where a.parent_id = b.id; -- 역방향(b.id = a.parent_id 와 같다) 
+
+-- 컬럼명이 위치 전환으로 결과도 전환 되는 것을 유심히 보기 바란다
+
+[순방향 결과]
+ID MENU PARENT_ID ID_1 MENU_1 PARENT_ID_1
+----------------------------------------------
+100	가전	(null)	102	세탁기	100
+100	가전	(null)	101	냉장고	100
+200	문구	(null)	201	볼펜	200
+
+
+[역방향 결과]
+ID MENU PARENT_ID ID_1 MENU_1 PARENT_ID_1
+----------------------------------------------
+102	세탁기	100	100	가전	(null)
+101	냉장고	100	100	가전	(null)
+201	볼펜	200	200	문구	(null)

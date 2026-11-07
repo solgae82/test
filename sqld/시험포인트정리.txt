@@ -227,3 +227,5 @@ insert first/all
 	  WHEN sal >= 2000 THEN INTO medium VALUES (empno, ename, sal)
 	  ELSE INTO poor VALUES (empno, ename, sal)
 	SELECT empno, ename, sal FROM emp;
+
+계층형 쿼리는 where 절보다 먼저 실행된다.
