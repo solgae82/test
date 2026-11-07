@@ -1,0 +1,27 @@
+<insert first/all>
+	
+원본테이블에 행을 기준으로 조건 검사 후,
+조건별 다른 테이블에 골라서 넣을 수 있는 강력한 기능
+
+first: 
+	- if(){..}else if(){..} 느낌
+	- 조건에 맞는 첫번째 테이블만 삽입
+all: 
+	- if(){}, if(){} 느낌 
+	- 조건에 맞는 테이블에 모두 삽입
+
+-------------------
+
+(first)
+INSERT FIRST 
+  WHEN sal >= 5000 THEN INTO rich VALUES (empno, ename, sal)
+  WHEN sal >= 2000 THEN INTO medium VALUES (empno, ename, sal)
+  ELSE INTO poor VALUES (empno, ename, sal)
+SELECT empno, ename, sal FROM emp;
+
+(all) 
+INSERT ALL 
+  WHEN sal >= 5000 THEN INTO rich VALUES (empno, ename, sal)
+  WHEN sal >= 2000 THEN INTO medium VALUES (empno, ename, sal)
+  ELSE INTO poor VALUES (empno, ename, sal)
+SELECT empno, ename, sal FROM emp;

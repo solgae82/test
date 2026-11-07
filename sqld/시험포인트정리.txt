@@ -76,7 +76,7 @@ group by 없는 집계함수 의 공집합일때
 	min(sal)=> null
 	avg(sal)=> null
 	
-count(*) == count(1) == count(23) 모두 같은 뜻.
+count(*) == count(1) == count(23) == count('apple') 모두 같은 뜻.
 
 OFFSET .. FETCH
 	
@@ -177,6 +177,7 @@ CTAS(create table as select) 절로 복제시
 	- 컬럼명, 데이터타입, not null 만 복사됨
 	
 natual join은 select 절에 테이블 별칭을 붙일 수 없다.
+(정확히는 공통 조인 되는 컬럼명에 테이블 별칭을 붙일 수 없다)
 
 rollup(deptno) , cube(deptno) 처럼 한개일 경우는 같은 결과다
 	
@@ -191,3 +192,38 @@ rollup(deptno) , cube(deptno) 처럼 한개일 경우는 같은 결과다
 	(NULL)  1100 -- 전쳬 합계
 	
 group by 에서는 null도 하나의 독립 그룹으로 인정한다.
+
+슈퍼/서브타입
+	회원(슈퍼), 서브(소비자회원, 판매자 회원등)
+	One to One: (슈퍼1개 + 서브n개)
+		각 서브별 테이블을 만든다
+		테이블이 너무 많아서 항상 조인이 발생.성능 안 좋음
+	plus type:(슈퍼 + 서브타입 결합형)
+		(슈퍼 + 서브A)테이블, (슈퍼 + 서브B)테이블 ..
+		서브타입별로 테이블이 나뉘므로 조인이 발생할 수 있다
+	single type: (슈퍼 + 서브 통합형)
+		통합 테이블 1개
+		조인이 없어 성능은 좋으나, 저장공간 낭비가 심하다
+
+연산자 우선수위		
+	산술->연결(||)->비교->is null, like,in->between->
+	not->and->or
+	
+insert first/all
+	
+	first: if(){..}else if(){..} 느낌(첫번째만 실행)
+	all: if(){}, if(){} 느낌 (모두 실행)
+	
+	(first)
+	INSERT FIRST 
+	  WHEN sal >= 5000 THEN INTO rich VALUES (empno, ename, sal)
+	  WHEN sal >= 2000 THEN INTO medium VALUES (empno, ename, sal)
+	  ELSE INTO poor VALUES (empno, ename, sal)
+	SELECT empno, ename, sal FROM emp;
+
+	(all) 
+	INSERT ALL 
+	  WHEN sal >= 5000 THEN INTO rich VALUES (empno, ename, sal)
+	  WHEN sal >= 2000 THEN INTO medium VALUES (empno, ename, sal)
+	  ELSE INTO poor VALUES (empno, ename, sal)
+	SELECT empno, ename, sal FROM emp;
