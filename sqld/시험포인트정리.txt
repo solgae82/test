@@ -272,3 +272,12 @@ greatest(),least() 함수는 여러개 인수를 넣을 수 있다.
 
 cross join 과 natural join은 on절을 사용할 수 없다.
 
+merge into
+	matched 절
+		update 와 delete 사용 가능
+		(delete의 대상은 update 절로 영향 받은 행) 
+	not matched 절
+		insert 만 가능
+
+파티션 테이블은 파티션 키에 대해서 인덱스를 생성할 수 있다
+
