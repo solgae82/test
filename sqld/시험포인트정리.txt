@@ -281,3 +281,100 @@ merge into
 
 파티션 테이블은 파티션 키에 대해서 인덱스를 생성할 수 있다
 
+rollup(col), col 문제
+		
+	select col1, sum(col2)
+	from test9
+	group by rollup(col1), col1;
+	
+	(풀이)
+	= rollup(col1): (col1), ()
+	= 전체그룹 col1 추가: 
+		(col1) + col1 = (col1,col1) = (col1) 
+		() + col1 = (col1)
+	= 최종계산:
+		(col1) group by 계산 결과
+		(col1) group by 계산 결과
+		
+regexp_instr
+
+	SELECT REGEXP_INSTR(
+	    'AB12CD345EF',  -- 1. 원본 문자열
+	    '([0-9]+)',     -- 2. 정규표현식
+	    1,              -- 3. 첫 문자부터 검색
+	    2,              -- 4. 두 번째 숫자 묶음
+	    1,              -- 5. 매칭 끝 다음 위치
+	    'c',            -- 6. 대소문자 구별
+	    1               -- 7. 첫 번째 괄호 그룹
+	) AS RESULT
+	FROM DUAL;
+	
+	옵션	기능
+	i	대소문자 구별 안 함
+	c	대소문자 구별
+	m	^, $를 각 줄의 시작·끝에도 적용
+	n	.이 줄바꿈 문자까지 매칭
+	x	패턴 안의 공백 문자 무시
+	
+외래키 걸렸을 경우
+	추가 제약 조건에 따라 행동이 달라진다
+	(자식, 즉 외래키 제약조건에 설정하는 것이다)
+	
+	on delete는 
+	연결된 부모의 값이 삭제 될시 결정하는 추가 옵션
+	(기본은 부모행의 값을 자식행이 공유하고 있으면 삭제 못함)
+	
+	외래키 설정	부모 행 삭제 시
+	ON DELETE CASCADE	관련 자식 행도 삭제
+	ON DELETE SET NULL	자식 FK를 NULL로 변경
+	기본값 (옵션 없음)	참조하는 자식 행이 있으면 부모 삭제 거부
+	
+where deptno = 10 과 10 = deptno 는 같다
+
+to_date('2026','YYYY')
+	현재 날짜가 2026-11-10 (화)
+	이면
+	2026-11-01 반환
+	
+	날짜 요소	생략했을 때(기본값)
+	------------------------
+	연도(YYYY)	현재 연도
+	월(MM)		현재 월
+	일(DD)		1일
+	시·분·초		00:00:00
+	
+인덱스 생성 컬럼을 대상으로 연산하면 인덱스로 사용되지 않아 검색 속도 향상 효과가 없다.
+
+	a, b가 인덱스 걸려 있는데
+	where (a - b) > 50 등의 연산
+	
+having절의 grouping 응용
+	SELECT deptno, job, SUM(sal)
+	FROM emp
+	GROUP BY ROLLUP(deptno, job);
+	(이곳에 HAVING GROUPING 추가)
+	
+	DEPTNO	JOB	행 종류	GROUPING(DEPTNO)	GROUPING(JOB)
+	10	CLERK	상세	0	0
+	10	NULL	부서 소계	0	1
+	20	CLERK	상세	0	0
+	20	NULL	부서 소계	0	1
+	NULL	NULL	전체 총계	1	1
+	
+	전체 총계 제거
+		HAVING GROUPING(deptno) = 0
+	
+	전체 총계만 출력
+		HAVING GROUPING(deptno) = 1
+	
+	부서별 소계만 출력
+		HAVING GROUPING(deptno) = 0
+		AND GROUPING(job) = 1
+		
+	상세 행만 출력 (소계·총계 제거)
+		HAVING GROUPING(deptno) = 0
+		AND GROUPING(job) = 0
+		
+	상세 행과 전체 총계만 출력
+		HAVING GROUPING(deptno) + GROUPING(job) <> 1
+		
