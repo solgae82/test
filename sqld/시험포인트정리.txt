@@ -22,6 +22,9 @@ A full outer join B
 	RIGHT OUTER JOIN B ON A.ID = B.ID
 	WHERE A.ID IS NULL;
 
+(left/right) outer join 과 full outer join 은 그리면서 파악해야 한ON 절 추가 조건과, where 절 조건 
+
+	
 Grouping Sets(A,B)
 	
 	group by A 결과와 group by B 결과를
@@ -204,7 +207,7 @@ natual join은 select 절에 테이블 별칭을 붙일 수 없다.
 
 rollup(deptno) , cube(deptno) 처럼 한개일 경우는 같은 결과다
 	
-	select deptno, sum(sal) as "sum" from dept
+	select deptno, sum(sal) as "sum" from emp
 	group by rollup(deptno) -- cube(deptno) 결과와 같다
 	;
 	
@@ -326,8 +329,7 @@ rollup(col), col 문제
 		(col1) + col1 = (col1,col1) = (col1) 
 		() + col1 = (col1)
 	= 최종계산:
-		(col1) group by 계산 결과
-		(col1) group by 계산 결과
+		??
 		
 regexp_instr
 
@@ -423,3 +425,111 @@ select level from dual connect by level <= 2;
 	
 	(그냥 이런 것도 있다로 이해)
 	
+ON 절 추가 조건과, where 절 조건 
+
+	: on절에 추가 연결 조건도 조인 조건에 포함된다
+	
+	on A.id=B.id AND name='이순신'
+	와
+	on A.id=B.id WHERE name='이순신'
+	
+	(inner join) : 둘다 결과가 같다
+	
+	(outer join): 결과가 다르다
+		왜냐면 outer join이기에 outer는 모두 나온다
+		대신 기본 조인과 결과는 다르게 조인 된다.
+		
+	상식적으로 생각하면 된다(은 탄환은 없다)
+	
+페이징 지식
+	
+	
+	(기본 원리)
+	SELECT *
+	FROM (
+	    SELECT *
+	    FROM EMP
+	    ORDER BY SAL DESC
+	)
+	WHERE ROWNUM <= 10;
+
+	(실전)
+	SELECT *
+	FROM (
+	    SELECT T.*, ROWNUM AS RN
+	    FROM (
+		SELECT *
+		FROM EMP
+		ORDER BY SAL DESC
+	    ) T
+	    WHERE ROWNUM <= 20
+	)
+	WHERE RN >= 11;
+	
+ON 과 where 절은 다르다
+	ON 절의 기본 연결 조건이고,
+	where 절은 필터 조건이다
+	
+	비슷해 보이지만, 다르다
+	
+	[project 테이블]
+	
+	p_id	p_name
+	---------------
+	P01	알파
+	P02	베타
+	P03	감마
+	
+	[member 테이블]
+	
+	m_id	m_name	p_id	role
+	----------------------------
+	M01	홍길동	P01	L
+	M02	이순신	P01	M
+	M03	강감찬	P02	M
+	M04	유관순	P04	L
+
+	=========================================
+	
+	(기본 left outer join)
+	
+	select * from project A
+		left outer join member B
+	ON
+		A.proj_id = B.proj_id
+	
+		
+	p_id	p_name	m_id	m_name	p_id	role
+	-----------------------------------------------
+	P01	알파	M01	홍길동	P01	L
+	P01	알파	M02	이순신	P01	M
+	P03	감마	(null)	(null)	(null)	(null)			
+	P02	베타	(null) 	(null)	(null)	(null)
+	
+	(ON 절에 AND 조건 필터링)
+	select * from project A
+		left outer join member B
+	ON
+		A.proj_id = B.proj_id
+		AND
+		B.role ='L';
+		
+	p_id	p_name	m_id	m_name	p_id	role
+	-----------------------------------------------
+	P01	알파	M01	홍길동	P01	L
+	P02	베타	(null) 	(null)	(null)	(null)
+	P03	감마	(null)	(null)	(null)	(null)			
+	
+	
+	
+	(where 절 조건 필터링)
+	select * from project A
+		left outer join member B
+	ON
+		A.proj_id = B.proj_id
+	where
+		B.role ='L';
+		
+	p_id	p_name	m_id	m_name	p_id	role
+	-----------------------------------------------
+	P01	알파	M01	홍길동	P01	L
