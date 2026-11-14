@@ -194,11 +194,15 @@ CTAS(create table as select) 절로 복제시
 	
 	- 컬럼명, 데이터타입, not null 만 복사됨
 	
-natual join은 select 절에 테이블 별칭을 붙일 수 없다.
-	조건: (동일컬럼명 + 데이터 유형)
-	동일 컬럼명으로 자동 조인되므로 테이블 별칭을 사용할 수 없다
-	(정확히는 공통 조인 되는 컬럼명에 테이블 별칭을 붙일 수 없다)
-
+natual join과 unsing(컬럼) 형식은 select 절에 테이블 별칭을 붙일 수 없다.
+	
+	"자동 공통 조인 되는 컬럼명에 테이블 별칭을 붙일 수 없다"
+	
+	
+일반 join은 조인 컬럼을 select절에 나타낼때 테이블 별칭을 붙여야만 한다.
+	select A.deptno , B.deptno from emp A, deptno B
+	where A.deptno=B.deptno;
+	
 집합연산자 조건
 	결과 집합의 구조가 동일 해야함(이름은 달라도 됨)
 	1. 컬럼 개수 일치
