@@ -429,21 +429,7 @@ select level from dual connect by level <= 2;
 	
 	(그냥 이런 것도 있다로 이해)
 	
-ON 절 추가 조건과, where 절 조건 
 
-	: on절에 추가 연결 조건도 조인 조건에 포함된다
-	
-	on A.id=B.id AND name='이순신'
-	와
-	on A.id=B.id WHERE name='이순신'
-	
-	(inner join) : 둘다 결과가 같다
-	
-	(outer join): 결과가 다르다
-		왜냐면 outer join이기에 outer는 모두 나온다
-		대신 기본 조인과 결과는 다르게 조인 된다.
-		
-	상식적으로 생각하면 된다(은 탄환은 없다)
 	
 페이징 지식
 	
@@ -469,6 +455,22 @@ ON 절 추가 조건과, where 절 조건
 	    WHERE ROWNUM <= 20
 	)
 	WHERE RN >= 11;
+	
+ON 절 추가 조건과, where 절 조건 
+
+	: on절에 추가 연결 조건도 조인 조건에 포함된다
+	
+	on A.id=B.id AND name='이순신'
+	와
+	on A.id=B.id WHERE name='이순신'
+	
+	(inner join) : 둘다 결과가 같다
+	
+	(outer join): 결과가 다르다
+		왜냐면 outer join이기에 outer는 모두 나온다
+		대신 기본 조인과 결과는 다르게 조인 된다.
+		
+	상식적으로 생각하면 된다(은 탄환은 없다)
 	
 ON 과 where 절은 다르다
 	ON 절의 기본 연결 조건이고,
@@ -537,3 +539,9 @@ ON 과 where 절은 다르다
 	p_id	p_name	m_id	m_name	p_id	role
 	-----------------------------------------------
 	P01	알파	M01	홍길동	P01	L
+	
+
+ORDER BY NULL;은 "별도의 정렬 작업을 수행하지 말라(정렬 생략)"는 뜻입니다
+	
+ORDER BY 절에 컬럼명, 별칭(Alias), 컬럼 순번(정수) 외에 
+NULL이나 문자/숫자 상수가 오면 모든 행의 정렬 기준값이 같아져 정렬 효과가 없어집니다.
